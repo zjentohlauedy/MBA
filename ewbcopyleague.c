@@ -7,126 +7,127 @@
 #include <fcntl.h>
 #include <math.h>
 #include <time.h>
+#include "ewbfiles.h"
 
-typedef enum
-{
-     cl_LtBlue = 0,
-     cl_Blue,
-     cl_DkRed,
-     cl_Red,
-     cl_Gold,
-     cl_Black,
-     cl_Brown,
-     cl_Green
-
-} colors_e;
-
-typedef struct
-{
-     unsigned char name   [12];
-     unsigned char color  [ 1];
-     unsigned char wins   [ 1];
-     unsigned char losses [ 1];
-     unsigned char term   [ 1];
-
-} team_s;
-
-typedef struct
-{
-     unsigned char header[52];
-     unsigned char league1[12];
-     unsigned char league2[12];
-     unsigned char division1[12];
-     unsigned char division2[12];
-     unsigned char division3[12];
-     unsigned char division4[12];
-     team_s        teams[32];
-
-} league_s;
 
 static struct {
 
      unsigned char color1;
      unsigned char color2;
-     int           percent;
+     int           alternate;
 
 } colors[] = {
 
-     { /* Sabres    */ cl_Blue,   cl_LtBlue, 80 },
-     { /* Portsmen  */ cl_LtBlue, cl_Green,  95 },
-     { /* Settlers  */ cl_Brown,  cl_Green,  75 },
-     { /* Kings     */ cl_LtBlue, cl_LtBlue, 50 },
-     { /* Voyagers  */ cl_Blue,   cl_Blue,   50 },
-     { /* Rockets   */ cl_DkRed,  cl_DkRed,  50 },
-     { /* Knights   */ cl_Black,  cl_Black,  50 },
-     { /* Drizzle   */ cl_LtBlue, cl_Brown,  80 },
+     { /* Sabres    */ cl_Blue,   cl_LtBlue, 0 },
+     { /* Portsmen  */ cl_LtBlue, cl_Green,  0 },
+     { /* Settlers  */ cl_Brown,  cl_Red,    0 },
+     { /* Kings     */ cl_Red,    cl_Blue,   0 },
+     { /* Voyagers  */ cl_Blue,   cl_Gold,   0 },
+     { /* Rockets   */ cl_DkRed,  cl_DkRed,  0 },
+     { /* Knights   */ cl_Black,  cl_Blue,   0 },
+     { /* Drizzle   */ cl_LtBlue, cl_Brown,  0 },
 
-     { /* Scorpions */ cl_Black,  cl_Brown,  65 },
-     { /* Lightning */ cl_LtBlue, cl_Gold,   80 },
-     { /* Goblins   */ cl_Green,  cl_Green,  50 },
-     { /* Photons   */ cl_Red,    cl_Red,    50 },
-     { /* Dragons   */ cl_Gold,   cl_Green,  90 },
-     { /* Hammers   */ cl_Black,  cl_DkRed,  65 },
-     { /* Expos     */ cl_Blue,   cl_DkRed,  50 },
-     { /* Dynamo    */ cl_Red,    cl_LtBlue, 90 },
+     { /* Scorpions */ cl_Black,  cl_Brown,  0 },
+     { /* Lightning */ cl_Gold,   cl_LtBlue, 0 },
+     { /* Goblins   */ cl_Green,  cl_Black,  0 },
+     { /* Photons   */ cl_Red,    cl_DkRed,  0 },
+     { /* Dragons   */ cl_Gold,   cl_Green,  0 },
+     { /* Hammers   */ cl_Black,  cl_DkRed,  0 },
+     { /* Expos     */ cl_DkRed,  cl_Blue,   1 },
+     { /* Dynamo    */ cl_Red,    cl_LtBlue, 0 },
 
-     { /* Aces      */ cl_Black,  cl_Black,  50 },
-     { /* Cyclone   */ cl_Green,  cl_Blue,   50 },
-     { /* Stormers  */ cl_Blue,   cl_Black,  80 },
-     { /* Express   */ cl_Gold,   cl_LtBlue, 75 },
-     { /* Warriors  */ cl_DkRed,  cl_Brown,  95 },
-     { /* Wanderers */ cl_LtBlue, cl_Red,    90 },
-     { /* Thunder   */ cl_Blue,   cl_Blue,   50 },
-     { /* Glory     */ cl_LtBlue, cl_Gold,   65 },
+     { /* Aces      */ cl_Black,  cl_Red,    0 },
+     { /* Cyclone   */ cl_Gold,   cl_Blue,   1 },
+     { /* Stormers  */ cl_Blue,   cl_Black,  0 },
+     { /* Express   */ cl_Brown,  cl_Gold,   0 },
+     { /* Warriors  */ cl_DkRed,  cl_Brown,  0 },
+     { /* Wanderers */ cl_LtBlue, cl_Red,    0 },
+     { /* Thunder   */ cl_Blue,   cl_Brown,  0 },
+     { /* Glory     */ cl_Red,    cl_Black,  0 },
 
-     { /* Eclipse   */ cl_Black,  cl_Gold,   75 },
-     { /* Legends   */ cl_Blue,   cl_Blue,   50 },
-     { /* Waves     */ cl_Blue,   cl_Green,  90 },
-     { /* Horizon   */ cl_Green,  cl_Green,  50 },
-     { /* Sharks    */ cl_LtBlue, cl_LtBlue, 50 },
-     { /* Flames    */ cl_Red,    cl_Gold,   80 },
-     { /* Techs     */ cl_Blue,   cl_Blue,   50 },
-     { /* Quasars   */ cl_LtBlue, cl_Black,  80 }
+     { /* Eclipse   */ cl_Black,  cl_Gold,   0 },
+     { /* Legends   */ cl_Blue,   cl_Red,    0 },
+     { /* Waves     */ cl_Blue,   cl_Green,  0 },
+     { /* Horizon   */ cl_Green,  cl_LtBlue, 0 },
+     { /* Sharks    */ cl_LtBlue, cl_DkRed,  0 },
+     { /* Flames    */ cl_Red,    cl_Gold,   0 },
+     { /* Techs     */ cl_DkRed,  cl_Red,    0 },
+     { /* Quasars   */ cl_LtBlue, cl_Black,  0 }
 };
 
-static char *getColorName( unsigned int color )
-{
-     switch ( color )
-     {
-     case cl_LtBlue: return "Lt. Blue";
-     case cl_Blue:   return "Blue";
-     case cl_DkRed:  return "Dark Red";
-     case cl_Red:    return "Red";
-     case cl_Gold:   return "Gold";
-     case cl_Black:  return "Black";
-     case cl_Brown:  return "Brown";
-     case cl_Green:  return "Green";
-     default:        return "Unknown";
-     }
-}
-
-int roll( int range )
+static int roll( int range )
 {
      return (int)ceil( ((double)rand() / (double)RAND_MAX) * (double)range );
 }
 
+static int getFileTeam( const fileteam_s *teams, const char *team )
+{
+     int i;
+
+     for ( i = 0; i < TOTAL_TEAMS; ++i )
+     {
+	  if ( memcmp( teams[i].name, team, min( strlen(team), sizeof(teams[i].name) ) ) == 0 ) return i;
+     }
+}
+
+static int uniqueColors( const int t1, const int t2 )
+{
+     if ( colors[t1].color1 == colors[t2].color1 ) return 0;
+     if ( colors[t1].color2 == colors[t2].color2 ) return 0;
+     if ( colors[t1].color1 == colors[t2].color2 ) return 0;
+     if ( colors[t1].color2 == colors[t2].color1 ) return 0;
+
+     return 1;
+}
+
+static void setColors( fileteam_s *teams, const char *road, const char *home )
+{
+     int road_idx = getFileTeam( teams, road );
+     int home_idx = getFileTeam( teams, home );
+
+
+     // Set both teams to primary color
+     teams[road_idx].color[0] = colors[road_idx].color1;
+     teams[home_idx].color[0] = colors[home_idx].color1;
+
+     // If the colors are the same, change road team to secondary color
+     if ( teams[road_idx].color[0] == teams[home_idx].color[0] )
+     {
+	  teams[road_idx].color[0] = colors[road_idx].color2;
+
+	  // If they are still the same (road team is only one color), change the home team color
+	  if ( teams[road_idx].color[0] == teams[home_idx].color[0] )
+	  {
+	       teams[home_idx].color[0] = colors[home_idx].color2;
+	  }
+     }
+
+     // Alternate color teams will pick the team color randomly, but
+     // ONLY if neither color is used by the other team
+     if ( colors[road_idx].alternate  &&  uniqueColors( road_idx, home_idx ) )
+     {
+	  if   ( roll( 100 ) < 50 ) teams[road_idx].color[0] = colors[road_idx].color1;
+	  else                      teams[road_idx].color[0] = colors[road_idx].color2;
+     }
+
+     if ( colors[home_idx].alternate  &&  uniqueColors( road_idx, home_idx ) )
+     {
+	  if   ( roll( 100 ) < 50 ) teams[home_idx].color[0] = colors[home_idx].color1;
+	  else                      teams[home_idx].color[0] = colors[home_idx].color2;
+     }
+}
+
 int main( int argc, char *argv[] )
 {
-     league_s  before;
-     league_s *league;
-     time_t    t;
-     char     *filename_r;
-     char     *filename_w;
-     char      input_buf[sizeof(league_s)];
-     int       fd_r;
-     int       fd_w;
-     int       bytes_read;
-     int       bytes_written;
+     fileleague_s *leagueFile;
+     fileleague_s  before;
+     char         *games;
+     char          home[20];
+     char          road[20];
+     int           i;
 
 
-     t = time( NULL );
-
-     srand( t );
+     srand( time( NULL ) );
 
      if ( argc < 3 )
      {
@@ -135,88 +136,50 @@ int main( int argc, char *argv[] )
 	  return EXIT_SUCCESS;
      }
 
-     filename_r = argv[1];
-     filename_w = argv[2];
-
-     if ( (fd_r = open( filename_r, O_RDONLY )) < 0 )
+     if ( (games  = getenv( "GAMES" )) == NULL )
      {
-	  printf( "Cannot open file <%s>: %s\n", filename_r, strerror(errno) );
+	  printf( "Environment variable GAMES not found.\n" );
 
 	  return EXIT_FAILURE;
      }
 
-     if ( (bytes_read = read( fd_r, input_buf, sizeof(league_s) )) < sizeof(league_s) )
+     if ( (leagueFile = readLeagueFile( argv[1] )) == NULL )
      {
-	  printf( "Warning: data may be truncated!\n" );
+          printf( "Cannot load league file." );
+
+          return EXIT_FAILURE;
      }
 
-     if ( close( fd_r ) < 0 )
-     {
-	  printf( "Error closing input file: %s\n", strerror(errno) );
+     before = *leagueFile;
 
-	  return EXIT_FAILURE;
+     while ( sscanf( games, "%s %s ", road, home ) != EOF )
+     {
+	  setColors( leagueFile->teams, road, home );
+
+	  games += strlen(road) + strlen(home) + 2;
      }
 
-     league = (league_s *)input_buf;
-     before = *league;
-
-     int i;
-
-     for ( i = 0; i < 32; ++i )
+     for ( i = 0; i < TOTAL_TEAMS; ++i )
      {
-	  int x = roll( 100 );
-
-	  if ( (x - colors[i].percent) <= 0 )
-	  {
-	       league->teams[i].color[0] = colors[i].color1;
-	  }
-	  else
-	  {
-	       league->teams[i].color[0] = colors[i].color2;
-	  }
-     }
-
-     for ( i = 0; i < 32; ++i )
-     {
-	  if ( before.teams[i].color[0] != league->teams[i].color[0] )
+	  if ( before.teams[i].color[0] != leagueFile->teams[i].color[0] )
 	  {
 	       printf( "%s changed from %s to %s uniforms.\n",
-		       league->teams[i].name,
+		       leagueFile->teams[i].name,
 		       getColorName( before.teams[i].color[0] ),
-		       getColorName( league->teams[i].color[0] ) );
+		       getColorName( leagueFile->teams[i].color[0] ) );
 	  }
      }
 
-     if ( (fd_w = creat( filename_w, S_IRUSR | S_IWUSR )) < 0 )
+     if ( ! writeLeagueFile( argv[2], leagueFile ) )
      {
-	  printf( "Cannot open file <%s>: %s\n", filename_w, strerror(errno) );
+          printf( "Cannot save league changes.\n" );
 
-	  return EXIT_FAILURE;
+          free( leagueFile );
+
+          return EXIT_FAILURE;
      }
 
-     if ( (bytes_written = write( fd_w, input_buf, sizeof(league_s) )) < bytes_read )
-     {
-	  if ( bytes_written < 0 )
-	  {
-	       printf( "Error writing to output file: %s\n", strerror( errno ) );
-
-	       if ( close( fd_w ) < 0 )
-	       {
-		    printf( "Error closing output file: %s\n", strerror(errno) );
-	       }
-
-	       return EXIT_FAILURE;
-	  }
-
-	  printf( "Warning: incomplete buffer written to output file!\n" );
-     }
-
-     if ( close( fd_w ) < 0 )
-     {
-	  printf( "Error closing output file: %s\n", strerror(errno) );
-
-	  return EXIT_FAILURE;
-     }
+     free( leagueFile );
 
      return EXIT_SUCCESS;
 }
