@@ -15,6 +15,7 @@ temp.file*
 *.ods
 *.csv
 *.txt
+setgames
 
 # executables
 calc_avg_park_size
