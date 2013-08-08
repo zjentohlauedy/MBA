@@ -11,7 +11,7 @@ test_players_t: test_players_t.o players_t.o sql_query.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 
-%.o: %.c player.h sql_query.h
+%.o: %.c player.h sql_query.h unit_test.h
 	$(CC) $(CFLAGS) -c $<
 
 
