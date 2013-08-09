@@ -10,6 +10,12 @@
 #define BIND_TEXT( STMT, NN, VALUE ) if ( (rc = sqlite3_bind_text( (STMT), (NN), (VALUE), strlen(VALUE), SQLITE_STATIC )) != SQLITE_OK ) return rc;
 
 
-int execute_query( sqlite3 *db, char *query, int (*apply_bindings)(sqlite3_stmt *, const void *), const void *data );
+int execute_query(
+     /**/  sqlite3  *db,
+     /**/  char     *query,
+     /**/  int     (*apply_bindings)(sqlite3_stmt *, const void *),
+     const void     *data,
+     /**/  int     (*retrieve_data)(sqlite3_stmt *, const void *),
+     /**/  void     *output );
 
 #endif

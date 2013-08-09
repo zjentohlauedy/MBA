@@ -35,7 +35,7 @@ static void insert_a_player( player_s *player )
 
 static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
 {
-     player_s expected;
+     player_s expected = { 0 };
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName1" );
@@ -50,7 +50,7 @@ static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
 
      assertEquals( "insert_player()", SQLITE_OK, insert_player( db, &expected ) );
 
-     player_s actual;
+     player_s actual = { 0 };
 
      actual.player_id = 1;
 
@@ -74,7 +74,7 @@ static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
 
 static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 {
-     player_s expected;
+     player_s expected = { 0 };
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName1" );
@@ -89,7 +89,7 @@ static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      insert_a_player( &expected );
 
-     player_s actual;
+     player_s actual = { 0 };
 
      actual.player_id = 1;
 
@@ -113,9 +113,8 @@ static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
 static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
 {
-     player_s expected;
+     player_s expected = { 0 };
 
-     char query[999+1];
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName1" );
@@ -142,7 +141,7 @@ static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
 
      assertEquals( "update_player()", SQLITE_OK, update_player( db, &expected ) );
 
-     player_s actual;
+     player_s actual = { 0 };
 
      actual.player_id = 1;
 
@@ -166,9 +165,8 @@ static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
 
 static char *delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId()
 {
-     player_s expected;
+     player_s expected = { 0 };
 
-     char query[999+1];
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName1" );
@@ -185,7 +183,13 @@ static char *delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      assertEquals( "delete_player()", SQLITE_OK, delete_player( db, &expected ) );
 
-     assertEquals( "get_player()", SQLITE_DONE, get_player( db, &expected ) );
+     player_s actual = { 0 };
+
+     actual.player_id = expected.player_id;
+
+     assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
+
+     assertEqualsStr( "first_name", "", actual.first_name );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -220,5 +224,5 @@ int main( int argc, char *argv[] )
 
      sqlite3_close( db );
 
-     return (result == NULL) ? EXIT_SUCCESS : EXIT_FAILURE;
+     return (tests_pass()) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

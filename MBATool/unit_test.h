@@ -55,4 +55,6 @@ do \
 
 #define show_test_results() do { printf( "Tests Run: %d, Passed: %d, Failed: %d\n", __unit_tests_run__, __unit_tests_passed__, __unit_tests_failed__ ); } while (0)
 
+#define tests_pass() (__unit_tests_failed__ == 0)
+
 #endif
