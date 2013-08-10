@@ -23,7 +23,7 @@ static struct {
      { /* Settlers  */ cl_Brown,  cl_Red,    0 },
      { /* Kings     */ cl_Red,    cl_Blue,   0 },
      { /* Voyagers  */ cl_Blue,   cl_Gold,   0 },
-     { /* Rockets   */ cl_DkRed,  cl_DkRed,  0 },
+     { /* Rockets   */ cl_DkRed,  cl_Green,  0 },
      { /* Knights   */ cl_Black,  cl_Blue,   0 },
      { /* Drizzle   */ cl_LtBlue, cl_Brown,  0 },
 
