@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 #
 
-rm mba.db
-sqlite3 mba.db < schema.sql
+DBFILE="mba_test.db"
+
+FAIL=0
+
+function runtestprog {
+    echo "$1:"
+    $1 $DBFILE
+
+    if [ $? -ne 0 ]; then
+        FAIL=1
+    fi
+}
+
+rm $DBFILE
+sqlite3 $DBFILE < schema.sql
 
 if [ $? -ne 0 ]; then exit; fi
 
@@ -13,10 +26,16 @@ if [ $? -ne 0 ]; then exit; fi
 echo
 echo
 
-echo test_players_t:
-./test_players_t
+runtestprog test_players_t
 
-if [ $? -ne 0 ]; then exit; fi
+if [ $FAIL -ne 0 ]; then
+
+    echo
+    echo "There were test failures..."
+    echo
+
+    exit
+fi
 
 echo
 echo "ALL TESTS COMPLETED SUCCESSFULLY"

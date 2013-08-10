@@ -10,6 +10,42 @@ static sqlite3 *db;
 static char    *result;
 
 
+static int load_player_data( void *output, int cols, char *data[], char *names[] )
+{
+     player_s *p = (player_s *)output;
+
+     if ( cols < 10 ) return SQLITE_ERROR;
+
+     /**/    p->player_id       = atoi( data[0] );
+     strcpy( p->first_name,             data[1] );
+     strcpy( p->last_name,              data[2] );
+     strcpy( p->first_phonetic,         data[3] );
+     strcpy( p->last_phonetic,          data[4] );
+     /**/    p->skin_tone       = atoi( data[5] );
+     /**/    p->handedness      = atoi( data[6] );
+     /**/    p->player_type     = atoi( data[7] );
+     /**/    p->rookie_season   = atoi( data[8] );
+     /**/    p->longevity       = atoi( data[9] );
+
+     return SQLITE_OK;
+}
+
+static player_s *get_a_player( int player_id )
+{
+     static player_s player;
+
+     char query[999+1];
+
+     memset( &player, '\0', sizeof(player_s) );
+
+     snprintf( query, sizeof(query), "select * from players_t where player_id = %d", player_id );
+
+     sqlite3_exec( db, query, load_player_data, &player, NULL );
+
+     return &player;
+}
+
+
 static void insert_a_player( player_s *player )
 {
      char query[999+1];
@@ -50,22 +86,18 @@ static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
 
      assertEquals( "insert_player()", SQLITE_OK, insert_player( db, &expected ) );
 
-     player_s actual = { 0 };
+     player_s *actual = get_a_player( expected.player_id );
 
-     actual.player_id = 1;
-
-     assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
-
-     assertEquals(    "player_id",      expected.player_id,      actual.player_id      );
-     assertEqualsStr( "first_name",     expected.first_name,     actual.first_name     );
-     assertEqualsStr( "last_name",      expected.last_name,      actual.last_name      );
-     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual.last_phonetic  );
-     assertEquals(    "skin_tone",      expected.skin_tone,      actual.skin_tone      );
-     assertEquals(    "handedness",     expected.handedness,     actual.handedness     );
-     assertEquals(    "player_type",    expected.player_type,    actual.player_type    );
-     assertEquals(    "rookie_season",  expected.rookie_season,  actual.rookie_season  );
-     assertEquals(    "longevity",      expected.longevity,      actual.longevity      );
+     assertEquals(    "player_id",      expected.player_id,      actual->player_id      );
+     assertEqualsStr( "first_name",     expected.first_name,     actual->first_name     );
+     assertEqualsStr( "last_name",      expected.last_name,      actual->last_name      );
+     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual->first_phonetic );
+     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual->last_phonetic  );
+     assertEquals(    "skin_tone",      expected.skin_tone,      actual->skin_tone      );
+     assertEquals(    "handedness",     expected.handedness,     actual->handedness     );
+     assertEquals(    "player_type",    expected.player_type,    actual->player_type    );
+     assertEquals(    "rookie_season",  expected.rookie_season,  actual->rookie_season  );
+     assertEquals(    "longevity",      expected.longevity,      actual->longevity      );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -141,22 +173,18 @@ static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
 
      assertEquals( "update_player()", SQLITE_OK, update_player( db, &expected ) );
 
-     player_s actual = { 0 };
+     player_s *actual = get_a_player( expected.player_id );
 
-     actual.player_id = 1;
-
-     assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
-
-     assertEquals(    "player_id",      expected.player_id,      actual.player_id      );
-     assertEqualsStr( "first_name",     expected.first_name,     actual.first_name     );
-     assertEqualsStr( "last_name",      expected.last_name,      actual.last_name      );
-     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual.last_phonetic  );
-     assertEquals(    "skin_tone",      expected.skin_tone,      actual.skin_tone      );
-     assertEquals(    "handedness",     expected.handedness,     actual.handedness     );
-     assertEquals(    "player_type",    expected.player_type,    actual.player_type    );
-     assertEquals(    "rookie_season",  expected.rookie_season,  actual.rookie_season  );
-     assertEquals(    "longevity",      expected.longevity,      actual.longevity      );
+     assertEquals(    "player_id",      expected.player_id,      actual->player_id      );
+     assertEqualsStr( "first_name",     expected.first_name,     actual->first_name     );
+     assertEqualsStr( "last_name",      expected.last_name,      actual->last_name      );
+     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual->first_phonetic );
+     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual->last_phonetic  );
+     assertEquals(    "skin_tone",      expected.skin_tone,      actual->skin_tone      );
+     assertEquals(    "handedness",     expected.handedness,     actual->handedness     );
+     assertEquals(    "player_type",    expected.player_type,    actual->player_type    );
+     assertEquals(    "rookie_season",  expected.rookie_season,  actual->rookie_season  );
+     assertEquals(    "longevity",      expected.longevity,      actual->longevity      );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -183,13 +211,9 @@ static char *delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      assertEquals( "delete_player()", SQLITE_OK, delete_player( db, &expected ) );
 
-     player_s actual = { 0 };
+     player_s *actual = get_a_player( expected.player_id );
 
-     actual.player_id = expected.player_id;
-
-     assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
-
-     assertEqualsStr( "first_name", "", actual.first_name );
+     assertEqualsStr( "first_name", "", actual->first_name );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -216,7 +240,14 @@ static char *run_all_tests()
 
 int main( int argc, char *argv[] )
 {
-     sqlite3_open( "mba.db", &db );
+     if ( argc < 2 )
+     {
+          printf( "Must supply a db file name.\n" );
+
+          return EXIT_FAILURE;
+     }
+
+     sqlite3_open( argv[1], &db );
 
      run_all_tests( db );
 
