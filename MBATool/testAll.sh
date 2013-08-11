@@ -6,6 +6,7 @@ DBFILE="mba_test.db"
 FAIL=0
 
 function runtestprog {
+    echo
     echo "$1:"
     $1 $DBFILE
 
@@ -27,6 +28,7 @@ echo
 echo
 
 runtestprog test_players_t
+runtestprog test_player_accolades_t
 
 if [ $FAIL -ne 0 ]; then
 

@@ -16,6 +16,7 @@ temp.file*
 *.csv
 *.txt
 setgames
+TAGS
 
 # executables
 calc_avg_park_size

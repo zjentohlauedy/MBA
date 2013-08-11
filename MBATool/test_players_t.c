@@ -53,7 +53,7 @@ static void insert_a_player( player_s *player )
 
      snprintf( query, sizeof(query), "insert into players_t (player_id, first_name, last_name, "
                "first_phonetic, last_phonetic, skin_tone, handedness, player_type, rookie_season, longevity)"
-               "values (%d, '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d )",
+               "values (%d, '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d)",
                player->player_id,
                player->first_name,
                player->last_name,
@@ -123,7 +123,7 @@ static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      player_s actual = { 0 };
 
-     actual.player_id = 1;
+     actual.player_id = expected.player_id;
 
      assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
 
@@ -228,13 +228,12 @@ static void check_sqlite_error()
      }
 }
 
-static char *run_all_tests()
+static void run_all_tests()
 {
      run_test( insert_player__ShouldInsertRecordsInThePlayersTTable,       check_sqlite_error );
      run_test( get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,  check_sqlite_error );
      run_test( update_player__ShouldModifyMatchingRecord_GivenThePlayerId, check_sqlite_error );
      run_test( delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId, check_sqlite_error );
-     return NULL;
 }
 
 
