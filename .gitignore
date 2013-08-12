@@ -48,4 +48,6 @@ updateewbpitching
 updateewbratings
 updateewbstats
 
-MBATool/test_sql
+MBATool/test_players_t
+MBATool/test_player_accolades_t
+
