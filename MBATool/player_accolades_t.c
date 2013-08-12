@@ -61,7 +61,7 @@ static int get_player_accolades_by_player_retrieve( sqlite3_stmt *statement, con
                return SQLITE_ERROR;
           }
 
-          memset( tmp + idx, '\0', (tmp + max + 1) - (tmp + idx) );
+          memset( tmp + idx, '\0', sizeof(player_accolade_s) * (max + 1 - idx) );
 
           *player_accolades = tmp;
      }
