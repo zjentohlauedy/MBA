@@ -64,9 +64,8 @@ int   get_player(       sqlite3 *db,       player_s *player );
 int   update_player(    sqlite3 *db, const player_s *player );
 int   delete_player(    sqlite3 *db, const player_s *player );
 
-int insert_player_accolade( sqlite3 *db, const player_accolade_s *player_accolade );
-int get_player_accolade(    sqlite3 *db,       player_accolade_s *player_accolade );
-int update_player_accolade( sqlite3 *db, const player_accolade_s *player_accolade );
-int delete_player_accolade( sqlite3 *db, const player_accolade_s *player_accolade );
+int insert_player_accolade(         sqlite3 *db,                      const player_accolade_s  *player_accolade  );
+int get_player_accolades_by_player( sqlite3 *db, const int player_id,       player_accolade_s **player_accolades );
+int delete_player_accolade(         sqlite3 *db,                      const player_accolade_s  *player_accolade  );
 
 #endif

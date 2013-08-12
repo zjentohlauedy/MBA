@@ -70,7 +70,7 @@ static char *insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTab
      return NULL;
 }
 
-static char *get_player_accolade__ShouldRetrieveMatchingRecord_GivenThePlayerId()
+static char *get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 {
      player_accolade_s expected = { 0 };
 
@@ -80,41 +80,50 @@ static char *get_player_accolade__ShouldRetrieveMatchingRecord_GivenThePlayerId(
 
      insert_a_player_accolade( &expected );
 
-     player_accolade_s actual = { 0 };
+     player_accolade_s *actual = NULL;
 
-     actual.player_id = expected.player_id;
+     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected.player_id, &actual ) );
 
-     assertEquals( "get_player_accolade()", SQLITE_OK, get_player_accolade( db, &actual ) );
+     assertEquals( "player_id", expected.player_id, actual->player_id );
+     assertEquals( "season",    expected.season,    actual->season    );
+     assertEquals( "accolade",  expected.accolade,  actual->accolade  );
 
-     assertEquals( "player_id", expected.player_id, actual.player_id );
-     assertEquals( "season",    expected.season,    actual.season    );
-     assertEquals( "accolade",  expected.accolade,  actual.accolade  );
+     free( actual );
 
      sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
 
      return NULL;
 }
 
-static char *update_player_accolade__ShouldModifyMatchingRecord_GivenThePlayerId()
+static char *get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId()
 {
-     player_accolade_s expected = { 0 };
+     player_accolade_s expected1 = { 0 };
+     player_accolade_s expected2 = { 0 };
 
-     expected.player_id = 123;
-     expected.season    = 5;
-     expected.accolade  = acc_League_Title;
+     expected1.player_id = 123;
+     expected1.season    = 5;
+     expected1.accolade  = acc_League_Title;
 
-     insert_a_player_accolade( &expected );
+     expected2.player_id = 123;
+     expected2.season    = 6;
+     expected2.accolade  = acc_All_Star;
 
-     expected.season    = 2;
-     expected.accolade  = acc_All_Star;
+     insert_a_player_accolade( &expected1 );
+     insert_a_player_accolade( &expected2 );
 
-     assertEquals( "update_player_accolade()", SQLITE_OK, update_player_accolade( db, &expected ) );
+     player_accolade_s *actual = NULL;
 
-     player_accolade_s *actual = get_a_player_accolade( expected.player_id );
+     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected1.player_id, &actual ) );
 
-     assertEquals( "player_id", expected.player_id, actual->player_id );
-     assertEquals( "season",    expected.season,    actual->season    );
-     assertEquals( "accolade",  expected.accolade,  actual->accolade  );
+     assertEquals( "player_id", expected1.player_id, actual[0].player_id );
+     assertEquals( "season",    expected1.season,    actual[0].season    );
+     assertEquals( "accolade",  expected1.accolade,  actual[0].accolade  );
+
+     assertEquals( "player_id", expected2.player_id, actual[1].player_id );
+     assertEquals( "season",    expected2.season,    actual[1].season    );
+     assertEquals( "accolade",  expected2.accolade,  actual[1].accolade  );
+
+     free( actual );
 
      sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
 
@@ -154,10 +163,10 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTable, check_sqlite_error );
-     run_test( get_player_accolade__ShouldRetrieveMatchingRecord_GivenThePlayerId,    check_sqlite_error );
-     run_test( update_player_accolade__ShouldModifyMatchingRecord_GivenThePlayerId,   check_sqlite_error );
-     run_test( delete_player_accolade__ShouldDeleteMatchingRecord_GivenThePlayerId,   check_sqlite_error );
+     run_test( insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTable,             check_sqlite_error );
+     run_test( get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,     check_sqlite_error );
+     run_test( get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId, check_sqlite_error );
+     run_test( delete_player_accolade__ShouldDeleteMatchingRecord_GivenThePlayerId,               check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )
