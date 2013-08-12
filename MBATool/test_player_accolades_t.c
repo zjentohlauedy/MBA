@@ -80,9 +80,13 @@ static char *get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenT
 
      insert_a_player_accolade( &expected );
 
-     player_accolade_s *actual = NULL;
+     data_list_s list = { 0 };
 
-     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected.player_id, &actual ) );
+     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected.player_id, &list ) );
+
+     assertEquals( "count", 1, list.count );
+
+     player_accolade_s *actual = list.data;
 
      assertEquals( "player_id", expected.player_id, actual->player_id );
      assertEquals( "season",    expected.season,    actual->season    );
@@ -111,9 +115,13 @@ static char *get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_Gi
      insert_a_player_accolade( &expected1 );
      insert_a_player_accolade( &expected2 );
 
-     player_accolade_s *actual = NULL;
+     data_list_s list = { 0 };
 
-     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected1.player_id, &actual ) );
+     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected1.player_id, &list ) );
+
+     assertEquals( "count", 2, list.count );
+
+     player_accolade_s *actual = list.data;
 
      assertEquals( "player_id", expected1.player_id, actual[0].player_id );
      assertEquals( "season",    expected1.season,    actual[0].season    );

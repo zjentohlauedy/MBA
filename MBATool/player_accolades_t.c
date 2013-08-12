@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
+#include "data_list.h"
 #include "player.h"
 #include "sql_query.h"
 
@@ -44,38 +45,20 @@ static int get_player_accolades_by_player_bindings( sqlite3_stmt *statement, con
 
 static int get_player_accolades_by_player_retrieve( sqlite3_stmt *statement, const void *data )
 {
-     player_accolade_s **player_accolades = (player_accolade_s **)data;
+     data_list_s *data_list = (data_list_s *)data;
 
-     if ( idx == max )
-     {
-          player_accolade_s *tmp = NULL;
+     player_accolade_s player_accolade = { 0 };
 
-          max += 10;
+     player_accolade.player_id = sqlite3_column_int(  statement, 0 );
+     player_accolade.season    = sqlite3_column_int(  statement, 1 );
+     player_accolade.accolade  = sqlite3_column_int(  statement, 2 );
 
-          tmp = realloc( *player_accolades, sizeof(player_accolade_s) * (max + 1) );
-
-          if ( tmp == NULL )
-          {
-               free( *player_accolades );
-
-               return SQLITE_ERROR;
-          }
-
-          memset( tmp + idx, '\0', sizeof(player_accolade_s) * (max + 1 - idx) );
-
-          *player_accolades = tmp;
-     }
-
-     (*player_accolades)[idx].player_id = sqlite3_column_int(  statement, 0 );
-     (*player_accolades)[idx].season    = sqlite3_column_int(  statement, 1 );
-     (*player_accolades)[idx].accolade  = sqlite3_column_int(  statement, 2 );
-
-     idx++;
+     if ( add_to_data_list( data_list, &player_accolade, sizeof(player_accolade), 10 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }
 
-int get_player_accolades_by_player( sqlite3 *db, const int player_id, player_accolade_s **player_accolades )
+int get_player_accolades_by_player( sqlite3 *db, const int player_id, data_list_s *player_accolades )
 {
      static char query[]   = "SELECT Player_Id, Season, Accolade FROM Player_Accolades_T WHERE Player_Id = ?";
 
