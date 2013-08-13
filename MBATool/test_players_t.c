@@ -69,7 +69,7 @@ static void insert_a_player( player_s *player )
 }
 
 
-static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
+static char *players_t_create__ShouldInsertRecordsInThePlayersTTable()
 {
      player_s expected = { 0 };
 
@@ -84,7 +84,7 @@ static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
      /**/    expected.rookie_season   = 1;
      /**/    expected.longevity       = 5;
 
-     assertEquals( "insert_player()", SQLITE_OK, insert_player( db, &expected ) );
+     assertEquals( "players_t_create()", SQLITE_OK, players_t_create( db, &expected ) );
 
      player_s *actual = get_a_player( expected.player_id );
 
@@ -104,7 +104,7 @@ static char *insert_player__ShouldInsertRecordsInThePlayersTTable()
      return NULL;
 }
 
-static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
+static char *players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 {
      player_s expected = { 0 };
 
@@ -125,7 +125,7 @@ static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      actual.player_id = expected.player_id;
 
-     assertEquals( "get_player()", SQLITE_OK, get_player( db, &actual ) );
+     assertEquals( "players_t_read()", SQLITE_OK, players_t_read( db, &actual ) );
 
      assertEquals(    "player_id",      expected.player_id,      actual.player_id      );
      assertEqualsStr( "first_name",     expected.first_name,     actual.first_name     );
@@ -143,7 +143,7 @@ static char *get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
      return NULL;
 }
 
-static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
+static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
 {
      player_s expected = { 0 };
 
@@ -171,7 +171,7 @@ static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
      /**/    expected.rookie_season   = 4;
      /**/    expected.longevity       = 2;
 
-     assertEquals( "update_player()", SQLITE_OK, update_player( db, &expected ) );
+     assertEquals( "players_t_update()", SQLITE_OK, players_t_update( db, &expected ) );
 
      player_s *actual = get_a_player( expected.player_id );
 
@@ -191,7 +191,7 @@ static char *update_player__ShouldModifyMatchingRecord_GivenThePlayerId()
      return NULL;
 }
 
-static char *delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId()
+static char *players_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 {
      player_s expected = { 0 };
 
@@ -209,7 +209,7 @@ static char *delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      insert_a_player( &expected );
 
-     assertEquals( "delete_player()", SQLITE_OK, delete_player( db, &expected ) );
+     assertEquals( "players_t_delete()", SQLITE_OK, players_t_delete( db, &expected ) );
 
      player_s *actual = get_a_player( expected.player_id );
 
@@ -230,10 +230,10 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( insert_player__ShouldInsertRecordsInThePlayersTTable,       check_sqlite_error );
-     run_test( get_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,  check_sqlite_error );
-     run_test( update_player__ShouldModifyMatchingRecord_GivenThePlayerId, check_sqlite_error );
-     run_test( delete_player__ShouldDeleteMatchingRecord_GivenThePlayerId, check_sqlite_error );
+     run_test( players_t_create__ShouldInsertRecordsInThePlayersTTable,       check_sqlite_error );
+     run_test( players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId, check_sqlite_error );
+     run_test( players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId, check_sqlite_error );
+     run_test( players_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId, check_sqlite_error );
 }
 
 

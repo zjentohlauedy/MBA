@@ -49,7 +49,7 @@ static void insert_a_player_accolade( player_accolade_s *player_accolade )
      sqlite3_exec( db, query, NULL, NULL, NULL );
 }
 
-static char *insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTable()
+static char *player_accolades_t_create__ShouldInsertRecordsInThePlayerAccoladesTTable()
 {
      player_accolade_s expected = { 0 };
 
@@ -57,7 +57,7 @@ static char *insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTab
      expected.season    = 5;
      expected.accolade  = acc_League_Title;
 
-     assertEquals( "insert_player_accolade()", SQLITE_OK, insert_player_accolade( db, &expected ) );
+     assertEquals( "player_accolades_t_create()", SQLITE_OK, player_accolades_t_create( db, &expected ) );
 
      player_accolade_s *actual = get_a_player_accolade( expected.player_id );
 
@@ -70,7 +70,7 @@ static char *insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTab
      return NULL;
 }
 
-static char *get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
+static char *player_accolades_t_read_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 {
      player_accolade_s expected = { 0 };
 
@@ -82,7 +82,7 @@ static char *get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenT
 
      data_list_s list = { 0 };
 
-     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected.player_id, &list ) );
+     assertEquals( "player_accolades_t_read_by_player()", SQLITE_OK, player_accolades_t_read_by_player( db, expected.player_id, &list ) );
 
      assertEquals( "count", 1, list.count );
 
@@ -99,7 +99,7 @@ static char *get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenT
      return NULL;
 }
 
-static char *get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId()
+static char *player_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId()
 {
      player_accolade_s expected1 = { 0 };
      player_accolade_s expected2 = { 0 };
@@ -117,7 +117,7 @@ static char *get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_Gi
 
      data_list_s list = { 0 };
 
-     assertEquals( "get_player_accolades_by_player()", SQLITE_OK, get_player_accolades_by_player( db, expected1.player_id, &list ) );
+     assertEquals( "player_accolades_t_read_by_player()", SQLITE_OK, player_accolades_t_read_by_player( db, expected1.player_id, &list ) );
 
      assertEquals( "count", 2, list.count );
 
@@ -140,7 +140,7 @@ static char *get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_Gi
      return NULL;
 }
 
-static char *delete_player_accolade__ShouldDeleteMatchingRecord_GivenThePlayerId()
+static char *player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 {
      player_accolade_s expected = { 0 };
 
@@ -150,7 +150,7 @@ static char *delete_player_accolade__ShouldDeleteMatchingRecord_GivenThePlayerId
 
      insert_a_player_accolade( &expected );
 
-     assertEquals( "delete_player_accolade()", SQLITE_OK, delete_player_accolade( db, &expected ) );
+     assertEquals( "player_accolades_t_delete()", SQLITE_OK, player_accolades_t_delete( db, &expected ) );
 
      player_accolade_s *actual = get_a_player_accolade( expected.player_id );
 
@@ -173,10 +173,10 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( insert_player_accolade__ShouldInsertRecordsInThePlayerAccoladesTTable,             check_sqlite_error );
-     run_test( get_player_accolades_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,     check_sqlite_error );
-     run_test( get_player_accolades_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId, check_sqlite_error );
-     run_test( delete_player_accolade__ShouldDeleteMatchingRecord_GivenThePlayerId,               check_sqlite_error );
+     run_test( player_accolades_t_create__ShouldInsertRecordsInThePlayerAccoladesTTable,             check_sqlite_error );
+     run_test( player_accolades_t_read_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,     check_sqlite_error );
+     run_test( player_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId, check_sqlite_error );
+     run_test( player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId,               check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )

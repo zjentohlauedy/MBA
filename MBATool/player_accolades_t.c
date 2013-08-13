@@ -9,7 +9,7 @@
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static int insert_player_accolade_bindings( sqlite3_stmt *statement, const void *data )
+static int player_accolades_t_create_bindings( sqlite3_stmt *statement, const void *data )
 {
      int rc;
 
@@ -23,12 +23,12 @@ static int insert_player_accolade_bindings( sqlite3_stmt *statement, const void 
 }
 
 
-int insert_player_accolade( sqlite3 *db, const player_accolade_s *player_accolade )
+int player_accolades_t_create( sqlite3 *db, const player_accolade_s *player_accolade )
 {
      static char query[]   = "INSERT INTO Player_Accolades_T ( Player_Id, Season, Accolade ) "
           /**/                                       "VALUES ( ?,"       "?,"    "?"      ")";
 
-     return execute_query( db, query, insert_player_accolade_bindings, player_accolade, NULL, NULL );
+     return execute_query( db, query, player_accolades_t_create_bindings, player_accolade, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -36,14 +36,14 @@ int insert_player_accolade( sqlite3 *db, const player_accolade_s *player_accolad
 static int idx = 0;
 static int max = 0;
 
-static int get_player_accolades_by_player_bindings( sqlite3_stmt *statement, const void *data )
+static int player_accolades_t_read_by_player_bindings( sqlite3_stmt *statement, const void *data )
 {
      const int *player_id = (int *)data;
 
      return sqlite3_bind_int( statement, 1, *player_id );
 }
 
-static int get_player_accolades_by_player_retrieve( sqlite3_stmt *statement, const void *data )
+static int player_accolades_t_read_by_player_retrieve( sqlite3_stmt *statement, const void *data )
 {
      data_list_s *data_list = (data_list_s *)data;
 
@@ -58,19 +58,19 @@ static int get_player_accolades_by_player_retrieve( sqlite3_stmt *statement, con
      return SQLITE_OK;
 }
 
-int get_player_accolades_by_player( sqlite3 *db, const int player_id, data_list_s *player_accolades )
+int player_accolades_t_read_by_player( sqlite3 *db, const int player_id, data_list_s *player_accolades )
 {
      static char query[]   = "SELECT Player_Id, Season, Accolade FROM Player_Accolades_T WHERE Player_Id = ?";
 
      idx = 0;
      max = 0;
 
-     return execute_query( db, query, get_player_accolades_by_player_bindings, &player_id, get_player_accolades_by_player_retrieve, player_accolades );
+     return execute_query( db, query, player_accolades_t_read_by_player_bindings, &player_id, player_accolades_t_read_by_player_retrieve, player_accolades );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static int delete_player_accolade_bindings( sqlite3_stmt *statement, const void *data )
+static int player_accolades_t_delete_bindings( sqlite3_stmt *statement, const void *data )
 {
      const player_accolade_s *player_accolade = (player_accolade_s *)data;
 
@@ -78,7 +78,7 @@ static int delete_player_accolade_bindings( sqlite3_stmt *statement, const void 
 }
 
 
-int delete_player_accolade( sqlite3 *db, const player_accolade_s *player_accolade )
+int player_accolades_t_delete( sqlite3 *db, const player_accolade_s *player_accolade )
 {
-     return execute_query( db, "DELETE FROM Player_Accolades_T WHERE Player_Id = ?", delete_player_accolade_bindings, player_accolade, NULL, NULL );
+     return execute_query( db, "DELETE FROM Player_Accolades_T WHERE Player_Id = ?", player_accolades_t_delete_bindings, player_accolade, NULL, NULL );
 }
