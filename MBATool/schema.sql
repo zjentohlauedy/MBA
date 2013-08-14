@@ -18,3 +18,12 @@ CREATE TABLE Player_Accolades_T
    Season              INTEGER,
    Accolade            INTEGER
 );
+
+CREATE TABLE Pitchers_T
+(
+   Player_Id           INTEGER,
+   Speed               INTEGER,
+   Control             INTEGER,
+   Bunt                INTEGER,
+   Fatigue             INTEGER
+);

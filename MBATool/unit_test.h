@@ -15,7 +15,7 @@ do \
 { \
      if ( (expected) != (actual) ) \
      { \
-          sprintf( __unit_test_msgbuf__, "Failed: %s; expected: %d, actual: %d", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %d, actual: %d\033[0m", (desc), (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
@@ -26,7 +26,7 @@ do \
 { \
      if ( strcmp( (expected), (actual) ) != 0 ) \
      { \
-          sprintf( __unit_test_msgbuf__, "Failed: %s; expected: %s, actual: %s", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %s, actual: %s\033[0m", (desc), (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
@@ -40,7 +40,7 @@ do \
      if (message) \
      { \
           __unit_tests_failed__++; \
-          printf( "FAILED\n" ); \
+          printf( "\033[0;31mFAILED\033[0m\n" ); \
           printf( "%s\n", message ); \
           if ( callback != NULL ) callback(); \
           printf( "\n" ); \
@@ -48,12 +48,18 @@ do \
      else \
      { \
           __unit_tests_passed__++; \
-          printf( "PASSED\n" ); \
+          printf( "\033[0;32mPASSED\033[0m\n" ); \
      } \
-} while (0)
+} while ( 0 )
 
 
-#define show_test_results() do { printf( "Tests Run: %d, Passed: %d, Failed: %d\n", __unit_tests_run__, __unit_tests_passed__, __unit_tests_failed__ ); } while (0)
+#define show_test_results() \
+do \
+{ \
+     if ( __unit_tests_failed__ > 0 ) printf( "\033[0;31m" ); else printf( "\033[0;32m" ); \
+     printf( "Tests Run: %d, Passed: %d, Failed: %d\n", __unit_tests_run__, __unit_tests_passed__, __unit_tests_failed__ ); \
+     printf( "\033[0m" ); \
+} while ( 0 )
 
 #define tests_pass() (__unit_tests_failed__ == 0)
 

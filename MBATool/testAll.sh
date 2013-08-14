@@ -6,8 +6,9 @@ DBFILE="mba_test.db"
 FAIL=0
 
 function runtestprog {
+
     echo
-    echo "$1:"
+    printf "%s:\n" $1
     $1 $DBFILE
 
     if [ $? -ne 0 ]; then
@@ -29,18 +30,19 @@ echo
 
 runtestprog test_players_t
 runtestprog test_player_accolades_t
+runtestprog test_pitchers_t
 
 if [ $FAIL -ne 0 ]; then
 
     echo
-    echo "There were test failures..."
+    printf "\033[1;31mThere were test failures...\033[0m\n"
     echo
 
     exit
 fi
 
 echo
-echo "ALL TESTS COMPLETED SUCCESSFULLY"
+printf "\033[1;32mALL TESTS COMPLETED SUCCESSFULLY\033[0m\n"
 echo
 
 exit

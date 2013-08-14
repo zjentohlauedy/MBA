@@ -61,13 +61,28 @@ typedef struct
 
 } player_accolade_s;
 
+typedef struct
+{
+     int player_id;
+     int speed;
+     int control;
+     int bunt;
+     int fatigue;
+
+} pitcher_s;
+
 int players_t_create( sqlite3 *db, const player_s *player );
-int players_t_read(    sqlite3 *db,       player_s *player );
+int players_t_read(   sqlite3 *db,       player_s *player );
 int players_t_update( sqlite3 *db, const player_s *player );
 int players_t_delete( sqlite3 *db, const player_s *player );
 
 int player_accolades_t_create(         sqlite3 *db,                      const player_accolade_s *player_accolade  );
 int player_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s       *player_accolades );
 int player_accolades_t_delete(         sqlite3 *db,                      const player_accolade_s *player_accolade  );
+
+int pitchers_t_create( sqlite3 *db, const pitcher_s *pitcher );
+int pitchers_t_read(   sqlite3 *db,       pitcher_s *pitcher );
+int pitchers_t_update( sqlite3 *db, const pitcher_s *pitcher );
+int pitchers_t_delete( sqlite3 *db, const pitcher_s *pitcher );
 
 #endif
