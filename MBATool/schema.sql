@@ -16,12 +16,14 @@ CREATE TABLE Player_Accolades_T
 (
    Player_Id           INTEGER,
    Season              INTEGER,
-   Accolade            INTEGER
+   Accolade            INTEGER,
+--
+   UNIQUE ( Player_Id, Season, Accolade )
 );
 
 CREATE TABLE Pitchers_T
 (
-   Player_Id           INTEGER,
+   Player_Id           INTEGER PRIMARY KEY,
    Speed               INTEGER,
    Control             INTEGER,
    Bunt                INTEGER,

@@ -12,32 +12,36 @@ static char    *result;
 
 static int load_pitcher_data( void *output, int cols, char *data[], char *names[] )
 {
-     pitcher_s *p = (pitcher_s *)output;
+     static pitcher_s pitcher;
+
+     pitcher_s **p = (pitcher_s **)output;
 
      if ( cols < 5 ) return SQLITE_ERROR;
 
-     /**/    p->player_id = atoi( data[0] );
-     /**/    p->speed     = atoi( data[1] );
-     /**/    p->control   = atoi( data[2] );
-     /**/    p->bunt      = atoi( data[3] );
-     /**/    p->fatigue   = atoi( data[4] );
+     memset( &pitcher, '\0', sizeof(pitcher_s) );
+
+     /**/    pitcher.player_id = atoi( data[0] );
+     /**/    pitcher.speed     = atoi( data[1] );
+     /**/    pitcher.control   = atoi( data[2] );
+     /**/    pitcher.bunt      = atoi( data[3] );
+     /**/    pitcher.fatigue   = atoi( data[4] );
+
+     *p = &pitcher;
 
      return SQLITE_OK;
 }
 
 static pitcher_s *get_a_pitcher( int player_id )
 {
-     static pitcher_s pitcher;
+     pitcher_s *pitcher = NULL;
 
      char query[999+1];
-
-     memset( &pitcher, '\0', sizeof(pitcher_s) );
 
      snprintf( query, sizeof(query), "select * from pitchers_t where player_id = %d", player_id );
 
      sqlite3_exec( db, query, load_pitcher_data, &pitcher, NULL );
 
-     return &pitcher;
+     return pitcher;
 }
 
 
@@ -77,6 +81,31 @@ static char *pitchers_t_create__ShouldInsertRecordsInThePitchersTTable()
      assertEquals( "control",   expected.control,   actual->control   );
      assertEquals( "bunt",      expected.bunt,      actual->bunt      );
      assertEquals( "fatigue",   expected.fatigue,   actual->fatigue   );
+
+     sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
+static char *pitchers_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
+{
+     pitcher_s expected = { 0 };
+
+     expected.player_id = 123;
+     expected.speed     = 5;
+     expected.control   = 7;
+     expected.bunt      = 3;
+     expected.fatigue   = 8;
+
+     assertEquals( "pitchers_t_create()", SQLITE_OK, pitchers_t_create( db, &expected ) );
+
+     expected.player_id = 123;
+     expected.speed     = 9;
+     expected.control   = 1;
+     expected.bunt      = 5;
+     expected.fatigue   = 5;
+
+     assertEquals( "pitchers_t_create()", SQLITE_CONSTRAINT, pitchers_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -160,11 +189,7 @@ static char *pitchers_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      pitcher_s *actual = get_a_pitcher( expected.player_id );
 
-     assertEquals( "player_id", 0, actual->player_id );
-     assertEquals( "speed",     0, actual->speed     );
-     assertEquals( "control",   0, actual->control   );
-     assertEquals( "bunt",      0, actual->bunt      );
-     assertEquals( "fatigue",   0, actual->fatigue   );
+     assertEquals( "actual", NULL, actual );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -182,6 +207,7 @@ static void check_sqlite_error()
 static void run_all_tests()
 {
      run_test( pitchers_t_create__ShouldInsertRecordsInThePitchersTTable,      check_sqlite_error );
+     run_test( pitchers_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists,    check_sqlite_error );
      run_test( pitchers_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId, check_sqlite_error );
      run_test( pitchers_t_update__ShouldModifyMatchingRecord_GivenThePlayerId, check_sqlite_error );
      run_test( pitchers_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId, check_sqlite_error );

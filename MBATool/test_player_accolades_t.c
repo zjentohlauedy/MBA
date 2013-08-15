@@ -11,30 +11,34 @@ static sqlite3 *db;
 
 static int load_player_accolade_data( void *output, int cols, char *data[], char *names[] )
 {
-     player_accolade_s *pa = (player_accolade_s *)output;
+     static player_accolade_s player_accolade;
+
+     player_accolade_s **pa = (player_accolade_s **)output;
 
      if ( cols < 3 ) return SQLITE_ERROR;
 
-     pa->player_id = atoi( data[0] );
-     pa->season    = atoi( data[1] );
-     pa->accolade  = atoi( data[2] );
+     memset( &player_accolade, '\0', sizeof(player_accolade_s) );
+
+     player_accolade.player_id = atoi( data[0] );
+     player_accolade.season    = atoi( data[1] );
+     player_accolade.accolade  = atoi( data[2] );
+
+     *pa = &player_accolade;
 
      return SQLITE_OK;
 }
 
 static player_accolade_s *get_a_player_accolade( int player_id )
 {
-     static player_accolade_s player_accolade;
+     player_accolade_s *player_accolade = NULL;
 
      char query[999+1];
-
-     memset( &player_accolade, '\0', sizeof(player_accolade_s) );
 
      snprintf( query, sizeof(query), "select * from player_accolades_t where player_id = %d", player_id );
 
      sqlite3_exec( db, query, load_player_accolade_data, &player_accolade, NULL );
 
-     return &player_accolade;
+     return player_accolade;
 }
 
 static void insert_a_player_accolade( player_accolade_s *player_accolade )
@@ -64,6 +68,22 @@ static char *player_accolades_t_create__ShouldInsertRecordsInThePlayerAccoladesT
      assertEquals( "player_id", expected.player_id, actual->player_id );
      assertEquals( "season",    expected.season,    actual->season    );
      assertEquals( "accolade",  expected.accolade,  actual->accolade  );
+
+     sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
+static char *player_accolades_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInserted()
+{
+     player_accolade_s expected = { 0 };
+
+     expected.player_id = 123;
+     expected.season    = 5;
+     expected.accolade  = acc_League_Title;
+
+     assertEquals( "player_accolades_t_create()", SQLITE_OK,         player_accolades_t_create( db, &expected ) );
+     assertEquals( "player_accolades_t_create()", SQLITE_CONSTRAINT, player_accolades_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
 
@@ -140,7 +160,7 @@ static char *player_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecords
      return NULL;
 }
 
-static char *player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
+static char *player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenAPlayerAccolade()
 {
      player_accolade_s expected = { 0 };
 
@@ -154,9 +174,37 @@ static char *player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenThePlaye
 
      player_accolade_s *actual = get_a_player_accolade( expected.player_id );
 
-     assertEquals( "player_id", 0, actual->player_id );
-     assertEquals( "season",    0, actual->season    );
-     assertEquals( "accolade",  0, actual->accolade  );
+     assertEquals( "actual", NULL, actual );
+
+     sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
+static char *player_accolades_t_delete__ShouldOnlyDeleteMatchingRecord_GivenAPlayerAccolade()
+{
+     player_accolade_s expected1 = { 0 };
+     player_accolade_s expected2 = { 0 };
+
+     expected1.player_id = 123;
+     expected1.season    = 5;
+     expected1.accolade  = acc_League_Title;
+
+     insert_a_player_accolade( &expected1 );
+
+     expected2.player_id = 123;
+     expected2.season    = 5;
+     expected2.accolade  = acc_All_Star;
+
+     insert_a_player_accolade( &expected2 );
+
+     assertEquals( "player_accolades_t_delete()", SQLITE_OK, player_accolades_t_delete( db, &expected2 ) );
+
+     player_accolade_s *actual = get_a_player_accolade( expected1.player_id );
+
+     assertEquals( "player_id", expected1.player_id, actual->player_id );
+     assertEquals( "season",    expected1.season,    actual->season    );
+     assertEquals( "accolade",  expected1.accolade,  actual->accolade  );
 
      sqlite3_exec( db, "delete from player_accolades_t", NULL, NULL, NULL );
 
@@ -174,9 +222,11 @@ static void check_sqlite_error()
 static void run_all_tests()
 {
      run_test( player_accolades_t_create__ShouldInsertRecordsInThePlayerAccoladesTTable,             check_sqlite_error );
+     run_test( player_accolades_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInserted,              check_sqlite_error );
      run_test( player_accolades_t_read_by_player__ShouldRetrieveMatchingRecord_GivenThePlayerId,     check_sqlite_error );
      run_test( player_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecords_GivenThePlayerId, check_sqlite_error );
-     run_test( player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId,               check_sqlite_error );
+     run_test( player_accolades_t_delete__ShouldDeleteMatchingRecord_GivenAPlayerAccolade,           check_sqlite_error );
+     run_test( player_accolades_t_delete__ShouldOnlyDeleteMatchingRecord_GivenAPlayerAccolade,       check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )
