@@ -273,7 +273,7 @@ static int getValueForTwo( const random_s (*array)[10], const int value1, const 
 }
 
 
-static int probabilityRoll( const int probabilities[], int count )
+static int probabilityRoll( const int probabilities[], const int count )
 {
      int total = 0;
 
@@ -325,7 +325,7 @@ static position_e getSecondaryPosition( const position_e position )
 }
 
 
-static void setBatterRatings( char ratings[], batter_attr_s *attr )
+static void setBatterRatings( char ratings[], const batter_attr_s *attr )
 {
      ratings[0] = (attr->hand  << 4) + attr->arm;
      ratings[1] = (attr->speed << 4) + attr->range;
@@ -334,14 +334,14 @@ static void setBatterRatings( char ratings[], batter_attr_s *attr )
 }
 
 
-static void setPitcherRatings( char ratings[], pitcher_attr_s *attr )
+static void setPitcherRatings( char ratings[], const pitcher_attr_s *attr )
 {
      ratings[0] = attr->speed   * 0x10 + attr->control;
      ratings[1] = attr->fatigue * 0x10 + attr->bunt;
 }
 
 
-static names_s *readNamesFile( char *filename )
+static names_s *readNamesFile( const char *filename )
 {
      FILE    *pNamesFile;
      names_s *names;
@@ -437,7 +437,7 @@ static void rollPitcherAttributes( pitcher_attr_s *attributes )
 }
 
 
-static void generatePitcher( fileplayer_s *player, names_s *name )
+static void generatePitcher( fileplayer_s *player, const names_s *name )
 {
      pitcher_attr_s attributes = { 0 };
 
@@ -508,7 +508,7 @@ static void generatePitcher( fileplayer_s *player, names_s *name )
      int2word( pitching->vl_so,     so   );
 }
 
-static void generateBatter( fileplayer_s *player, names_s *name, position_e position )
+static void generateBatter( fileplayer_s *player, const names_s *name, const position_e position )
 {
      batter_attr_s attributes = { 0 };
 
@@ -570,7 +570,7 @@ static void generateBatter( fileplayer_s *player, names_s *name, position_e posi
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileplayer_s   *playersFile;
      names_s        *nameList;

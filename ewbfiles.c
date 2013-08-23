@@ -11,27 +11,27 @@
 
 
 
-int word2int( unsigned char *word )
+int word2int( const unsigned char *word )
 {
      return (word[0]<<8) + word[1];
 }
 
 
-void int2word( unsigned char *word, int value )
+void int2word( unsigned char *word, const int value )
 {
      word[0] = (value & 0x0000ff00)>>8;
      word[1] = (value & 0x000000ff);
 }
 
 
-int nibble( unsigned char byte, nibble_e position )
+int nibble( const unsigned char byte, const nibble_e position )
 {
      if   ( position == n_Low ) return byte & 0x0F;
      else                       return byte >> 4;
 }
 
 
-void termName( unsigned char *buffer, int len )
+void termName( unsigned char *buffer, const int len )
 {
      if ( buffer[len - 1] == '\0' ) buffer[len - 1] = ' ';
 
@@ -39,7 +39,7 @@ void termName( unsigned char *buffer, int len )
 }
 
 
-void untermName( unsigned char *buffer, int len )
+void untermName( unsigned char *buffer, const int len )
 {
      buffer[len - 1] &= 0x7F;
 
@@ -47,7 +47,7 @@ void untermName( unsigned char *buffer, int len )
 }
 
 
-char *getColorName( unsigned int color )
+char *getColorName( const unsigned int color )
 {
      switch ( color )
      {
@@ -64,7 +64,7 @@ char *getColorName( unsigned int color )
 }
 
 
-char *getParkColorName( unsigned int color )
+char *getParkColorName( const unsigned int color )
 {
      switch ( color )
      {
@@ -81,7 +81,7 @@ char *getParkColorName( unsigned int color )
 }
 
 
-char *positionName( int position )
+char *positionName( const int position )
 {
      switch ( position )
      {
@@ -103,7 +103,7 @@ char *positionName( int position )
 }
 
 
-fileplayer_s *readPlayersFile( char *filename )
+fileplayer_s *readPlayersFile( const char *filename )
 {
      fileplayer_s *playersFile;
      size_t        filesize;
@@ -155,7 +155,7 @@ fileplayer_s *readPlayersFile( char *filename )
 }
 
 
-boolean_e writePlayersFile( char *filename, fileplayer_s *playersFile )
+boolean_e writePlayersFile( const char *filename, const fileplayer_s *playersFile )
 {
      size_t        filesize;
      int           bytes_written;
@@ -199,7 +199,7 @@ boolean_e writePlayersFile( char *filename, fileplayer_s *playersFile )
 }
 
 
-fileleague_s *readLeagueFile( char *filename )
+fileleague_s *readLeagueFile( const char *filename )
 {
      fileleague_s *leagueFile;
      size_t        filesize;
@@ -247,7 +247,7 @@ fileleague_s *readLeagueFile( char *filename )
 }
 
 
-boolean_e writeLeagueFile( char *filename, fileleague_s *leagueFile )
+boolean_e writeLeagueFile( const char *filename, const fileleague_s *leagueFile )
 {
      size_t        filesize;
      int           bytes_written;
@@ -290,9 +290,8 @@ boolean_e writeLeagueFile( char *filename, fileleague_s *leagueFile )
      return bl_True;
 }
 
-//------------------
 
-fileparks_s *readParksFile( char *filename )
+fileparks_s *readParksFile( const char *filename )
 {
      fileparks_s *parksFile;
      size_t       filesize;
@@ -340,7 +339,7 @@ fileparks_s *readParksFile( char *filename )
 }
 
 
-boolean_e writeParksFile( char *filename, fileparks_s *parksFile )
+boolean_e writeParksFile( const char *filename, const fileparks_s *parksFile )
 {
      size_t        filesize;
      int           bytes_written;

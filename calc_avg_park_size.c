@@ -10,7 +10,7 @@ static int hyp( short x, short y )
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileparks_s *parksFile;
 

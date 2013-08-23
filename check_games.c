@@ -37,7 +37,7 @@ int compareTeams(const void *t1, const void *t2)
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileleague_s *leagueFile;
      league_s      leagues[TOTAL_LEAGUES];

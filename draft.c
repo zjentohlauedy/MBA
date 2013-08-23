@@ -40,7 +40,7 @@ typedef struct
 } draft_s;
 
 
-static void cleanup( draft_s *draft )
+static void cleanup( const draft_s *draft )
 {
      free( draft->draftTeams           );
      free( draft->teamPlayers          );
@@ -64,7 +64,7 @@ static void shuffleTeams( draftteam_s *teams )
 }
 
 
-static int findOpenPlayerSlot( fileplayer_s *players, int teamIdx )
+static int findOpenPlayerSlot( const fileplayer_s *players, const int teamIdx )
 {
      int start = (teamIdx * PLAYERS_PER_TEAM);
 
@@ -132,7 +132,7 @@ static boolean_e draftRound( draft_s *draft )
           if   ( players == &(draft->freePitchers) ) draftTeam->pitchers_needed--;
           else                                       draftTeam->batters_needed--;
 
-          printf( "%s has drafted %s %.*s, %.*s\n", 
+          printf( "%s has drafted %s %.*s, %.*s\n",
                   draftTeam->name,
                   positionName( nibble( draft->teamPlayers[freeSlot].position[0], n_High ) ),
                   sizeof(draft->teamPlayers[freeSlot].last_name), draft->teamPlayers[freeSlot].last_name,
@@ -162,23 +162,23 @@ static void draftPlayers( draft_s *draft )
 }
 
 
-static int calcVsba( fileplayer_s *player )
+static int calcVsba( const fileplayer_s *player )
 {
-     struct pitching_s *p = &(player->filestats.filepitching);
+     const struct pitching_s *p = &(player->filestats.filepitching);
 
-     int ab = word2int( p->vl_ab   ) + word2int( p->vr_ab   );
-     int h  = word2int( p->vl_hits ) + word2int( p->vr_hits );
+     const int ab = word2int( p->vl_ab   ) + word2int( p->vr_ab   );
+     const int h  = word2int( p->vl_hits ) + word2int( p->vr_hits );
 
      return (int)ceil( (double)h / (double)ab * 1000.0 );
 }
 
 
-static int calcEra( fileplayer_s *player )
+static int calcEra( const fileplayer_s *player )
 {
-     struct pitching_s *p = &(player->filestats.filepitching);
+     const struct pitching_s *p = &(player->filestats.filepitching);
 
-     float inn = (float)word2int( p->real_inn ) / 10.0;
-     int   er  = p->real_er[0];
+     const float inn = (float)word2int( p->real_inn ) / 10.0;
+     const int   er  = p->real_er[0];
 
      return (int)ceil( (double)er / (double)inn * 9.0 );
 }
@@ -203,20 +203,20 @@ static int comparePitchers( const void *arg1, const void *arg2 )
 }
 
 
-static int calcBa( fileplayer_s *player )
+static int calcBa( const fileplayer_s *player )
 {
-     struct batting_s *b = &(player->filestats.filebatting);
+     const struct batting_s *b = &(player->filestats.filebatting);
 
-     int ab = word2int( b->vl_ab ) + word2int( b->vr_ab );
-     int h  = word2int( b->vl_hits ) + word2int( b->vr_hits );
+     const int ab = word2int( b->vl_ab ) + word2int( b->vr_ab );
+     const int h  = word2int( b->vl_hits ) + word2int( b->vr_hits );
 
      return (int)ceil( (double)h / (double)ab * 1000.0 );
 }
 
 
-static int getPower( fileplayer_s *player )
+static int getPower( const fileplayer_s *player )
 {
-     struct batting_s *b = &(player->filestats.filebatting);
+     const struct batting_s *b = &(player->filestats.filebatting);
 
      return nibble( b->ratings[2], n_High );
 }
@@ -242,13 +242,13 @@ static int compareHitters( const void *arg1, const void *arg2 )
 }
 
 
-static void sortPlayerList( playerlist_s *list, int(*compar)(const void *, const void *) )
+static void sortPlayerList( const playerlist_s *list, int(*compar)(const void *, const void *) )
 {
      qsort( list->players, list->total, sizeof(fileplayer_s), compar );
 }
 
 
-static boolean_e addPlayerToList( playerlist_s *list, fileplayer_s *player )
+static boolean_e addPlayerToList( playerlist_s *list, const fileplayer_s *player )
 {
      if ( list->total == 0 )
      {
@@ -286,10 +286,8 @@ static boolean_e addPlayerToList( playerlist_s *list, fileplayer_s *player )
 }
 
 
-static boolean_e separateFreeAgentsByPosition( fileplayer_s *agentsFile, draft_s *draft )
+static boolean_e separateFreeAgentsByPosition( const fileplayer_s *agentsFile, draft_s *draft )
 {
-     fileplayer_s *pitchers;
-     fileplayer_s *hitters;
      playerlist_s *players;
 
      for ( int i = 0, pi = 0, hi = 0; i < TOTAL_PLAYERS; ++i )
@@ -317,9 +315,9 @@ static boolean_e separateFreeAgentsByPosition( fileplayer_s *agentsFile, draft_s
 }
 
 
-static boolean_e loadTeamsArray( fileleague_s *leagueFile, draft_s *draft )
+static boolean_e loadTeamsArray( const fileleague_s *leagueFile, draft_s *draft )
 {
-     fileteam_s  *fileTeam;
+     const fileteam_s  *fileTeam;
      draftteam_s *draftTeams;
 
      if ( (draftTeams = malloc( sizeof(draftteam_s) * TOTAL_TEAMS)) == NULL )
@@ -346,7 +344,7 @@ static boolean_e loadTeamsArray( fileleague_s *leagueFile, draft_s *draft )
 }
 
 
-static boolean_e initDraft( draft_s *draft, char *argv[] )
+static boolean_e initDraft( draft_s *draft, const char *argv[] )
 {
      fileplayer_s *agentsFile;
      fileplayer_s *playerFile;
@@ -402,7 +400,7 @@ static boolean_e initDraft( draft_s *draft, char *argv[] )
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      draft_s draft = { 0 };
 

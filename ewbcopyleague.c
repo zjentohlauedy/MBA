@@ -55,7 +55,7 @@ static struct {
      { /* Quasars   */ cl_LtBlue, cl_Black,  0 }
 };
 
-static int roll( int range )
+static int roll( const int range )
 {
      return (int)ceil( ((double)rand() / (double)RAND_MAX) * (double)range );
 }
@@ -117,7 +117,7 @@ static void setColors( fileteam_s *teams, const char *road, const char *home )
      }
 }
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileleague_s *leagueFile;
      fileleague_s  before;

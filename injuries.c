@@ -146,7 +146,7 @@ static printstyle_e  print_style;
 static boolean_e  print_pitcher_rest;
 
 
-static char *displayAvg( double avg )
+static char *displayAvg( const double avg )
 {
      static char buffer[5 + 1];
 
@@ -188,7 +188,7 @@ static void printHittingHeader( void )
 }
 
 
-static void printHitterFielding( fielding_s *fielding, position_e  secondary_pos )
+static void printHitterFielding( const fielding_s *fielding, const position_e secondary_pos )
 {
      int total = fielding->put_outs + fielding->assists + fielding->errors;
 
@@ -199,7 +199,7 @@ static void printHitterFielding( fielding_s *fielding, position_e  secondary_pos
 }
 
 
-static void printHitterStats( hitting_s *stats )
+static void printHitterStats( const hitting_s *stats )
 {
      printf( "%s ", displayAvg( (stats->at_bats > 0) ? ((float)stats->hits) / ((float)stats->at_bats) : 0 ) );
 
@@ -228,11 +228,11 @@ static void printHitterStats( hitting_s *stats )
 }
 
 
-static void printHitter( player_s *player )
+static void printHitter( const player_s *player )
 {
      char name_buf[ 42 + 1 ];
 
-     batter_s *b = &(player->data.batter);
+     const batter_s *b = &(player->data.batter);
 
      snprintf( name_buf, sizeof(name_buf), "%s, %s", b->last_name, b->first_name );
 
@@ -246,13 +246,13 @@ static void printHitter( player_s *player )
 }
 
 
-static void printPitcherFielding( pitcher_s *pitcher )
+static void printPitcherFielding( const pitcher_s *pitcher )
 {
      printf( "%s", displayAvg( pitcher->fielding_avg ) );
 }
 
 
-static void printPitcherStats( pitching_s *stats )
+static void printPitcherStats( const pitching_s *stats )
 {
      printf( "%2d %2d ", stats->wins, stats->losses );
 
@@ -283,11 +283,11 @@ static void printPitcherStats( pitching_s *stats )
 }
 
 
-static void printPitcher( player_s *player )
+static void printPitcher( const player_s *player )
 {
      char name_buf[ 42 + 1 ];
 
-     pitcher_s *p = &(player->data.pitcher);
+     const pitcher_s *p = &(player->data.pitcher);
 
      snprintf( name_buf, sizeof(name_buf), "%s, %s", p->last_name, p->first_name );
 
@@ -301,7 +301,7 @@ static void printPitcher( player_s *player )
 }
 
 
-static void printPlayer( player_s *player )
+static void printPlayer( const player_s *player )
 {
      if      ( player->type == pt_Pitcher ) printPitcher( player );
      else if ( player->type == pt_Hitter  ) printHitter(  player );
@@ -344,7 +344,7 @@ static int cmpplr( const void *arg1, const void *arg2 )
 }
 
 
-static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
+static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 {
      // Don't copy empty players
      if ( fileplayer->last_name[0] == 0 )
@@ -354,6 +354,12 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 	  return;
      }
 
+     char first_name [sizeof(fileplayer->first_name)];
+     char last_name  [sizeof(fileplayer->last_name) ];
+
+     memcpy( first_name, fileplayer->first_name, sizeof(fileplayer->first_name) );
+     memcpy( last_name,  fileplayer->last_name,  sizeof(fileplayer->last_name)  );
+
      if ( (fileplayer->position[0]>>4) == 0 )
      {
 	  // Pitcher
@@ -362,17 +368,17 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 	  pitcher_s *pitcher = &(player->data.pitcher);
 
 	  // The last byte of each name has the high bit set, it needs to be cleared
-          untermName( fileplayer->first_name, sizeof(fileplayer->first_name) );
-          untermName( fileplayer->last_name,  sizeof(fileplayer->last_name)  );
+          untermName( first_name, sizeof(fileplayer->first_name) );
+          untermName( last_name,  sizeof(fileplayer->last_name)  );
 
-	  snprintf( pitcher->first_name, sizeof(pitcher->first_name), "%.*s", sizeof(fileplayer->first_name), fileplayer->first_name );
-	  snprintf( pitcher->last_name,  sizeof(pitcher->last_name),  "%.*s", sizeof(fileplayer->last_name),  fileplayer->last_name );
+	  snprintf( pitcher->first_name, sizeof(pitcher->first_name), "%.*s", sizeof(fileplayer->first_name), first_name );
+	  snprintf( pitcher->last_name,  sizeof(pitcher->last_name),  "%.*s", sizeof(fileplayer->last_name),  last_name );
 
 	  pitcher->year = fileplayer->year[0] + 1845;
 	  pitcher->primary_pos   = pos_Pitcher;
 	  pitcher->secondary_pos = pos_Pitcher;
 
-	  struct pitching_s *p = &(fileplayer->filestats.filepitching);
+	  const struct pitching_s *p = &(fileplayer->filestats.filepitching);
 
           player->injury_days = p->injury_days[0];
 
@@ -396,7 +402,7 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 	  stats->walks       = p->vl_bb[0] + p->vr_bb[0];
 	  stats->strike_outs = word2int( p->vl_so ) + word2int( p->vr_so );
 
-	  acc_pch_stats_s *simulated = &(p->simulated);
+	  const acc_pch_stats_s *simulated = &(p->simulated);
 
 	  stats = &(pitcher->simulated);
 
@@ -425,17 +431,17 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 	  batter_s *batter = &(player->data.batter);
 
 	  // The last byte of each name has the high bit set, it needs to be cleared
-          untermName( fileplayer->first_name, sizeof(fileplayer->first_name) );
-          untermName( fileplayer->last_name,  sizeof(fileplayer->last_name)  );
+          untermName( first_name, sizeof(fileplayer->first_name) );
+          untermName( last_name,  sizeof(fileplayer->last_name)  );
 
-	  snprintf( batter->first_name, sizeof(batter->first_name), "%.*s", sizeof(fileplayer->first_name), fileplayer->first_name );
-	  snprintf( batter->last_name,  sizeof(batter->last_name),  "%.*s", sizeof(fileplayer->last_name),  fileplayer->last_name );
+	  snprintf( batter->first_name, sizeof(batter->first_name), "%.*s", sizeof(fileplayer->first_name), first_name );
+	  snprintf( batter->last_name,  sizeof(batter->last_name),  "%.*s", sizeof(fileplayer->last_name),  last_name );
 
 	  batter->year = fileplayer->year[0] + 1845;
 	  batter->primary_pos   = (fileplayer->position[0]>>4);
 	  batter->secondary_pos = (fileplayer->position[0] & 0x0F);
 
-	  struct batting_s *b = &(fileplayer->filestats.filebatting);
+	  const struct batting_s *b = &(fileplayer->filestats.filebatting);
 
           player->injury_days = b->injury_days[0];
 
@@ -468,8 +474,8 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 	  stats->stolen_bases = (b->real_sb[0]);
 	  stats->errors       = (b->real_err[0]);
 
-	  acc_bat_stats_s *simulated = &(b->simulated);
-	  acc_bat_stats_s *action    = &(b->action);
+	  const acc_bat_stats_s *simulated = &(b->simulated);
+	  const acc_bat_stats_s *action    = &(b->action);
 
 	  stats = &(batter->simulated);
 
@@ -489,7 +495,7 @@ static void copyPlayer( player_s *player, fileplayer_s *fileplayer )
 }
 
 
-static void printInjuries( league_s *leagues )
+static void printInjuries( const league_s *leagues )
 {
      boolean_e  printTeam = bl_False;
      int  leag;
@@ -507,7 +513,7 @@ static void printInjuries( league_s *leagues )
 
 		    for ( plyr = 0; plyr < PLAYERS_PER_TEAM; ++plyr )
 		    {
-			 player_s *pl = &leagues[leag].divisions[div].teams[team].players[plyr];
+			 const player_s *pl = &leagues[leag].divisions[div].teams[team].players[plyr];
 
                          if ( pl->injury_days <= 0 ) continue;
 
@@ -532,7 +538,7 @@ static void printInjuries( league_s *leagues )
 }
 
 
-static league_s *convertFilesToLeagues( fileleague_s *leagueFile, fileplayer_s *playerFile )
+static league_s *convertFilesToLeagues( const fileleague_s *leagueFile, const fileplayer_s *playerFile )
 {
      league_s *leagues;
      int       leag;
@@ -603,7 +609,7 @@ static league_s *convertFilesToLeagues( fileleague_s *leagueFile, fileplayer_s *
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileplayer_s *playerFile;
      fileleague_s *leagueFile;

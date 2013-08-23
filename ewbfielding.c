@@ -21,14 +21,14 @@ typedef struct
 } fielding_s;
 
 
-static void print_results( fielding_s *results )
+static void print_results( const fielding_s *results )
 {
      printf( "Pos   #   G   PO(/Game)   AS(/Game)   E   AVG\n" );
      //        C:  24 127  747( 5.90)   51( 0.40)   6  .992
 
      for ( int i = 1; i < 16; ++i )
      {
-          fielding_s *f = &results[i];
+          const fielding_s *f = &results[i];
 
 	  if ( f->count > 0 )
 	  {
@@ -50,7 +50,7 @@ static void print_results( fielding_s *results )
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fielding_s    totals[16] = { 0 };
      fielding_s    maxpo[16] = { 0 };
