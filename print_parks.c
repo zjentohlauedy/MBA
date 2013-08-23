@@ -4,7 +4,7 @@
 #include "ewbfiles.h"
 
 
-static int getWindPercentage( int value )
+static int getWindPercentage( const int value )
 {
      switch ( value )
      {
@@ -46,7 +46,7 @@ static int getWindPercentage( int value )
 }
 
 
-static char *getWindDirection( int direction )
+static char *getWindDirection( const int direction )
 {
      switch ( direction )
      {
@@ -60,7 +60,7 @@ static char *getWindDirection( int direction )
 }
 
 
-static int getCapacity( int value )
+static int getCapacity( const int value )
 {
      switch ( value )
      {
@@ -74,7 +74,7 @@ static int getCapacity( int value )
 }
 
 
-static void print_park_details( park_details_s *details )
+static void print_park_details( const park_details_s *details )
 {
      if   ( details->details1[0] & 0x80 ) printf( "Inside " );
      else                                 printf( "Outside " );
@@ -90,7 +90,7 @@ static void print_park_details( park_details_s *details )
      printf( "  Right-Center: %d\n", 1 + ((details->bleachers[0] & 0x03) >> 0) );
      printf( "  Right:        %d\n", 1 + ((details->bleachers[0] & 0x30) >> 4) );
 
-     int details2 = word2int( details->details2 );
+     const int details2 = word2int( details->details2 );
 
      printf( "Wind Speed: %d %s %d%%\n", (details2 & 0xF800) >> 11, getWindDirection( (details2 & 0x0600) >> 9 ), getWindPercentage( (details2 & 0x1F0) >> 4 ) );
      printf( "Capacity: %dk\n", getCapacity( details2 & 0x0003 ) );
@@ -104,7 +104,7 @@ static void print_park_details( park_details_s *details )
              word2int( distances->right_center ),
              word2int( distances->right_line ) );
 */
-     heights_s *heights = &(details->heights);
+     const heights_s *heights = &(details->heights);
 
      printf( "Heights:       %2d   %2d   %2d   %2d   %2d   %2d   %2d   %2d   %2d\n",
              heights->left1[0],
@@ -120,8 +120,8 @@ static void print_park_details( park_details_s *details )
      printf( "Distances:" );
      for ( int i = 0; i < 10; ++i )
      {
-          short x = (short)word2int( details->outfield[i].x );
-          short y = (short)word2int( details->outfield[i].y );
+          const short x = (short)word2int( details->outfield[i].x );
+          const short y = (short)word2int( details->outfield[i].y );
 
           printf( "  %3d", (int)round( sqrt( pow((double)x, 2.0) + pow((double)y, 2.0) ) ) );
      }
@@ -151,7 +151,7 @@ static void print_park_details( park_details_s *details )
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileparks_s *parksFile;
 

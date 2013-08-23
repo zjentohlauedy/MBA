@@ -24,7 +24,7 @@ typedef struct
 } league_s;
 
 
-int compareTeams(const void *t1, const void *t2)
+int compareTeams( const void *t1, const void *t2 )
 {
      team_s *team1 = (team_s *)t1;
      team_s *team2 = (team_s *)t2;
@@ -37,7 +37,7 @@ int compareTeams(const void *t1, const void *t2)
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileleague_s *leagueFile;
      league_s      leagues[TOTAL_LEAGUES];

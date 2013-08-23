@@ -10,12 +10,12 @@
 #include "ewbfiles.h"
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileplayer_s   *playersFile;
      int             idx;
 
-     struct
+     const struct
      {
           unsigned int put_outs;
           unsigned int assists;

@@ -51,7 +51,7 @@ static int roll( const int start, const int range )
 }
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileplayer_s   *playersFile;
      int             idx;

@@ -25,7 +25,7 @@ static const double ab_per_rbi[] = { 0,  19.00,  16.50,  16.50,  16.50,  15.00, 
 static const double h_per_run [] = { 0,   4.50,   4.25,   4.00,   3.50,   3.25,   3.00,   2.90,   2.75,   2.50,   2.35 };
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileplayer_s   *playersFile;
      int             idx;

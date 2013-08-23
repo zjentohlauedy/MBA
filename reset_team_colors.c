@@ -56,7 +56,7 @@ static struct {
 };
 
 
-int main( int argc, char *argv[] )
+int main( const int argc, const char *argv[] )
 {
      fileleague_s *leagueFile;
      fileleague_s  before;
