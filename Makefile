@@ -5,6 +5,7 @@ LDFLAGS = -lm
 progs = \
 calc_avg_park_size \
 check_games draft \
+clear_stats \
 ewbamiga2dos \
 ewbcopyleague \
 ewbdos2amiga \
@@ -39,6 +40,9 @@ calc_avg_park_size: calc_avg_park_size.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 check_games: check_games.o ewbfiles.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+clear_stats: clear_stats.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 draft: draft.o ewbfiles.o
