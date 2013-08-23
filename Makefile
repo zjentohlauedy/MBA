@@ -22,6 +22,7 @@ print_team_totals \
 rating_ratios \
 readgames \
 reset_team_colors \
+rest_players \
 schedule \
 sort_players \
 standings \
@@ -92,6 +93,9 @@ readgames: readgames.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 reset_team_colors: reset_team_colors.o ewbfiles.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+rest_players: rest_players.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 schedule: schedule.o
