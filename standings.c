@@ -2,26 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ewbfiles.h"
-
-
-typedef struct
-{
-     char name[12 + 1];
-     int  wins;
-     int  losses;
-} team_s;
-
-typedef struct
-{
-     char   name[12 + 1];
-     team_s teams[TEAMS_PER_DIVISION];
-} division_s;
-
-typedef struct
-{
-     char       name[12 + 1];
-     division_s divisions[DIVISIONS_PER_LEAGUE];
-} league_s;
+#include "league.h"
 
 
 int compareTeams( const void *t1, const void *t2 )

@@ -70,7 +70,7 @@ games_played: games_played.o ewbfiles.o
 gen_players: gen_players.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-injuries: injuries.o ewbfiles.o
+injuries: injuries.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 lottery: lottery.o
@@ -82,13 +82,13 @@ print_colors: print_colors.o ewbfiles.o
 print_parks: print_parks.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-print_rosters: print_rosters.o ewbfiles.o
+print_rosters: print_rosters.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-print_rosters2: print_rosters2.o ewbfiles.o
+print_rosters2: print_rosters2.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-print_team_totals: print_team_totals.o ewbfiles.o
+print_team_totals: print_team_totals.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 rating_ratios: rating_ratios.o ewbfiles.o
@@ -133,7 +133,7 @@ updateewbstats: updateewbstats.o ewbfiles.o
 lottery.o: lottery.c
 	$(CC) $(CFLAGS) -D_BSD_SOURCE -c $<
 
-%.o: %.c ewbfiles.h
+%.o: %.c ewbfiles.h league.h
 	$(CC) $(CFLAGS) -c $<
 
 
