@@ -77,6 +77,8 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 
 	  const struct pitching_s *p = &(fileplayer->filestats.filepitching);
 
+          player->injury_days = p->injury_days[0];
+
 	  pitcher->speed        = (p->ratings[0]>>4);
 	  pitcher->control      = (p->ratings[0] & 0x0F);
 	  pitcher->fatigue      = (p->ratings[1]>>4);
@@ -85,17 +87,19 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 
 	  pitching_s *stats = &(pitcher->potential);
 
-	  stats->wins        = p->real_wins[0];
-	  stats->losses      = p->real_losses[0];
-	  stats->games       = p->real_games[0];
-	  stats->saves       = p->real_saves[0];
-	  stats->innings     = (float)word2int( p->real_inn ) / 10.0;
-          stats->at_bats     = word2int( p->vl_ab   ) + word2int( p->vr_ab   );
-	  stats->hits        = word2int( p->vl_hits ) + word2int( p->vr_hits );
-	  stats->earned_runs = p->real_er[0];
-	  stats->home_runs   = p->vl_hr[0] + p->vr_hr[0];
-	  stats->walks       = p->vl_bb[0] + p->vr_bb[0];
-	  stats->strike_outs = word2int( p->vl_so ) + word2int( p->vr_so );
+	  stats->wins            = p->real_wins[0];
+	  stats->losses          = p->real_losses[0];
+	  stats->games           = p->real_games[0];
+          stats->games_started   = p->real_starts[0];
+          stats->games_completed = p->real_cg[0];
+	  stats->saves           = p->real_saves[0];
+	  stats->innings         = (float)word2int( p->real_inn ) / 10.0;
+          stats->at_bats         = word2int( p->vl_ab   ) + word2int( p->vr_ab   );
+	  stats->hits            = word2int( p->vl_hits ) + word2int( p->vr_hits );
+	  stats->earned_runs     = p->real_er[0];
+	  stats->home_runs       = p->vl_hr[0] + p->vr_hr[0];
+	  stats->walks           = p->vl_bb[0] + p->vr_bb[0];
+	  stats->strike_outs     = word2int( p->vl_so ) + word2int( p->vr_so );
 
 	  const acc_pch_stats_s *simulated = &(p->simulated);
 
@@ -137,6 +141,8 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 	  batter->secondary_pos = (fileplayer->position[0] & 0x0F);
 
 	  const struct batting_s *b = &(fileplayer->filestats.filebatting);
+
+          player->injury_days = b->injury_days[0];
 
 	  batter->power     = (b->ratings[2]>>4);
 	  batter->hit_n_run = (b->ratings[3] & 0x0F);
