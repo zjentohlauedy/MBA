@@ -53,4 +53,5 @@ updateewbstats
 
 MBATool/test_players_t
 MBATool/test_player_accolades_t
-
+MBATool/test_pitchers_t
+MBATool/test_pitcher_stats_t

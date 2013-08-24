@@ -13,16 +13,16 @@ static int players_t_create_bindings( sqlite3_stmt *statement, const void *data 
 
      const player_s *player = (player_s *)data;
 
-     BIND_INT(  statement,  1, player->player_id      );
-     BIND_TEXT( statement,  2, player->first_name     );
-     BIND_TEXT( statement,  3, player->last_name      );
-     BIND_TEXT( statement,  4, player->first_phonetic );
-     BIND_TEXT( statement,  5, player->last_phonetic  );
-     BIND_INT(  statement,  6, player->skin_tone      );
-     BIND_INT(  statement,  7, player->handedness     );
-     BIND_INT(  statement,  8, player->player_type    );
-     BIND_INT(  statement,  9, player->rookie_season  );
-     BIND_INT(  statement, 10, player->longevity      );
+     BIND_INT( statement,  1, player->player_id      );
+     BIND_TXT( statement,  2, player->first_name     );
+     BIND_TXT( statement,  3, player->last_name      );
+     BIND_TXT( statement,  4, player->first_phonetic );
+     BIND_TXT( statement,  5, player->last_phonetic  );
+     BIND_INT( statement,  6, player->skin_tone      );
+     BIND_INT( statement,  7, player->handedness     );
+     BIND_INT( statement,  8, player->player_type    );
+     BIND_INT( statement,  9, player->rookie_season  );
+     BIND_INT( statement, 10, player->longevity      );
 
      return SQLITE_OK;
 }
@@ -77,16 +77,16 @@ static int players_t_update_bindings( sqlite3_stmt *statement, const void *data 
 
      const player_s *player = (player_s *)data;
 
-     BIND_TEXT( statement,  1, player->first_name     );
-     BIND_TEXT( statement,  2, player->last_name      );
-     BIND_TEXT( statement,  3, player->first_phonetic );
-     BIND_TEXT( statement,  4, player->last_phonetic  );
-     BIND_INT(  statement,  5, player->skin_tone      );
-     BIND_INT(  statement,  6, player->handedness     );
-     BIND_INT(  statement,  7, player->player_type    );
-     BIND_INT(  statement,  8, player->rookie_season  );
-     BIND_INT(  statement,  9, player->longevity      );
-     BIND_INT(  statement, 10, player->player_id      );
+     BIND_TXT( statement,  1, player->first_name     );
+     BIND_TXT( statement,  2, player->last_name      );
+     BIND_TXT( statement,  3, player->first_phonetic );
+     BIND_TXT( statement,  4, player->last_phonetic  );
+     BIND_INT( statement,  5, player->skin_tone      );
+     BIND_INT( statement,  6, player->handedness     );
+     BIND_INT( statement,  7, player->player_type    );
+     BIND_INT( statement,  8, player->rookie_season  );
+     BIND_INT( statement,  9, player->longevity      );
+     BIND_INT( statement, 10, player->player_id      );
 
      return SQLITE_OK;
 }

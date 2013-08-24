@@ -6,8 +6,9 @@
 
 #define cpytxt( DEST, SRC )   strncpy( (DEST), (char *)(SRC), sizeof(DEST) )
 
-#define BIND_INT(  STMT, NN, VALUE ) if ( (rc = sqlite3_bind_int(  (STMT), (NN), (VALUE) )) != SQLITE_OK ) return rc;
-#define BIND_TEXT( STMT, NN, VALUE ) if ( (rc = sqlite3_bind_text( (STMT), (NN), (VALUE), strlen(VALUE), SQLITE_STATIC )) != SQLITE_OK ) return rc;
+#define BIND_DBL( STMT, NN, VALUE ) if ( (rc = sqlite3_bind_double( (STMT), (NN), (VALUE)                               )) != SQLITE_OK ) return rc;
+#define BIND_INT( STMT, NN, VALUE ) if ( (rc = sqlite3_bind_int(    (STMT), (NN), (VALUE)                               )) != SQLITE_OK ) return rc;
+#define BIND_TXT( STMT, NN, VALUE ) if ( (rc = sqlite3_bind_text(   (STMT), (NN), (VALUE), strlen(VALUE), SQLITE_STATIC )) != SQLITE_OK ) return rc;
 
 
 int execute_query(

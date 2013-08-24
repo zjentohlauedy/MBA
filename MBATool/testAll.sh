@@ -5,7 +5,7 @@ DBFILE="mba_test.db"
 
 FAIL=0
 
-function runtestprog {
+function runTestProg {
 
     echo
     printf "%s:\n" $1
@@ -28,9 +28,10 @@ if [ $? -ne 0 ]; then exit; fi
 echo
 echo
 
-runtestprog test_players_t
-runtestprog test_player_accolades_t
-runtestprog test_pitchers_t
+runTestProg test_players_t
+runTestProg test_player_accolades_t
+runTestProg test_pitchers_t
+runTestProg test_pitcher_stats_t
 
 if [ $FAIL -ne 0 ]; then
 

@@ -29,3 +29,22 @@ CREATE TABLE Pitchers_T
    Bunt                INTEGER,
    Fatigue             INTEGER
 );
+
+CREATE TABLE Pitcher_Stats_T
+(
+   Player_Id           INTEGER,
+   Season              INTEGER,
+   Season_Phase        INTEGER,
+   Wins                INTEGER,
+   Losses              INTEGER,
+   Games               INTEGER,
+   Saves               INTEGER,
+   Innings             REAL,
+   Hits                INTEGER,
+   Earned_Runs         INTEGER,
+   Home_Runs           INTEGER,
+   Walks               INTEGER,
+   Strike_Outs         INTEGER,
+--
+   PRIMARY KEY ( Player_Id, Season, Season_Phase )
+);

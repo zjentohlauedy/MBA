@@ -32,6 +32,15 @@ typedef enum
 
 typedef enum
 {
+     sp_None    = 0,
+     sp_Regular = 1,
+     sp_Playoff = 2,
+     sp_Allstar = 3
+
+} season_phase_e;
+
+typedef enum
+{
      st_None  = 0,
      st_Light = 1,
      st_Dark  = 2,
@@ -71,6 +80,24 @@ typedef struct
 
 } pitcher_s;
 
+typedef struct
+{
+     int            player_id;
+     int            season;
+     season_phase_e season_phase;
+     int            wins;
+     int            losses;
+     int            games;
+     int            saves;
+     float          innings;
+     int            hits;
+     int            earned_runs;
+     int            home_runs;
+     int            walks;
+     int            strike_outs;
+
+} pitcher_stats_s;
+
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
 int players_t_update( sqlite3 *db, const player_s *player );
@@ -84,5 +111,8 @@ int pitchers_t_create( sqlite3 *db, const pitcher_s *pitcher );
 int pitchers_t_read(   sqlite3 *db,       pitcher_s *pitcher );
 int pitchers_t_update( sqlite3 *db, const pitcher_s *pitcher );
 int pitchers_t_delete( sqlite3 *db, const pitcher_s *pitcher );
+
+int pitcher_stats_t_create( sqlite3 *db, const pitcher_stats_s *pitcher_stats );
+int pitcher_stats_t_read(   sqlite3 *db,       pitcher_stats_s *pitcher_stats );
 
 #endif
