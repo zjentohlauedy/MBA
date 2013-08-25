@@ -209,6 +209,91 @@ static char *pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId
      return NULL;
 }
 
+static char *pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerIdSeasonAndPhase()
+{
+     pitcher_stats_s expected = { 0 };
+
+     expected.player_id    = 123;
+     expected.season       = 5;
+     expected.season_phase = sp_Regular;
+     expected.wins         = 12;
+     expected.losses       = 15;
+     expected.games        = 54;
+     expected.saves        = 11;
+     expected.innings      = 321.2;
+     expected.hits         = 165;
+     expected.earned_runs  = 23;
+     expected.home_runs    = 14;
+     expected.walks        = 25;
+     expected.strike_outs  = 234;
+
+     insert_a_pitcher_stats( &expected );
+
+     expected.wins         = 21;
+     expected.losses       = 51;
+     expected.games        = 45;
+     expected.saves        = 99;
+     expected.innings      = 123.1;
+     expected.hits         = 156;
+     expected.earned_runs  = 32;
+     expected.home_runs    = 41;
+     expected.walks        = 52;
+     expected.strike_outs  = 321;
+
+     assertEquals( "pitcher_stats_t_update()", SQLITE_OK, pitcher_stats_t_update( db, &expected ) );
+
+     pitcher_stats_s *actual = get_a_pitcher_stats( expected.player_id );
+
+     assertEquals( "player_id",    expected.player_id,    actual->player_id    );
+     assertEquals( "season",       expected.season,       actual->season       );
+     assertEquals( "season_phase", expected.season_phase, actual->season_phase );
+     assertEquals( "wins",         expected.wins,         actual->wins         );
+     assertEquals( "losses",       expected.losses,       actual->losses       );
+     assertEquals( "games",        expected.games,        actual->games        );
+     assertEquals( "saves",        expected.saves,        actual->saves        );
+     assertEquals( "innings",      expected.innings,      actual->innings      );
+     assertEquals( "hits",         expected.hits,         actual->hits         );
+     assertEquals( "earned_runs",  expected.earned_runs,  actual->earned_runs  );
+     assertEquals( "home_runs",    expected.home_runs,    actual->home_runs    );
+     assertEquals( "walks",        expected.walks,        actual->walks        );
+     assertEquals( "strike_outs",  expected.strike_outs,  actual->strike_outs  );
+
+     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
+static char* pitcher_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdSeasonAndPhase()
+{
+     pitcher_stats_s expected = { 0 };
+
+     expected.player_id    = 123;
+     expected.season       = 5;
+     expected.season_phase = sp_Regular;
+     expected.wins         = 12;
+     expected.losses       = 15;
+     expected.games        = 54;
+     expected.saves        = 11;
+     expected.innings      = 321.2;
+     expected.hits         = 165;
+     expected.earned_runs  = 23;
+     expected.home_runs    = 14;
+     expected.walks        = 25;
+     expected.strike_outs  = 234;
+
+     insert_a_pitcher_stats( &expected );
+
+     assertEquals( "pitcher_stats_t_delete()", SQLITE_OK, pitcher_stats_t_delete( db, &expected ) );
+
+     pitcher_stats_s *actual = get_a_pitcher_stats( expected.player_id );
+
+     assertEquals( "actual", NULL, actual );
+
+     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
 static void check_sqlite_error()
 {
      if ( sqlite3_errcode( db ) != 0 )
@@ -222,6 +307,8 @@ static void run_all_tests()
      run_test( pitcher_stats_t_create__ShouldInsertRecordsInThePitcherStatsTTable,                 check_sqlite_error );
      run_test( pitcher_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeasonAndPhaseExists, check_sqlite_error );
      run_test( pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
+     run_test( pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
+     run_test( pitcher_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
 }
 
 

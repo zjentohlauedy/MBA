@@ -16,6 +16,31 @@ typedef enum
 
 typedef enum
 {
+     pacc_None                         =  0,
+     pacc_Pitcher_of_the_Year          =  1,
+     pacc_Global_Pitcher_of_the_Year   =  2,
+     pacc_World_Pitcher_of_the_Year    =  3,
+     pacc_Atlantic_Pitcher_of_the_Year =  4,
+     pacc_North_Pitcher_of_the_Year    =  5,
+     pacc_South_Pitcher_of_the_Year    =  6,
+     pacc_Pacific_Pitcher_of_the_Year  =  7,
+     pacc_Most_Wins                    =  8,
+     pacc_Best_Win_Percentage          =  9,
+     pacc_Best_Earned_Run_Average      = 10,
+     pacc_Best_vs_Batting_Average      = 11,
+     pacc_Most_Saves                   = 12,
+     pacc_Most_Strike_Outs             = 13,
+     pacc_Most_Innings_per_Game        = 14,
+     pacc_Best_Hits_per_Nine           = 15,
+     pacc_Best_Walks_per_Nine          = 16,
+     pacc_Most_Strike_Outs_per_Nine    = 17,
+     pacc_Best_Home_Runs_per_Nine      = 18,
+     pacc_Best_Efficiency              = 19
+
+} pitching_accolade_e;
+
+typedef enum
+{
      hnd_None  = 0,
      hnd_Right = 1,
      hnd_Left  = 2,
@@ -98,6 +123,14 @@ typedef struct
 
 } pitcher_stats_s;
 
+typedef struct
+{
+     int                 player_id;
+     int                 season;
+     pitching_accolade_e accolade;
+
+} pitcher_accolade_s;
+
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
 int players_t_update( sqlite3 *db, const player_s *player );
@@ -114,5 +147,11 @@ int pitchers_t_delete( sqlite3 *db, const pitcher_s *pitcher );
 
 int pitcher_stats_t_create( sqlite3 *db, const pitcher_stats_s *pitcher_stats );
 int pitcher_stats_t_read(   sqlite3 *db,       pitcher_stats_s *pitcher_stats );
+int pitcher_stats_t_update( sqlite3 *db, const pitcher_stats_s *pitcher_stats );
+int pitcher_stats_t_delete( sqlite3 *db, const pitcher_stats_s *pitcher_stats );
+
+int pitcher_accolades_t_create(         sqlite3 *db,                      const pitcher_accolade_s *pitcher_accolade  );
+int pitcher_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s        *pitcher_accolades );
+int pitcher_accolades_t_delete(         sqlite3 *db,                      const pitcher_accolade_s *pitcher_accolade  );
 
 #endif
