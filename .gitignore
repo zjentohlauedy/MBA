@@ -56,3 +56,4 @@ MBATool/test_player_accolades_t
 MBATool/test_pitchers_t
 MBATool/test_pitcher_stats_t
 MBATool/test_pitcher_accolades_t
+MBATool/test_batters_t

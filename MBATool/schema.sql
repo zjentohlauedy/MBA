@@ -57,3 +57,16 @@ CREATE TABLE Pitcher_Accolades_T
 --
    UNIQUE ( Player_Id, Season, Accolade )
 );
+
+CREATE TABLE Batters_T
+(
+   Player_Id           INTEGER PRIMARY KEY,
+   Power               INTEGER,
+   Hit_N_Run           INTEGER,
+   Bunt                INTEGER,
+   Running             INTEGER,
+   Range               INTEGER,
+   Arm                 INTEGER,
+   Primary_Position    INTEGER,
+   Secondary_Position  INTEGER
+);

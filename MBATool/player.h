@@ -41,6 +41,23 @@ typedef enum
 
 typedef enum
 {
+     pos_None        =  0,
+     pos_Catcher     =  1,
+     pos_FirstBase   =  2,
+     pos_SecondBase  =  3,
+     pos_ThirdBase   =  4,
+     pos_ShortStop   =  5,
+     pos_LeftField   =  6,
+     pos_CenterField =  7,
+     pos_RightField  =  8,
+     pos_Infield     =  9,
+     pos_Outfield    = 10
+
+} position_e;
+
+
+typedef enum
+{
      hnd_None  = 0,
      hnd_Right = 1,
      hnd_Left  = 2,
@@ -131,6 +148,20 @@ typedef struct
 
 } pitcher_accolade_s;
 
+typedef struct
+{
+     int        player_id;
+     int        power;
+     int        hit_n_run;
+     int        bunt;
+     int        running;
+     int        range;
+     int        arm;
+     position_e primary_position;
+     position_e secondary_position;
+
+} batter_s;
+
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
 int players_t_update( sqlite3 *db, const player_s *player );
@@ -153,5 +184,10 @@ int pitcher_stats_t_delete( sqlite3 *db, const pitcher_stats_s *pitcher_stats );
 int pitcher_accolades_t_create(         sqlite3 *db,                      const pitcher_accolade_s *pitcher_accolade  );
 int pitcher_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s        *pitcher_accolades );
 int pitcher_accolades_t_delete(         sqlite3 *db,                      const pitcher_accolade_s *pitcher_accolade  );
+
+int batters_t_create( sqlite3 *db, const batter_s *batter );
+int batters_t_read(   sqlite3 *db,       batter_s *batter );
+int batters_t_update( sqlite3 *db, const batter_s *batter );
+int batters_t_delete( sqlite3 *db, const batter_s *batter );
 
 #endif
