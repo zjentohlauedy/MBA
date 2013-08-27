@@ -162,6 +162,27 @@ typedef struct
 
 } batter_s;
 
+typedef struct
+{
+     int            player_id;
+     int            season;
+     season_phase_e season_phase;
+     int            games;
+     int            at_bats;
+     int            runs;
+     int            hits;
+     int            doubles;
+     int            triples;
+     int            home_runs;
+     int            runs_batted_in;
+     int            walks;
+     int            strike_outs;
+     int            steals;
+     int            errors;
+
+} batter_stats_s;
+
+
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
 int players_t_update( sqlite3 *db, const player_s *player );
@@ -189,5 +210,11 @@ int batters_t_create( sqlite3 *db, const batter_s *batter );
 int batters_t_read(   sqlite3 *db,       batter_s *batter );
 int batters_t_update( sqlite3 *db, const batter_s *batter );
 int batters_t_delete( sqlite3 *db, const batter_s *batter );
+
+int batter_stats_t_create( sqlite3 *db, const batter_stats_s *batter_stats );
+int batter_stats_t_read(   sqlite3 *db,       batter_stats_s *batter_stats );
+int batter_stats_t_update( sqlite3 *db, const batter_stats_s *batter_stats );
+int batter_stats_t_delete( sqlite3 *db, const batter_stats_s *batter_stats );
+
 
 #endif

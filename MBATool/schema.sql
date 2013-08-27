@@ -70,3 +70,24 @@ CREATE TABLE Batters_T
    Primary_Position    INTEGER,
    Secondary_Position  INTEGER
 );
+
+CREATE TABLE Batter_Stats_T
+(
+   Player_Id      INTEGER,
+   Season         INTEGER,
+   Season_Phase   INTEGER,
+   Games          INTEGER,
+   At_Bats        INTEGER,
+   Runs           INTEGER,
+   Hits           INTEGER,
+   Doubles        INTEGER,
+   Triples        INTEGER,
+   Home_Runs      INTEGER,
+   Runs_Batted_In INTEGER,
+   Walks          INTEGER,
+   Strike_Outs    INTEGER,
+   Steals         INTEGER,
+   Errors         INTEGER,
+--
+   PRIMARY KEY ( Player_Id, Season, Season_Phase )
+);
