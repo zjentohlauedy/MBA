@@ -16,14 +16,39 @@ typedef enum
 
 typedef enum
 {
+     bacc_None                        =  0,
+     bacc_Batter_of_the_Year          =  1,
+     bacc_Global_Batter_of_the_Year   =  2,
+     bacc_World_Batter_of_the_Year    =  3,
+     bacc_Atlantic_Batter_of_the_Year =  4,
+     bacc_North_Batter_of_the_Year    =  5,
+     bacc_Pacific_Batter_of_the_Year  =  6,
+     bacc_South_Batter_of_the_Year    =  7,
+     bacc_Best_Batting_Average        =  8,
+     bacc_Most_Doubles                =  9,
+     bacc_Most_Triples                = 10,
+     bacc_Most_Home_Runs              = 11,
+     bacc_Most_Runs                   = 12,
+     bacc_Most_Runs_Batted_In         = 13,
+     bacc_Most_Stolen_Bases           = 14,
+     bacc_Most_Walks                  = 15,
+     bacc_Best_Slugging_Average       = 16,
+     bacc_Best_On_Base_Percentage     = 17,
+     bacc_Best_Strike_Out_Average     = 18,
+     bacc_Best_Runs_per_Game          = 19
+
+} batting_accolade_e;
+
+typedef enum
+{
      pacc_None                         =  0,
      pacc_Pitcher_of_the_Year          =  1,
      pacc_Global_Pitcher_of_the_Year   =  2,
      pacc_World_Pitcher_of_the_Year    =  3,
      pacc_Atlantic_Pitcher_of_the_Year =  4,
      pacc_North_Pitcher_of_the_Year    =  5,
-     pacc_South_Pitcher_of_the_Year    =  6,
-     pacc_Pacific_Pitcher_of_the_Year  =  7,
+     pacc_Pacific_Pitcher_of_the_Year  =  6,
+     pacc_South_Pitcher_of_the_Year    =  7,
      pacc_Most_Wins                    =  8,
      pacc_Best_Win_Percentage          =  9,
      pacc_Best_Earned_Run_Average      = 10,
@@ -182,6 +207,14 @@ typedef struct
 
 } batter_stats_s;
 
+typedef struct
+{
+     int                player_id;
+     int                season;
+     batting_accolade_e accolade;
+
+} batter_accolade_s;
+
 
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
@@ -216,5 +249,8 @@ int batter_stats_t_read(   sqlite3 *db,       batter_stats_s *batter_stats );
 int batter_stats_t_update( sqlite3 *db, const batter_stats_s *batter_stats );
 int batter_stats_t_delete( sqlite3 *db, const batter_stats_s *batter_stats );
 
+int batter_accolades_t_create(         sqlite3 *db,                      const batter_accolade_s *batter_accolade  );
+int batter_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s       *batter_accolades );
+int batter_accolades_t_delete(         sqlite3 *db,                      const batter_accolade_s *batter_accolade  );
 
 #endif

@@ -35,6 +35,7 @@ runTestProg test_pitcher_stats_t
 runTestProg test_pitcher_accolades_t
 runTestProg test_batters_t
 runTestProg test_batter_stats_t
+runTestProg test_batter_accolades_t
 
 if [ $FAIL -ne 0 ]; then
 

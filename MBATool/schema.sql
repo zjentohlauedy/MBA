@@ -91,3 +91,12 @@ CREATE TABLE Batter_Stats_T
 --
    PRIMARY KEY ( Player_Id, Season, Season_Phase )
 );
+
+CREATE TABLE Batter_Accolades_T
+(
+   Player_Id           INTEGER,
+   Season              INTEGER,
+   Accolade            INTEGER,
+--
+   UNIQUE ( Player_Id, Season, Accolade )
+);
