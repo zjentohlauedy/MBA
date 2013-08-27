@@ -9,7 +9,7 @@ progs = \
    test_pitcher_stats_t \
    test_pitcher_accolades_t
 
-ALL: $(progs)
+ALL: $(progs) TAGS
 
 
 test_players_t: test_players_t.o players_t.o sql_query.o
@@ -30,6 +30,8 @@ test_pitcher_accolades_t: test_pitcher_accolades_t.o pitcher_accolades_t.o sql_q
 %.o: %.c player.h sql_query.h unit_test.h
 	$(CC) $(CFLAGS) -c $<
 
+TAGS: *.h *.c
+	etags *.h *.c
 
 .PHONY: clean
 clean:
