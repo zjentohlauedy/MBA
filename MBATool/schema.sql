@@ -109,3 +109,12 @@ CREATE TABLE Teams_T
    Primary_Color   INTEGER,
    Secondary_Color INTEGER
 );
+
+CREATE TABLE Team_Players_T
+(
+   Team_Id   INTEGER,
+   Season    INTEGER,
+   Player_Id INTEGER,
+--
+   UNIQUE ( Team_Id, Season, Player_Id )
+);
