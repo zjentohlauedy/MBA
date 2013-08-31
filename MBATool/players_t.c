@@ -86,7 +86,8 @@ static int players_t_update_bindings( sqlite3_stmt *statement, const void *data 
      BIND_INT( statement,  7, player->player_type    );
      BIND_INT( statement,  8, player->rookie_season  );
      BIND_INT( statement,  9, player->longevity      );
-     BIND_INT( statement, 10, player->player_id      );
+
+     BIND_INT( statement, 10, player->player_id );
 
      return SQLITE_OK;
 }

@@ -100,3 +100,12 @@ CREATE TABLE Batter_Accolades_T
 --
    UNIQUE ( Player_Id, Season, Accolade )
 );
+
+CREATE TABLE Teams_T
+(
+   Team_Id         INTEGER PRIMARY KEY,
+   Name            TEXT,
+   Location        TEXT,
+   Primary_Color   INTEGER,
+   Secondary_Color INTEGER
+);
