@@ -33,9 +33,6 @@ int batter_accolades_t_create( sqlite3 *db, const batter_accolade_s *batter_acco
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static int idx = 0;
-static int max = 0;
-
 static int batter_accolades_t_read_by_player_bindings( sqlite3_stmt *statement, const void *data )
 {
      const int *player_id = (int *)data;
@@ -61,9 +58,6 @@ static int batter_accolades_t_read_by_player_retrieve( sqlite3_stmt *statement, 
 int batter_accolades_t_read_by_player( sqlite3 *db, const int player_id, data_list_s *batter_accolades )
 {
      static char query[] = "SELECT Player_Id, Season, Accolade FROM Batter_Accolades_T WHERE Player_Id = ?";
-
-     idx = 0;
-     max = 0;
 
      return execute_query( db, query, batter_accolades_t_read_by_player_bindings, &player_id, batter_accolades_t_read_by_player_retrieve, batter_accolades );
 }

@@ -33,9 +33,6 @@ int team_players_t_create( sqlite3 *db, const team_player_s *team_player )
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-static int idx = 0;
-static int max = 0;
-
 static int team_players_t_read_by_team_bindings( sqlite3_stmt *statement, const void *data )
 {
      const int *team_id = (int *)data;
@@ -61,9 +58,6 @@ static int team_players_t_read_by_team_retrieve( sqlite3_stmt *statement, const 
 int team_players_t_read_by_team( sqlite3 *db, const int team_id, data_list_s *team_players )
 {
      static char query[] = "SELECT Team_Id, Season, Player_Id FROM Team_Players_T WHERE Team_Id = ?";
-
-     idx = 0;
-     max = 0;
 
      return execute_query( db, query, team_players_t_read_by_team_bindings, &team_id, team_players_t_read_by_team_retrieve, team_players );
 }
