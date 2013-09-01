@@ -118,3 +118,24 @@ CREATE TABLE Team_Players_T
 --
    UNIQUE ( Team_Id, Season, Player_Id )
 );
+
+CREATE TABLE Team_Stats_T
+(
+   Team_Id         INTEGER,
+   Season          INTEGER,
+   Season_Phase    INTEGER,
+   Wins            INTEGER,
+   Losses          INTEGER,
+   Home_Wins       INTEGER,
+   Home_Losses     INTEGER,
+   Road_Wins       INTEGER,
+   Road_Losses     INTEGER,
+   Division_Wins   INTEGER,
+   Division_Losses INTEGER,
+   League_Wins     INTEGER,
+   League_Losses   INTEGER,
+   Runs_Scored     INTEGER,
+   Runs_Allowed    INTEGER,
+--
+   PRIMARY KEY ( Team_Id, Season, Season_Phase )
+);

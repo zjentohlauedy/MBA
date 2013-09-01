@@ -1,6 +1,7 @@
 #ifndef __INC_PLAYER_H__
 #define __INC_PLAYER_H__
 
+#include "season.h"
 #include "data_list.h"
 
 typedef enum
@@ -96,15 +97,6 @@ typedef enum
      pt_Hitter  = 2
 
 } playertype_e;
-
-typedef enum
-{
-     sp_None    = 0,
-     sp_Regular = 1,
-     sp_Playoff = 2,
-     sp_Allstar = 3
-
-} season_phase_e;
 
 typedef enum
 {
