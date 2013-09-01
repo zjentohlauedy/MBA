@@ -152,8 +152,6 @@ static char *pitcher_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecord
      assertEquals( "season",    expected2.season,    actual[1].season    );
      assertEquals( "accolade",  expected2.accolade,  actual[1].accolade  );
 
-     assertEquals( "player_id", 0, actual[2].player_id );
-
      free( actual );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );

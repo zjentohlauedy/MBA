@@ -161,8 +161,6 @@ static char *team_players_t_read_by_team__ShouldRetrieveAllMatchingRecords_Given
      assertEquals( "season",    expected2.season,    actual[1].season    );
      assertEquals( "player_id", expected2.player_id, actual[1].player_id );
 
-     assertEquals( "team_id", 0, actual[2].team_id );
-
      free( actual );
 
      sqlite3_exec( db, "delete from team_players_t", NULL, NULL, NULL );
