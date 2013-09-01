@@ -322,11 +322,15 @@ int main( int argc, char *argv[] )
      }
 
      sqlite3_open( argv[1], &db );
+     sqlite3_exec( db, "begin", NULL, NULL, NULL );
+
 
      run_all_tests( db );
 
      show_test_results();
 
+
+     sqlite3_exec( db, "rollback", NULL, NULL, NULL );
      sqlite3_close( db );
 
      return (tests_pass()) ? EXIT_SUCCESS : EXIT_FAILURE;
