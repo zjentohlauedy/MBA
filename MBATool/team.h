@@ -18,6 +18,16 @@ typedef enum
 
 } color_e;
 
+typedef enum
+{
+     tacc_None           = 0,
+     tacc_World_Title    = 1,
+     tacc_League_Title   = 2,
+     tacc_Division_Title = 3,
+     tacc_Best_Record    = 4
+
+} team_accolade_e;
+
 typedef struct
 {
      int      team_id;
@@ -56,6 +66,52 @@ typedef struct
 
 } team_stats_s;
 
+typedef struct
+{
+     int            team_id;
+     int            season;
+     season_phase_e season_phase;
+     int            wins;
+     int            losses;
+     int            games;
+     int            saves;
+     float          innings;
+     int            hits;
+     int            earned_runs;
+     int            home_runs;
+     int            walks;
+     int            strike_outs;
+
+} team_pitching_stats_s;
+
+typedef struct
+{
+     int            team_id;
+     int            season;
+     season_phase_e season_phase;
+     int            games;
+     int            at_bats;
+     int            runs;
+     int            hits;
+     int            doubles;
+     int            triples;
+     int            home_runs;
+     int            runs_batted_in;
+     int            walks;
+     int            strike_outs;
+     int            steals;
+     int            errors;
+
+} team_batting_stats_s;
+
+typedef struct
+{
+     int              team_id;
+     int              season;
+     team_accolade_e  accolade;
+
+} team_accolade_s;
+
 
 int teams_t_create( sqlite3 *db, const team_s *team );
 int teams_t_read(   sqlite3 *db,       team_s *team );
@@ -70,6 +126,20 @@ int team_stats_t_create( sqlite3 *db, const team_stats_s *team_stats );
 int team_stats_t_read(   sqlite3 *db,       team_stats_s *team_stats );
 int team_stats_t_update( sqlite3 *db, const team_stats_s *team_stats );
 int team_stats_t_delete( sqlite3 *db, const team_stats_s *team_stats );
+
+int team_pitching_stats_t_create( sqlite3 *db, const team_pitching_stats_s *team_pitching_stats );
+int team_pitching_stats_t_read(   sqlite3 *db,       team_pitching_stats_s *team_pitching_stats );
+int team_pitching_stats_t_update( sqlite3 *db, const team_pitching_stats_s *team_pitching_stats );
+int team_pitching_stats_t_delete( sqlite3 *db, const team_pitching_stats_s *team_pitching_stats );
+
+int team_batting_stats_t_create( sqlite3 *db, const team_batting_stats_s *team_batting_stats );
+int team_batting_stats_t_read(   sqlite3 *db,       team_batting_stats_s *team_batting_stats );
+int team_batting_stats_t_update( sqlite3 *db, const team_batting_stats_s *team_batting_stats );
+int team_batting_stats_t_delete( sqlite3 *db, const team_batting_stats_s *team_batting_stats );
+
+int team_accolades_t_create(       sqlite3 *db,                    const team_accolade_s *team_accolade  );
+int team_accolades_t_read_by_team( sqlite3 *db, const int team_id,       data_list_s     *team_accolades );
+int team_accolades_t_delete(       sqlite3 *db,                    const team_accolade_s *team_accolade  );
 
 
 #endif

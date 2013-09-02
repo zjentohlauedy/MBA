@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
-#include "player.h"
+#include "team.h"
 #include "unit_test.h"
 
 
@@ -10,79 +10,79 @@ static sqlite3 *db;
 static char    *result;
 
 
-static int load_pitcher_stats_data( void *output, int cols, char *data[], char *names[] )
+static int load_team_pitching_stats_data( void *output, int cols, char *data[], char *names[] )
 {
-     static pitcher_stats_s pitcher_stats;
+     static team_pitching_stats_s team_pitching_stats;
 
-     pitcher_stats_s **ps = (pitcher_stats_s **)output;
+     team_pitching_stats_s **tps = (team_pitching_stats_s **)output;
 
      if ( cols < 13 ) return SQLITE_ERROR;
 
-     memset( &pitcher_stats, '\0', sizeof(pitcher_stats_s) );
+     memset( &team_pitching_stats, '\0', sizeof(team_pitching_stats_s) );
 
-     /**/    pitcher_stats.player_id    = atoi( data[ 0] );
-     /**/    pitcher_stats.season       = atoi( data[ 1] );
-     /**/    pitcher_stats.season_phase = atoi( data[ 2] );
-     /**/    pitcher_stats.wins         = atoi( data[ 3] );
-     /**/    pitcher_stats.losses       = atoi( data[ 4] );
-     /**/    pitcher_stats.games        = atoi( data[ 5] );
-     /**/    pitcher_stats.saves        = atoi( data[ 6] );
-     /**/    pitcher_stats.innings      = atof( data[ 7] );
-     /**/    pitcher_stats.hits         = atoi( data[ 8] );
-     /**/    pitcher_stats.earned_runs  = atoi( data[ 9] );
-     /**/    pitcher_stats.home_runs    = atoi( data[10] );
-     /**/    pitcher_stats.walks        = atoi( data[11] );
-     /**/    pitcher_stats.strike_outs  = atoi( data[12] );
+     /**/    team_pitching_stats.team_id      = atoi( data[ 0] );
+     /**/    team_pitching_stats.season       = atoi( data[ 1] );
+     /**/    team_pitching_stats.season_phase = atoi( data[ 2] );
+     /**/    team_pitching_stats.wins         = atoi( data[ 3] );
+     /**/    team_pitching_stats.losses       = atoi( data[ 4] );
+     /**/    team_pitching_stats.games        = atoi( data[ 5] );
+     /**/    team_pitching_stats.saves        = atoi( data[ 6] );
+     /**/    team_pitching_stats.innings      = atof( data[ 7] );
+     /**/    team_pitching_stats.hits         = atoi( data[ 8] );
+     /**/    team_pitching_stats.earned_runs  = atoi( data[ 9] );
+     /**/    team_pitching_stats.home_runs    = atoi( data[10] );
+     /**/    team_pitching_stats.walks        = atoi( data[11] );
+     /**/    team_pitching_stats.strike_outs  = atoi( data[12] );
 
-     *ps = &pitcher_stats;
+     *tps = &team_pitching_stats;
 
      return SQLITE_OK;
 }
 
-static pitcher_stats_s *get_a_pitcher_stats( int player_id )
+static team_pitching_stats_s *get_a_team_pitching_stats( int team_id )
 {
-     pitcher_stats_s *pitcher_stats = NULL;
+     team_pitching_stats_s *team_pitching_stats = NULL;
 
      char query[999+1];
 
-     snprintf( query, sizeof(query), "select * from pitcher_stats_t where player_id = %d", player_id );
+     snprintf( query, sizeof(query), "select * from team_pitching_stats_t where team_id = %d", team_id );
 
-     sqlite3_exec( db, query, load_pitcher_stats_data, &pitcher_stats, NULL );
+     sqlite3_exec( db, query, load_team_pitching_stats_data, &team_pitching_stats, NULL );
 
-     return pitcher_stats;
+     return team_pitching_stats;
 }
 
 
-static void insert_a_pitcher_stats( pitcher_stats_s *pitcher_stats )
+static void insert_a_team_pitching_stats( team_pitching_stats_s *team_pitching_stats )
 {
      char query[999+1];
 
 
-     snprintf( query, sizeof(query), "insert into pitcher_stats_t (player_id, season, season_phase, wins, losses, games, saves, innings, hits, earned_runs, home_runs, walks, strike_outs)"
+     snprintf( query, sizeof(query), "insert into team_pitching_stats_t (team_id, season, season_phase, wins, losses, games, saves, innings, hits, earned_runs, home_runs, walks, strike_outs)"
                "values (%d, %d, %d, %d, %d, %d, %d, %.1f, %d, %d, %d, %d, %d)",
-               pitcher_stats->player_id,
-               pitcher_stats->season,
-               pitcher_stats->season_phase,
-               pitcher_stats->wins,
-               pitcher_stats->losses,
-               pitcher_stats->games,
-               pitcher_stats->saves,
-               pitcher_stats->innings,
-               pitcher_stats->hits,
-               pitcher_stats->earned_runs,
-               pitcher_stats->home_runs,
-               pitcher_stats->walks,
-               pitcher_stats->strike_outs );
+               team_pitching_stats->team_id,
+               team_pitching_stats->season,
+               team_pitching_stats->season_phase,
+               team_pitching_stats->wins,
+               team_pitching_stats->losses,
+               team_pitching_stats->games,
+               team_pitching_stats->saves,
+               team_pitching_stats->innings,
+               team_pitching_stats->hits,
+               team_pitching_stats->earned_runs,
+               team_pitching_stats->home_runs,
+               team_pitching_stats->walks,
+               team_pitching_stats->strike_outs );
 
      sqlite3_exec( db, query, NULL, NULL, NULL );
 }
 
 
-static char *pitcher_stats_t_create__ShouldInsertRecordsInThePitcherStatsTTable()
+static char *team_pitching_stats_t_create__ShouldInsertRecordsInTheTeamPitchingStatsTTable()
 {
-     pitcher_stats_s expected = { 0 };
+     team_pitching_stats_s expected = { 0 };
 
-     expected.player_id    = 123;
+     expected.team_id      = 123;
      expected.season       = 5;
      expected.season_phase = sp_Regular;
      expected.wins         = 12;
@@ -96,11 +96,11 @@ static char *pitcher_stats_t_create__ShouldInsertRecordsInThePitcherStatsTTable(
      expected.walks        = 25;
      expected.strike_outs  = 234;
 
-     assertEquals( "pitcher_stats_t_create()", SQLITE_OK, pitcher_stats_t_create( db, &expected ) );
+     assertEquals( "team_pitching_stats_t_create()", SQLITE_OK, team_pitching_stats_t_create( db, &expected ) );
 
-     pitcher_stats_s *actual = get_a_pitcher_stats( expected.player_id );
+     team_pitching_stats_s *actual = get_a_team_pitching_stats( expected.team_id );
 
-     assertEquals( "player_id",    expected.player_id,    actual->player_id    );
+     assertEquals( "team_id",      expected.team_id,      actual->team_id      );
      assertEquals( "season",       expected.season,       actual->season       );
      assertEquals( "season_phase", expected.season_phase, actual->season_phase );
      assertEquals( "wins",         expected.wins,         actual->wins         );
@@ -114,17 +114,16 @@ static char *pitcher_stats_t_create__ShouldInsertRecordsInThePitcherStatsTTable(
      assertEquals( "walks",        expected.walks,        actual->walks        );
      assertEquals( "strike_outs",  expected.strike_outs,  actual->strike_outs  );
 
-     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+     sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 
      return NULL;
 }
 
-
-static char *pitcher_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeasonAndPhaseExists()
+static char *team_pitching_stats_t_create__ShouldGiveAnErrorIfRecordForSameTeamSeasonAndPhaseExists()
 {
-     pitcher_stats_s expected = { 0 };
+     team_pitching_stats_s expected = { 0 };
 
-     expected.player_id    = 123;
+     expected.team_id      = 123;
      expected.season       = 5;
      expected.season_phase = sp_Regular;
      expected.wins         = 12;
@@ -138,7 +137,7 @@ static char *pitcher_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeaso
      expected.walks        = 25;
      expected.strike_outs  = 234;
 
-     assertEquals( "pitcher_stats_t_create()", SQLITE_OK, pitcher_stats_t_create( db, &expected ) );
+     assertEquals( "team_pitching_stats_t_create()", SQLITE_OK, team_pitching_stats_t_create( db, &expected ) );
 
      expected.wins         = 20;
      expected.losses       = 9;
@@ -151,19 +150,18 @@ static char *pitcher_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeaso
      expected.walks        = 30;
      expected.strike_outs  = 250;
 
-     assertEquals( "pitcher_stats_t_create()", SQLITE_CONSTRAINT, pitcher_stats_t_create( db, &expected ) );
+     assertEquals( "team_pitching_stats_t_create()", SQLITE_CONSTRAINT, team_pitching_stats_t_create( db, &expected ) );
 
-     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+     sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 
      return NULL;
 }
 
-
-static char *pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerIdSeasonAndPhase()
+static char *team_pitching_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamIdSeasonAndPhase()
 {
-     pitcher_stats_s expected = { 0 };
+     team_pitching_stats_s expected = { 0 };
 
-     expected.player_id    = 123;
+     expected.team_id    = 123;
      expected.season       = 5;
      expected.season_phase = sp_Regular;
      expected.wins         = 12;
@@ -177,17 +175,17 @@ static char *pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId
      expected.walks        = 25;
      expected.strike_outs  = 234;
 
-     insert_a_pitcher_stats( &expected );
+     insert_a_team_pitching_stats( &expected );
 
-     pitcher_stats_s actual = { 0 };
+     team_pitching_stats_s actual = { 0 };
 
-     actual.player_id    = expected.player_id;
+     actual.team_id      = expected.team_id;
      actual.season       = expected.season;
      actual.season_phase = expected.season_phase;
 
-     assertEquals( "pitcher_stats_t_read()", SQLITE_OK, pitcher_stats_t_read( db, &actual ) );
+     assertEquals( "team_pitching_stats_t_read()", SQLITE_OK, team_pitching_stats_t_read( db, &actual ) );
 
-     assertEquals( "player_id",    expected.player_id,    actual.player_id    );
+     assertEquals( "team_id",      expected.team_id,      actual.team_id      );
      assertEquals( "season",       expected.season,       actual.season       );
      assertEquals( "season_phase", expected.season_phase, actual.season_phase );
      assertEquals( "wins",         expected.wins,         actual.wins         );
@@ -201,16 +199,16 @@ static char *pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId
      assertEquals( "walks",        expected.walks,        actual.walks        );
      assertEquals( "strike_outs",  expected.strike_outs,  actual.strike_outs  );
 
-     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+     sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 
      return NULL;
 }
 
-static char *pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerIdSeasonAndPhase()
+static char *team_pitching_stats_t_update__ShouldModifyMatchingRecord_GivenTheTeamIdSeasonAndPhase()
 {
-     pitcher_stats_s expected = { 0 };
+     team_pitching_stats_s expected = { 0 };
 
-     expected.player_id    = 123;
+     expected.team_id      = 123;
      expected.season       = 5;
      expected.season_phase = sp_Regular;
      expected.wins         = 12;
@@ -224,7 +222,7 @@ static char *pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerId
      expected.walks        = 25;
      expected.strike_outs  = 234;
 
-     insert_a_pitcher_stats( &expected );
+     insert_a_team_pitching_stats( &expected );
 
      expected.wins         = 21;
      expected.losses       = 51;
@@ -237,11 +235,11 @@ static char *pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerId
      expected.walks        = 52;
      expected.strike_outs  = 321;
 
-     assertEquals( "pitcher_stats_t_update()", SQLITE_OK, pitcher_stats_t_update( db, &expected ) );
+     assertEquals( "team_pitching_stats_t_update()", SQLITE_OK, team_pitching_stats_t_update( db, &expected ) );
 
-     pitcher_stats_s *actual = get_a_pitcher_stats( expected.player_id );
+     team_pitching_stats_s *actual = get_a_team_pitching_stats( expected.team_id );
 
-     assertEquals( "player_id",    expected.player_id,    actual->player_id    );
+     assertEquals( "team_id",      expected.team_id,      actual->team_id      );
      assertEquals( "season",       expected.season,       actual->season       );
      assertEquals( "season_phase", expected.season_phase, actual->season_phase );
      assertEquals( "wins",         expected.wins,         actual->wins         );
@@ -255,16 +253,16 @@ static char *pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerId
      assertEquals( "walks",        expected.walks,        actual->walks        );
      assertEquals( "strike_outs",  expected.strike_outs,  actual->strike_outs  );
 
-     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+     sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 
      return NULL;
 }
 
-static char* pitcher_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdSeasonAndPhase()
+static char *team_pitching_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamIdSeasonAndPhase()
 {
-     pitcher_stats_s expected = { 0 };
+     team_pitching_stats_s expected = { 0 };
 
-     expected.player_id    = 123;
+     expected.team_id      = 123;
      expected.season       = 5;
      expected.season_phase = sp_Regular;
      expected.wins         = 12;
@@ -278,15 +276,15 @@ static char* pitcher_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId
      expected.walks        = 25;
      expected.strike_outs  = 234;
 
-     insert_a_pitcher_stats( &expected );
+     insert_a_team_pitching_stats( &expected );
 
-     assertEquals( "pitcher_stats_t_delete()", SQLITE_OK, pitcher_stats_t_delete( db, &expected ) );
+     assertEquals( "team_pitching_stats_t_delete()", SQLITE_OK, team_pitching_stats_t_delete( db, &expected ) );
 
-     pitcher_stats_s *actual = get_a_pitcher_stats( expected.player_id );
+     team_pitching_stats_s *actual = get_a_team_pitching_stats( expected.team_id );
 
      assertEquals( "actual", NULL, actual );
 
-     sqlite3_exec( db, "delete from pitcher_stats_t", NULL, NULL, NULL );
+     sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 
      return NULL;
 }
@@ -301,11 +299,11 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( pitcher_stats_t_create__ShouldInsertRecordsInThePitcherStatsTTable,                 check_sqlite_error );
-     run_test( pitcher_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeasonAndPhaseExists, check_sqlite_error );
-     run_test( pitcher_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
-     run_test( pitcher_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
-     run_test( pitcher_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdSeasonAndPhase,  check_sqlite_error );
+     run_test( team_pitching_stats_t_create__ShouldInsertRecordsInTheTeamPitchingStatsTTable,          check_sqlite_error );
+     run_test( team_pitching_stats_t_create__ShouldGiveAnErrorIfRecordForSameTeamSeasonAndPhaseExists, check_sqlite_error );
+     run_test( team_pitching_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
+     run_test( team_pitching_stats_t_update__ShouldModifyMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
+     run_test( team_pitching_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
 }
 
 

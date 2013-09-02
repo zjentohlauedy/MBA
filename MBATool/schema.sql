@@ -139,3 +139,58 @@ CREATE TABLE Team_Stats_T
 --
    PRIMARY KEY ( Team_Id, Season, Season_Phase )
 );
+
+CREATE TABLE Team_Pitching_Stats_T
+(
+   Team_Id             INTEGER,
+   Season              INTEGER,
+   Season_Phase        INTEGER,
+   Wins                INTEGER,
+   Losses              INTEGER,
+   Games               INTEGER,
+   Saves               INTEGER,
+   Innings             REAL,
+   Hits                INTEGER,
+   Earned_Runs         INTEGER,
+   Home_Runs           INTEGER,
+   Walks               INTEGER,
+   Strike_Outs         INTEGER,
+--
+   PRIMARY KEY ( Team_Id, Season, Season_Phase )
+);
+
+CREATE TABLE Team_Batting_Stats_T
+(
+   Team_Id        INTEGER,
+   Season         INTEGER,
+   Season_Phase   INTEGER,
+   Games          INTEGER,
+   At_Bats        INTEGER,
+   Runs           INTEGER,
+   Hits           INTEGER,
+   Doubles        INTEGER,
+   Triples        INTEGER,
+   Home_Runs      INTEGER,
+   Runs_Batted_In INTEGER,
+   Walks          INTEGER,
+   Strike_Outs    INTEGER,
+   Steals         INTEGER,
+   Errors         INTEGER,
+--
+   PRIMARY KEY ( Team_Id, Season, Season_Phase )
+);
+
+CREATE TABLE Team_Accolades_T
+(
+   Team_Id             INTEGER,
+   Season              INTEGER,
+   Accolade            INTEGER,
+--
+   UNIQUE ( Team_Id, Season, Accolade )
+);
+
+CREATE TABLE Divisions_T
+(
+   Division_Id INTEGER PRIMARY KEY,
+   Name        TEXT
+);

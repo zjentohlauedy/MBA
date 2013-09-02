@@ -54,6 +54,11 @@ runTestProg test_batter_accolades_t
 runTestProg test_teams_t
 runTestProg test_team_players_t
 runTestProg test_team_stats_t
+runTestProg test_team_pitching_stats_t
+runTestProg test_team_batting_stats_t
+runTestProg test_team_accolades_t
+
+runTestProg test_divisions_t
 
 if [ $FAIL -ne 0 ]; then
 

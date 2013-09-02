@@ -44,7 +44,6 @@ static team_s *get_a_team( int team_id )
      return team;
 }
 
-
 static void insert_a_team( team_s *team )
 {
      char query[999+1];
