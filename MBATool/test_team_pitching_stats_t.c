@@ -280,9 +280,7 @@ static char *team_pitching_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheTe
 
      assertEquals( "team_pitching_stats_t_delete()", SQLITE_OK, team_pitching_stats_t_delete( db, &expected ) );
 
-     team_pitching_stats_s *actual = get_a_team_pitching_stats( expected.team_id );
-
-     assertEquals( "actual", NULL, actual );
+     assertEquals( "get_a_team_pitching_stats()", NULL, get_a_team_pitching_stats( expected.team_id ) );
 
      sqlite3_exec( db, "delete from team_pitching_stats_t", NULL, NULL, NULL );
 

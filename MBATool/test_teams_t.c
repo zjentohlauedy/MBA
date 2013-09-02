@@ -185,9 +185,7 @@ static char *teams_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamId()
 
      assertEquals( "teams_t_delete()", SQLITE_OK, teams_t_delete( db, &expected ) );
 
-     team_s *actual = get_a_team( expected.team_id );
-
-     assertEquals( "actual", NULL, actual );
+     assertEquals( "get_a_team()", NULL, get_a_team( expected.team_id ) );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
