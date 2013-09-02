@@ -54,14 +54,6 @@ static void insert_a_team_player( team_player_s *team_player )
 }
 
 
-static void check_sqlite_error()
-{
-     if ( sqlite3_errcode( db ) != 0 )
-     {
-          printf( "sqlite3 error message: %s\n", sqlite3_errmsg( db ) );
-     }
-}
-
 static char *team_players_t_create__ShouldInsertRecordsInTheTeamPlayersTTable()
 {
      team_player_s expected = { 0 };
@@ -216,6 +208,14 @@ static char *team_players_t_delete__ShouldOnlyDeleteMatchingRecord_GivenATeamPla
      sqlite3_exec( db, "delete from team_players_t", NULL, NULL, NULL );
 
      return NULL;
+}
+
+static void check_sqlite_error()
+{
+     if ( sqlite3_errcode( db ) != 0 )
+     {
+          printf( "sqlite3 error message: %s\n", sqlite3_errmsg( db ) );
+     }
 }
 
 static void run_all_tests()

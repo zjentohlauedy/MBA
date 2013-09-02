@@ -17,7 +17,8 @@ progs = \
    test_team_pitching_stats_t \
    test_team_batting_stats_t \
    test_team_accolades_t \
-   test_divisions_t
+   test_divisions_t \
+   test_division_teams_t
 
 ALL: $(progs) TAGS
 
@@ -65,6 +66,9 @@ test_team_accolades_t: test_team_accolades_t.o team_accolades_t.o sql_query.o da
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_divisions_t: test_divisions_t.o divisions_t.o sql_query.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
+
+test_division_teams_t: test_division_teams_t.o division_teams_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 %.o: %.c player.h team.h sql_query.h unit_test.h

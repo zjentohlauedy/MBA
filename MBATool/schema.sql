@@ -194,3 +194,11 @@ CREATE TABLE Divisions_T
    Division_Id INTEGER PRIMARY KEY,
    Name        TEXT
 );
+
+CREATE TABLE Division_Teams_T
+(
+   Division_Id INTEGER,
+   Team_Id     INTEGER,
+--
+   UNIQUE ( Division_Id, Team_Id )
+);
