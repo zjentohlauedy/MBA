@@ -221,3 +221,12 @@ CREATE TABLE Division_Stats_T
 --
    PRIMARY KEY ( Division_Id, Season, Season_Phase )
 );
+
+CREATE TABLE Division_Accolades_T
+(
+   Division_Id         INTEGER,
+   Season              INTEGER,
+   Accolade            INTEGER,
+--
+   UNIQUE ( Division_Id, Season, Accolade )
+);

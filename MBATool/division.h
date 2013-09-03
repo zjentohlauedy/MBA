@@ -4,6 +4,15 @@
 #include "data_list.h"
 #include "season.h"
 
+typedef enum
+{
+     dacc_None           = 0,
+     dacc_World_Title    = 1,
+     dacc_League_Title   = 2,
+     dacc_Best_Record    = 3
+
+} division_accolade_e;
+
 typedef struct
 {
      int   division_id;
@@ -36,6 +45,15 @@ typedef struct
 
 } division_stats_s;
 
+typedef struct
+{
+     int                  division_id;
+     int                  season;
+     division_accolade_e  accolade;
+
+} division_accolade_s;
+
+
 int divisions_t_create( sqlite3 *db, const division_s *division );
 int divisions_t_read(   sqlite3 *db,       division_s *division );
 int divisions_t_update( sqlite3 *db, const division_s *division );
@@ -49,6 +67,10 @@ int division_stats_t_create( sqlite3 *db, const division_stats_s *division_stats
 int division_stats_t_read(   sqlite3 *db,       division_stats_s *division_stats );
 int division_stats_t_update( sqlite3 *db, const division_stats_s *division_stats );
 int division_stats_t_delete( sqlite3 *db, const division_stats_s *division_stats );
+
+int division_accolades_t_create(           sqlite3 *db,                        const division_accolade_s *division_accolade  );
+int division_accolades_t_read_by_division( sqlite3 *db, const int division_id,       data_list_s         *division_accolades );
+int division_accolades_t_delete(           sqlite3 *db,                        const division_accolade_s *division_accolade  );
 
 
 #endif
