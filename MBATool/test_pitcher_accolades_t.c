@@ -171,7 +171,7 @@ static char *pitcher_accolades_t_delete__ShouldDeleteMatchingRecord_GivenAPitche
 
      assertEquals( "pitcher_accolades_t_delete()", SQLITE_OK, pitcher_accolades_t_delete( db, &expected ) );
 
-     assertEquals( "get_a_pitcher_accolade()", NULL, get_a_pitcher_accolade( expected.player_id ) );
+     assertNull( "get_a_pitcher_accolade()", get_a_pitcher_accolade( expected.player_id ) );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );
 

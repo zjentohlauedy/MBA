@@ -304,7 +304,7 @@ static char *batter_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdS
 
      assertEquals( "batter_stats_t_delete()", SQLITE_OK, batter_stats_t_delete( db, &expected ) );
 
-     assertEquals( "get_a_batter_stats()", NULL, get_a_batter_stats( expected.player_id ) );
+     assertNull( "get_a_batter_stats()", get_a_batter_stats( expected.player_id ) );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 

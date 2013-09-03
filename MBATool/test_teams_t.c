@@ -75,11 +75,11 @@ static char *teams_t_create__ShouldInsertRecordsInTheTeamsTTable()
 
      team_s *actual = get_a_team( expected.team_id );
 
-     assertEquals(    "team_id",         expected.team_id,         actual->team_id         );
+     assertEqualsInt( "team_id",         expected.team_id,         actual->team_id         );
      assertEqualsStr( "name",            expected.name,            actual->name            );
      assertEqualsStr( "location",        expected.location,        actual->location        );
-     assertEquals(    "primary_color",   expected.primary_color,   actual->primary_color   );
-     assertEquals(    "secondary_color", expected.secondary_color, actual->secondary_color );
+     assertEqualsInt( "primary_color",   expected.primary_color,   actual->primary_color   );
+     assertEqualsInt( "secondary_color", expected.secondary_color, actual->secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -128,11 +128,11 @@ static char *teams_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamId()
 
      assertEquals( "teams_t_read()", SQLITE_OK, teams_t_read( db, &actual ) );
 
-     assertEquals(    "team_id",         expected.team_id,         actual.team_id         );
+     assertEqualsInt( "team_id",         expected.team_id,         actual.team_id         );
      assertEqualsStr( "name",            expected.name,            actual.name            );
      assertEqualsStr( "location",        expected.location,        actual.location        );
-     assertEquals(    "primary_color",   expected.primary_color,   actual.primary_color   );
-     assertEquals(    "secondary_color", expected.secondary_color, actual.secondary_color );
+     assertEqualsInt( "primary_color",   expected.primary_color,   actual.primary_color   );
+     assertEqualsInt( "secondary_color", expected.secondary_color, actual.secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -160,11 +160,11 @@ static char *teams_t_update__ShouldModifyMatchingRecord_GivenTheTeamId()
 
      team_s *actual = get_a_team( expected.team_id );
 
-     assertEquals(    "team_id",         expected.team_id,         actual->team_id         );
+     assertEqualsInt( "team_id",         expected.team_id,         actual->team_id         );
      assertEqualsStr( "name",            expected.name,            actual->name            );
      assertEqualsStr( "location",        expected.location,        actual->location        );
-     assertEquals(    "primary_color",   expected.primary_color,   actual->primary_color   );
-     assertEquals(    "secondary_color", expected.secondary_color, actual->secondary_color );
+     assertEqualsInt( "primary_color",   expected.primary_color,   actual->primary_color   );
+     assertEqualsInt( "secondary_color", expected.secondary_color, actual->secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -185,7 +185,7 @@ static char *teams_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamId()
 
      assertEquals( "teams_t_delete()", SQLITE_OK, teams_t_delete( db, &expected ) );
 
-     assertEquals( "get_a_team()", NULL, get_a_team( expected.team_id ) );
+     assertNull( "get_a_team()", get_a_team( expected.team_id ) );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 

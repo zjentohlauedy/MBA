@@ -159,7 +159,7 @@ static char *division_teams_t_delete__ShouldDeleteMatchingRecord_GivenADivisionT
 
      assertEquals( "division_teams_t_delete()", SQLITE_OK, division_teams_t_delete( db, &expected) );
 
-     assertEquals( "get_a_division_team()", NULL, get_a_division_team( expected.division_id ) );
+     assertNull( "get_a_division_team()", get_a_division_team( expected.division_id ) );
 
      sqlite3_exec( db, "delete from division_teams_t", NULL, NULL, NULL );
 

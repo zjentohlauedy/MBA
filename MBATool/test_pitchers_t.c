@@ -187,7 +187,7 @@ static char *pitchers_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      assertEquals( "pitchers_t_delete()", SQLITE_OK, pitchers_t_delete( db, &expected ) );
 
-     assertEquals( "get_a_pitcher()", NULL, get_a_pitcher( expected.player_id ) );
+     assertNull( "get_a_pitcher()", get_a_pitcher( expected.player_id ) );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
