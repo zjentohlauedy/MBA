@@ -67,3 +67,4 @@ MBATool/test_team_batting_stats_t
 MBATool/test_team_accolades_t
 MBATool/test_divisions_t
 MBATool/test_division_teams_t
+MBATool/test_division_stats_t
