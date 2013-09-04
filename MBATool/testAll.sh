@@ -63,6 +63,8 @@ runTestProg test_division_teams_t
 runTestProg test_division_stats_t
 runTestProg test_division_accolades_t
 
+runTestProg test_leagues_t
+
 if [ $FAIL -ne 0 ]; then
 
     echo

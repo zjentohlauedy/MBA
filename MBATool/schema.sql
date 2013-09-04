@@ -230,3 +230,9 @@ CREATE TABLE Division_Accolades_T
 --
    UNIQUE ( Division_Id, Season, Accolade )
 );
+
+CREATE TABLE Leagues_T
+(
+   League_Id INTEGER PRIMARY KEY,
+   Name      TEXT
+);
