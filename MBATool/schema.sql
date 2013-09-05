@@ -236,3 +236,11 @@ CREATE TABLE Leagues_T
    League_Id INTEGER PRIMARY KEY,
    Name      TEXT
 );
+
+CREATE TABLE League_Divisions_T
+(
+   League_Id   INTEGER,
+   Division_Id INTEGER,
+--
+   UNIQUE ( League_Id, Division_Id )
+);
