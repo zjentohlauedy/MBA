@@ -65,6 +65,7 @@ runTestProg test_division_accolades_t
 
 runTestProg test_leagues_t
 runTestProg test_league_divisions_t
+runTestProg test_league_stats_t
 
 if [ $FAIL -ne 0 ]; then
 

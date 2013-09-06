@@ -244,3 +244,20 @@ CREATE TABLE League_Divisions_T
 --
    UNIQUE ( League_Id, Division_Id )
 );
+
+CREATE TABLE League_Stats_T
+(
+   League_Id       INTEGER,
+   Season          INTEGER,
+   Season_Phase    INTEGER,
+   Wins            INTEGER,
+   Losses          INTEGER,
+   Home_Wins       INTEGER,
+   Home_Losses     INTEGER,
+   Road_Wins       INTEGER,
+   Road_Losses     INTEGER,
+   Runs_Scored     INTEGER,
+   Runs_Allowed    INTEGER,
+--
+   PRIMARY KEY ( League_Id, Season, Season_Phase )
+);
