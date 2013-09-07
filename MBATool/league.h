@@ -4,6 +4,14 @@
 #include "data_list.h"
 #include "season.h"
 
+typedef enum
+{
+     lacc_None           = 0,
+     lacc_World_Title    = 1,
+     lacc_Best_Record    = 2
+
+} league_accolade_e;
+
 typedef struct
 {
      int   league_id;
@@ -34,6 +42,14 @@ typedef struct
 
 } league_stats_s;
 
+typedef struct
+{
+     int                league_id;
+     int                season;
+     league_accolade_e  accolade;
+
+} league_accolade_s;
+
 int leagues_t_create( sqlite3 *db, const league_s *league );
 int leagues_t_read(   sqlite3 *db,       league_s *league );
 int leagues_t_update( sqlite3 *db, const league_s *league );
@@ -47,6 +63,10 @@ int league_stats_t_create( sqlite3 *db, const league_stats_s *league_stats );
 int league_stats_t_read(   sqlite3 *db,       league_stats_s *league_stats );
 int league_stats_t_update( sqlite3 *db, const league_stats_s *league_stats );
 int league_stats_t_delete( sqlite3 *db, const league_stats_s *league_stats );
+
+int league_accolades_t_create(         sqlite3 *db,                      const league_accolade_s *league_accolade  );
+int league_accolades_t_read_by_league( sqlite3 *db, const int league_id,       data_list_s       *league_accolades );
+int league_accolades_t_delete(         sqlite3 *db,                      const league_accolade_s *league_accolade  );
 
 
 #endif
