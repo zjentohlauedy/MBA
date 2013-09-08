@@ -88,20 +88,20 @@ static char *players_t_create__ShouldInsertRecordsInThePlayersTTable()
      /**/    expected.rookie_season   = 1;
      /**/    expected.longevity       = 5;
 
-     assertEquals( "players_t_create()", SQLITE_OK, players_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
      player_s *actual = get_a_player( expected.player_id );
 
-     assertEqualsInt( "player_id",      expected.player_id,      actual->player_id      );
-     assertEqualsStr( "first_name",     expected.first_name,     actual->first_name     );
-     assertEqualsStr( "last_name",      expected.last_name,      actual->last_name      );
-     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual->first_phonetic );
-     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual->last_phonetic  );
-     assertEqualsInt( "skin_tone",      expected.skin_tone,      actual->skin_tone      );
-     assertEqualsInt( "handedness",     expected.handedness,     actual->handedness     );
-     assertEqualsInt( "player_type",    expected.player_type,    actual->player_type    );
-     assertEqualsInt( "rookie_season",  expected.rookie_season,  actual->rookie_season  );
-     assertEqualsInt( "longevity",      expected.longevity,      actual->longevity      );
+     assertEqualsInt( expected.player_id,      actual->player_id      );
+     assertEqualsStr( expected.first_name,     actual->first_name     );
+     assertEqualsStr( expected.last_name,      actual->last_name      );
+     assertEqualsStr( expected.first_phonetic, actual->first_phonetic );
+     assertEqualsStr( expected.last_phonetic,  actual->last_phonetic  );
+     assertEqualsInt( expected.skin_tone,      actual->skin_tone      );
+     assertEqualsInt( expected.handedness,     actual->handedness     );
+     assertEqualsInt( expected.player_type,    actual->player_type    );
+     assertEqualsInt( expected.rookie_season,  actual->rookie_season  );
+     assertEqualsInt( expected.longevity,      actual->longevity      );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -123,7 +123,7 @@ static char *players_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      /**/    expected.rookie_season   = 1;
      /**/    expected.longevity       = 5;
 
-     assertEquals( "players_t_create()", SQLITE_OK, players_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName2" );
@@ -137,7 +137,7 @@ static char *players_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      /**/    expected.longevity       = 3;
 
 
-     assertEquals( "players_t_create()", SQLITE_CONSTRAINT, players_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, players_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -165,18 +165,18 @@ static char *players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      actual.player_id = expected.player_id;
 
-     assertEquals( "players_t_read()", SQLITE_OK, players_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, players_t_read( db, &actual ) );
 
-     assertEqualsInt( "player_id",      expected.player_id,      actual.player_id      );
-     assertEqualsStr( "first_name",     expected.first_name,     actual.first_name     );
-     assertEqualsStr( "last_name",      expected.last_name,      actual.last_name      );
-     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual.last_phonetic  );
-     assertEqualsInt( "skin_tone",      expected.skin_tone,      actual.skin_tone      );
-     assertEqualsInt( "handedness",     expected.handedness,     actual.handedness     );
-     assertEqualsInt( "player_type",    expected.player_type,    actual.player_type    );
-     assertEqualsInt( "rookie_season",  expected.rookie_season,  actual.rookie_season  );
-     assertEqualsInt( "longevity",      expected.longevity,      actual.longevity      );
+     assertEqualsInt( expected.player_id,      actual.player_id      );
+     assertEqualsStr( expected.first_name,     actual.first_name     );
+     assertEqualsStr( expected.last_name,      actual.last_name      );
+     assertEqualsStr( expected.first_phonetic, actual.first_phonetic );
+     assertEqualsStr( expected.last_phonetic,  actual.last_phonetic  );
+     assertEqualsInt( expected.skin_tone,      actual.skin_tone      );
+     assertEqualsInt( expected.handedness,     actual.handedness     );
+     assertEqualsInt( expected.player_type,    actual.player_type    );
+     assertEqualsInt( expected.rookie_season,  actual.rookie_season  );
+     assertEqualsInt( expected.longevity,      actual.longevity      );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -211,20 +211,20 @@ static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
      /**/    expected.rookie_season   = 4;
      /**/    expected.longevity       = 2;
 
-     assertEquals( "players_t_update()", SQLITE_OK, players_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, players_t_update( db, &expected ) );
 
      player_s *actual = get_a_player( expected.player_id );
 
-     assertEqualsInt( "player_id",      expected.player_id,      actual->player_id      );
-     assertEqualsStr( "first_name",     expected.first_name,     actual->first_name     );
-     assertEqualsStr( "last_name",      expected.last_name,      actual->last_name      );
-     assertEqualsStr( "first_phonetic", expected.first_phonetic, actual->first_phonetic );
-     assertEqualsStr( "last_phonetic",  expected.last_phonetic,  actual->last_phonetic  );
-     assertEqualsInt( "skin_tone",      expected.skin_tone,      actual->skin_tone      );
-     assertEqualsInt( "handedness",     expected.handedness,     actual->handedness     );
-     assertEqualsInt( "player_type",    expected.player_type,    actual->player_type    );
-     assertEqualsInt( "rookie_season",  expected.rookie_season,  actual->rookie_season  );
-     assertEqualsInt( "longevity",      expected.longevity,      actual->longevity      );
+     assertEqualsInt( expected.player_id,      actual->player_id      );
+     assertEqualsStr( expected.first_name,     actual->first_name     );
+     assertEqualsStr( expected.last_name,      actual->last_name      );
+     assertEqualsStr( expected.first_phonetic, actual->first_phonetic );
+     assertEqualsStr( expected.last_phonetic,  actual->last_phonetic  );
+     assertEqualsInt( expected.skin_tone,      actual->skin_tone      );
+     assertEqualsInt( expected.handedness,     actual->handedness     );
+     assertEqualsInt( expected.player_type,    actual->player_type    );
+     assertEqualsInt( expected.rookie_season,  actual->rookie_season  );
+     assertEqualsInt( expected.longevity,      actual->longevity      );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 
@@ -249,9 +249,9 @@ static char *players_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      insert_a_player( &expected );
 
-     assertEquals( "players_t_delete()", SQLITE_OK, players_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
 
-     assertNull( "get_a_player()", get_a_player( expected.player_id ) );
+     assertNull( get_a_player( expected.player_id ) );
 
      sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
 

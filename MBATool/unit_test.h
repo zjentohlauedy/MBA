@@ -11,52 +11,52 @@ static int  __unit_tests_failed__ = 0;
 
 #define assert(message, test) do { if (!(test)) return message; } while (0)
 
-#define assertEqualsDbl( desc, expected, actual ) \
+#define assertEqualsDbl( expected, actual ) \
 do \
 { \
      if ( (expected) != (actual) ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %f, actual: %f\033[0m", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %f, actual: %f\033[0m", #actual, (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
 
-#define assertEqualsInt( desc, expected, actual ) \
+#define assertEqualsInt( expected, actual ) \
 do \
 { \
      if ( (expected) != (actual) ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %d, actual: %d\033[0m", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %d, actual: %d\033[0m", #actual, (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
 
-#define assertEqualsStr( desc, expected, actual ) \
+#define assertEqualsStr( expected, actual ) \
 do \
 { \
      if ( strcmp( (expected), (actual) ) != 0 ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %s, actual: %s\033[0m", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %s, actual: %s\033[0m", #actual, (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
 
-#define assertNotNull( desc, actual ) \
+#define assertNotNull( actual ) \
 do \
 { \
      if ( (actual) == NULL ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; not NULL expected but NULL found\033[0m", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to not be NULL but was NULL\033[0m", #actual, (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
 
-#define assertNull( desc, actual ) \
+#define assertNull( actual ) \
 do \
 { \
      if ( (actual) != NULL ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; NULL expected but not found\033[0m", (desc), (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to be NULL but was not\033[0m", #actual, (expected), (actual) ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )

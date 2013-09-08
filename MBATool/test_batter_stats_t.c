@@ -102,25 +102,25 @@ static char *batter_stats_t_create__ShouldInsertRecordsInTheBatterStatsTTable()
      expected.steals         = 45;
      expected.errors         = 5;
 
-     assertEquals( "batter_stats_t_create()", SQLITE_OK, batter_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, batter_stats_t_create( db, &expected ) );
 
      batter_stats_s *actual = get_a_batter_stats( expected.player_id );
 
-     assertEquals( "player_id",      expected.player_id,      actual->player_id      );
-     assertEquals( "season",         expected.season,         actual->season         );
-     assertEquals( "season_phase",   expected.season_phase,   actual->season_phase   );
-     assertEquals( "games",          expected.games,          actual->games          );
-     assertEquals( "at_bats",        expected.at_bats,        actual->at_bats        );
-     assertEquals( "runs",           expected.runs,           actual->runs           );
-     assertEquals( "hits",           expected.hits,           actual->hits           );
-     assertEquals( "doubles",        expected.doubles,        actual->doubles        );
-     assertEquals( "triples",        expected.triples,        actual->triples        );
-     assertEquals( "home_runs",      expected.home_runs,      actual->home_runs      );
-     assertEquals( "runs_batted_in", expected.runs_batted_in, actual->runs_batted_in );
-     assertEquals( "walks",          expected.walks,          actual->walks          );
-     assertEquals( "strike_outs",    expected.strike_outs,    actual->strike_outs    );
-     assertEquals( "steals",         expected.steals,         actual->steals         );
-     assertEquals( "errors",         expected.errors,         actual->errors         );
+     assertEquals( expected.player_id,      actual->player_id      );
+     assertEquals( expected.season,         actual->season         );
+     assertEquals( expected.season_phase,   actual->season_phase   );
+     assertEquals( expected.games,          actual->games          );
+     assertEquals( expected.at_bats,        actual->at_bats        );
+     assertEquals( expected.runs,           actual->runs           );
+     assertEquals( expected.hits,           actual->hits           );
+     assertEquals( expected.doubles,        actual->doubles        );
+     assertEquals( expected.triples,        actual->triples        );
+     assertEquals( expected.home_runs,      actual->home_runs      );
+     assertEquals( expected.runs_batted_in, actual->runs_batted_in );
+     assertEquals( expected.walks,          actual->walks          );
+     assertEquals( expected.strike_outs,    actual->strike_outs    );
+     assertEquals( expected.steals,         actual->steals         );
+     assertEquals( expected.errors,         actual->errors         );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 
@@ -147,7 +147,7 @@ static char *batter_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeason
      expected.steals         = 45;
      expected.errors         = 5;
 
-     assertEquals( "batter_stats_t_create()", SQLITE_OK, batter_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, batter_stats_t_create( db, &expected ) );
 
      expected.games          = 143;
      expected.at_bats        = 555;
@@ -162,7 +162,7 @@ static char *batter_stats_t_create__ShouldGiveAnErrorIfRecordForSamePlayerSeason
      expected.steals         = 37;
      expected.errors         = 8;
 
-     assertEquals( "batter_stats_t_create()", SQLITE_CONSTRAINT, batter_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, batter_stats_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 
@@ -197,23 +197,23 @@ static char *batter_stats_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerIdS
      actual.season       = expected.season;
      actual.season_phase = expected.season_phase;
 
-     assertEquals( "batter_stats_t_read()", SQLITE_OK, batter_stats_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, batter_stats_t_read( db, &actual ) );
 
-     assertEquals( "player_id",      expected.player_id,      actual.player_id      );
-     assertEquals( "season",         expected.season,         actual.season         );
-     assertEquals( "season_phase",   expected.season_phase,   actual.season_phase   );
-     assertEquals( "games",          expected.games,          actual.games          );
-     assertEquals( "at_bats",        expected.at_bats,        actual.at_bats        );
-     assertEquals( "runs",           expected.runs,           actual.runs           );
-     assertEquals( "hits",           expected.hits,           actual.hits           );
-     assertEquals( "doubles",        expected.doubles,        actual.doubles        );
-     assertEquals( "triples",        expected.triples,        actual.triples        );
-     assertEquals( "home_runs",      expected.home_runs,      actual.home_runs      );
-     assertEquals( "runs_batted_in", expected.runs_batted_in, actual.runs_batted_in );
-     assertEquals( "walks",          expected.walks,          actual.walks          );
-     assertEquals( "strike_outs",    expected.strike_outs,    actual.strike_outs    );
-     assertEquals( "steals",         expected.steals,         actual.steals         );
-     assertEquals( "errors",         expected.errors,         actual.errors         );
+     assertEquals( expected.player_id,      actual.player_id      );
+     assertEquals( expected.season,         actual.season         );
+     assertEquals( expected.season_phase,   actual.season_phase   );
+     assertEquals( expected.games,          actual.games          );
+     assertEquals( expected.at_bats,        actual.at_bats        );
+     assertEquals( expected.runs,           actual.runs           );
+     assertEquals( expected.hits,           actual.hits           );
+     assertEquals( expected.doubles,        actual.doubles        );
+     assertEquals( expected.triples,        actual.triples        );
+     assertEquals( expected.home_runs,      actual.home_runs      );
+     assertEquals( expected.runs_batted_in, actual.runs_batted_in );
+     assertEquals( expected.walks,          actual.walks          );
+     assertEquals( expected.strike_outs,    actual.strike_outs    );
+     assertEquals( expected.steals,         actual.steals         );
+     assertEquals( expected.errors,         actual.errors         );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 
@@ -255,25 +255,25 @@ static char *batter_stats_t_update__ShouldModifyMatchingRecord_GivenThePlayerIdS
      expected.steals         = 37;
      expected.errors         = 8;
 
-     assertEquals( "batter_stats_t_update()", SQLITE_OK, batter_stats_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, batter_stats_t_update( db, &expected ) );
 
      batter_stats_s *actual = get_a_batter_stats( expected.player_id );
 
-     assertEquals( "player_id",      expected.player_id,      actual->player_id      );
-     assertEquals( "season",         expected.season,         actual->season         );
-     assertEquals( "season_phase",   expected.season_phase,   actual->season_phase   );
-     assertEquals( "games",          expected.games,          actual->games          );
-     assertEquals( "at_bats",        expected.at_bats,        actual->at_bats        );
-     assertEquals( "runs",           expected.runs,           actual->runs           );
-     assertEquals( "hits",           expected.hits,           actual->hits           );
-     assertEquals( "doubles",        expected.doubles,        actual->doubles        );
-     assertEquals( "triples",        expected.triples,        actual->triples        );
-     assertEquals( "home_runs",      expected.home_runs,      actual->home_runs      );
-     assertEquals( "runs_batted_in", expected.runs_batted_in, actual->runs_batted_in );
-     assertEquals( "walks",          expected.walks,          actual->walks          );
-     assertEquals( "strike_outs",    expected.strike_outs,    actual->strike_outs    );
-     assertEquals( "steals",         expected.steals,         actual->steals         );
-     assertEquals( "errors",         expected.errors,         actual->errors         );
+     assertEquals( expected.player_id,      actual->player_id      );
+     assertEquals( expected.season,         actual->season         );
+     assertEquals( expected.season_phase,   actual->season_phase   );
+     assertEquals( expected.games,          actual->games          );
+     assertEquals( expected.at_bats,        actual->at_bats        );
+     assertEquals( expected.runs,           actual->runs           );
+     assertEquals( expected.hits,           actual->hits           );
+     assertEquals( expected.doubles,        actual->doubles        );
+     assertEquals( expected.triples,        actual->triples        );
+     assertEquals( expected.home_runs,      actual->home_runs      );
+     assertEquals( expected.runs_batted_in, actual->runs_batted_in );
+     assertEquals( expected.walks,          actual->walks          );
+     assertEquals( expected.strike_outs,    actual->strike_outs    );
+     assertEquals( expected.steals,         actual->steals         );
+     assertEquals( expected.errors,         actual->errors         );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 
@@ -302,9 +302,9 @@ static char *batter_stats_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerIdS
 
      insert_a_batter_stats( &expected );
 
-     assertEquals( "batter_stats_t_delete()", SQLITE_OK, batter_stats_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, batter_stats_t_delete( db, &expected ) );
 
-     assertNull( "get_a_batter_stats()", get_a_batter_stats( expected.player_id ) );
+     assertNull( get_a_batter_stats( expected.player_id ) );
 
      sqlite3_exec( db, "delete from batter_stats_t", NULL, NULL, NULL );
 

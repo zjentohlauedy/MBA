@@ -59,12 +59,12 @@ static char *division_teams_t_create__ShouldInsertRecordsInTheDivisionTeamsTTabl
      expected.division_id = 8;
      expected.team_id     = 123;
 
-     assertEquals( "division_teams_t_create()", SQLITE_OK, division_teams_t_create( db, &expected) );
+     assertEquals( SQLITE_OK, division_teams_t_create( db, &expected) );
 
      division_team_s *actual = get_a_division_team( expected.division_id );
 
-     assertEquals( "division_id", expected.division_id, actual->division_id );
-     assertEquals( "team_id",     expected.team_id,     actual->team_id     );
+     assertEquals( expected.division_id, actual->division_id );
+     assertEquals( expected.team_id,     actual->team_id     );
 
      sqlite3_exec( db, "delete from division_teams_t", NULL, NULL, NULL );
 
@@ -78,8 +78,8 @@ static char *division_teams_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInsert
      expected.division_id = 8;
      expected.team_id     = 123;
 
-     assertEquals( "division_teams_t_create()", SQLITE_OK,         division_teams_t_create( db, &expected) );
-     assertEquals( "division_teams_t_create()", SQLITE_CONSTRAINT, division_teams_t_create( db, &expected) );
+     assertEquals( SQLITE_OK,         division_teams_t_create( db, &expected) );
+     assertEquals( SQLITE_CONSTRAINT, division_teams_t_create( db, &expected) );
 
      sqlite3_exec( db, "delete from division_teams_t", NULL, NULL, NULL );
 
@@ -97,14 +97,14 @@ static char *division_teams_t_read_by_division__ShouldRetrieveMatchingRecord_Giv
 
      data_list_s list = { 0 };
 
-     assertEquals( "division_teams_t_read_by_division()", SQLITE_OK, division_teams_t_read_by_division( db, expected.division_id, &list) );
+     assertEquals( SQLITE_OK, division_teams_t_read_by_division( db, expected.division_id, &list) );
 
-     assertEquals( "count", 1, list.count );
+     assertEquals( 1, list.count );
 
      division_team_s *actual = list.data;
 
-     assertEquals( "division_id", expected.division_id, actual[0].division_id );
-     assertEquals( "team_id",     expected.team_id,     actual[0].team_id     );
+     assertEquals( expected.division_id, actual[0].division_id );
+     assertEquals( expected.team_id,     actual[0].team_id     );
 
      free( actual );
 
@@ -129,17 +129,17 @@ static char *division_teams_t_read_by_division__ShouldRetrieveAllMatchingRecords
 
      data_list_s list = { 0 };
 
-     assertEquals( "division_teams_t_read_by_division()", SQLITE_OK, division_teams_t_read_by_division( db, expected1.division_id, &list) );
+     assertEquals( SQLITE_OK, division_teams_t_read_by_division( db, expected1.division_id, &list) );
 
-     assertEquals( "count", 2, list.count );
+     assertEquals( 2, list.count );
 
      division_team_s *actual = list.data;
 
-     assertEquals( "division_id", expected1.division_id, actual[0].division_id );
-     assertEquals( "team_id",     expected1.team_id,     actual[0].team_id     );
+     assertEquals( expected1.division_id, actual[0].division_id );
+     assertEquals( expected1.team_id,     actual[0].team_id     );
 
-     assertEquals( "division_id", expected2.division_id, actual[1].division_id );
-     assertEquals( "team_id",     expected2.team_id,     actual[1].team_id     );
+     assertEquals( expected2.division_id, actual[1].division_id );
+     assertEquals( expected2.team_id,     actual[1].team_id     );
 
      free( actual );
 
@@ -157,9 +157,9 @@ static char *division_teams_t_delete__ShouldDeleteMatchingRecord_GivenADivisionT
 
      insert_a_division_team( &expected );
 
-     assertEquals( "division_teams_t_delete()", SQLITE_OK, division_teams_t_delete( db, &expected) );
+     assertEquals( SQLITE_OK, division_teams_t_delete( db, &expected) );
 
-     assertNull( "get_a_division_team()", get_a_division_team( expected.division_id ) );
+     assertNull( get_a_division_team( expected.division_id ) );
 
      sqlite3_exec( db, "delete from division_teams_t", NULL, NULL, NULL );
 
@@ -180,12 +180,12 @@ static char *division_teams_t_delete__ShouldOnlyDeleteMatchingRecord_GivenADivis
      insert_a_division_team( &expected1 );
      insert_a_division_team( &expected2 );
 
-     assertEquals( "division_teams_t_delete()", SQLITE_OK, division_teams_t_delete( db, &expected2) );
+     assertEquals( SQLITE_OK, division_teams_t_delete( db, &expected2) );
 
      division_team_s *actual = get_a_division_team( expected1.division_id );
 
-     assertEquals( "division_id", expected1.division_id, actual->division_id );
-     assertEquals( "team_id",     expected1.team_id,     actual->team_id     );
+     assertEquals( expected1.division_id, actual->division_id );
+     assertEquals( expected1.team_id,     actual->team_id     );
 
      sqlite3_exec( db, "delete from division_teams_t", NULL, NULL, NULL );
 

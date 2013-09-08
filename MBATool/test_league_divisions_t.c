@@ -59,12 +59,12 @@ static char *league_divisions_t_create__ShouldInsertRecordsInTheLeagueDivisionsT
      expected.league_id   = 5;
      expected.division_id = 8;
 
-     assertEquals( "league_divisions_t_create()", SQLITE_OK, league_divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, league_divisions_t_create( db, &expected ) );
 
      league_division_s *actual = get_a_league_division( expected.league_id );
 
-     assertEquals( "league_id",   expected.league_id,   actual->league_id   );
-     assertEquals( "division_id", expected.division_id, actual->division_id );
+     assertEquals( expected.league_id,   actual->league_id   );
+     assertEquals( expected.division_id, actual->division_id );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 
@@ -78,8 +78,8 @@ static char *league_divisions_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInse
      expected.league_id   = 5;
      expected.division_id = 8;
 
-     assertEquals( "league_divisions_t_create()", SQLITE_OK,         league_divisions_t_create( db, &expected ) );
-     assertEquals( "league_divisions_t_create()", SQLITE_CONSTRAINT, league_divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK,         league_divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, league_divisions_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 
@@ -97,14 +97,14 @@ static char *league_divisions_t_read_by_division__ShouldRetrieveMatchingRecord_G
 
      data_list_s list = { 0 };
 
-     assertEquals( "league_divisions_t_read_by_league()", SQLITE_OK, league_divisions_t_read_by_league( db, expected.league_id, &list ) );
+     assertEquals( SQLITE_OK, league_divisions_t_read_by_league( db, expected.league_id, &list ) );
 
-     assertEquals( "count", 1, list.count );
+     assertEquals( 1, list.count );
 
      league_division_s *actual = list.data;
 
-     assertEquals( "league_id",   expected.league_id,   actual->league_id   );
-     assertEquals( "division_id", expected.division_id, actual->division_id );
+     assertEquals( expected.league_id,   actual->league_id   );
+     assertEquals( expected.division_id, actual->division_id );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 
@@ -127,17 +127,17 @@ static char *league_divisions_t_read_by_division__ShouldRetrieveAllMatchingRecor
 
      data_list_s list = { 0 };
 
-     assertEquals( "league_divisions_t_read_by_league()", SQLITE_OK, league_divisions_t_read_by_league( db, expected1.league_id, &list ) );
+     assertEquals( SQLITE_OK, league_divisions_t_read_by_league( db, expected1.league_id, &list ) );
 
-     assertEquals( "count", 2, list.count );
+     assertEquals( 2, list.count );
 
      league_division_s *actual = list.data;
 
-     assertEquals( "league_id",   expected1.league_id,   actual[0].league_id   );
-     assertEquals( "division_id", expected1.division_id, actual[0].division_id );
+     assertEquals( expected1.league_id,   actual[0].league_id   );
+     assertEquals( expected1.division_id, actual[0].division_id );
 
-     assertEquals( "league_id",   expected2.league_id,   actual[1].league_id   );
-     assertEquals( "division_id", expected2.division_id, actual[1].division_id );
+     assertEquals( expected2.league_id,   actual[1].league_id   );
+     assertEquals( expected2.division_id, actual[1].division_id );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 
@@ -153,11 +153,11 @@ static char *league_divisions_t_delete__ShouldDeleteMatchingRecord_GivenALeagueD
 
      insert_a_league_division( &expected );
 
-     assertEquals( "league_divisions_t_delete()", SQLITE_OK, league_divisions_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, league_divisions_t_delete( db, &expected ) );
 
      league_division_s *actual = get_a_league_division( expected.league_id );
 
-     assertNull( "get_a_league_division()", get_a_league_division( expected.league_id ) );
+     assertNull( get_a_league_division( expected.league_id ) );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 
@@ -178,12 +178,12 @@ static char *league_divisions_t_delete__ShouldOnlyDeleteMatchingRecord_GivenALea
      insert_a_league_division( &expected1 );
      insert_a_league_division( &expected2 );
 
-     assertEquals( "league_divisions_t_delete()", SQLITE_OK, league_divisions_t_delete( db, &expected2 ) );
+     assertEquals( SQLITE_OK, league_divisions_t_delete( db, &expected2 ) );
 
      league_division_s *actual = get_a_league_division( expected1.league_id );
 
-     assertEquals( "league_id",   expected1.league_id,   actual->league_id   );
-     assertEquals( "division_id", expected1.division_id, actual->division_id );
+     assertEquals( expected1.league_id,   actual->league_id   );
+     assertEquals( expected1.division_id, actual->division_id );
 
      sqlite3_exec( db, "delete from league_divisions_t", NULL, NULL, NULL );
 

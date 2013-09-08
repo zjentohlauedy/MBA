@@ -85,19 +85,19 @@ static char *batters_t_create__ShouldInsertRecordsInTheBattersTTable()
      expected.primary_position   = pos_SecondBase;
      expected.secondary_position = pos_ThirdBase;
 
-     assertEquals( "batters_t_create()", SQLITE_OK, batters_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_create( db, &expected ) );
 
      batter_s *actual = get_a_batter( expected.player_id );
 
-     assertEquals( "player_id",          expected.player_id,          actual->player_id          );
-     assertEquals( "power",              expected.power,              actual->power              );
-     assertEquals( "hit_n_run",          expected.hit_n_run,          actual->hit_n_run          );
-     assertEquals( "bunt",               expected.bunt,               actual->bunt               );
-     assertEquals( "running",            expected.running,            actual->running            );
-     assertEquals( "range",              expected.range,              actual->range              );
-     assertEquals( "arm",                expected.arm,                actual->arm                );
-     assertEquals( "primary_position",   expected.primary_position,   actual->primary_position   );
-     assertEquals( "secondary_position", expected.secondary_position, actual->secondary_position );
+     assertEquals( expected.player_id,          actual->player_id          );
+     assertEquals( expected.power,              actual->power              );
+     assertEquals( expected.hit_n_run,          actual->hit_n_run          );
+     assertEquals( expected.bunt,               actual->bunt               );
+     assertEquals( expected.running,            actual->running            );
+     assertEquals( expected.range,              actual->range              );
+     assertEquals( expected.arm,                actual->arm                );
+     assertEquals( expected.primary_position,   actual->primary_position   );
+     assertEquals( expected.secondary_position, actual->secondary_position );
 
      sqlite3_exec( db, "delete from batters_t", NULL, NULL, NULL );
 
@@ -118,7 +118,7 @@ static char *batters_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      expected.primary_position   = pos_SecondBase;
      expected.secondary_position = pos_ThirdBase;
 
-     assertEquals( "batters_t_create()", SQLITE_OK, batters_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_create( db, &expected ) );
 
      expected.power              = 4;
      expected.hit_n_run          = 6;
@@ -129,7 +129,7 @@ static char *batters_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      expected.primary_position   = pos_Catcher;
      expected.secondary_position = pos_RightField;
 
-     assertEquals( "batters_t_create()", SQLITE_CONSTRAINT, batters_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, batters_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from batters_t", NULL, NULL, NULL );
 
@@ -156,17 +156,17 @@ static char *batters_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      actual.player_id = expected.player_id;
 
-     assertEquals( "batters_t_read()", SQLITE_OK, batters_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, batters_t_read( db, &actual ) );
 
-     assertEquals( "player_id",          expected.player_id,          actual.player_id          );
-     assertEquals( "power",              expected.power,              actual.power              );
-     assertEquals( "hit_n_run",          expected.hit_n_run,          actual.hit_n_run          );
-     assertEquals( "bunt",               expected.bunt,               actual.bunt               );
-     assertEquals( "running",            expected.running,            actual.running            );
-     assertEquals( "range",              expected.range,              actual.range              );
-     assertEquals( "arm",                expected.arm,                actual.arm                );
-     assertEquals( "primary_position",   expected.primary_position,   actual.primary_position   );
-     assertEquals( "secondary_position", expected.secondary_position, actual.secondary_position );
+     assertEquals( expected.player_id,          actual.player_id          );
+     assertEquals( expected.power,              actual.power              );
+     assertEquals( expected.hit_n_run,          actual.hit_n_run          );
+     assertEquals( expected.bunt,               actual.bunt               );
+     assertEquals( expected.running,            actual.running            );
+     assertEquals( expected.range,              actual.range              );
+     assertEquals( expected.arm,                actual.arm                );
+     assertEquals( expected.primary_position,   actual.primary_position   );
+     assertEquals( expected.secondary_position, actual.secondary_position );
 
      sqlite3_exec( db, "delete from batters_t", NULL, NULL, NULL );
 
@@ -198,19 +198,19 @@ static char *batters_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
      expected.primary_position   = pos_Catcher;
      expected.secondary_position = pos_RightField;
 
-     assertEquals( "batters_t_update()", SQLITE_OK, batters_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_update( db, &expected ) );
 
      batter_s *actual = get_a_batter( expected.player_id );
 
-     assertEquals( "player_id",          expected.player_id,          actual->player_id          );
-     assertEquals( "power",              expected.power,              actual->power              );
-     assertEquals( "hit_n_run",          expected.hit_n_run,          actual->hit_n_run          );
-     assertEquals( "bunt",               expected.bunt,               actual->bunt               );
-     assertEquals( "running",            expected.running,            actual->running            );
-     assertEquals( "range",              expected.range,              actual->range              );
-     assertEquals( "arm",                expected.arm,                actual->arm                );
-     assertEquals( "primary_position",   expected.primary_position,   actual->primary_position   );
-     assertEquals( "secondary_position", expected.secondary_position, actual->secondary_position );
+     assertEquals( expected.player_id,          actual->player_id          );
+     assertEquals( expected.power,              actual->power              );
+     assertEquals( expected.hit_n_run,          actual->hit_n_run          );
+     assertEquals( expected.bunt,               actual->bunt               );
+     assertEquals( expected.running,            actual->running            );
+     assertEquals( expected.range,              actual->range              );
+     assertEquals( expected.arm,                actual->arm                );
+     assertEquals( expected.primary_position,   actual->primary_position   );
+     assertEquals( expected.secondary_position, actual->secondary_position );
 
      sqlite3_exec( db, "delete from batters_t", NULL, NULL, NULL );
 
@@ -233,9 +233,9 @@ static char *batters_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      insert_a_batter( &expected );
 
-     assertEquals( "batters_t_delete()", SQLITE_OK, batters_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_delete( db, &expected ) );
 
-     assertNull( "get_a_batter()", get_a_batter( expected.player_id ) );
+     assertNull( get_a_batter( expected.player_id ) );
 
      sqlite3_exec( db, "delete from batters_t", NULL, NULL, NULL );
 

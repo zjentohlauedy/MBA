@@ -101,25 +101,25 @@ static char *team_stats_t_create__ShouldInsertRecordsInTheTeamStatsTTable()
      expected.runs_scored     = 234;
      expected.runs_allowed    = 222;
 
-     assertEquals( "team_stats_t_create()", SQLITE_OK, team_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, team_stats_t_create( db, &expected ) );
 
      team_stats_s *actual = get_a_team_stats( expected.team_id );
 
-     assertEquals( "team_id",         expected.team_id,         actual->team_id         );
-     assertEquals( "season",          expected.season,          actual->season          );
-     assertEquals( "season_phase",    expected.season_phase,    actual->season_phase    );
-     assertEquals( "wins",            expected.wins,            actual->wins            );
-     assertEquals( "losses",          expected.losses,          actual->losses          );
-     assertEquals( "home_wins",       expected.home_wins,       actual->home_wins       );
-     assertEquals( "home_losses",     expected.home_losses,     actual->home_losses     );
-     assertEquals( "road_wins",       expected.road_wins,       actual->road_wins       );
-     assertEquals( "road_losses",     expected.road_losses,     actual->road_losses     );
-     assertEquals( "division_wins",   expected.division_wins,   actual->division_wins   );
-     assertEquals( "division_losses", expected.division_losses, actual->division_losses );
-     assertEquals( "league_wins",     expected.league_wins,     actual->league_wins     );
-     assertEquals( "league_losses",   expected.league_losses,   actual->league_losses   );
-     assertEquals( "runs_scored",     expected.runs_scored,     actual->runs_scored     );
-     assertEquals( "runs_allowed",    expected.runs_allowed,    actual->runs_allowed    );
+     assertEquals( expected.team_id,         actual->team_id         );
+     assertEquals( expected.season,          actual->season          );
+     assertEquals( expected.season_phase,    actual->season_phase    );
+     assertEquals( expected.wins,            actual->wins            );
+     assertEquals( expected.losses,          actual->losses          );
+     assertEquals( expected.home_wins,       actual->home_wins       );
+     assertEquals( expected.home_losses,     actual->home_losses     );
+     assertEquals( expected.road_wins,       actual->road_wins       );
+     assertEquals( expected.road_losses,     actual->road_losses     );
+     assertEquals( expected.division_wins,   actual->division_wins   );
+     assertEquals( expected.division_losses, actual->division_losses );
+     assertEquals( expected.league_wins,     actual->league_wins     );
+     assertEquals( expected.league_losses,   actual->league_losses   );
+     assertEquals( expected.runs_scored,     actual->runs_scored     );
+     assertEquals( expected.runs_allowed,    actual->runs_allowed    );
 
      sqlite3_exec( db, "delete from team_stats_t", NULL, NULL, NULL );
 
@@ -146,7 +146,7 @@ static char *team_stats_t_create__ShouldGiveAnErrorIfRecordForSameTeamSeasonAndP
      expected.runs_scored     = 234;
      expected.runs_allowed    = 222;
 
-     assertEquals( "team_stats_t_create()", SQLITE_OK, team_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, team_stats_t_create( db, &expected ) );
 
      expected.wins            = 92;
      expected.losses          = 60;
@@ -161,7 +161,7 @@ static char *team_stats_t_create__ShouldGiveAnErrorIfRecordForSameTeamSeasonAndP
      expected.runs_scored     = 199;
      expected.runs_allowed    = 141;
 
-     assertEquals( "team_stats_t_create()", SQLITE_CONSTRAINT, team_stats_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, team_stats_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from team_stats_t", NULL, NULL, NULL );
 
@@ -196,23 +196,23 @@ static char *team_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamIdSeaso
      actual.season       = expected.season;
      actual.season_phase = expected.season_phase;
 
-     assertEquals( "team_stats_t_read()", SQLITE_OK, team_stats_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, team_stats_t_read( db, &actual ) );
 
-     assertEquals( "team_id",         expected.team_id,         actual.team_id         );
-     assertEquals( "season",          expected.season,          actual.season          );
-     assertEquals( "season_phase",    expected.season_phase,    actual.season_phase    );
-     assertEquals( "wins",            expected.wins,            actual.wins            );
-     assertEquals( "losses",          expected.losses,          actual.losses          );
-     assertEquals( "home_wins",       expected.home_wins,       actual.home_wins       );
-     assertEquals( "home_losses",     expected.home_losses,     actual.home_losses     );
-     assertEquals( "road_wins",       expected.road_wins,       actual.road_wins       );
-     assertEquals( "road_losses",     expected.road_losses,     actual.road_losses     );
-     assertEquals( "division_wins",   expected.division_wins,   actual.division_wins   );
-     assertEquals( "division_losses", expected.division_losses, actual.division_losses );
-     assertEquals( "league_wins",     expected.league_wins,     actual.league_wins     );
-     assertEquals( "league_losses",   expected.league_losses,   actual.league_losses   );
-     assertEquals( "runs_scored",     expected.runs_scored,     actual.runs_scored     );
-     assertEquals( "runs_allowed",    expected.runs_allowed,    actual.runs_allowed    );
+     assertEquals( expected.team_id,         actual.team_id         );
+     assertEquals( expected.season,          actual.season          );
+     assertEquals( expected.season_phase,    actual.season_phase    );
+     assertEquals( expected.wins,            actual.wins            );
+     assertEquals( expected.losses,          actual.losses          );
+     assertEquals( expected.home_wins,       actual.home_wins       );
+     assertEquals( expected.home_losses,     actual.home_losses     );
+     assertEquals( expected.road_wins,       actual.road_wins       );
+     assertEquals( expected.road_losses,     actual.road_losses     );
+     assertEquals( expected.division_wins,   actual.division_wins   );
+     assertEquals( expected.division_losses, actual.division_losses );
+     assertEquals( expected.league_wins,     actual.league_wins     );
+     assertEquals( expected.league_losses,   actual.league_losses   );
+     assertEquals( expected.runs_scored,     actual.runs_scored     );
+     assertEquals( expected.runs_allowed,    actual.runs_allowed    );
 
      sqlite3_exec( db, "delete from team_stats_t", NULL, NULL, NULL );
 
@@ -254,25 +254,25 @@ static char *team_stats_t_update__ShouldModifyMatchingRecord_GivenTheTeamIdSeaso
      expected.runs_scored     = 199;
      expected.runs_allowed    = 141;
 
-     assertEquals( "team_stats_t_update()", SQLITE_OK, team_stats_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, team_stats_t_update( db, &expected ) );
 
      team_stats_s *actual = get_a_team_stats( expected.team_id );
 
-     assertEquals( "team_id",         expected.team_id,         actual->team_id         );
-     assertEquals( "season",          expected.season,          actual->season          );
-     assertEquals( "season_phase",    expected.season_phase,    actual->season_phase    );
-     assertEquals( "wins",            expected.wins,            actual->wins            );
-     assertEquals( "losses",          expected.losses,          actual->losses          );
-     assertEquals( "home_wins",       expected.home_wins,       actual->home_wins       );
-     assertEquals( "home_losses",     expected.home_losses,     actual->home_losses     );
-     assertEquals( "road_wins",       expected.road_wins,       actual->road_wins       );
-     assertEquals( "road_losses",     expected.road_losses,     actual->road_losses     );
-     assertEquals( "division_wins",   expected.division_wins,   actual->division_wins   );
-     assertEquals( "division_losses", expected.division_losses, actual->division_losses );
-     assertEquals( "league_wins",     expected.league_wins,     actual->league_wins     );
-     assertEquals( "league_losses",   expected.league_losses,   actual->league_losses   );
-     assertEquals( "runs_scored",     expected.runs_scored,     actual->runs_scored     );
-     assertEquals( "runs_allowed",    expected.runs_allowed,    actual->runs_allowed    );
+     assertEquals( expected.team_id,         actual->team_id         );
+     assertEquals( expected.season,          actual->season          );
+     assertEquals( expected.season_phase,    actual->season_phase    );
+     assertEquals( expected.wins,            actual->wins            );
+     assertEquals( expected.losses,          actual->losses          );
+     assertEquals( expected.home_wins,       actual->home_wins       );
+     assertEquals( expected.home_losses,     actual->home_losses     );
+     assertEquals( expected.road_wins,       actual->road_wins       );
+     assertEquals( expected.road_losses,     actual->road_losses     );
+     assertEquals( expected.division_wins,   actual->division_wins   );
+     assertEquals( expected.division_losses, actual->division_losses );
+     assertEquals( expected.league_wins,     actual->league_wins     );
+     assertEquals( expected.league_losses,   actual->league_losses   );
+     assertEquals( expected.runs_scored,     actual->runs_scored     );
+     assertEquals( expected.runs_allowed,    actual->runs_allowed    );
 
      sqlite3_exec( db, "delete from team_stats_t", NULL, NULL, NULL );
 
@@ -301,9 +301,9 @@ static char *team_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamIdSeaso
 
      insert_a_team_stats( &expected );
 
-     assertEquals( "team_stats_t_delete()", SQLITE_OK, team_stats_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, team_stats_t_delete( db, &expected ) );
 
-     assertNull( "get_a_team_stats()", get_a_team_stats( expected.team_id ) );
+     assertNull( get_a_team_stats( expected.team_id ) );
 
      sqlite3_exec( db, "delete from team_stats_t", NULL, NULL, NULL );
 

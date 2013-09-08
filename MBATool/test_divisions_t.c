@@ -62,12 +62,12 @@ static char *divisions_t_create__ShouldInsertRecordsInTheDivisionsTTable()
      /**/    expected.division_id = 5;
      strcpy( expected.name,        "DivisionName1" );
 
-     assertEquals( "divisions_t_create()", SQLITE_OK, divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, divisions_t_create( db, &expected ) );
 
      division_s *actual = get_a_division( expected.division_id );
 
-     assertEqualsInt( "division_id", expected.division_id, actual->division_id );
-     assertEqualsStr( "name",        expected.name,        actual->name        );
+     assertEqualsInt( expected.division_id, actual->division_id );
+     assertEqualsStr( expected.name,        actual->name        );
 
      sqlite3_exec( db, "delete from divisions_t", NULL, NULL, NULL );
 
@@ -81,11 +81,11 @@ static char *divisions_t_create__ShouldGiveAnErrorIfDivisionIdAlreadyExists()
      /**/    expected.division_id = 5;
      strcpy( expected.name,        "DivisionName1" );
 
-     assertEquals( "divisions_t_create()", SQLITE_OK, divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, divisions_t_create( db, &expected ) );
 
      strcpy( expected.name, "DivisionName2" );
 
-     assertEquals( "divisions_t_create()", SQLITE_CONSTRAINT, divisions_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, divisions_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from divisions_t", NULL, NULL, NULL );
 
@@ -105,10 +105,10 @@ static char *divisions_t_read__ShouldRetrieveMatchingRecord_GivenTheDivisionId()
 
      actual.division_id = expected.division_id;
 
-     assertEquals( "divisions_t_read()", SQLITE_OK, divisions_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, divisions_t_read( db, &actual ) );
 
-     assertEqualsInt( "division_id", expected.division_id, actual.division_id );
-     assertEqualsStr( "name",        expected.name,        actual.name        );
+     assertEqualsInt( expected.division_id, actual.division_id );
+     assertEqualsStr( expected.name,        actual.name        );
 
      sqlite3_exec( db, "delete from divisions_t", NULL, NULL, NULL );
 
@@ -126,12 +126,12 @@ static char *divisions_t_update__ShouldModifyMatchingRecord_GivenTheDivisionId()
 
      strcpy( expected.name, "DivisionName2" );
 
-     assertEquals( "divisions_t_update()", SQLITE_OK, divisions_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, divisions_t_update( db, &expected ) );
 
      division_s *actual = get_a_division( expected.division_id );
 
-     assertEqualsInt( "division_id", expected.division_id, actual->division_id );
-     assertEqualsStr( "name",        expected.name,        actual->name        );
+     assertEqualsInt( expected.division_id, actual->division_id );
+     assertEqualsStr( expected.name,        actual->name        );
 
      sqlite3_exec( db, "delete from divisions_t", NULL, NULL, NULL );
 
@@ -147,9 +147,9 @@ static char *divisions_t_delete__ShouldDeleteMatchingRecord_GivenTheDivisionId()
 
      insert_a_division( &expected );
 
-     assertEquals( "divisions_t_delete()", SQLITE_OK, divisions_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, divisions_t_delete( db, &expected ) );
 
-     assertNull( "get_a_division()", get_a_division( expected.division_id ) );
+     assertNull( get_a_division( expected.division_id ) );
 
      sqlite3_exec( db, "delete from divisions_t", NULL, NULL, NULL );
 

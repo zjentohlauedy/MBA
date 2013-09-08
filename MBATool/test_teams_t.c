@@ -71,15 +71,15 @@ static char *teams_t_create__ShouldInsertRecordsInTheTeamsTTable()
      /**/    expected.primary_color   = cl_Blue;
      /**/    expected.secondary_color = cl_Gold;
 
-     assertEquals( "teams_t_create()", SQLITE_OK, teams_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
 
      team_s *actual = get_a_team( expected.team_id );
 
-     assertEqualsInt( "team_id",         expected.team_id,         actual->team_id         );
-     assertEqualsStr( "name",            expected.name,            actual->name            );
-     assertEqualsStr( "location",        expected.location,        actual->location        );
-     assertEqualsInt( "primary_color",   expected.primary_color,   actual->primary_color   );
-     assertEqualsInt( "secondary_color", expected.secondary_color, actual->secondary_color );
+     assertEqualsInt( expected.team_id,         actual->team_id         );
+     assertEqualsStr( expected.name,            actual->name            );
+     assertEqualsStr( expected.location,        actual->location        );
+     assertEqualsInt( expected.primary_color,   actual->primary_color   );
+     assertEqualsInt( expected.secondary_color, actual->secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -96,14 +96,14 @@ static char *teams_t_create__ShouldGiveAnErrorIfTeamIdAlreadyExists()
      /**/    expected.primary_color   = cl_Blue;
      /**/    expected.secondary_color = cl_Gold;
 
-     assertEquals( "teams_t_create()", SQLITE_OK, teams_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
 
      strcpy( expected.name,            "TeamName2" );
      strcpy( expected.location,        "Location2" );
      /**/    expected.primary_color   = cl_Red;
      /**/    expected.secondary_color = cl_Black;
 
-     assertEquals( "teams_t_create()", SQLITE_CONSTRAINT, teams_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, teams_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -126,13 +126,13 @@ static char *teams_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamId()
 
      actual.team_id = expected.team_id;
 
-     assertEquals( "teams_t_read()", SQLITE_OK, teams_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, teams_t_read( db, &actual ) );
 
-     assertEqualsInt( "team_id",         expected.team_id,         actual.team_id         );
-     assertEqualsStr( "name",            expected.name,            actual.name            );
-     assertEqualsStr( "location",        expected.location,        actual.location        );
-     assertEqualsInt( "primary_color",   expected.primary_color,   actual.primary_color   );
-     assertEqualsInt( "secondary_color", expected.secondary_color, actual.secondary_color );
+     assertEqualsInt( expected.team_id,         actual.team_id         );
+     assertEqualsStr( expected.name,            actual.name            );
+     assertEqualsStr( expected.location,        actual.location        );
+     assertEqualsInt( expected.primary_color,   actual.primary_color   );
+     assertEqualsInt( expected.secondary_color, actual.secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -156,15 +156,15 @@ static char *teams_t_update__ShouldModifyMatchingRecord_GivenTheTeamId()
      /**/    expected.primary_color   = cl_Red;
      /**/    expected.secondary_color = cl_Black;
 
-     assertEquals( "teams_t_update()", SQLITE_OK, teams_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, teams_t_update( db, &expected ) );
 
      team_s *actual = get_a_team( expected.team_id );
 
-     assertEqualsInt( "team_id",         expected.team_id,         actual->team_id         );
-     assertEqualsStr( "name",            expected.name,            actual->name            );
-     assertEqualsStr( "location",        expected.location,        actual->location        );
-     assertEqualsInt( "primary_color",   expected.primary_color,   actual->primary_color   );
-     assertEqualsInt( "secondary_color", expected.secondary_color, actual->secondary_color );
+     assertEqualsInt( expected.team_id,         actual->team_id         );
+     assertEqualsStr( expected.name,            actual->name            );
+     assertEqualsStr( expected.location,        actual->location        );
+     assertEqualsInt( expected.primary_color,   actual->primary_color   );
+     assertEqualsInt( expected.secondary_color, actual->secondary_color );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 
@@ -183,9 +183,9 @@ static char *teams_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamId()
 
      insert_a_team( &expected );
 
-     assertEquals( "teams_t_delete()", SQLITE_OK, teams_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
 
-     assertNull( "get_a_team()", get_a_team( expected.team_id ) );
+     assertNull( get_a_team( expected.team_id ) );
 
      sqlite3_exec( db, "delete from teams_t", NULL, NULL, NULL );
 

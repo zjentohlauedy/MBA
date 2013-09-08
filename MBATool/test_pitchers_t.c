@@ -72,15 +72,15 @@ static char *pitchers_t_create__ShouldInsertRecordsInThePitchersTTable()
      expected.bunt      = 3;
      expected.fatigue   = 8;
 
-     assertEquals( "pitchers_t_create()", SQLITE_OK, pitchers_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_create( db, &expected ) );
 
      pitcher_s *actual = get_a_pitcher( expected.player_id );
 
-     assertEquals( "player_id", expected.player_id, actual->player_id );
-     assertEquals( "speed",     expected.speed,     actual->speed     );
-     assertEquals( "control",   expected.control,   actual->control   );
-     assertEquals( "bunt",      expected.bunt,      actual->bunt      );
-     assertEquals( "fatigue",   expected.fatigue,   actual->fatigue   );
+     assertEquals( expected.player_id, actual->player_id );
+     assertEquals( expected.speed,     actual->speed     );
+     assertEquals( expected.control,   actual->control   );
+     assertEquals( expected.bunt,      actual->bunt      );
+     assertEquals( expected.fatigue,   actual->fatigue   );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -97,7 +97,7 @@ static char *pitchers_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      expected.bunt      = 3;
      expected.fatigue   = 8;
 
-     assertEquals( "pitchers_t_create()", SQLITE_OK, pitchers_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_create( db, &expected ) );
 
      expected.player_id = 123;
      expected.speed     = 9;
@@ -105,7 +105,7 @@ static char *pitchers_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      expected.bunt      = 5;
      expected.fatigue   = 5;
 
-     assertEquals( "pitchers_t_create()", SQLITE_CONSTRAINT, pitchers_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, pitchers_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -128,13 +128,13 @@ static char *pitchers_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId()
 
      actual.player_id = expected.player_id;
 
-     assertEquals( "pitchers_t_read()", SQLITE_OK, pitchers_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, pitchers_t_read( db, &actual ) );
 
-     assertEquals( "player_id", expected.player_id, actual.player_id );
-     assertEquals( "speed",     expected.speed,     actual.speed     );
-     assertEquals( "control",   expected.control,   actual.control   );
-     assertEquals( "bunt",      expected.bunt,      actual.bunt      );
-     assertEquals( "fatigue",   expected.fatigue,   actual.fatigue   );
+     assertEquals( expected.player_id, actual.player_id );
+     assertEquals( expected.speed,     actual.speed     );
+     assertEquals( expected.control,   actual.control   );
+     assertEquals( expected.bunt,      actual.bunt      );
+     assertEquals( expected.fatigue,   actual.fatigue   );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -158,15 +158,15 @@ static char *pitchers_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
      expected.bunt      = 6;
      expected.fatigue   = 9;
 
-     assertEquals( "pitchers_t_update()", SQLITE_OK, pitchers_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_update( db, &expected ) );
 
      pitcher_s *actual = get_a_pitcher( expected.player_id );
 
-     assertEquals( "player_id", expected.player_id, actual->player_id );
-     assertEquals( "speed",     expected.speed,     actual->speed     );
-     assertEquals( "control",   expected.control,   actual->control   );
-     assertEquals( "bunt",      expected.bunt,      actual->bunt      );
-     assertEquals( "fatigue",   expected.fatigue,   actual->fatigue   );
+     assertEquals( expected.player_id, actual->player_id );
+     assertEquals( expected.speed,     actual->speed     );
+     assertEquals( expected.control,   actual->control   );
+     assertEquals( expected.bunt,      actual->bunt      );
+     assertEquals( expected.fatigue,   actual->fatigue   );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 
@@ -185,9 +185,9 @@ static char *pitchers_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId()
 
      insert_a_pitcher( &expected );
 
-     assertEquals( "pitchers_t_delete()", SQLITE_OK, pitchers_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_delete( db, &expected ) );
 
-     assertNull( "get_a_pitcher()", get_a_pitcher( expected.player_id ) );
+     assertNull( get_a_pitcher( expected.player_id ) );
 
      sqlite3_exec( db, "delete from pitchers_t", NULL, NULL, NULL );
 

@@ -61,13 +61,13 @@ static char *league_accolades_t_create__ShouldInsertRecordsInTheLeagueAccoladesT
      expected.season    = 5;
      expected.accolade  = lacc_World_Title;
 
-     assertEquals( "league_accolades_t_create()", SQLITE_OK, league_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, league_accolades_t_create( db, &expected ) );
 
      league_accolade_s *actual = get_a_league_accolade( expected.league_id );
 
-     assertEquals( "league_id", expected.league_id, actual->league_id );
-     assertEquals( "season",    expected.season,    actual->season      );
-     assertEquals( "accolade",  expected.accolade,  actual->accolade    );
+     assertEquals( expected.league_id, actual->league_id );
+     assertEquals( expected.season,    actual->season      );
+     assertEquals( expected.accolade,  actual->accolade    );
 
      sqlite3_exec( db, "delete from league_accolades_t", NULL, NULL, NULL );
 
@@ -82,8 +82,8 @@ static char *league_accolades_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInse
      expected.season    = 5;
      expected.accolade  = lacc_World_Title;
 
-     assertEquals( "league_accolades_t_create()", SQLITE_OK,         league_accolades_t_create( db, &expected ) );
-     assertEquals( "league_accolades_t_create()", SQLITE_CONSTRAINT, league_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK,         league_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, league_accolades_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from league_accolades_t", NULL, NULL, NULL );
 
@@ -102,15 +102,15 @@ static char *league_accolades_t_read_by_league__ShouldRetrieveMatchingRecord_Giv
 
      data_list_s list = { 0 };
 
-     assertEquals( "league_accolades_t_read_by_league()", SQLITE_OK, league_accolades_t_read_by_league( db, expected.league_id, &list ) );
+     assertEquals( SQLITE_OK, league_accolades_t_read_by_league( db, expected.league_id, &list ) );
 
-     assertEquals( "count", 1, list.count );
+     assertEquals( 1, list.count );
 
      league_accolade_s *actual = list.data;
 
-     assertEquals( "league_id", expected.league_id, actual->league_id );
-     assertEquals( "season",    expected.season,    actual->season      );
-     assertEquals( "accolade",  expected.accolade,  actual->accolade    );
+     assertEquals( expected.league_id, actual->league_id );
+     assertEquals( expected.season,    actual->season      );
+     assertEquals( expected.accolade,  actual->accolade    );
 
      free( actual );
 
@@ -137,19 +137,19 @@ static char *league_accolades_t_read_by_league__ShouldRetrieveAllMatchingRecords
 
      data_list_s list = { 0 };
 
-     assertEquals( "league_accolades_t_read_by_league()", SQLITE_OK, league_accolades_t_read_by_league( db, expected1.league_id, &list ) );
+     assertEquals( SQLITE_OK, league_accolades_t_read_by_league( db, expected1.league_id, &list ) );
 
-     assertEquals( "count", 2, list.count );
+     assertEquals( 2, list.count );
 
      league_accolade_s *actual = list.data;
 
-     assertEquals( "league_id", expected1.league_id, actual[0].league_id );
-     assertEquals( "season",    expected1.season,    actual[0].season      );
-     assertEquals( "accolade",  expected1.accolade,  actual[0].accolade    );
+     assertEquals( expected1.league_id, actual[0].league_id );
+     assertEquals( expected1.season,    actual[0].season      );
+     assertEquals( expected1.accolade,  actual[0].accolade    );
 
-     assertEquals( "league_id", expected2.league_id, actual[1].league_id );
-     assertEquals( "season",    expected2.season,    actual[1].season      );
-     assertEquals( "accolade",  expected2.accolade,  actual[1].accolade    );
+     assertEquals( expected2.league_id, actual[1].league_id );
+     assertEquals( expected2.season,    actual[1].season      );
+     assertEquals( expected2.accolade,  actual[1].accolade    );
 
      free( actual );
 
@@ -168,9 +168,9 @@ static char *league_accolades_t_delete__ShouldDeleteMatchingRecord_GivenALeagueA
 
      insert_a_league_accolade( &expected );
 
-     assertEquals( "league_accolades_t_delete()", SQLITE_OK, league_accolades_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, league_accolades_t_delete( db, &expected ) );
 
-     assertNull( "get_a_league_accolade()", get_a_league_accolade( expected.league_id ) );
+     assertNull( get_a_league_accolade( expected.league_id ) );
 
      sqlite3_exec( db, "delete from league_accolades_t", NULL, NULL, NULL );
 
@@ -194,13 +194,13 @@ static char *league_accolades_t_delete__ShouldOnlyDeleteMatchingRecord_GivenALea
 
      insert_a_league_accolade( &expected2 );
 
-     assertEquals( "league_accolades_t_delete()", SQLITE_OK, league_accolades_t_delete( db, &expected2 ) );
+     assertEquals( SQLITE_OK, league_accolades_t_delete( db, &expected2 ) );
 
      league_accolade_s *actual = get_a_league_accolade( expected1.league_id );
 
-     assertEquals( "league_id", expected1.league_id, actual->league_id );
-     assertEquals( "season",    expected1.season,    actual->season      );
-     assertEquals( "accolade",  expected1.accolade,  actual->accolade    );
+     assertEquals( expected1.league_id, actual->league_id );
+     assertEquals( expected1.season,    actual->season      );
+     assertEquals( expected1.accolade,  actual->accolade    );
 
      sqlite3_exec( db, "delete from league_accolades_t", NULL, NULL, NULL );
 

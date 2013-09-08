@@ -62,13 +62,13 @@ static char *pitcher_accolades_t_create__ShouldInsertRecordsInThePitcherAccolade
      expected.season    = 5;
      expected.accolade  = pacc_Best_Earned_Run_Average;
 
-     assertEquals( "pitcher_accolades_t_create()", SQLITE_OK, pitcher_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_create( db, &expected ) );
 
      pitcher_accolade_s *actual = get_a_pitcher_accolade( expected.player_id );
 
-     assertEquals( "player_id", expected.player_id, actual->player_id );
-     assertEquals( "season",    expected.season,    actual->season    );
-     assertEquals( "accolade",  expected.accolade,  actual->accolade  );
+     assertEquals( expected.player_id, actual->player_id );
+     assertEquals( expected.season,    actual->season    );
+     assertEquals( expected.accolade,  actual->accolade  );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );
 
@@ -83,8 +83,8 @@ static char *pitcher_accolades_t_create__ShouldGiveAnErrorIfDuplicateRecordIsIns
      expected.season    = 5;
      expected.accolade  = pacc_Best_Earned_Run_Average;
 
-     assertEquals( "pitcher_accolades_t_create()", SQLITE_OK,         pitcher_accolades_t_create( db, &expected ) );
-     assertEquals( "pitcher_accolades_t_create()", SQLITE_CONSTRAINT, pitcher_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK,         pitcher_accolades_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, pitcher_accolades_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );
 
@@ -103,15 +103,15 @@ static char *pitcher_accolades_t_read_by_player__ShouldRetrieveMatchingRecord_Gi
 
      data_list_s list = { 0 };
 
-     assertEquals( "pitcher_accolades_t_read_by_player()", SQLITE_OK, pitcher_accolades_t_read_by_player( db, expected.player_id, &list ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_read_by_player( db, expected.player_id, &list ) );
 
-     assertEquals( "count", 1, list.count );
+     assertEquals( 1, list.count );
 
      pitcher_accolade_s *actual = list.data;
 
-     assertEquals( "player_id", expected.player_id, actual->player_id );
-     assertEquals( "season",    expected.season,    actual->season    );
-     assertEquals( "accolade",  expected.accolade,  actual->accolade  );
+     assertEquals( expected.player_id, actual->player_id );
+     assertEquals( expected.season,    actual->season    );
+     assertEquals( expected.accolade,  actual->accolade  );
 
      free( actual );
 
@@ -138,19 +138,19 @@ static char *pitcher_accolades_t_read_by_player__ShouldRetrieveAllMatchingRecord
 
      data_list_s list = { 0 };
 
-     assertEquals( "pitcher_accolades_t_read_by_player()", SQLITE_OK, pitcher_accolades_t_read_by_player( db, expected1.player_id, &list ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_read_by_player( db, expected1.player_id, &list ) );
 
-     assertEquals( "count", 2, list.count );
+     assertEquals( 2, list.count );
 
      pitcher_accolade_s *actual = list.data;
 
-     assertEquals( "player_id", expected1.player_id, actual[0].player_id );
-     assertEquals( "season",    expected1.season,    actual[0].season    );
-     assertEquals( "accolade",  expected1.accolade,  actual[0].accolade  );
+     assertEquals( expected1.player_id, actual[0].player_id );
+     assertEquals( expected1.season,    actual[0].season    );
+     assertEquals( expected1.accolade,  actual[0].accolade  );
 
-     assertEquals( "player_id", expected2.player_id, actual[1].player_id );
-     assertEquals( "season",    expected2.season,    actual[1].season    );
-     assertEquals( "accolade",  expected2.accolade,  actual[1].accolade  );
+     assertEquals( expected2.player_id, actual[1].player_id );
+     assertEquals( expected2.season,    actual[1].season    );
+     assertEquals( expected2.accolade,  actual[1].accolade  );
 
      free( actual );
 
@@ -169,9 +169,9 @@ static char *pitcher_accolades_t_delete__ShouldDeleteMatchingRecord_GivenAPitche
 
      insert_a_pitcher_accolade( &expected );
 
-     assertEquals( "pitcher_accolades_t_delete()", SQLITE_OK, pitcher_accolades_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_delete( db, &expected ) );
 
-     assertNull( "get_a_pitcher_accolade()", get_a_pitcher_accolade( expected.player_id ) );
+     assertNull( get_a_pitcher_accolade( expected.player_id ) );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );
 
@@ -195,13 +195,13 @@ static char *pitcher_accolades_t_delete__ShouldOnlyDeleteMatchingRecord_GivenAPi
 
      insert_a_pitcher_accolade( &expected2 );
 
-     assertEquals( "pitcher_accolades_t_delete()", SQLITE_OK, pitcher_accolades_t_delete( db, &expected2 ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_delete( db, &expected2 ) );
 
      pitcher_accolade_s *actual = get_a_pitcher_accolade( expected1.player_id );
 
-     assertEquals( "player_id", expected1.player_id, actual->player_id );
-     assertEquals( "season",    expected1.season,    actual->season    );
-     assertEquals( "accolade",  expected1.accolade,  actual->accolade  );
+     assertEquals( expected1.player_id, actual->player_id );
+     assertEquals( expected1.season,    actual->season    );
+     assertEquals( expected1.accolade,  actual->accolade  );
 
      sqlite3_exec( db, "delete from pitcher_accolades_t", NULL, NULL, NULL );
 

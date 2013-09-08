@@ -62,12 +62,12 @@ static char *leagues_t_create__ShouldInsertRecordsInTheLeaguesTTable()
      /**/    expected.league_id = 5;
      strcpy( expected.name,      "LeagueName1" );
 
-     assertEquals( "leagues_t_create()", SQLITE_OK, leagues_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
 
      league_s *actual = get_a_league( expected.league_id );
 
-     assertEqualsInt( "league_id", expected.league_id, actual->league_id );
-     assertEqualsStr( "name",      expected.name,      actual->name      );
+     assertEqualsInt( expected.league_id, actual->league_id );
+     assertEqualsStr( expected.name,      actual->name      );
 
      sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
 
@@ -81,11 +81,11 @@ static char *leagues_t_create__ShouldGiveAnErrorIfLeagueIdAlreadyExists()
      /**/    expected.league_id = 5;
      strcpy( expected.name,      "LeagueName1" );
 
-     assertEquals( "leagues_t_create()", SQLITE_OK, leagues_t_create( db, &expected ) );
+     assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
 
      strcpy( expected.name, "LeagueName2" );
 
-     assertEquals( "leagues_t_create()", SQLITE_CONSTRAINT, leagues_t_create( db, &expected ) );
+     assertEquals( SQLITE_CONSTRAINT, leagues_t_create( db, &expected ) );
 
      sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
 
@@ -105,10 +105,10 @@ static char *leagues_t_read__ShouldRetrieveMatchingRecord_GivenTheLeagueId()
 
      actual.league_id = expected.league_id;
 
-     assertEquals( "leagues_t_read()", SQLITE_OK, leagues_t_read( db, &actual ) );
+     assertEquals( SQLITE_OK, leagues_t_read( db, &actual ) );
 
-     assertEqualsInt( "league_id", expected.league_id, actual.league_id );
-     assertEqualsStr( "name",      expected.name,      actual.name      );
+     assertEqualsInt( expected.league_id, actual.league_id );
+     assertEqualsStr( expected.name,      actual.name      );
 
      sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
 
@@ -126,12 +126,12 @@ static char *leagues_t_update__ShouldModifyMatchingRecord_GivenTheLeagueId()
 
      strcpy( expected.name, "LeagueName2" );
 
-     assertEquals( "leagues_t_update()", SQLITE_OK, leagues_t_update( db, &expected ) );
+     assertEquals( SQLITE_OK, leagues_t_update( db, &expected ) );
 
      league_s *actual = get_a_league( expected.league_id );
 
-     assertEqualsInt( "league_id", expected.league_id, actual->league_id );
-     assertEqualsStr( "name",      expected.name,      actual->name      );
+     assertEqualsInt( expected.league_id, actual->league_id );
+     assertEqualsStr( expected.name,      actual->name      );
 
      sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
 
@@ -147,9 +147,9 @@ static char *leagues_t_delete__ShouldDeleteMatchingRecord_GivenTheLeagueId()
 
      insert_a_league( &expected );
 
-     assertEquals( "leagues_t_delete()", SQLITE_OK, leagues_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, leagues_t_delete( db, &expected ) );
 
-     assertNull( "get_a_league()", get_a_league( expected.league_id ) );
+     assertNull( get_a_league( expected.league_id ) );
 
      sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
 
