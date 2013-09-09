@@ -20,11 +20,11 @@ static int load_pitcher_data( void *output, int cols, char *data[], char *names[
 
      memset( &pitcher, '\0', sizeof(pitcher_s) );
 
-     /**/    pitcher.player_id = atoi( data[0] );
-     /**/    pitcher.speed     = atoi( data[1] );
-     /**/    pitcher.control   = atoi( data[2] );
-     /**/    pitcher.bunt      = atoi( data[3] );
-     /**/    pitcher.fatigue   = atoi( data[4] );
+     pitcher.player_id = atoi( data[0] );
+     pitcher.speed     = atoi( data[1] );
+     pitcher.control   = atoi( data[2] );
+     pitcher.bunt      = atoi( data[3] );
+     pitcher.fatigue   = atoi( data[4] );
 
      *p = &pitcher;
 

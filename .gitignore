@@ -9,6 +9,7 @@ recover
 test
 tmp
 temp.file*
+*.a
 *.o
 *.bak
 *.db
@@ -73,3 +74,4 @@ MBATool/test_leagues_t
 MBATool/test_league_divisions_t
 MBATool/test_league_stats_t
 MBATool/test_league_accolades_t
+MBATool/test_player_service

@@ -1,6 +1,8 @@
+AR = ar
+ARFLAGS = -rc
 CC = cc
 CFLAGS = -std=c99 -g -Werror-implicit-function-declaration
-LDFLAGS = -lm
+LDFLAGS = -L. -lm -lsqlite3
 
 progs = \
    test_players_t \
@@ -24,7 +26,8 @@ progs = \
    test_leagues_t \
    test_league_divisions_t \
    test_league_stats_t \
-   test_league_accolades_t
+   test_league_accolades_t \
+   test_player_service
 
 ALL: $(progs) TAGS
 
@@ -38,7 +41,7 @@ test_player_accolades_t: test_player_accolades_t.o player_accolades_t.o sql_quer
 test_pitchers_t: test_pitchers_t.o pitchers_t.o sql_query.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_pitcher_stats_t: test_pitcher_stats_t.o pitcher_stats_t.o sql_query.o
+test_pitcher_stats_t: test_pitcher_stats_t.o pitcher_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_pitcher_accolades_t: test_pitcher_accolades_t.o pitcher_accolades_t.o sql_query.o data_list.o
@@ -95,7 +98,39 @@ test_league_stats_t: test_league_stats_t.o league_stats_t.o sql_query.o
 test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-%.o: %.c player.h team.h sql_query.h unit_test.h
+test_player_service: test_player_service.o libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+MBADATA_OBJECTS = sql_query.o \
+ data_list.o \
+ batter_accolades_t.o \
+ batter_stats_t.o \
+ batters_t.o \
+ division_accolades_t.o \
+ division_stats_t.o \
+ divisions_t.o \
+ division_teams_t.o \
+ league_accolades_t.o \
+ league_divisions_t.o \
+ league_stats_t.o \
+ leagues_t.o \
+ pitcher_accolades_t.o \
+ pitcher_stats_t.o \
+ pitchers_t.o \
+ player_accolades_t.o \
+ players_t.o \
+ team_accolades_t.o \
+ team_batting_stats_t.o \
+ team_pitching_stats_t.o \
+ team_players_t.o \
+ team_stats_t.o \
+ teams_t.o \
+ player_service.o
+
+libmbadata.a: $(MBADATA_OBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
+
+%.o: %.c player.h team.h division.h league.h sql_query.h unit_test.h
 	$(CC) $(CFLAGS) -c $<
 
 TAGS: *.h *.c

@@ -132,7 +132,7 @@ static char *players_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists()
      strcpy( expected.last_phonetic,   "LastPho2"   );
      /**/    expected.skin_tone       = st_Dark;
      /**/    expected.handedness      = hnd_Left;
-     /**/    expected.player_type     = pt_Hitter;
+     /**/    expected.player_type     = pt_Batter;
      /**/    expected.rookie_season   = 3;
      /**/    expected.longevity       = 3;
 
@@ -207,7 +207,7 @@ static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
      strcpy( expected.last_phonetic,   "LastPho2"   );
      /**/    expected.skin_tone       = st_Dark;
      /**/    expected.handedness      = hnd_Left;
-     /**/    expected.player_type     = pt_Hitter;
+     /**/    expected.player_type     = pt_Batter;
      /**/    expected.rookie_season   = 4;
      /**/    expected.longevity       = 2;
 

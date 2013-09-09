@@ -30,12 +30,12 @@ function runTestProg {
     fi
 }
 
-rm $DBFILE
-sqlite3 $DBFILE < schema.sql
+make
 
 if [ $? -ne 0 ]; then exit; fi
 
-make
+rm $DBFILE
+sqlite3 $DBFILE < schema.sql
 
 if [ $? -ne 0 ]; then exit; fi
 
@@ -67,6 +67,8 @@ runTestProg test_leagues_t
 runTestProg test_league_divisions_t
 runTestProg test_league_stats_t
 runTestProg test_league_accolades_t
+
+runTestProg test_player_service
 
 if [ $FAIL -ne 0 ]; then
 

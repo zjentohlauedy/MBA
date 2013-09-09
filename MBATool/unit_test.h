@@ -46,7 +46,7 @@ do \
 { \
      if ( (actual) == NULL ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to not be NULL but was NULL\033[0m", #actual, (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to not be NULL but was NULL\033[0m", #actual ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
@@ -56,7 +56,7 @@ do \
 { \
      if ( (actual) != NULL ) \
      { \
-          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to be NULL but was not\033[0m", #actual, (expected), (actual) ); \
+          sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to be NULL but was not\033[0m", #actual ); \
           return __unit_test_msgbuf__; \
      } \
 } while ( 0 )
