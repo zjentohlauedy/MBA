@@ -50,7 +50,7 @@ static int pitcher_accolades_t_read_by_player_retrieve( sqlite3_stmt *statement,
      pitcher_accolade.season    = sqlite3_column_int(  statement, 1 );
      pitcher_accolade.accolade  = sqlite3_column_int(  statement, 2 );
 
-     if ( add_to_data_list( data_list, &pitcher_accolade, sizeof(pitcher_accolade), 10 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &pitcher_accolade, sizeof(pitcher_accolade_s), 10 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

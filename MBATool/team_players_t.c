@@ -50,7 +50,7 @@ static int team_players_t_read_by_team_retrieve( sqlite3_stmt *statement, const 
      team_player.season    = sqlite3_column_int(  statement, 1 );
      team_player.player_id = sqlite3_column_int(  statement, 2 );
 
-     if ( add_to_data_list( data_list, &team_player, sizeof(team_player), 100 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &team_player, sizeof(team_player_s), 100 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

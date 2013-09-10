@@ -48,7 +48,7 @@ static int league_divisions_t_read_by_league_retrieve( sqlite3_stmt *statement, 
      league_division.league_id   = sqlite3_column_int( statement, 0 );
      league_division.division_id = sqlite3_column_int( statement, 1 );
 
-     if ( add_to_data_list( data_list, &league_division, sizeof(league_division), 100 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &league_division, sizeof(league_division_s), 100 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

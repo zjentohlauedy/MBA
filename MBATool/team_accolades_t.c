@@ -50,7 +50,7 @@ static int team_accolades_t_read_by_team_retrieve( sqlite3_stmt *statement, cons
      team_accolade.season   = sqlite3_column_int( statement, 1 );
      team_accolade.accolade = sqlite3_column_int( statement, 2 );
 
-     if ( add_to_data_list( data_list, &team_accolade, sizeof(team_accolade), 10 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &team_accolade, sizeof(team_accolade_s), 10 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

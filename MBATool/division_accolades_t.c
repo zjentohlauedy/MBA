@@ -50,7 +50,7 @@ static int division_accolades_t_read_by_division_retrieve( sqlite3_stmt *stateme
      division_accolade.season      = sqlite3_column_int( statement, 1 );
      division_accolade.accolade    = sqlite3_column_int( statement, 2 );
 
-     if ( add_to_data_list( data_list, &division_accolade, sizeof(division_accolade), 10 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &division_accolade, sizeof(division_accolade_s), 10 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

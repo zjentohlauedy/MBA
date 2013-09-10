@@ -114,7 +114,7 @@ static int pitcher_stats_t_read_by_player_retrieve( sqlite3_stmt *statement, con
      pitcher_stats.walks        = sqlite3_column_int(    statement, 11 );
      pitcher_stats.strike_outs  = sqlite3_column_int(    statement, 12 );
 
-     if ( add_to_data_list( data_list, &pitcher_stats, sizeof(pitcher_stats), 10 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &pitcher_stats, sizeof(pitcher_stats_s), 10 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }

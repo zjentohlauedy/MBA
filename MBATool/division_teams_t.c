@@ -48,7 +48,7 @@ static int division_teams_t_read_by_division_retrieve( sqlite3_stmt *statement, 
      division_team.division_id = sqlite3_column_int( statement, 0 );
      division_team.team_id     = sqlite3_column_int( statement, 1 );
 
-     if ( add_to_data_list( data_list, &division_team, sizeof(division_team), 100 ) < 0 ) return SQLITE_ERROR;
+     if ( add_to_data_list( data_list, &division_team, sizeof(division_team_s), 100 ) < 0 ) return SQLITE_ERROR;
 
      return SQLITE_OK;
 }
