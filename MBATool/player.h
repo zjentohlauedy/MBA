@@ -4,8 +4,11 @@
 #include "season.h"
 #include "data_list.h"
 
-#define PLAYER_ACCOLADE_SENTINEL { -1, -1, acc_None }
-#define PITCHER_STATS_SENTINEL   { -1, -1, sp_None, -1, -1, -1, -1, -1.0, -1, -1, -1, -1, -1 }
+#define PLAYER_ACCOLADE_SENTINEL  { -1, -1, acc_None }
+#define PITCHER_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1.0, -1, -1, -1, -1, -1 }
+#define PITCHER_ACCOLADE_SENTINEL { -1, -1, pacc_None }
+#define BATTER_STATS_SENTINEL     { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
+#define BATTER_ACCOLADE_SENTINEL  { -1, -1, bacc_None }
 
 typedef enum
 {
@@ -111,17 +114,55 @@ typedef enum
 
 typedef struct
 {
-     int        player_id;
-     int        power;
-     int        hit_n_run;
-     int        bunt;
-     int        running;
-     int        range;
-     int        arm;
-     position_e primary_position;
-     position_e secondary_position;
+     int                player_id;
+     int                season;
+     batting_accolade_e accolade;
+
+} batter_accolade_s;
+
+typedef struct
+{
+     int            player_id;
+     int            season;
+     season_phase_e season_phase;
+     int            games;
+     int            at_bats;
+     int            runs;
+     int            hits;
+     int            doubles;
+     int            triples;
+     int            home_runs;
+     int            runs_batted_in;
+     int            walks;
+     int            strike_outs;
+     int            steals;
+     int            errors;
+
+} batter_stats_s;
+
+typedef struct
+{
+     int                player_id;
+     int                power;
+     int                hit_n_run;
+     int                bunt;
+     int                running;
+     int                range;
+     int                arm;
+     position_e         primary_position;
+     position_e         secondary_position;
+     batter_stats_s    *stats;
+     batter_accolade_s *accolades;
 
 } batter_s;
+
+typedef struct
+{
+     int                 player_id;
+     int                 season;
+     pitching_accolade_e accolade;
+
+} pitcher_accolade_s;
 
 typedef struct
 {
@@ -143,12 +184,13 @@ typedef struct
 
 typedef struct
 {
-     int              player_id;
-     int              speed;
-     int              control;
-     int              bunt;
-     int              fatigue;
-     pitcher_stats_s *stats;
+     int                 player_id;
+     int                 speed;
+     int                 control;
+     int                 bunt;
+     int                 fatigue;
+     pitcher_stats_s    *stats;
+     pitcher_accolade_s *accolades;
 
 } pitcher_s;
 
@@ -180,42 +222,6 @@ typedef struct
 
 } player_s;
 
-typedef struct
-{
-     int                 player_id;
-     int                 season;
-     pitching_accolade_e accolade;
-
-} pitcher_accolade_s;
-
-typedef struct
-{
-     int            player_id;
-     int            season;
-     season_phase_e season_phase;
-     int            games;
-     int            at_bats;
-     int            runs;
-     int            hits;
-     int            doubles;
-     int            triples;
-     int            home_runs;
-     int            runs_batted_in;
-     int            walks;
-     int            strike_outs;
-     int            steals;
-     int            errors;
-
-} batter_stats_s;
-
-typedef struct
-{
-     int                player_id;
-     int                season;
-     batting_accolade_e accolade;
-
-} batter_accolade_s;
-
 
 int players_t_create( sqlite3 *db, const player_s *player );
 int players_t_read(   sqlite3 *db,       player_s *player );
@@ -246,10 +252,11 @@ int batters_t_read(   sqlite3 *db,       batter_s *batter );
 int batters_t_update( sqlite3 *db, const batter_s *batter );
 int batters_t_delete( sqlite3 *db, const batter_s *batter );
 
-int batter_stats_t_create( sqlite3 *db, const batter_stats_s *batter_stats );
-int batter_stats_t_read(   sqlite3 *db,       batter_stats_s *batter_stats );
-int batter_stats_t_update( sqlite3 *db, const batter_stats_s *batter_stats );
-int batter_stats_t_delete( sqlite3 *db, const batter_stats_s *batter_stats );
+int batter_stats_t_create(         sqlite3 *db,                      const batter_stats_s *batter_stats );
+int batter_stats_t_read(           sqlite3 *db,                            batter_stats_s *batter_stats );
+int batter_stats_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s    *batter_stats );
+int batter_stats_t_update(         sqlite3 *db,                      const batter_stats_s *batter_stats );
+int batter_stats_t_delete(         sqlite3 *db,                      const batter_stats_s *batter_stats );
 
 int batter_accolades_t_create(         sqlite3 *db,                      const batter_accolade_s *batter_accolade  );
 int batter_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s       *batter_accolades );

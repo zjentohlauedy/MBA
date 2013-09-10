@@ -50,7 +50,7 @@ test_pitcher_accolades_t: test_pitcher_accolades_t.o pitcher_accolades_t.o sql_q
 test_batters_t: test_batters_t.o batters_t.o sql_query.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_batter_stats_t: test_batter_stats_t.o batter_stats_t.o sql_query.o
+test_batter_stats_t: test_batter_stats_t.o batter_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_batter_accolades_t: test_batter_accolades_t.o batter_accolades_t.o sql_query.o data_list.o
