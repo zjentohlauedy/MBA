@@ -144,6 +144,31 @@ player_s *get_player( sqlite3 *db, int player_id )
      return player;
 }
 
+int save_player( sqlite3 *db, player_s *player )
+{
+     int rc;
+
+     if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
+     {
+          if ( (rc = batters_t_create( db, player->details.pitching )) != SQLITE_OK ) return rc;
+     }
+
+     if ( player->player_type == pt_Pitcher  &&   player->details.pitching != NULL )
+     {
+          if ( (rc = pitchers_t_create( db, player->details.pitching )) != SQLITE_OK ) return rc;
+     }
+
+     if ( player->accolades != NULL )
+     {
+          for ( int i = 0; player->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = player_accolades_t_create( db, &player->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     return players_t_create( db, player );
+}
+
 void free_player( player_s *player )
 {
      if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )

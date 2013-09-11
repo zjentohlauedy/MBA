@@ -262,9 +262,9 @@ int batter_accolades_t_create(         sqlite3 *db,                      const b
 int batter_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s       *batter_accolades );
 int batter_accolades_t_delete(         sqlite3 *db,                      const batter_accolade_s *batter_accolade  );
 
-player_s *get_player( sqlite3 *db, int player_id );
-
-void free_player( player_s *player );
+player_s *get_player(  sqlite3 *db, int       player_id );
+int       save_player( sqlite3 *db, player_s *player    );
+void      free_player(              player_s *player    );
 
 
 #endif
