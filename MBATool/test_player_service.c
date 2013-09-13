@@ -782,6 +782,182 @@ static char *save_player__ShouldSavePitcherDetailsToTheDatabase_GivenAPlayerWith
      return NULL;
 }
 
+static char *save_player__ShouldSavePitcherStatsToTheDatabase_GivenAPlayerWithPitchingStats()
+{
+     player_s        expected                  = { 0 };
+     pitcher_s       expected_pitcher          = { 0 };
+     pitcher_stats_s expected_pitcher_stats[3] = { 0 };
+
+     /**/    expected.player_id       = 1;
+     strcpy( expected.first_name,      "FirstName1" );
+     strcpy( expected.last_name,       "LastName1"  );
+     strcpy( expected.first_phonetic,  "FirstPho1"  );
+     strcpy( expected.last_phonetic,   "LastPho1"   );
+     /**/    expected.skin_tone       = st_Light;
+     /**/    expected.handedness      = hnd_Right;
+     /**/    expected.player_type     = pt_Pitcher;
+     /**/    expected.rookie_season   = 1;
+     /**/    expected.longevity       = 5;
+
+     expected_pitcher.player_id = 1;
+     expected_pitcher.speed     = 5;
+     expected_pitcher.control   = 7;
+     expected_pitcher.bunt      = 3;
+     expected_pitcher.fatigue   = 8;
+
+     expected_pitcher_stats[0].player_id    = 1;
+     expected_pitcher_stats[0].season       = 1;
+     expected_pitcher_stats[0].season_phase = sp_Regular;
+     expected_pitcher_stats[0].wins         = 12;
+     expected_pitcher_stats[0].losses       = 15;
+     expected_pitcher_stats[0].games        = 54;
+     expected_pitcher_stats[0].saves        = 11;
+     expected_pitcher_stats[0].innings      = 321.2;
+     expected_pitcher_stats[0].hits         = 165;
+     expected_pitcher_stats[0].earned_runs  = 23;
+     expected_pitcher_stats[0].home_runs    = 14;
+     expected_pitcher_stats[0].walks        = 25;
+     expected_pitcher_stats[0].strike_outs  = 234;
+
+     expected_pitcher_stats[1].player_id    = 1;
+     expected_pitcher_stats[1].season       = 1;
+     expected_pitcher_stats[1].season_phase = sp_Playoff;
+     expected_pitcher_stats[1].wins         = 2;
+     expected_pitcher_stats[1].losses       = 1;
+     expected_pitcher_stats[1].games        = 3;
+     expected_pitcher_stats[1].saves        = 0;
+     expected_pitcher_stats[1].innings      = 25.2;
+     expected_pitcher_stats[1].hits         = 20;
+     expected_pitcher_stats[1].earned_runs  = 5;
+     expected_pitcher_stats[1].home_runs    = 1;
+     expected_pitcher_stats[1].walks        = 3;
+     expected_pitcher_stats[1].strike_outs  = 25;
+
+     pitcher_stats_s sentinel = PITCHER_STATS_SENTINEL;
+
+     expected_pitcher_stats[2] = sentinel;
+
+     expected_pitcher.stats    =  expected_pitcher_stats;
+     expected.details.pitching = &expected_pitcher;
+
+     assertEquals( SQLITE_OK, save_player( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, pitcher_stats_t_read_by_player( db, expected.player_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     pitcher_stats_s *actual_pitcher_stats = list.data;
+
+     assertNotNull( actual_pitcher_stats );
+
+     assertEqualsInt( expected_pitcher_stats[0].player_id,    actual_pitcher_stats[0].player_id    );
+     assertEqualsInt( expected_pitcher_stats[0].season,       actual_pitcher_stats[0].season       );
+     assertEqualsInt( expected_pitcher_stats[0].season_phase, actual_pitcher_stats[0].season_phase );
+     assertEqualsInt( expected_pitcher_stats[0].wins,         actual_pitcher_stats[0].wins         );
+     assertEqualsInt( expected_pitcher_stats[0].losses,       actual_pitcher_stats[0].losses       );
+     assertEqualsInt( expected_pitcher_stats[0].games,        actual_pitcher_stats[0].games        );
+     assertEqualsInt( expected_pitcher_stats[0].saves,        actual_pitcher_stats[0].saves        );
+     assertEqualsDbl( expected_pitcher_stats[0].innings,      actual_pitcher_stats[0].innings      );
+     assertEqualsInt( expected_pitcher_stats[0].hits,         actual_pitcher_stats[0].hits         );
+     assertEqualsInt( expected_pitcher_stats[0].earned_runs,  actual_pitcher_stats[0].earned_runs  );
+     assertEqualsInt( expected_pitcher_stats[0].home_runs,    actual_pitcher_stats[0].home_runs    );
+     assertEqualsInt( expected_pitcher_stats[0].walks,        actual_pitcher_stats[0].walks        );
+     assertEqualsInt( expected_pitcher_stats[0].strike_outs,  actual_pitcher_stats[0].strike_outs  );
+
+     assertEqualsInt( expected_pitcher_stats[1].player_id,    actual_pitcher_stats[1].player_id    );
+     assertEqualsInt( expected_pitcher_stats[1].season,       actual_pitcher_stats[1].season       );
+     assertEqualsInt( expected_pitcher_stats[1].season_phase, actual_pitcher_stats[1].season_phase );
+     assertEqualsInt( expected_pitcher_stats[1].wins,         actual_pitcher_stats[1].wins         );
+     assertEqualsInt( expected_pitcher_stats[1].losses,       actual_pitcher_stats[1].losses       );
+     assertEqualsInt( expected_pitcher_stats[1].games,        actual_pitcher_stats[1].games        );
+     assertEqualsInt( expected_pitcher_stats[1].saves,        actual_pitcher_stats[1].saves        );
+     assertEqualsDbl( expected_pitcher_stats[1].innings,      actual_pitcher_stats[1].innings      );
+     assertEqualsInt( expected_pitcher_stats[1].hits,         actual_pitcher_stats[1].hits         );
+     assertEqualsInt( expected_pitcher_stats[1].earned_runs,  actual_pitcher_stats[1].earned_runs  );
+     assertEqualsInt( expected_pitcher_stats[1].home_runs,    actual_pitcher_stats[1].home_runs    );
+     assertEqualsInt( expected_pitcher_stats[1].walks,        actual_pitcher_stats[1].walks        );
+     assertEqualsInt( expected_pitcher_stats[1].strike_outs,  actual_pitcher_stats[1].strike_outs  );
+
+     free( actual_pitcher_stats );
+
+     assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_delete( db, &expected_pitcher ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, &expected_pitcher_stats[0] ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, &expected_pitcher_stats[1] ) );
+
+     return NULL;
+}
+
+static char *save_player__ShouldSavePitcherAccoladesToTheDatabase_GivenAPlayerWithPitchingAccolades()
+{
+     player_s           expected              = { 0 };
+     pitcher_s          expected_pitcher      = { 0 };
+     pitcher_accolade_s expected_accolades[3] = { 0 };
+
+     /**/    expected.player_id       = 1;
+     strcpy( expected.first_name,      "FirstName1" );
+     strcpy( expected.last_name,       "LastName1"  );
+     strcpy( expected.first_phonetic,  "FirstPho1"  );
+     strcpy( expected.last_phonetic,   "LastPho1"   );
+     /**/    expected.skin_tone       = st_Light;
+     /**/    expected.handedness      = hnd_Right;
+     /**/    expected.player_type     = pt_Pitcher;
+     /**/    expected.rookie_season   = 1;
+     /**/    expected.longevity       = 5;
+
+     expected_pitcher.player_id = 1;
+     expected_pitcher.speed     = 5;
+     expected_pitcher.control   = 7;
+     expected_pitcher.bunt      = 3;
+     expected_pitcher.fatigue   = 8;
+
+     expected_accolades[0].player_id = 1;
+     expected_accolades[0].season    = 1;
+     expected_accolades[0].accolade  = pacc_Atlantic_Pitcher_of_the_Year;
+
+     expected_accolades[1].player_id = 1;
+     expected_accolades[1].season    = 2;
+     expected_accolades[1].accolade  = pacc_Most_Wins;
+
+     pitcher_accolade_s sentinel = PITCHER_ACCOLADE_SENTINEL;
+
+     expected_accolades[2] = sentinel;
+
+     expected_pitcher.accolades =  expected_accolades;
+     expected.details.pitching  = &expected_pitcher;
+
+     assertEquals( SQLITE_OK, save_player( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, pitcher_accolades_t_read_by_player( db, expected.player_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     pitcher_accolade_s *actual_pitcher_accolades = list.data;
+
+     assertNotNull( actual_pitcher_accolades );
+
+     assertEqualsInt( expected_accolades[0].player_id, actual_pitcher_accolades[0].player_id );
+     assertEqualsInt( expected_accolades[0].season,    actual_pitcher_accolades[0].season    );
+     assertEqualsInt( expected_accolades[0].accolade,  actual_pitcher_accolades[0].accolade  );
+
+     assertEqualsInt( expected_accolades[1].player_id, actual_pitcher_accolades[1].player_id );
+     assertEqualsInt( expected_accolades[1].season,    actual_pitcher_accolades[1].season    );
+     assertEqualsInt( expected_accolades[1].accolade,  actual_pitcher_accolades[1].accolade  );
+
+     free( actual_pitcher_accolades );
+
+     assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, pitchers_t_delete( db, &expected_pitcher ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_delete( db, &expected_accolades[0] ) );
+     assertEquals( SQLITE_OK, pitcher_accolades_t_delete( db, &expected_accolades[1] ) );
+
+     return NULL;
+}
+
 static char *save_player__ShouldSaveBatterDetailsToTheDatabase_GivenAPlayerWithBattingDetails()
 {
      player_s expected        = { 0 };
@@ -834,6 +1010,199 @@ static char *save_player__ShouldSaveBatterDetailsToTheDatabase_GivenAPlayerWithB
      return NULL;
 }
 
+static char *save_player__ShouldSaveBatterStatsToTheDatabase_GivenAPlayerWithBattingStats()
+{
+     player_s       expected                 = { 0 };
+     batter_s       expected_batter          = { 0 };
+     batter_stats_s expected_batter_stats[3] = { 0 };
+
+     /**/    expected.player_id       = 1;
+     strcpy( expected.first_name,      "FirstName1" );
+     strcpy( expected.last_name,       "LastName1"  );
+     strcpy( expected.first_phonetic,  "FirstPho1"  );
+     strcpy( expected.last_phonetic,   "LastPho1"   );
+     /**/    expected.skin_tone       = st_Light;
+     /**/    expected.handedness      = hnd_Right;
+     /**/    expected.player_type     = pt_Batter;
+     /**/    expected.rookie_season   = 1;
+     /**/    expected.longevity       = 5;
+
+     expected_batter.player_id          = 1;
+     expected_batter.power              = 6;
+     expected_batter.hit_n_run          = 4;
+     expected_batter.bunt               = 5;
+     expected_batter.running            = 3;
+     expected_batter.range              = 7;
+     expected_batter.arm                = 8;
+     expected_batter.primary_position   = pos_SecondBase;
+     expected_batter.secondary_position = pos_ThirdBase;
+
+     expected_batter_stats[0].player_id      = 1;
+     expected_batter_stats[0].season         = 1;
+     expected_batter_stats[0].season_phase   = sp_Regular;
+     expected_batter_stats[0].games          = 134;
+     expected_batter_stats[0].at_bats        = 543;
+     expected_batter_stats[0].runs           = 101;
+     expected_batter_stats[0].hits           = 220;
+     expected_batter_stats[0].doubles        = 35;
+     expected_batter_stats[0].triples        = 16;
+     expected_batter_stats[0].home_runs      = 56;
+     expected_batter_stats[0].runs_batted_in = 115;
+     expected_batter_stats[0].walks          = 62;
+     expected_batter_stats[0].strike_outs    = 131;
+     expected_batter_stats[0].steals         = 45;
+     expected_batter_stats[0].errors         = 5;
+
+     expected_batter_stats[1].player_id      = 1;
+     expected_batter_stats[1].season         = 2;
+     expected_batter_stats[1].season_phase   = sp_Regular;
+     expected_batter_stats[1].games          = 143;
+     expected_batter_stats[1].at_bats        = 555;
+     expected_batter_stats[1].runs           = 99;
+     expected_batter_stats[1].hits           = 206;
+     expected_batter_stats[1].doubles        = 22;
+     expected_batter_stats[1].triples        = 11;
+     expected_batter_stats[1].home_runs      = 44;
+     expected_batter_stats[1].runs_batted_in = 109;
+     expected_batter_stats[1].walks          = 58;
+     expected_batter_stats[1].strike_outs    = 144;
+     expected_batter_stats[1].steals         = 37;
+     expected_batter_stats[1].errors         = 8;
+
+     batter_stats_s sentinel = BATTER_STATS_SENTINEL;
+
+     expected_batter_stats[2] = sentinel;
+
+     expected_batter.stats    = expected_batter_stats;
+     expected.details.batting = &expected_batter;
+
+     assertEquals( SQLITE_OK, save_player( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, batter_stats_t_read_by_player( db, expected.player_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     batter_stats_s *actual_batter_stats = list.data;
+
+     assertNotNull( actual_batter_stats );
+
+     assertEquals( expected_batter_stats[0].player_id,      actual_batter_stats[0].player_id      );
+     assertEquals( expected_batter_stats[0].season,         actual_batter_stats[0].season         );
+     assertEquals( expected_batter_stats[0].season_phase,   actual_batter_stats[0].season_phase   );
+     assertEquals( expected_batter_stats[0].games,          actual_batter_stats[0].games          );
+     assertEquals( expected_batter_stats[0].at_bats,        actual_batter_stats[0].at_bats        );
+     assertEquals( expected_batter_stats[0].runs,           actual_batter_stats[0].runs           );
+     assertEquals( expected_batter_stats[0].hits,           actual_batter_stats[0].hits           );
+     assertEquals( expected_batter_stats[0].doubles,        actual_batter_stats[0].doubles        );
+     assertEquals( expected_batter_stats[0].triples,        actual_batter_stats[0].triples        );
+     assertEquals( expected_batter_stats[0].home_runs,      actual_batter_stats[0].home_runs      );
+     assertEquals( expected_batter_stats[0].runs_batted_in, actual_batter_stats[0].runs_batted_in );
+     assertEquals( expected_batter_stats[0].walks,          actual_batter_stats[0].walks          );
+     assertEquals( expected_batter_stats[0].strike_outs,    actual_batter_stats[0].strike_outs    );
+     assertEquals( expected_batter_stats[0].steals,         actual_batter_stats[0].steals         );
+     assertEquals( expected_batter_stats[0].errors,         actual_batter_stats[0].errors         );
+
+     assertEquals( expected_batter_stats[1].player_id,      actual_batter_stats[1].player_id      );
+     assertEquals( expected_batter_stats[1].season,         actual_batter_stats[1].season         );
+     assertEquals( expected_batter_stats[1].season_phase,   actual_batter_stats[1].season_phase   );
+     assertEquals( expected_batter_stats[1].games,          actual_batter_stats[1].games          );
+     assertEquals( expected_batter_stats[1].at_bats,        actual_batter_stats[1].at_bats        );
+     assertEquals( expected_batter_stats[1].runs,           actual_batter_stats[1].runs           );
+     assertEquals( expected_batter_stats[1].hits,           actual_batter_stats[1].hits           );
+     assertEquals( expected_batter_stats[1].doubles,        actual_batter_stats[1].doubles        );
+     assertEquals( expected_batter_stats[1].triples,        actual_batter_stats[1].triples        );
+     assertEquals( expected_batter_stats[1].home_runs,      actual_batter_stats[1].home_runs      );
+     assertEquals( expected_batter_stats[1].runs_batted_in, actual_batter_stats[1].runs_batted_in );
+     assertEquals( expected_batter_stats[1].walks,          actual_batter_stats[1].walks          );
+     assertEquals( expected_batter_stats[1].strike_outs,    actual_batter_stats[1].strike_outs    );
+     assertEquals( expected_batter_stats[1].steals,         actual_batter_stats[1].steals         );
+     assertEquals( expected_batter_stats[1].errors,         actual_batter_stats[1].errors         );
+
+     free( actual_batter_stats );
+
+     assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_delete( db, &expected_batter ) );
+     assertEquals( SQLITE_OK, batter_stats_t_delete( db, &expected_batter_stats[0] ) );
+     assertEquals( SQLITE_OK, batter_stats_t_delete( db, &expected_batter_stats[1] ) );
+
+     return NULL;
+}
+
+static char *save_player__ShouldSaveBatterAccoladesToTheDatabase_GivenAPlayerWithBattingAccolades()
+{
+     player_s          expected                     = { 0 };
+     batter_s          expected_batter              = { 0 };
+     batter_accolade_s expected_batter_accolades[3] = { 0 };
+
+     /**/    expected.player_id       = 1;
+     strcpy( expected.first_name,      "FirstName1" );
+     strcpy( expected.last_name,       "LastName1"  );
+     strcpy( expected.first_phonetic,  "FirstPho1"  );
+     strcpy( expected.last_phonetic,   "LastPho1"   );
+     /**/    expected.skin_tone       = st_Light;
+     /**/    expected.handedness      = hnd_Right;
+     /**/    expected.player_type     = pt_Batter;
+     /**/    expected.rookie_season   = 1;
+     /**/    expected.longevity       = 5;
+
+     expected_batter.player_id          = 1;
+     expected_batter.power              = 6;
+     expected_batter.hit_n_run          = 4;
+     expected_batter.bunt               = 5;
+     expected_batter.running            = 3;
+     expected_batter.range              = 7;
+     expected_batter.arm                = 8;
+     expected_batter.primary_position   = pos_SecondBase;
+     expected_batter.secondary_position = pos_ThirdBase;
+
+     expected_batter_accolades[0].player_id = 1;
+     expected_batter_accolades[0].season    = 1;
+     expected_batter_accolades[0].accolade  = bacc_Best_Batting_Average;
+
+     expected_batter_accolades[1].player_id = 1;
+     expected_batter_accolades[1].season    = 1;
+     expected_batter_accolades[1].accolade  = bacc_Most_Home_Runs;
+
+     batter_accolade_s sentinel = BATTER_ACCOLADE_SENTINEL;
+
+     expected_batter_accolades[2] = sentinel;
+
+     expected_batter.accolades =  expected_batter_accolades;
+     expected.details.batting  = &expected_batter;
+
+     assertEquals( SQLITE_OK, save_player( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, batter_accolades_t_read_by_player( db, expected.player_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     batter_accolade_s *actual_batter_accolades = list.data;
+
+     assertNotNull( actual_batter_accolades );
+
+     assertEquals( expected_batter_accolades[0].player_id, actual_batter_accolades[0].player_id );
+     assertEquals( expected_batter_accolades[0].season,    actual_batter_accolades[0].season    );
+     assertEquals( expected_batter_accolades[0].accolade,  actual_batter_accolades[0].accolade  );
+
+     assertEquals( expected_batter_accolades[1].player_id, actual_batter_accolades[1].player_id );
+     assertEquals( expected_batter_accolades[1].season,    actual_batter_accolades[1].season    );
+     assertEquals( expected_batter_accolades[1].accolade,  actual_batter_accolades[1].accolade  );
+
+     free( actual_batter_accolades );
+
+     assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, batters_t_delete( db, &expected_batter ) );
+     assertEquals( SQLITE_OK, batter_accolades_t_delete( db, &expected_batter_accolades[0] ) );
+     assertEquals( SQLITE_OK, batter_accolades_t_delete( db, &expected_batter_accolades[1] ) );
+
+     return NULL;
+
+}
+
 static void check_sqlite_error()
 {
      if ( sqlite3_errcode( db ) != 0 )
@@ -855,11 +1224,14 @@ static void run_all_tests()
      run_test( get_player__ShouldReturnTheMatchingPlayerWithBattingAccolades_GivenAPlayerId,  check_sqlite_error );
 
      // save_player()
-     run_test( save_player__ShouldSaveThePlayerToTheDatabase_GivenAPlayerObject,                   check_sqlite_error );
-     run_test( save_player__ShouldSavePlayerAccoladesToTheDatabase_GivenAPlayerWithAccolades,      check_sqlite_error );
-     run_test( save_player__ShouldSavePitcherDetailsToTheDatabase_GivenAPlayerWithPitchingDetails, check_sqlite_error );
-
-     run_test( save_player__ShouldSaveBatterDetailsToTheDatabase_GivenAPlayerWithBattingDetails,   check_sqlite_error );
+     run_test( save_player__ShouldSaveThePlayerToTheDatabase_GivenAPlayerObject,                       check_sqlite_error );
+     run_test( save_player__ShouldSavePlayerAccoladesToTheDatabase_GivenAPlayerWithAccolades,          check_sqlite_error );
+     run_test( save_player__ShouldSavePitcherDetailsToTheDatabase_GivenAPlayerWithPitchingDetails,     check_sqlite_error );
+     run_test( save_player__ShouldSavePitcherStatsToTheDatabase_GivenAPlayerWithPitchingStats,         check_sqlite_error );
+     run_test( save_player__ShouldSavePitcherAccoladesToTheDatabase_GivenAPlayerWithPitchingAccolades, check_sqlite_error );
+     run_test( save_player__ShouldSaveBatterDetailsToTheDatabase_GivenAPlayerWithBattingDetails,       check_sqlite_error );
+     run_test( save_player__ShouldSaveBatterStatsToTheDatabase_GivenAPlayerWithBattingStats,           check_sqlite_error );
+     run_test( save_player__ShouldSaveBatterAccoladesToTheDatabase_GivenAPlayerWithBattingAccolades,   check_sqlite_error );
 
      // remove_player()
 }

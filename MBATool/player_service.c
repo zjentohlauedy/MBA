@@ -144,18 +144,64 @@ player_s *get_player( sqlite3 *db, int player_id )
      return player;
 }
 
+static int save_batter( sqlite3 *db, batter_s *batter )
+{
+     int rc;
+
+     if ( batter->stats != NULL )
+     {
+          for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
+          {
+               if ( (rc = batter_stats_t_create( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( batter->accolades != NULL )
+     {
+          for ( int i = 0; batter->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = batter_accolades_t_create( db, &batter->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( (rc = batters_t_create( db, batter )) != SQLITE_OK ) return rc;
+}
+
+static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
+{
+     int rc;
+
+     if ( pitcher->stats != NULL )
+     {
+          for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
+          {
+               if ( (rc = pitcher_stats_t_create( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( pitcher->accolades != NULL )
+     {
+          for ( int i = 0; pitcher->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = pitcher_accolades_t_create( db, &pitcher->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( (rc = pitchers_t_create( db, pitcher )) != SQLITE_OK ) return rc;
+}
+
 int save_player( sqlite3 *db, player_s *player )
 {
      int rc;
 
      if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
      {
-          if ( (rc = batters_t_create( db, player->details.pitching )) != SQLITE_OK ) return rc;
+          if ( (rc = save_batter( db, player->details.batting )) != SQLITE_OK ) return rc;
      }
 
-     if ( player->player_type == pt_Pitcher  &&   player->details.pitching != NULL )
+     if ( player->player_type == pt_Pitcher  &&  player->details.pitching != NULL )
      {
-          if ( (rc = pitchers_t_create( db, player->details.pitching )) != SQLITE_OK ) return rc;
+          if ( (rc = save_pitcher( db, player->details.pitching )) != SQLITE_OK ) return rc;
      }
 
      if ( player->accolades != NULL )
