@@ -123,9 +123,11 @@ player_s *get_player( sqlite3 *db, int player_id )
      {
           pitcher_s *pitching = NULL;
 
-          pitching            = get_pitching_details(  db, player_id );
-          pitching->stats     = get_pitcher_stats(     db, player_id );
-          pitching->accolades = get_pitcher_accolades( db, player_id );
+          if ( (pitching = get_pitching_details(  db, player_id )) != NULL )
+          {
+               pitching->stats     = get_pitcher_stats(     db, player_id );
+               pitching->accolades = get_pitcher_accolades( db, player_id );
+          }
 
           player->details.pitching = pitching;
      }
@@ -134,9 +136,11 @@ player_s *get_player( sqlite3 *db, int player_id )
      {
           batter_s *batting = NULL;
 
-          batting            = get_batting_details(  db, player_id );
-          batting->stats     = get_batter_stats(     db, player_id );
-          batting->accolades = get_batter_accolades( db, player_id );
+          if ( (batting = get_batting_details(  db, player_id )) != NULL )
+          {
+               batting->stats     = get_batter_stats(     db, player_id );
+               batting->accolades = get_batter_accolades( db, player_id );
+          }
 
           player->details.batting = batting;
      }
@@ -164,7 +168,7 @@ static int save_batter( sqlite3 *db, batter_s *batter )
           }
      }
 
-     if ( (rc = batters_t_create( db, batter )) != SQLITE_OK ) return rc;
+     return batters_t_create( db, batter );
 }
 
 static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
@@ -187,7 +191,7 @@ static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
           }
      }
 
-     if ( (rc = pitchers_t_create( db, pitcher )) != SQLITE_OK ) return rc;
+     return pitchers_t_create( db, pitcher );
 }
 
 int save_player( sqlite3 *db, player_s *player )
@@ -213,6 +217,11 @@ int save_player( sqlite3 *db, player_s *player )
      }
 
      return players_t_create( db, player );
+}
+
+int remove_player( sqlite3 *db, player_s *player )
+{
+     return players_t_delete( db, player );
 }
 
 void free_player( player_s *player )

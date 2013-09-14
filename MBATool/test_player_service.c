@@ -1203,6 +1203,34 @@ static char *save_player__ShouldSaveBatterAccoladesToTheDatabase_GivenAPlayerWit
 
 }
 
+static char *remove_player__ShouldRemoveThePlayerFromTheDatabase_GivenAPlayerObject()
+{
+     player_s expected = { 0 };
+
+     /**/    expected.player_id       = 1;
+     strcpy( expected.first_name,      "FirstName1" );
+     strcpy( expected.last_name,       "LastName1"  );
+     strcpy( expected.first_phonetic,  "FirstPho1"  );
+     strcpy( expected.last_phonetic,   "LastPho1"   );
+     /**/    expected.skin_tone       = st_Light;
+     /**/    expected.handedness      = hnd_Right;
+     /**/    expected.player_type     = pt_Pitcher;
+     /**/    expected.rookie_season   = 1;
+     /**/    expected.longevity       = 5;
+
+     assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
+
+     assertEquals( SQLITE_OK, remove_player( db, &expected ) );
+
+     player_s actual = { 0 };
+
+     actual.player_id = expected.player_id;
+
+     assertEquals( SQLITE_NOTFOUND, players_t_read( db, &actual ) );
+
+     return NULL;
+}
+
 static void check_sqlite_error()
 {
      if ( sqlite3_errcode( db ) != 0 )
@@ -1234,6 +1262,7 @@ static void run_all_tests()
      run_test( save_player__ShouldSaveBatterAccoladesToTheDatabase_GivenAPlayerWithBattingAccolades,   check_sqlite_error );
 
      // remove_player()
+     run_test( remove_player__ShouldRemoveThePlayerFromTheDatabase_GivenAPlayerObject, check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )
