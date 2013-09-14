@@ -37,7 +37,7 @@ int pitcher_stats_t_create( sqlite3 *db, const pitcher_stats_s *pitcher_stats )
      static char query[]   = "INSERT INTO Pitcher_Stats_T ( Player_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs )"
           /**/                                    "VALUES ( ?,"       "?,"    "?,"          "?,"  "?,"    "?,"   "?,"   "?,"     "?,"  "?,"         "?,"       "?,"   "?"         ")";
 
-     return execute_query( db, query, pitcher_stats_t_create_bindings, pitcher_stats, NULL, NULL );
+     return execute_update_old( db, query, pitcher_stats_t_create_bindings, pitcher_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -173,7 +173,7 @@ int pitcher_stats_t_update( sqlite3 *db, const pitcher_stats_s *pitcher_stats )
           /**/               "AND    Season       = ? "
           /**/               "AND    Season_Phase = ? ";
 
-     return execute_query( db, query, pitcher_stats_t_update_bindings, pitcher_stats, NULL, NULL );
+     return execute_update_old( db, query, pitcher_stats_t_update_bindings, pitcher_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -194,5 +194,5 @@ static int pitcher_stats_t_delete_bindings( sqlite3_stmt *statement, const void 
 
 int pitcher_stats_t_delete( sqlite3 *db, const pitcher_stats_s *pitcher_stats )
 {
-     return execute_query( db, "DELETE FROM Pitcher_Stats_T WHERE Player_Id = ? AND Season = ? AND Season_Phase = ?", pitcher_stats_t_delete_bindings, pitcher_stats, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Pitcher_Stats_T WHERE Player_Id = ? AND Season = ? AND Season_Phase = ?", pitcher_stats_t_delete_bindings, pitcher_stats, NULL, NULL );
 }

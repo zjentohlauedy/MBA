@@ -28,7 +28,7 @@ int teams_t_create( sqlite3 *db, const team_s *team )
      static char query[]   = "INSERT INTO Teams_T ( Team_Id, Name, Location, Primary_Color, Secondary_Color )"
           /**/                            "VALUES ( ?,"     "?,"  "?,"      "?,"           "?"             ")";
 
-     return execute_query( db, query, teams_t_create_bindings, team, NULL, NULL );
+     return execute_update_old( db, query, teams_t_create_bindings, team, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -89,7 +89,7 @@ int teams_t_update( sqlite3 *db, const team_s *team )
           /**/
           /**/               "WHERE  Team_Id = ?";
 
-     return execute_query( db, query, teams_t_update_bindings, team, NULL, NULL );
+     return execute_update_old( db, query, teams_t_update_bindings, team, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -104,5 +104,5 @@ static int teams_t_delete_bindings( sqlite3_stmt *statement, const void *data )
 
 int teams_t_delete( sqlite3 *db, const team_s *team )
 {
-     return execute_query( db, "DELETE FROM Teams_T WHERE Team_Id = ?", teams_t_delete_bindings, team, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Teams_T WHERE Team_Id = ?", teams_t_delete_bindings, team, NULL, NULL );
 }

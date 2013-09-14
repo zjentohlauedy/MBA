@@ -32,7 +32,7 @@ int batters_t_create( sqlite3 *db, const batter_s *batter )
      static char query[]   = "INSERT INTO Batters_T ( Player_Id, Power, Hit_N_Run, Bunt, Running, Range, Arm, Primary_Position, Secondary_Position )"
           /**/                              "VALUES ( ?,"       "?,"   "?,"       "?,"  "?,"     "?,"   "?," "?,"              "?"                ")";
 
-     return execute_query( db, query, batters_t_create_bindings, batter, NULL, NULL );
+     return execute_update_old( db, query, batters_t_create_bindings, batter, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -104,7 +104,7 @@ int batters_t_update( sqlite3 *db, const batter_s *batter )
           /**/
           /**/               "WHERE  Player_Id = ?";
 
-     return execute_query( db, query, batters_t_update_bindings, batter, NULL, NULL );
+     return execute_update_old( db, query, batters_t_update_bindings, batter, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -119,5 +119,5 @@ static int batters_t_delete_bindings( sqlite3_stmt *statement, const void *data 
 
 int batters_t_delete( sqlite3 *db, const batter_s *batter )
 {
-     return execute_query( db, "DELETE FROM Batters_T WHERE Player_Id = ?", batters_t_delete_bindings, batter, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Batters_T WHERE Player_Id = ?", batters_t_delete_bindings, batter, NULL, NULL );
 }

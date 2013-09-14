@@ -28,7 +28,7 @@ int division_accolades_t_create( sqlite3 *db, const division_accolade_s *divisio
      static char query[]   = "INSERT INTO Division_Accolades_T ( Division_Id, Season, Accolade ) "
           /**/                                         "VALUES ( ?,"         "?,"    "?"      ")";
 
-     return execute_query( db, query, division_accolades_t_create_bindings, division_accolade, NULL, NULL );
+     return execute_update_old( db, query, division_accolades_t_create_bindings, division_accolade, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -82,5 +82,5 @@ int division_accolades_t_delete( sqlite3 *db, const division_accolade_s *divisio
 {
      static char query[] = "DELETE FROM Division_Accolades_T WHERE Division_Id = ? AND Season = ? AND Accolade = ?";
 
-     return execute_query( db, query, division_accolades_t_delete_bindings, division_accolade, NULL, NULL );
+     return execute_update_old( db, query, division_accolades_t_delete_bindings, division_accolade, NULL, NULL );
 }

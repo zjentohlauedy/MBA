@@ -25,7 +25,7 @@ int divisions_t_create( sqlite3 *db, const division_s *division )
      static char query[]   = "INSERT INTO Divisions_T ( Division_Id, Name )"
           /**/                                "VALUES ( ?,"         "?"  ")";
 
-     return execute_query( db, query, divisions_t_create_bindings, division, NULL, NULL );
+     return execute_update_old( db, query, divisions_t_create_bindings, division, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -77,7 +77,7 @@ int divisions_t_update( sqlite3 *db, const division_s *division )
           /**/
           /**/               "WHERE  Division_Id = ?";
 
-     return execute_query( db, query, divisions_t_update_bindings, division, NULL, NULL );
+     return execute_update_old( db, query, divisions_t_update_bindings, division, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -92,5 +92,5 @@ static int divisions_t_delete_bindings( sqlite3_stmt *statement, const void *dat
 
 int divisions_t_delete( sqlite3 *db, const division_s *division )
 {
-     return execute_query( db, "DELETE FROM Divisions_T WHERE Division_Id = ?", divisions_t_delete_bindings, division, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Divisions_T WHERE Division_Id = ?", divisions_t_delete_bindings, division, NULL, NULL );
 }

@@ -27,7 +27,7 @@ int division_teams_t_create( sqlite3 *db, const division_team_s *division_team )
      static char query[]   = "INSERT INTO Division_Teams_T ( Division_Id, Team_Id ) "
           /**/                                     "VALUES ( ?,"         "?"     ")";
 
-     return execute_query( db, query, division_teams_t_create_bindings, division_team, NULL, NULL );
+     return execute_update_old( db, query, division_teams_t_create_bindings, division_team, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -79,5 +79,5 @@ int division_teams_t_delete( sqlite3 *db, const division_team_s *division_team )
 {
      static char query[] = "DELETE FROM Division_Teams_T WHERE Division_Id = ? AND Team_Id = ?";
 
-     return execute_query( db, query, division_teams_t_delete_bindings, division_team, NULL, NULL );
+     return execute_update_old( db, query, division_teams_t_delete_bindings, division_team, NULL, NULL );
 }

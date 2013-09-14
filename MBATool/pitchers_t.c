@@ -28,7 +28,7 @@ int pitchers_t_create( sqlite3 *db, const pitcher_s *pitcher )
      static char query[]   = "INSERT INTO Pitchers_T ( Player_Id, Speed, Control, Bunt, Fatigue )"
           /**/                               "VALUES ( ?,"       "?,"   "?,"     "?,"  "?"     ")";
 
-     return execute_query( db, query, pitchers_t_create_bindings, pitcher, NULL, NULL );
+     return execute_update_old( db, query, pitchers_t_create_bindings, pitcher, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -88,7 +88,7 @@ int pitchers_t_update( sqlite3 *db, const pitcher_s *pitcher )
           /**/
           /**/               "WHERE  Player_Id = ?";
 
-     return execute_query( db, query, pitchers_t_update_bindings, pitcher, NULL, NULL );
+     return execute_update_old( db, query, pitchers_t_update_bindings, pitcher, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -103,5 +103,5 @@ static int pitchers_t_delete_bindings( sqlite3_stmt *statement, const void *data
 
 int pitchers_t_delete( sqlite3 *db, const pitcher_s *pitcher )
 {
-     return execute_query( db, "DELETE FROM Pitchers_T WHERE Player_Id = ?", pitchers_t_delete_bindings, pitcher, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Pitchers_T WHERE Player_Id = ?", pitchers_t_delete_bindings, pitcher, NULL, NULL );
 }

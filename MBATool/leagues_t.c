@@ -25,7 +25,7 @@ int leagues_t_create( sqlite3 *db, const league_s *league )
      static char query[]   = "INSERT INTO Leagues_T ( League_Id, Name )"
           /**/                              "VALUES ( ?,"       "?"  ")";
 
-     return execute_query( db, query, leagues_t_create_bindings, league, NULL, NULL );
+     return execute_update_old( db, query, leagues_t_create_bindings, league, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -77,7 +77,7 @@ int leagues_t_update( sqlite3 *db, const league_s *league )
           /**/
           /**/               "WHERE  League_Id = ?";
 
-     return execute_query( db, query, leagues_t_update_bindings, league, NULL, NULL );
+     return execute_update_old( db, query, leagues_t_update_bindings, league, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -92,5 +92,5 @@ static int leagues_t_delete_bindings( sqlite3_stmt *statement, const void *data 
 
 int leagues_t_delete( sqlite3 *db, const league_s *league )
 {
-     return execute_query( db, "DELETE FROM Leagues_T WHERE League_Id = ?", leagues_t_delete_bindings, league, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Leagues_T WHERE League_Id = ?", leagues_t_delete_bindings, league, NULL, NULL );
 }

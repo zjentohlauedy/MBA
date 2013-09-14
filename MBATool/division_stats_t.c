@@ -36,7 +36,7 @@ int division_stats_t_create( sqlite3 *db, const division_stats_s *division_stats
      static char query[]   = "INSERT INTO Division_Stats_T ( Division_Id, Season, Season_Phase, Wins, Losses, Home_Wins, Home_Losses, Road_Wins, Road_Losses, League_Wins, League_Losses, Runs_Scored, Runs_Allowed )"
           /**/                                     "VALUES ( ?,"         "?,"    "?,"          "?,"  "?,"    "?,"       "?,"         "?,"       "?,"         "?,"         "?,"           "?,"         "?"          ")";
 
-     return execute_query( db, query, division_stats_t_create_bindings, division_stats, NULL, NULL );
+     return execute_update_old( db, query, division_stats_t_create_bindings, division_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -129,7 +129,7 @@ int division_stats_t_update( sqlite3 *db, const division_stats_s *division_stats
           /**/               "AND    Season       = ? "
           /**/               "AND    Season_Phase = ? ";
 
-     return execute_query( db, query, division_stats_t_update_bindings, division_stats, NULL, NULL );
+     return execute_update_old( db, query, division_stats_t_update_bindings, division_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -150,5 +150,5 @@ static int division_stats_t_delete_bindings( sqlite3_stmt *statement, const void
 
 int division_stats_t_delete( sqlite3 *db, const division_stats_s *division_stats )
 {
-     return execute_query( db, "DELETE FROM Division_Stats_T WHERE Division_Id = ? AND Season = ? AND Season_Phase = ?", division_stats_t_delete_bindings, division_stats, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM Division_Stats_T WHERE Division_Id = ? AND Season = ? AND Season_Phase = ?", division_stats_t_delete_bindings, division_stats, NULL, NULL );
 }

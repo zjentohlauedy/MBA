@@ -28,7 +28,7 @@ int player_accolades_t_create( sqlite3 *db, const player_accolade_s *player_acco
      static char query[]   = "INSERT INTO Player_Accolades_T ( Player_Id, Season, Accolade ) "
           /**/                                       "VALUES ( ?,"       "?,"    "?"      ")";
 
-     return execute_query( db, query, player_accolades_t_create_bindings, player_accolade, NULL, NULL );
+     return execute_update_old( db, query, player_accolades_t_create_bindings, player_accolade, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -82,5 +82,5 @@ int player_accolades_t_delete( sqlite3 *db, const player_accolade_s *player_acco
 {
      static char query[] = "DELETE FROM Player_Accolades_T WHERE Player_Id = ? AND Season = ? AND Accolade = ?";
 
-     return execute_query( db, query, player_accolades_t_delete_bindings, player_accolade, NULL, NULL );
+     return execute_update_old( db, query, player_accolades_t_delete_bindings, player_accolade, NULL, NULL );
 }

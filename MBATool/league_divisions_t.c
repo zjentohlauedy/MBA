@@ -27,7 +27,7 @@ int league_divisions_t_create( sqlite3 *db, const league_division_s *league_divi
      static char query[]   = "INSERT INTO League_Divisions_T ( League_Id, Division_Id ) "
           /**/                                       "VALUES ( ?,"       "?"         ")";
 
-     return execute_query( db, query, league_divisions_t_create_bindings, league_division, NULL, NULL );
+     return execute_update_old( db, query, league_divisions_t_create_bindings, league_division, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -79,5 +79,5 @@ int league_divisions_t_delete( sqlite3 *db, const league_division_s *league_divi
 {
      static char query[] = "DELETE FROM League_Divisions_T WHERE League_Id = ? AND Division_Id = ?";
 
-     return execute_query( db, query, league_divisions_t_delete_bindings, league_division, NULL, NULL );
+     return execute_update_old( db, query, league_divisions_t_delete_bindings, league_division, NULL, NULL );
 }

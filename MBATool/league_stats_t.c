@@ -34,7 +34,7 @@ int league_stats_t_create( sqlite3 *db, const league_stats_s *league_stats )
      static char query[]   = "INSERT INTO League_Stats_T ( League_Id, Season, Season_Phase, Wins, Losses, Home_Wins, Home_Losses, Road_Wins, Road_Losses, Runs_Scored, Runs_Allowed )"
           /**/                                   "VALUES ( ?,"       "?,"    "?,"          "?,"  "?,"    "?,"       "?,"         "?,"       "?,"         "?,"         "?"          ")";
 
-     return execute_query( db, query, league_stats_t_create_bindings, league_stats, NULL, NULL );
+     return execute_update_old( db, query, league_stats_t_create_bindings, league_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -121,7 +121,7 @@ int league_stats_t_update( sqlite3 *db, const league_stats_s *league_stats )
           /**/               "AND    Season       = ? "
           /**/               "AND    Season_Phase = ? ";
 
-     return execute_query( db, query, league_stats_t_update_bindings, league_stats, NULL, NULL );
+     return execute_update_old( db, query, league_stats_t_update_bindings, league_stats, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -142,5 +142,5 @@ static int league_stats_t_delete_bindings( sqlite3_stmt *statement, const void *
 
 int league_stats_t_delete( sqlite3 *db, const league_stats_s *league_stats )
 {
-     return execute_query( db, "DELETE FROM League_Stats_T WHERE League_Id = ? AND Season = ? AND Season_Phase = ?", league_stats_t_delete_bindings, league_stats, NULL, NULL );
+     return execute_update_old( db, "DELETE FROM League_Stats_T WHERE League_Id = ? AND Season = ? AND Season_Phase = ?", league_stats_t_delete_bindings, league_stats, NULL, NULL );
 }

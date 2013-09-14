@@ -33,7 +33,7 @@ int players_t_create( sqlite3 *db, const player_s *player )
      static char query[]   = "INSERT INTO Players_T ( Player_Id, First_Name, Last_Name, First_Phonetic, Last_Phonetic, Skin_Tone, Handedness, Player_Type, Rookie_Season, Longevity )"
           /**/                              "VALUES ( ?,"       "?,"        "?,"       "?,"            "?,"           "?,"       "?,"        "?,"         "?,"           "?"       ")";
 
-     return execute_query( db, query, players_t_create_bindings, player, NULL, NULL );
+     return execute_update( db, query, players_t_create_bindings, player );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -109,7 +109,7 @@ int players_t_update( sqlite3 *db, const player_s *player )
           /**/
           /**/               "WHERE  Player_Id = ?";
 
-     return execute_query( db, query, players_t_update_bindings, player, NULL, NULL );
+     return execute_update( db, query, players_t_update_bindings, player );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -124,5 +124,5 @@ static int players_t_delete_bindings( sqlite3_stmt *statement, const void *data 
 
 int players_t_delete( sqlite3 *db, const player_s *player )
 {
-     return execute_query( db, "DELETE FROM Players_T WHERE Player_Id = ?", players_t_delete_bindings, player, NULL, NULL );
+     return execute_update( db, "DELETE FROM Players_T WHERE Player_Id = ?", players_t_delete_bindings, player );
 }

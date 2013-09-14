@@ -28,7 +28,7 @@ int team_players_t_create( sqlite3 *db, const team_player_s *team_player )
      static char query[]   = "INSERT INTO Team_Players_T ( Team_Id, Season, Player_Id ) "
           /**/                                   "VALUES ( ?,"     "?,"    "?"       ")";
 
-     return execute_query( db, query, team_players_t_create_bindings, team_player, NULL, NULL );
+     return execute_update_old( db, query, team_players_t_create_bindings, team_player, NULL, NULL );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -82,5 +82,5 @@ int team_players_t_delete( sqlite3 *db, const team_player_s *team_player )
 {
      static char query[] = "DELETE FROM Team_Players_T WHERE Team_Id = ? AND Season = ? AND Player_Id = ?";
 
-     return execute_query( db, query, team_players_t_delete_bindings, team_player, NULL, NULL );
+     return execute_update_old( db, query, team_players_t_delete_bindings, team_player, NULL, NULL );
 }
