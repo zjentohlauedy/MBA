@@ -29,7 +29,7 @@ progs = \
    test_league_accolades_t \
    test_player_service
 
-ALL: $(progs) TAGS
+ALL: $(progs) mba_test.db TAGS
 
 
 test_players_t: test_players_t.o players_t.o sql_query.o
@@ -132,6 +132,9 @@ libmbadata.a: $(MBADATA_OBJECTS)
 
 %.o: %.c player.h team.h division.h league.h sql_query.h unit_test.h
 	$(CC) $(CFLAGS) -c $<
+
+mba_test.db: schema.sql
+	sqlite3 $@ < $<
 
 TAGS: *.h *.c
 	etags *.h *.c

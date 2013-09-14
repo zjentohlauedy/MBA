@@ -34,11 +34,6 @@ make
 
 if [ $? -ne 0 ]; then exit; fi
 
-rm $DBFILE
-sqlite3 $DBFILE < schema.sql
-
-if [ $? -ne 0 ]; then exit; fi
-
 echo
 echo
 
