@@ -148,6 +148,66 @@ player_s *get_player( sqlite3 *db, int player_id )
      return player;
 }
 
+static int upsert_batter_stats( sqlite3 *db, batter_stats_s *batter_stats )
+{
+     int rc;
+
+     if ( (rc = batter_stats_t_create( db, batter_stats )) == SQLITE_CONSTRAINT )
+     {
+          return batter_stats_t_update( db, batter_stats );
+     }
+
+     return rc;
+}
+
+static int upsert_batter( sqlite3 *db, batter_s *batter )
+{
+     int rc;
+
+     if ( (rc = batters_t_create( db, batter )) == SQLITE_CONSTRAINT )
+     {
+          return batters_t_update( db, batter );
+     }
+
+     return rc;
+}
+
+static int upsert_pitcher_stats( sqlite3 *db, pitcher_stats_s *pitcher_stats )
+{
+     int rc;
+
+     if ( (rc = pitcher_stats_t_create( db, pitcher_stats )) == SQLITE_CONSTRAINT )
+     {
+          return pitcher_stats_t_update( db, pitcher_stats );
+     }
+
+     return rc;
+}
+
+static int upsert_pitcher( sqlite3 *db, pitcher_s *pitcher )
+{
+     int rc;
+
+     if ( (rc = pitchers_t_create( db, pitcher )) == SQLITE_CONSTRAINT )
+     {
+          return pitchers_t_update( db, pitcher );
+     }
+
+     return rc;
+}
+
+static int upsert_player( sqlite3 *db, player_s *player )
+{
+     int rc;
+
+     if ( (rc = players_t_create( db, player )) == SQLITE_CONSTRAINT )
+     {
+          return players_t_update( db, player );
+     }
+
+     return rc;
+}
+
 static int save_batter( sqlite3 *db, batter_s *batter )
 {
      int rc;
@@ -156,7 +216,7 @@ static int save_batter( sqlite3 *db, batter_s *batter )
      {
           for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = batter_stats_t_create( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
+               if ( (rc = upsert_batter_stats( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
           }
      }
 
@@ -164,11 +224,14 @@ static int save_batter( sqlite3 *db, batter_s *batter )
      {
           for ( int i = 0; batter->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = batter_accolades_t_create( db, &batter->accolades[i] )) != SQLITE_OK ) return rc;
+               if ( (rc = batter_accolades_t_create( db, &batter->accolades[i] )) != SQLITE_OK )
+               {
+                    if ( rc != SQLITE_CONSTRAINT ) return rc;
+               }
           }
      }
 
-     return batters_t_create( db, batter );
+     return upsert_batter( db, batter );
 }
 
 static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
@@ -179,7 +242,7 @@ static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
      {
           for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = pitcher_stats_t_create( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
+               if ( (rc = upsert_pitcher_stats( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
           }
      }
 
@@ -187,11 +250,14 @@ static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
      {
           for ( int i = 0; pitcher->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = pitcher_accolades_t_create( db, &pitcher->accolades[i] )) != SQLITE_OK ) return rc;
+               if ( (rc = pitcher_accolades_t_create( db, &pitcher->accolades[i] )) != SQLITE_OK )
+               {
+                    if ( rc != SQLITE_CONSTRAINT ) return rc;
+               }
           }
      }
 
-     return pitchers_t_create( db, pitcher );
+     return upsert_pitcher( db, pitcher );
 }
 
 int save_player( sqlite3 *db, player_s *player )
@@ -212,15 +278,84 @@ int save_player( sqlite3 *db, player_s *player )
      {
           for ( int i = 0; player->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = player_accolades_t_create( db, &player->accolades[i] )) != SQLITE_OK ) return rc;
+               if ( (rc = player_accolades_t_create( db, &player->accolades[i] )) != SQLITE_OK )
+               {
+                    if ( rc != SQLITE_CONSTRAINT ) return rc;
+               }
           }
      }
 
-     return players_t_create( db, player );
+     return upsert_player( db, player );
+}
+
+static int remove_batter( sqlite3 *db, batter_s *batter )
+{
+     int rc;
+
+     if ( batter->stats != NULL )
+     {
+          for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
+          {
+               if ( (rc = batter_stats_t_delete( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( batter->accolades != NULL )
+     {
+          for ( int i = 0; batter->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = batter_accolades_t_delete( db, &batter->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     return batters_t_delete( db, batter );
+}
+
+static int remove_pitcher( sqlite3 *db, pitcher_s *pitcher )
+{
+     int rc;
+
+     if ( pitcher->stats != NULL )
+     {
+          for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
+          {
+               if ( (rc = pitcher_stats_t_delete( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     if ( pitcher->accolades != NULL )
+     {
+          for ( int i = 0; pitcher->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = pitcher_accolades_t_delete( db, &pitcher->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
+     return pitchers_t_delete( db, pitcher );
 }
 
 int remove_player( sqlite3 *db, player_s *player )
 {
+     int rc;
+
+     if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
+     {
+          if ( (rc = remove_batter( db, player->details.batting )) != SQLITE_OK ) return rc;
+     }
+
+     if ( player->player_type == pt_Pitcher  &&  player->details.pitching != NULL )
+     {
+          if ( (rc = remove_pitcher( db, player->details.pitching )) != SQLITE_OK ) return rc;
+     }
+
+     if ( player->accolades != NULL )
+     {
+          for ( int i = 0; player->accolades[i].player_id >= 0; ++i )
+          {
+               if ( (rc = player_accolades_t_delete( db, &player->accolades[i] )) != SQLITE_OK ) return rc;
+          }
+     }
+
      return players_t_delete( db, player );
 }
 
