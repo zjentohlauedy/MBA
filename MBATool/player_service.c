@@ -8,7 +8,7 @@
 #define TRY( Func ) if ( (rc = (Func)) != SQLITE_OK ) return rc
 
 
-static batter_accolade_s *get_batter_accolades( sqlite3 *db, int player_id )
+static batter_accolade_s *get_batter_accolades( sqlite3 *db, const int player_id )
 {
      static batter_accolade_s sentinel = BATTER_ACCOLADE_SENTINEL;
 
@@ -21,7 +21,7 @@ static batter_accolade_s *get_batter_accolades( sqlite3 *db, int player_id )
      return list.data;
 }
 
-static batter_stats_s *get_batter_stats( sqlite3 *db, int player_id )
+static batter_stats_s *get_batter_stats( sqlite3 *db, const int player_id )
 {
      static batter_stats_s sentinel = BATTER_STATS_SENTINEL;
 
@@ -34,7 +34,7 @@ static batter_stats_s *get_batter_stats( sqlite3 *db, int player_id )
      return list.data;
 }
 
-static batter_s *get_batting_details( sqlite3 *db, int player_id )
+static batter_s *get_batting_details( sqlite3 *db, const int player_id )
 {
      batter_s *batter = NULL;
 
@@ -49,7 +49,7 @@ static batter_s *get_batting_details( sqlite3 *db, int player_id )
      return batter;
 }
 
-static pitcher_accolade_s *get_pitcher_accolades( sqlite3 *db, int player_id )
+static pitcher_accolade_s *get_pitcher_accolades( sqlite3 *db, const int player_id )
 {
      static pitcher_accolade_s sentinel = PITCHER_ACCOLADE_SENTINEL;
 
@@ -62,7 +62,7 @@ static pitcher_accolade_s *get_pitcher_accolades( sqlite3 *db, int player_id )
      return list.data;
 }
 
-static pitcher_stats_s *get_pitcher_stats( sqlite3 *db, int player_id )
+static pitcher_stats_s *get_pitcher_stats( sqlite3 *db, const int player_id )
 {
      static pitcher_stats_s sentinel = PITCHER_STATS_SENTINEL;
 
@@ -75,7 +75,7 @@ static pitcher_stats_s *get_pitcher_stats( sqlite3 *db, int player_id )
      return list.data;
 }
 
-static pitcher_s *get_pitching_details( sqlite3 *db, int player_id )
+static pitcher_s *get_pitching_details( sqlite3 *db, const int player_id )
 {
      pitcher_s *pitcher = NULL;
 
@@ -90,7 +90,7 @@ static pitcher_s *get_pitching_details( sqlite3 *db, int player_id )
      return pitcher;
 }
 
-static player_accolade_s *get_player_accolades( sqlite3 *db, int player_id )
+static player_accolade_s *get_player_accolades( sqlite3 *db, const int player_id )
 {
      static player_accolade_s sentinel = PLAYER_ACCOLADE_SENTINEL;
 
@@ -103,7 +103,7 @@ static player_accolade_s *get_player_accolades( sqlite3 *db, int player_id )
      return list.data;
 }
 
-player_s *get_player( sqlite3 *db, int player_id )
+player_s *get_player( sqlite3 *db, const int player_id )
 {
      player_s *player = NULL;
 
@@ -151,7 +151,7 @@ player_s *get_player( sqlite3 *db, int player_id )
      return player;
 }
 
-static int upsert_batter_stats( sqlite3 *db, batter_stats_s *batter_stats )
+static int upsert_batter_stats( sqlite3 *db, const batter_stats_s *batter_stats )
 {
      int rc;
 
@@ -163,7 +163,7 @@ static int upsert_batter_stats( sqlite3 *db, batter_stats_s *batter_stats )
      return rc;
 }
 
-static int upsert_batter( sqlite3 *db, batter_s *batter )
+static int upsert_batter( sqlite3 *db, const batter_s *batter )
 {
      int rc;
 
@@ -175,7 +175,7 @@ static int upsert_batter( sqlite3 *db, batter_s *batter )
      return rc;
 }
 
-static int upsert_pitcher_stats( sqlite3 *db, pitcher_stats_s *pitcher_stats )
+static int upsert_pitcher_stats( sqlite3 *db, const pitcher_stats_s *pitcher_stats )
 {
      int rc;
 
@@ -187,7 +187,7 @@ static int upsert_pitcher_stats( sqlite3 *db, pitcher_stats_s *pitcher_stats )
      return rc;
 }
 
-static int upsert_pitcher( sqlite3 *db, pitcher_s *pitcher )
+static int upsert_pitcher( sqlite3 *db, const pitcher_s *pitcher )
 {
      int rc;
 
@@ -199,7 +199,7 @@ static int upsert_pitcher( sqlite3 *db, pitcher_s *pitcher )
      return rc;
 }
 
-static int upsert_player( sqlite3 *db, player_s *player )
+static int upsert_player( sqlite3 *db, const player_s *player )
 {
      int rc;
 
@@ -211,7 +211,7 @@ static int upsert_player( sqlite3 *db, player_s *player )
      return rc;
 }
 
-static int save_batter( sqlite3 *db, batter_s *batter )
+static int save_batter( sqlite3 *db, const batter_s *batter )
 {
      int rc;
 
@@ -237,7 +237,7 @@ static int save_batter( sqlite3 *db, batter_s *batter )
      return upsert_batter( db, batter );
 }
 
-static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
+static int save_pitcher( sqlite3 *db, const pitcher_s *pitcher )
 {
      int rc;
 
@@ -263,7 +263,7 @@ static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
      return upsert_pitcher( db, pitcher );
 }
 
-int save_player( sqlite3 *db, player_s *player )
+int save_player( sqlite3 *db, const player_s *player )
 {
      int rc;
 
@@ -291,7 +291,7 @@ int save_player( sqlite3 *db, player_s *player )
      return upsert_player( db, player );
 }
 
-static int remove_batter( sqlite3 *db, batter_s *batter )
+static int remove_batter( sqlite3 *db, const batter_s *batter )
 {
      int rc;
 
@@ -314,7 +314,7 @@ static int remove_batter( sqlite3 *db, batter_s *batter )
      return batters_t_delete( db, batter );
 }
 
-static int remove_pitcher( sqlite3 *db, pitcher_s *pitcher )
+static int remove_pitcher( sqlite3 *db, const pitcher_s *pitcher )
 {
      int rc;
 
@@ -337,7 +337,7 @@ static int remove_pitcher( sqlite3 *db, pitcher_s *pitcher )
      return pitchers_t_delete( db, pitcher );
 }
 
-int remove_player( sqlite3 *db, player_s *player )
+int remove_player( sqlite3 *db, const player_s *player )
 {
      int rc;
 
