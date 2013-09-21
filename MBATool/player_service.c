@@ -5,6 +5,9 @@
 #include "player.h"
 
 
+#define TRY( Func ) if ( (rc = (Func)) != SQLITE_OK ) return rc
+
+
 static batter_accolade_s *get_batter_accolades( sqlite3 *db, int player_id )
 {
      static batter_accolade_s sentinel = BATTER_ACCOLADE_SENTINEL;
@@ -216,7 +219,7 @@ static int save_batter( sqlite3 *db, batter_s *batter )
      {
           for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = upsert_batter_stats( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
+               TRY( upsert_batter_stats( db, &batter->stats[i] ) );
           }
      }
 
@@ -242,7 +245,7 @@ static int save_pitcher( sqlite3 *db, pitcher_s *pitcher )
      {
           for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = upsert_pitcher_stats( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
+               TRY( upsert_pitcher_stats( db, &pitcher->stats[i] ) );
           }
      }
 
@@ -266,12 +269,12 @@ int save_player( sqlite3 *db, player_s *player )
 
      if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
      {
-          if ( (rc = save_batter( db, player->details.batting )) != SQLITE_OK ) return rc;
+          TRY( save_batter( db, player->details.batting ) );
      }
 
      if ( player->player_type == pt_Pitcher  &&  player->details.pitching != NULL )
      {
-          if ( (rc = save_pitcher( db, player->details.pitching )) != SQLITE_OK ) return rc;
+          TRY( save_pitcher( db, player->details.pitching ) );
      }
 
      if ( player->accolades != NULL )
@@ -296,7 +299,7 @@ static int remove_batter( sqlite3 *db, batter_s *batter )
      {
           for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = batter_stats_t_delete( db, &batter->stats[i] )) != SQLITE_OK ) return rc;
+               TRY( batter_stats_t_delete( db, &batter->stats[i] ) );
           }
      }
 
@@ -304,7 +307,7 @@ static int remove_batter( sqlite3 *db, batter_s *batter )
      {
           for ( int i = 0; batter->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = batter_accolades_t_delete( db, &batter->accolades[i] )) != SQLITE_OK ) return rc;
+               TRY( batter_accolades_t_delete( db, &batter->accolades[i] ) );
           }
      }
 
@@ -319,7 +322,7 @@ static int remove_pitcher( sqlite3 *db, pitcher_s *pitcher )
      {
           for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
           {
-               if ( (rc = pitcher_stats_t_delete( db, &pitcher->stats[i] )) != SQLITE_OK ) return rc;
+               TRY( pitcher_stats_t_delete( db, &pitcher->stats[i] ) );
           }
      }
 
@@ -327,7 +330,7 @@ static int remove_pitcher( sqlite3 *db, pitcher_s *pitcher )
      {
           for ( int i = 0; pitcher->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = pitcher_accolades_t_delete( db, &pitcher->accolades[i] )) != SQLITE_OK ) return rc;
+               TRY( pitcher_accolades_t_delete( db, &pitcher->accolades[i] ) );
           }
      }
 
@@ -340,19 +343,19 @@ int remove_player( sqlite3 *db, player_s *player )
 
      if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
      {
-          if ( (rc = remove_batter( db, player->details.batting )) != SQLITE_OK ) return rc;
+          TRY( remove_batter( db, player->details.batting ) );
      }
 
      if ( player->player_type == pt_Pitcher  &&  player->details.pitching != NULL )
      {
-          if ( (rc = remove_pitcher( db, player->details.pitching )) != SQLITE_OK ) return rc;
+          TRY( remove_pitcher( db, player->details.pitching ) );
      }
 
      if ( player->accolades != NULL )
      {
           for ( int i = 0; player->accolades[i].player_id >= 0; ++i )
           {
-               if ( (rc = player_accolades_t_delete( db, &player->accolades[i] )) != SQLITE_OK ) return rc;
+               TRY( player_accolades_t_delete( db, &player->accolades[i] ) );
           }
      }
 
