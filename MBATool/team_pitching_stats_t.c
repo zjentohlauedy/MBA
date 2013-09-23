@@ -41,6 +41,7 @@ int team_pitching_stats_t_create( sqlite3 *db, const team_pitching_stats_s *team
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// By Key:
 static int team_pitching_stats_t_read_bindings( sqlite3_stmt *statement, const void *data )
 {
      int rc;
@@ -81,6 +82,46 @@ int team_pitching_stats_t_read( sqlite3 *db, team_pitching_stats_s *team_pitchin
           /**/               "AND    Season_Phase = ? ";
 
      return execute_query( db, query, team_pitching_stats_t_read_bindings, team_pitching_stats, team_pitching_stats_t_read_retrieve, team_pitching_stats );
+}
+
+// By Team:
+static int team_pitching_stats_t_read_by_team_bindings( sqlite3_stmt *statement, const void *data )
+{
+     const int *team_id = (int *)data;
+
+     return sqlite3_bind_int( statement, 1, *team_id );
+}
+
+static int team_pitching_stats_t_read_by_team_retrieve( sqlite3_stmt *statement, const void *data )
+{
+     data_list_s *data_list = (data_list_s *)data;
+
+     team_pitching_stats_s team_pitching_stats = { 0 };
+
+     team_pitching_stats.team_id      = sqlite3_column_int(    statement,  0 );
+     team_pitching_stats.season       = sqlite3_column_int(    statement,  1 );
+     team_pitching_stats.season_phase = sqlite3_column_int(    statement,  2 );
+     team_pitching_stats.wins         = sqlite3_column_int(    statement,  3 );
+     team_pitching_stats.losses       = sqlite3_column_int(    statement,  4 );
+     team_pitching_stats.games        = sqlite3_column_int(    statement,  5 );
+     team_pitching_stats.saves        = sqlite3_column_int(    statement,  6 );
+     team_pitching_stats.innings      = sqlite3_column_double( statement,  7 );
+     team_pitching_stats.hits         = sqlite3_column_int(    statement,  8 );
+     team_pitching_stats.earned_runs  = sqlite3_column_int(    statement,  9 );
+     team_pitching_stats.home_runs    = sqlite3_column_int(    statement, 10 );
+     team_pitching_stats.walks        = sqlite3_column_int(    statement, 11 );
+     team_pitching_stats.strike_outs  = sqlite3_column_int(    statement, 12 );
+
+     if ( add_to_data_list( data_list, &team_pitching_stats, sizeof(team_pitching_stats_s), 10 ) < 0 ) return SQLITE_ERROR;
+
+     return SQLITE_OK;
+}
+
+int team_pitching_stats_t_read_by_team( sqlite3 *db, const int team_id, data_list_s *team_pitching_stats )
+{
+     static char query[] = "SELECT Team_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs FROM Team_Pitching_Stats_T WHERE Team_Id = ?";
+
+     return execute_query( db, query, team_pitching_stats_t_read_by_team_bindings, &team_id, team_pitching_stats_t_read_by_team_retrieve, team_pitching_stats );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

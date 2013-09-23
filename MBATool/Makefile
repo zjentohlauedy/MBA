@@ -27,7 +27,8 @@ progs = \
    test_league_divisions_t \
    test_league_stats_t \
    test_league_accolades_t \
-   test_player_service
+   test_player_service \
+   test_team_service
 
 ALL: $(progs) mba_test.db TAGS
 
@@ -62,13 +63,13 @@ test_teams_t: test_teams_t.o teams_t.o sql_query.o
 test_team_players_t: test_team_players_t.o team_players_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_team_stats_t: test_team_stats_t.o team_stats_t.o sql_query.o
+test_team_stats_t: test_team_stats_t.o team_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_team_pitching_stats_t: test_team_pitching_stats_t.o team_pitching_stats_t.o sql_query.o
+test_team_pitching_stats_t: test_team_pitching_stats_t.o team_pitching_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_team_batting_stats_t: test_team_batting_stats_t.o team_batting_stats_t.o sql_query.o
+test_team_batting_stats_t: test_team_batting_stats_t.o team_batting_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_team_accolades_t: test_team_accolades_t.o team_accolades_t.o sql_query.o data_list.o
@@ -101,6 +102,9 @@ test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_quer
 test_player_service: test_player_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+test_team_service: test_team_service.o libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 MBADATA_OBJECTS = sql_query.o \
  data_list.o \
  batter_accolades_t.o \
@@ -125,7 +129,8 @@ MBADATA_OBJECTS = sql_query.o \
  team_players_t.o \
  team_stats_t.o \
  teams_t.o \
- player_service.o
+ player_service.o \
+ team_service.o
 
 libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^

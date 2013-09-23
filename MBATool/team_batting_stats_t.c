@@ -43,6 +43,7 @@ int team_batting_stats_t_create( sqlite3 *db, const team_batting_stats_s *team_b
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ READ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// By Key:
 static int team_batting_stats_t_read_bindings( sqlite3_stmt *statement, const void *data )
 {
      int rc;
@@ -85,6 +86,48 @@ int team_batting_stats_t_read( sqlite3 *db, team_batting_stats_s *team_batting_s
           /**/               "AND    Season_Phase = ? ";
 
      return execute_query( db, query, team_batting_stats_t_read_bindings, team_batting_stats, team_batting_stats_t_read_retrieve, team_batting_stats );
+}
+
+// By Team:
+static int team_batting_stats_t_read_bindings_by_team( sqlite3_stmt *statement, const void *data )
+{
+     const int *team_id = (int *)data;
+
+     return sqlite3_bind_int( statement, 1, *team_id );
+}
+
+static int team_batting_stats_t_read_retrieve_by_team( sqlite3_stmt *statement, const void *data )
+{
+     data_list_s *data_list = (data_list_s *)data;
+
+     team_batting_stats_s team_batting_stats = { 0 };
+
+     team_batting_stats.team_id        = sqlite3_column_int( statement,  0 );
+     team_batting_stats.season         = sqlite3_column_int( statement,  1 );
+     team_batting_stats.season_phase   = sqlite3_column_int( statement,  2 );
+     team_batting_stats.games          = sqlite3_column_int( statement,  3 );
+     team_batting_stats.at_bats        = sqlite3_column_int( statement,  4 );
+     team_batting_stats.runs           = sqlite3_column_int( statement,  5 );
+     team_batting_stats.hits           = sqlite3_column_int( statement,  6 );
+     team_batting_stats.doubles        = sqlite3_column_int( statement,  7 );
+     team_batting_stats.triples        = sqlite3_column_int( statement,  8 );
+     team_batting_stats.home_runs      = sqlite3_column_int( statement,  9 );
+     team_batting_stats.runs_batted_in = sqlite3_column_int( statement, 10 );
+     team_batting_stats.walks          = sqlite3_column_int( statement, 11 );
+     team_batting_stats.strike_outs    = sqlite3_column_int( statement, 12 );
+     team_batting_stats.steals         = sqlite3_column_int( statement, 13 );
+     team_batting_stats.errors         = sqlite3_column_int( statement, 14 );
+
+     if ( add_to_data_list( data_list, &team_batting_stats, sizeof(team_batting_stats_s), 10 ) < 0 ) return SQLITE_ERROR;
+
+     return SQLITE_OK;
+}
+
+int team_batting_stats_t_read_by_team( sqlite3 *db, const int team_id, data_list_s *team_batting_stats )
+{
+     static char query[] = "SELECT Team_Id, Season, Season_Phase, Games, At_Bats, Runs, Hits, Doubles, Triples, Home_Runs, Runs_Batted_In, Walks, Strike_Outs, Steals, Errors FROM Team_Batting_Stats_T WHERE Team_Id = ?";
+
+     return execute_query( db, query, team_batting_stats_t_read_bindings_by_team, &team_id, team_batting_stats_t_read_retrieve_by_team, team_batting_stats );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

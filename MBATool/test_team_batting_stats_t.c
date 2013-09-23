@@ -220,6 +220,95 @@ static char *team_batting_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheTea
      return NULL;
 }
 
+static char *team_batting_stats_t_read_by_team__ShouldRetrieveAllMatchingRecords_GivenTheTeamId()
+{
+     team_batting_stats_s expected1 = { 0 };
+     team_batting_stats_s expected2 = { 0 };
+
+     expected1.team_id        = 123;
+     expected1.season         = 7;
+     expected1.season_phase   = sp_Playoff;
+     expected1.games          = 134;
+     expected1.at_bats        = 543;
+     expected1.runs           = 101;
+     expected1.hits           = 220;
+     expected1.doubles        = 35;
+     expected1.triples        = 16;
+     expected1.home_runs      = 56;
+     expected1.runs_batted_in = 115;
+     expected1.walks          = 62;
+     expected1.strike_outs    = 131;
+     expected1.steals         = 45;
+     expected1.errors         = 5;
+
+     expected2.team_id        = 123;
+     expected2.season         = 10;
+     expected2.season_phase   = sp_Playoff;
+     expected2.games          = 143;
+     expected2.at_bats        = 555;
+     expected2.runs           = 99;
+     expected2.hits           = 206;
+     expected2.doubles        = 22;
+     expected2.triples        = 11;
+     expected2.home_runs      = 44;
+     expected2.runs_batted_in = 109;
+     expected2.walks          = 58;
+     expected2.strike_outs    = 144;
+     expected2.steals         = 37;
+     expected2.errors         = 8;
+
+     insert_a_team_batting_stats( &expected1 );
+     insert_a_team_batting_stats( &expected2 );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, team_batting_stats_t_read_by_team( db, expected1.team_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     team_batting_stats_s *actual = list.data;
+
+     assertNotNull( actual );
+
+     assertEquals( expected1.team_id,        actual[0].team_id        );
+     assertEquals( expected1.season,         actual[0].season         );
+     assertEquals( expected1.season_phase,   actual[0].season_phase   );
+     assertEquals( expected1.games,          actual[0].games          );
+     assertEquals( expected1.at_bats,        actual[0].at_bats        );
+     assertEquals( expected1.runs,           actual[0].runs           );
+     assertEquals( expected1.hits,           actual[0].hits           );
+     assertEquals( expected1.doubles,        actual[0].doubles        );
+     assertEquals( expected1.triples,        actual[0].triples        );
+     assertEquals( expected1.home_runs,      actual[0].home_runs      );
+     assertEquals( expected1.runs_batted_in, actual[0].runs_batted_in );
+     assertEquals( expected1.walks,          actual[0].walks          );
+     assertEquals( expected1.strike_outs,    actual[0].strike_outs    );
+     assertEquals( expected1.steals,         actual[0].steals         );
+     assertEquals( expected1.errors,         actual[0].errors         );
+
+     assertEquals( expected2.team_id,        actual[1].team_id        );
+     assertEquals( expected2.season,         actual[1].season         );
+     assertEquals( expected2.season_phase,   actual[1].season_phase   );
+     assertEquals( expected2.games,          actual[1].games          );
+     assertEquals( expected2.at_bats,        actual[1].at_bats        );
+     assertEquals( expected2.runs,           actual[1].runs           );
+     assertEquals( expected2.hits,           actual[1].hits           );
+     assertEquals( expected2.doubles,        actual[1].doubles        );
+     assertEquals( expected2.triples,        actual[1].triples        );
+     assertEquals( expected2.home_runs,      actual[1].home_runs      );
+     assertEquals( expected2.runs_batted_in, actual[1].runs_batted_in );
+     assertEquals( expected2.walks,          actual[1].walks          );
+     assertEquals( expected2.strike_outs,    actual[1].strike_outs    );
+     assertEquals( expected2.steals,         actual[1].steals         );
+     assertEquals( expected2.errors,         actual[1].errors         );
+
+     free( actual );
+
+     sqlite3_exec( db, "delete from team_batting_stats_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
 static char *team_batting_stats_t_update__ShouldModifyMatchingRecord_GivenTheTeamIdSeasonAndPhase()
 {
      team_batting_stats_s expected = { 0 };
@@ -324,6 +413,7 @@ static void run_all_tests()
      run_test( team_batting_stats_t_create__ShouldInsertRecordsInTheTeamBattingStatsTTable,           check_sqlite_error );
      run_test( team_batting_stats_t_create__ShouldGiveAnErrorIfRecordForSameTeamSeasonAndPhaseExists, check_sqlite_error );
      run_test( team_batting_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
+     run_test( team_batting_stats_t_read_by_team__ShouldRetrieveAllMatchingRecords_GivenTheTeamId,    check_sqlite_error );
      run_test( team_batting_stats_t_update__ShouldModifyMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
      run_test( team_batting_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheTeamIdSeasonAndPhase,  check_sqlite_error );
 }

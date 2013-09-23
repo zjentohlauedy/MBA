@@ -86,7 +86,6 @@ int pitcher_stats_t_read( sqlite3 *db, pitcher_stats_s *pitcher_stats )
 }
 
 // By Player:
-
 static int pitcher_stats_t_read_by_player_bindings( sqlite3_stmt *statement, const void *data )
 {
      const int *player_id = (int *)data;
