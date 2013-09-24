@@ -157,6 +157,7 @@ int team_accolades_t_read_by_team( sqlite3 *db, const int team_id,       data_li
 int team_accolades_t_delete(       sqlite3 *db,                    const team_accolade_s *team_accolade  );
 
 team_s *get_team(  sqlite3 *db, const int     team_id );
+int     save_team( sqlite3 *db, const team_s *team    );
 void    free_team(                    team_s *team    );
 
 #endif
