@@ -1040,6 +1040,9 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      expected_pitcher.bunt      = 5;
      expected_pitcher.fatigue   = 7;
 
+     expected_pitcher_stats[0].wins   = 18;
+     expected_pitcher_stats[0].losses = 12;
+
      expected_pitcher.stats     =  expected_pitcher_stats;
      expected_pitcher.accolades =  expected_pitcher_accolades;
      expected.details.pitching  = &expected_pitcher;
@@ -1516,6 +1519,9 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      expected_batter.arm                = 3;
      expected_batter.primary_position   = pos_ShortStop;
      expected_batter.secondary_position = pos_LeftField;
+
+     expected_batter_stats[0].games   = 141;
+     expected_batter_stats[0].at_bats = 567;
 
      assertEquals( SQLITE_OK, save_player( db, &expected ) );
 
