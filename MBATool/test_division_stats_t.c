@@ -203,6 +203,85 @@ static char *division_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheDivisio
      return NULL;
 }
 
+static char *division_stats_t_read_by_division__ShouldRetrieveAllMatchingRecords_GivenTheDivisionId()
+{
+     division_stats_s expected1 = { 0 };
+     division_stats_s expected2 = { 0 };
+
+     expected1.division_id   = 3;
+     expected1.season        = 2;
+     expected1.season_phase  = sp_Regular;
+     expected1.wins          = 388;
+     expected1.losses        = 380;
+     expected1.home_wins     = 205;
+     expected1.home_losses   = 179;
+     expected1.road_wins     = 166;
+     expected1.road_losses   = 218;
+     expected1.league_wins   = 135;
+     expected1.league_losses = 121;
+     expected1.runs_scored   = 2642;
+     expected1.runs_allowed  = 2619;
+
+     expected2.division_id   = 3;
+     expected2.season        = 5;
+     expected2.season_phase  = sp_Regular;
+     expected2.wins          = 392;
+     expected2.losses        = 376;
+     expected2.home_wins     = 195;
+     expected2.home_losses   = 189;
+     expected2.road_wins     = 167;
+     expected2.road_losses   = 217;
+     expected2.league_wins   = 138;
+     expected2.league_losses = 118;
+     expected2.runs_scored   = 2698;
+     expected2.runs_allowed  = 2703;
+
+     insert_a_division_stats( &expected1 );
+     insert_a_division_stats( &expected2 );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, division_stats_t_read_by_division( db, expected1.division_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     division_stats_s *actual = list.data;
+
+     assertNotNull( actual );
+
+     assertEquals( expected1.division_id,   actual[0].division_id     );
+     assertEquals( expected1.season,        actual[0].season          );
+     assertEquals( expected1.season_phase,  actual[0].season_phase    );
+     assertEquals( expected1.wins,          actual[0].wins            );
+     assertEquals( expected1.losses,        actual[0].losses          );
+     assertEquals( expected1.home_wins,     actual[0].home_wins       );
+     assertEquals( expected1.home_losses,   actual[0].home_losses     );
+     assertEquals( expected1.road_wins,     actual[0].road_wins       );
+     assertEquals( expected1.road_losses,   actual[0].road_losses     );
+     assertEquals( expected1.league_wins,   actual[0].league_wins     );
+     assertEquals( expected1.league_losses, actual[0].league_losses   );
+     assertEquals( expected1.runs_scored,   actual[0].runs_scored     );
+     assertEquals( expected1.runs_allowed,  actual[0].runs_allowed    );
+
+     assertEquals( expected2.division_id,   actual[1].division_id     );
+     assertEquals( expected2.season,        actual[1].season          );
+     assertEquals( expected2.season_phase,  actual[1].season_phase    );
+     assertEquals( expected2.wins,          actual[1].wins            );
+     assertEquals( expected2.losses,        actual[1].losses          );
+     assertEquals( expected2.home_wins,     actual[1].home_wins       );
+     assertEquals( expected2.home_losses,   actual[1].home_losses     );
+     assertEquals( expected2.road_wins,     actual[1].road_wins       );
+     assertEquals( expected2.road_losses,   actual[1].road_losses     );
+     assertEquals( expected2.league_wins,   actual[1].league_wins     );
+     assertEquals( expected2.league_losses, actual[1].league_losses   );
+     assertEquals( expected2.runs_scored,   actual[1].runs_scored     );
+     assertEquals( expected2.runs_allowed,  actual[1].runs_allowed    );
+
+     sqlite3_exec( db, "delete from division_stats_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
 static char *division_stats_t_update__ShouldModifyMatchingRecord_GivenTheDivisionIdSeasonAndPhase()
 {
      division_stats_s expected = { 0 };
@@ -296,11 +375,12 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( division_stats_t_create__ShouldInsertRecordsInTheDivisionStatsTTable,                  check_sqlite_error );
-     run_test( division_stats_t_create__ShouldGiveAnErrorIfRecordForSameDivisionSeasonAndPhaseExists, check_sqlite_error );
-     run_test( division_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheDivisionIdSeasonAndPhase,  check_sqlite_error );
-     run_test( division_stats_t_update__ShouldModifyMatchingRecord_GivenTheDivisionIdSeasonAndPhase,  check_sqlite_error );
-     run_test( division_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheDivisionIdSeasonAndPhase,  check_sqlite_error );
+     run_test( division_stats_t_create__ShouldInsertRecordsInTheDivisionStatsTTable,                   check_sqlite_error );
+     run_test( division_stats_t_create__ShouldGiveAnErrorIfRecordForSameDivisionSeasonAndPhaseExists,  check_sqlite_error );
+     run_test( division_stats_t_read__ShouldRetrieveMatchingRecord_GivenTheDivisionIdSeasonAndPhase,   check_sqlite_error );
+     run_test( division_stats_t_read_by_division__ShouldRetrieveAllMatchingRecords_GivenTheDivisionId, check_sqlite_error );
+     run_test( division_stats_t_update__ShouldModifyMatchingRecord_GivenTheDivisionIdSeasonAndPhase,   check_sqlite_error );
+     run_test( division_stats_t_delete__ShouldDeleteMatchingRecord_GivenTheDivisionIdSeasonAndPhase,   check_sqlite_error );
 }
 
 

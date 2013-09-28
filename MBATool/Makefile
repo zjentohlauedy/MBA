@@ -28,7 +28,8 @@ progs = \
    test_league_stats_t \
    test_league_accolades_t \
    test_player_service \
-   test_team_service
+   test_team_service \
+   test_division_service
 
 ALL: $(progs) mba_test.db TAGS
 
@@ -81,7 +82,7 @@ test_divisions_t: test_divisions_t.o divisions_t.o sql_query.o
 test_division_teams_t: test_division_teams_t.o division_teams_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
-test_division_stats_t: test_division_stats_t.o division_stats_t.o sql_query.o
+test_division_stats_t: test_division_stats_t.o division_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_division_accolades_t: test_division_accolades_t.o division_accolades_t.o sql_query.o data_list.o
@@ -103,6 +104,9 @@ test_player_service: test_player_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_team_service: test_team_service.o libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_division_service: test_division_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 MBADATA_OBJECTS = sql_query.o \
@@ -130,7 +134,8 @@ MBADATA_OBJECTS = sql_query.o \
  team_stats_t.o \
  teams_t.o \
  player_service.o \
- team_service.o
+ team_service.o \
+ division_service.o
 
 libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^

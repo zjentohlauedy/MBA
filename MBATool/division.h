@@ -4,6 +4,10 @@
 #include "data_list.h"
 #include "season.h"
 
+#define DIVISION_TEAM_SENTINEL     { -1, -1 }
+#define DIVISION_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
+#define DIVISION_ACCOLADE_SENTINEL { -1, -1, dacc_None }
+
 typedef enum
 {
      dacc_None           = 0,
@@ -15,17 +19,11 @@ typedef enum
 
 typedef struct
 {
-     int   division_id;
-     char  name        [20 + 1];
+     int                  division_id;
+     int                  season;
+     division_accolade_e  accolade;
 
-} division_s;
-
-typedef struct
-{
-     int   division_id;
-     int   team_id;
-
-} division_team_s;
+} division_accolade_s;
 
 typedef struct
 {
@@ -47,11 +45,20 @@ typedef struct
 
 typedef struct
 {
-     int                  division_id;
-     int                  season;
-     division_accolade_e  accolade;
+     int   division_id;
+     int   team_id;
 
-} division_accolade_s;
+} division_team_s;
+
+typedef struct
+{
+     int                  division_id;
+     char                 name        [20 + 1];
+     division_team_s     *teams;
+     division_stats_s    *stats;
+     division_accolade_s *accolades;
+
+} division_s;
 
 
 int divisions_t_create( sqlite3 *db, const division_s *division );
@@ -63,14 +70,18 @@ int division_teams_t_create(           sqlite3 *db,                        const
 int division_teams_t_read_by_division( sqlite3 *db, const int division_id,       data_list_s     *division_teams );
 int division_teams_t_delete(           sqlite3 *db,                        const division_team_s *division_team  );
 
-int division_stats_t_create( sqlite3 *db, const division_stats_s *division_stats );
-int division_stats_t_read(   sqlite3 *db,       division_stats_s *division_stats );
-int division_stats_t_update( sqlite3 *db, const division_stats_s *division_stats );
-int division_stats_t_delete( sqlite3 *db, const division_stats_s *division_stats );
+int division_stats_t_create(           sqlite3 *db,                        const division_stats_s *division_stats );
+int division_stats_t_read(             sqlite3 *db,                              division_stats_s *division_stats );
+int division_stats_t_read_by_division( sqlite3 *db, const int division_id,       data_list_s      *division_stats );
+int division_stats_t_update(           sqlite3 *db,                        const division_stats_s *division_stats );
+int division_stats_t_delete(           sqlite3 *db,                        const division_stats_s *division_stats );
 
 int division_accolades_t_create(           sqlite3 *db,                        const division_accolade_s *division_accolade  );
 int division_accolades_t_read_by_division( sqlite3 *db, const int division_id,       data_list_s         *division_accolades );
 int division_accolades_t_delete(           sqlite3 *db,                        const division_accolade_s *division_accolade  );
 
+division_s *get_division(  sqlite3 *db, const int         division_id );
+int         save_division( sqlite3 *db, const division_s *division    );
+void        free_division(                    division_s *division    );
 
 #endif
