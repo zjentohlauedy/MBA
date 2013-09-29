@@ -144,12 +144,12 @@ static char *league_accolades_t_read_by_league__ShouldRetrieveAllMatchingRecords
      league_accolade_s *actual = list.data;
 
      assertEquals( expected1.league_id, actual[0].league_id );
-     assertEquals( expected1.season,    actual[0].season      );
-     assertEquals( expected1.accolade,  actual[0].accolade    );
+     assertEquals( expected1.season,    actual[0].season    );
+     assertEquals( expected1.accolade,  actual[0].accolade  );
 
      assertEquals( expected2.league_id, actual[1].league_id );
-     assertEquals( expected2.season,    actual[1].season      );
-     assertEquals( expected2.accolade,  actual[1].accolade    );
+     assertEquals( expected2.season,    actual[1].season    );
+     assertEquals( expected2.accolade,  actual[1].accolade  );
 
      free( actual );
 
