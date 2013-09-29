@@ -88,9 +88,138 @@ division_s *get_division( sqlite3 *db, const int division_id )
      return division;
 }
 
+static int save_division_accolades( sqlite3 *db, const division_accolade_s *division_accolades )
+{
+     int rc;
+
+     for ( int i = 0; division_accolades[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_accolades_t_create( db, &division_accolades[i] )) != SQLITE_OK )
+          {
+               if ( rc != SQLITE_CONSTRAINT ) return rc;
+          }
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_division_stats( sqlite3 *db, const division_stats_s *division_stats )
+{
+     int rc;
+
+     for ( int i = 0; division_stats[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_stats_t_create( db, &division_stats[i] )) == SQLITE_CONSTRAINT )
+          {
+               if ( (rc = division_stats_t_update( db, &division_stats[i] )) != SQLITE_OK ) return rc;
+          }
+          else if ( rc != SQLITE_OK )
+          {
+               return rc;
+          }
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_division_teams( sqlite3 *db, const division_team_s *division_teams )
+{
+     int rc;
+
+     for ( int i = 0; division_teams[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_teams_t_create( db, &division_teams[i] )) != SQLITE_OK )
+          {
+               if ( rc != SQLITE_CONSTRAINT ) return rc;
+          }
+     }
+
+     return SQLITE_OK;
+}
+
 int save_division( sqlite3 *db, const division_s *division )
 {
-     return divisions_t_create( db, division );
+     int rc;
+
+     if ( division->teams != NULL )
+     {
+          if ( (rc = save_division_teams( db, division->teams )) != SQLITE_OK ) return rc;
+     }
+
+     if ( division->stats != NULL )
+     {
+          if ( (rc = save_division_stats( db, division->stats )) != SQLITE_OK ) return rc;
+     }
+
+     if ( division->accolades != NULL )
+     {
+          if ( (rc = save_division_accolades( db, division->accolades )) != SQLITE_OK ) return rc;
+     }
+
+     if ( (rc = divisions_t_create( db, division )) == SQLITE_CONSTRAINT )
+     {
+          return divisions_t_update( db, division );
+     }
+
+     return rc;
+}
+
+static int remove_division_accolades( sqlite3 *db, const division_accolade_s *division_accolades )
+{
+     int rc;
+
+     for ( int i = 0; division_accolades[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_accolades_t_delete( db, &division_accolades[i] )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+static int remove_division_stats( sqlite3 *db, const division_stats_s *division_stats )
+{
+     int rc;
+
+     for ( int i = 0; division_stats[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_stats_t_delete( db, &division_stats[i] )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+static int remove_division_teams( sqlite3 *db, const division_team_s *division_teams )
+{
+     int rc;
+
+     for ( int i = 0; division_teams[i].division_id >= 0; ++i )
+     {
+          if ( (rc = division_teams_t_delete( db, &division_teams[i] )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+int remove_division( sqlite3 *db, const division_s *division )
+{
+     int rc;
+
+     if ( division->teams != NULL )
+     {
+          if ( (rc = remove_division_teams( db, division->teams )) != SQLITE_OK ) return rc;
+     }
+
+     if ( division->stats != NULL )
+     {
+          if ( (rc = remove_division_stats( db, division->stats )) != SQLITE_OK ) return rc;
+     }
+
+     if ( division->accolades != NULL )
+     {
+          if ( (rc = remove_division_accolades( db, division->accolades )) != SQLITE_OK ) return rc;
+     }
+
+     return divisions_t_delete( db, division );
 }
 
 void free_division( division_s *division )

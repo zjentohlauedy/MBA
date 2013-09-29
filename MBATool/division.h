@@ -80,8 +80,9 @@ int division_accolades_t_create(           sqlite3 *db,                        c
 int division_accolades_t_read_by_division( sqlite3 *db, const int division_id,       data_list_s         *division_accolades );
 int division_accolades_t_delete(           sqlite3 *db,                        const division_accolade_s *division_accolade  );
 
-division_s *get_division(  sqlite3 *db, const int         division_id );
-int         save_division( sqlite3 *db, const division_s *division    );
-void        free_division(                    division_s *division    );
+division_s *get_division(    sqlite3 *db, const int         division_id );
+int         save_division(   sqlite3 *db, const division_s *division    );
+int         remove_division( sqlite3 *db, const division_s *division    );
+void        free_division(                      division_s *division    );
 
 #endif
