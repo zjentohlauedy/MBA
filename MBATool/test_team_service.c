@@ -1366,6 +1366,8 @@ static char *remove_team__ShouldRemoveTheTeamStatsFromTheDatabase_GivenATeamWith
      expected_stats[1].runs_scored     = 199;
      expected_stats[1].runs_allowed    = 141;
 
+     expected_stats[2] = team_stats_sentinel;
+
      assertEquals( SQLITE_OK, team_stats_t_create( db, &expected_stats[0] ) );
      assertEquals( SQLITE_OK, team_stats_t_create( db, &expected_stats[1] ) );
 

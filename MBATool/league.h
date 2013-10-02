@@ -76,7 +76,9 @@ int league_accolades_t_create(         sqlite3 *db,                      const l
 int league_accolades_t_read_by_league( sqlite3 *db, const int league_id,       data_list_s       *league_accolades );
 int league_accolades_t_delete(         sqlite3 *db,                      const league_accolade_s *league_accolade  );
 
-league_s *get_league(  sqlite3 *db, const int       league_id );
-void      free_league(                    league_s *league    );
+league_s *get_league(    sqlite3 *db, const int       league_id );
+int       save_league(   sqlite3 *db, const league_s *league    );
+int       remove_league( sqlite3 *db, const league_s *league    );
+void      free_league(                      league_s *league    );
 
 #endif
