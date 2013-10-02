@@ -137,7 +137,10 @@ MBADATA_OBJECTS = sql_query.o \
  team_players_t.o \
  team_stats_t.o \
  teams_t.o \
- player_service.o \
+ player_service_get.o \
+ player_service_save.o \
+ player_service_remove.o \
+ player_service_free.o \
  team_service.o \
  division_service.o \
  league_service.o
@@ -156,4 +159,4 @@ TAGS: *.h *.c
 
 .PHONY: clean
 clean:
-	rm $(progs) *.o
+	rm $(progs) *.o *.a
