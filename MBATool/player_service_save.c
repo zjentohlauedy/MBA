@@ -66,28 +66,84 @@ static int upsert_player( sqlite3 *db, const player_s *player )
      return rc;
 }
 
+static int save_batter_stats( sqlite3 *db, const batter_stats_s *batter_stats )
+{
+     int rc;
+
+     if ( batter_stats == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; batter_stats[i].player_id >= 0; ++i )
+     {
+          TRY( upsert_batter_stats( db, &batter_stats[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_batter_accolades( sqlite3 *db, const batter_accolade_s *batter_accolades )
+{
+     int rc;
+
+     if ( batter_accolades == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; batter_accolades[i].player_id >= 0; ++i )
+     {
+          INSERT_IF_UNIQUE( batter_accolades_t_create( db, &batter_accolades[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_pitcher_stats( sqlite3 *db, const pitcher_stats_s *pitcher_stats )
+{
+     int rc;
+
+     if ( pitcher_stats == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; pitcher_stats[i].player_id >= 0; ++i )
+     {
+          TRY( upsert_pitcher_stats( db, &pitcher_stats[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_pitcher_accolades( sqlite3 *db, const pitcher_accolade_s *pitcher_accolades )
+{
+     int rc;
+
+     if ( pitcher_accolades == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; pitcher_accolades[i].player_id >= 0; ++i )
+     {
+          INSERT_IF_UNIQUE( pitcher_accolades_t_create( db, &pitcher_accolades[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
+static int save_player_accolades( sqlite3 *db, const player_accolade_s *player_accolades )
+{
+     int rc;
+
+     if ( player_accolades == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; player_accolades[i].player_id >= 0; ++i )
+     {
+          INSERT_IF_UNIQUE( player_accolades_t_create( db, &player_accolades[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
 static int save_batter( sqlite3 *db, const batter_s *batter )
 {
      int rc;
 
-     if ( batter->stats != NULL )
-     {
-          for ( int i = 0; batter->stats[i].player_id >= 0; ++i )
-          {
-               TRY( upsert_batter_stats( db, &batter->stats[i] ) );
-          }
-     }
+     if ( batter == NULL ) return SQLITE_OK;
 
-     if ( batter->accolades != NULL )
-     {
-          for ( int i = 0; batter->accolades[i].player_id >= 0; ++i )
-          {
-               if ( (rc = batter_accolades_t_create( db, &batter->accolades[i] )) != SQLITE_OK )
-               {
-                    if ( rc != SQLITE_CONSTRAINT ) return rc;
-               }
-          }
-     }
+     TRY( save_batter_stats(     db, batter->stats     ) );
+     TRY( save_batter_accolades( db, batter->accolades ) );
 
      return upsert_batter( db, batter );
 }
@@ -96,24 +152,10 @@ static int save_pitcher( sqlite3 *db, const pitcher_s *pitcher )
 {
      int rc;
 
-     if ( pitcher->stats != NULL )
-     {
-          for ( int i = 0; pitcher->stats[i].player_id >= 0; ++i )
-          {
-               TRY( upsert_pitcher_stats( db, &pitcher->stats[i] ) );
-          }
-     }
+     if ( pitcher == NULL ) return SQLITE_OK;
 
-     if ( pitcher->accolades != NULL )
-     {
-          for ( int i = 0; pitcher->accolades[i].player_id >= 0; ++i )
-          {
-               if ( (rc = pitcher_accolades_t_create( db, &pitcher->accolades[i] )) != SQLITE_OK )
-               {
-                    if ( rc != SQLITE_CONSTRAINT ) return rc;
-               }
-          }
-     }
+     TRY( save_pitcher_stats(     db, pitcher->stats     ) );
+     TRY( save_pitcher_accolades( db, pitcher->accolades ) );
 
      return upsert_pitcher( db, pitcher );
 }
@@ -122,26 +164,13 @@ int save_player( sqlite3 *db, const player_s *player )
 {
      int rc;
 
-     if ( player->player_type == pt_Batter  &&  player->details.batting != NULL )
+     switch ( player->player_type )
      {
-          TRY( save_batter( db, player->details.batting ) );
+     case pt_Batter:  TRY( save_batter(  db, player->details.batting  ) ); break;
+     case pt_Pitcher: TRY( save_pitcher( db, player->details.pitching ) ); break;
      }
 
-     if ( player->player_type == pt_Pitcher  &&  player->details.pitching != NULL )
-     {
-          TRY( save_pitcher( db, player->details.pitching ) );
-     }
-
-     if ( player->accolades != NULL )
-     {
-          for ( int i = 0; player->accolades[i].player_id >= 0; ++i )
-          {
-               if ( (rc = player_accolades_t_create( db, &player->accolades[i] )) != SQLITE_OK )
-               {
-                    if ( rc != SQLITE_CONSTRAINT ) return rc;
-               }
-          }
-     }
+     TRY( save_player_accolades( db, player->accolades ) );
 
      return upsert_player( db, player );
 }
