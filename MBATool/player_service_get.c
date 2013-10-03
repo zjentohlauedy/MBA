@@ -14,7 +14,12 @@ static batter_accolade_s *get_batter_accolades( sqlite3 *db, const int player_id
 
      if ( batter_accolades_t_read_by_player( db, player_id, &list ) != SQLITE_OK ) return NULL;
 
-     add_to_data_list( &list, &sentinel, sizeof(batter_accolade_s), 10 );
+     if ( add_to_data_list( &list, &sentinel, sizeof(batter_accolade_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
 
      return list.data;
 }
@@ -27,7 +32,12 @@ static batter_stats_s *get_batter_stats( sqlite3 *db, const int player_id )
 
      if ( batter_stats_t_read_by_player( db, player_id, &list ) != SQLITE_OK ) return NULL;
 
-     add_to_data_list( &list, &sentinel, sizeof(batter_stats_s), 10 );
+     if ( add_to_data_list( &list, &sentinel, sizeof(batter_stats_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
 
      return list.data;
 }
@@ -42,7 +52,25 @@ static batter_s *get_batting_details( sqlite3 *db, const int player_id )
 
      batter->player_id = player_id;
 
-     if ( batters_t_read( db, batter ) != SQLITE_OK ) return NULL;
+     if ( batters_t_read( db, batter ) != SQLITE_OK )
+     {
+          free( batter );
+
+          return NULL;
+     }
+
+     return batter;
+}
+
+static batter_s *get_batter( sqlite3 *db, const int player_id )
+{
+     batter_s *batter = NULL;
+
+     if ( (batter = get_batting_details(  db, player_id )) != NULL )
+     {
+          batter->stats     = get_batter_stats(     db, player_id );
+          batter->accolades = get_batter_accolades( db, player_id );
+     }
 
      return batter;
 }
@@ -55,7 +83,12 @@ static pitcher_accolade_s *get_pitcher_accolades( sqlite3 *db, const int player_
 
      if ( pitcher_accolades_t_read_by_player( db, player_id, &list ) != SQLITE_OK ) return NULL;
 
-     add_to_data_list( &list, &sentinel, sizeof(pitcher_accolade_s), 10 );
+     if ( add_to_data_list( &list, &sentinel, sizeof(pitcher_accolade_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
 
      return list.data;
 }
@@ -68,7 +101,12 @@ static pitcher_stats_s *get_pitcher_stats( sqlite3 *db, const int player_id )
 
      if ( pitcher_stats_t_read_by_player( db, player_id, &list ) != SQLITE_OK ) return NULL;
 
-     add_to_data_list( &list, &sentinel, sizeof(pitcher_stats_s), 10 );
+     if ( add_to_data_list( &list, &sentinel, sizeof(pitcher_stats_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
 
      return list.data;
 }
@@ -83,7 +121,25 @@ static pitcher_s *get_pitching_details( sqlite3 *db, const int player_id )
 
      pitcher->player_id = player_id;
 
-     if ( pitchers_t_read( db, pitcher ) != SQLITE_OK ) return NULL;
+     if ( pitchers_t_read( db, pitcher ) != SQLITE_OK )
+     {
+          free( pitcher );
+
+          return NULL;
+     }
+
+     return pitcher;
+}
+
+static pitcher_s *get_pitcher( sqlite3 *db, const int player_id )
+{
+     pitcher_s *pitcher = NULL;
+
+     if ( (pitcher = get_pitching_details(  db, player_id )) != NULL )
+     {
+          pitcher->stats     = get_pitcher_stats(     db, player_id );
+          pitcher->accolades = get_pitcher_accolades( db, player_id );
+     }
 
      return pitcher;
 }
@@ -96,12 +152,17 @@ static player_accolade_s *get_player_accolades( sqlite3 *db, const int player_id
 
      if ( player_accolades_t_read_by_player( db, player_id, &list ) != SQLITE_OK ) return NULL;
 
-     add_to_data_list( &list, &sentinel, sizeof(player_accolade_s), 10 );
+     if ( add_to_data_list( &list, &sentinel, sizeof(player_accolade_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
 
      return list.data;
 }
 
-player_s *get_player( sqlite3 *db, const int player_id )
+static player_s *get_player_details( sqlite3 *db, const int player_id )
 {
      player_s *player = NULL;
 
@@ -118,32 +179,21 @@ player_s *get_player( sqlite3 *db, const int player_id )
           return NULL;
      }
 
+     return player;
+}
+
+player_s *get_player( sqlite3 *db, const int player_id )
+{
+     player_s *player = NULL;
+
+     if ( (player = get_player_details( db, player_id )) == NULL ) return NULL;
+
      player->accolades = get_player_accolades( db, player_id );
 
-     if ( player->player_type == pt_Pitcher )
+     switch ( player->player_type )
      {
-          pitcher_s *pitching = NULL;
-
-          if ( (pitching = get_pitching_details(  db, player_id )) != NULL )
-          {
-               pitching->stats     = get_pitcher_stats(     db, player_id );
-               pitching->accolades = get_pitcher_accolades( db, player_id );
-          }
-
-          player->details.pitching = pitching;
-     }
-
-     if ( player->player_type == pt_Batter  )
-     {
-          batter_s *batting = NULL;
-
-          if ( (batting = get_batting_details(  db, player_id )) != NULL )
-          {
-               batting->stats     = get_batter_stats(     db, player_id );
-               batting->accolades = get_batter_accolades( db, player_id );
-          }
-
-          player->details.batting = batting;
+     case pt_Batter:  player->details.batting  = get_batter(  db, player_id ); break;
+     case pt_Pitcher: player->details.pitching = get_pitcher( db, player_id ); break;
      }
 
      return player;

@@ -28,6 +28,7 @@ progs = \
    test_league_stats_t \
    test_league_accolades_t \
    test_player_service \
+   test_player_service_free \
    test_team_service \
    test_division_service \
    test_league_service
@@ -104,6 +105,9 @@ test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_quer
 test_player_service: test_player_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+test_player_service_free: test_player_service_free.o libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 test_team_service: test_team_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
@@ -141,7 +145,10 @@ MBADATA_OBJECTS = sql_query.o \
  player_service_save.o \
  player_service_remove.o \
  player_service_free.o \
- team_service.o \
+ team_service_get.o \
+ team_service_save.o \
+ team_service_remove.o \
+ team_service_free.o \
  division_service.o \
  league_service.o
 

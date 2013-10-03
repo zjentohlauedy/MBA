@@ -101,4 +101,6 @@ static int  __unit_tests_failed__ = 0;
 
 #define tests_pass() (__unit_tests_failed__ == 0)
 
+static void null() {}
+
 #endif
