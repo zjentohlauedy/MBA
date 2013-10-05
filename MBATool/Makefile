@@ -28,7 +28,6 @@ progs = \
    test_league_stats_t \
    test_league_accolades_t \
    test_player_service \
-   test_player_service_free \
    test_team_service \
    test_division_service \
    test_league_service
@@ -103,9 +102,6 @@ test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_quer
 	$(CC) $(CFLAGS) $(LDFLAGS) -lsqlite3 -o $@ $^
 
 test_player_service: test_player_service.o libmbadata.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-test_player_service_free: test_player_service_free.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_team_service: test_team_service.o libmbadata.a
