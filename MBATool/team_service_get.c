@@ -94,7 +94,7 @@ static team_player_s *get_team_players( sqlite3 *db, const int team_id )
      return list.data;
 }
 
-static *get_team_details( sqlite3 *db, const int team_id )
+static team_s *get_team_details( sqlite3 *db, const int team_id )
 {
      team_s *team = NULL;
 

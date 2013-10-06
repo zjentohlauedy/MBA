@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 
+TESTARGS=""
+
 DBFILE="mba_test.db"
 
 FAIL=0
@@ -14,7 +16,7 @@ function runTestProg {
 
     echo
     printf "%s:\n" $1
-    RESULTS=$( $1 $DBFILE )
+    RESULTS=$( $1 $TESTARGS )
 
     if [ $? -ne 0 ]; then
         FAIL=1
@@ -36,6 +38,8 @@ if [ $? -ne 0 ]; then exit; fi
 
 echo
 echo
+
+TESTARGS=$DBFILE
 
 runTestProg test_players_t
 runTestProg test_player_accolades_t
@@ -67,6 +71,10 @@ runTestProg test_player_service
 runTestProg test_team_service
 runTestProg test_division_service
 runTestProg test_league_service
+
+TESTARGS="."
+
+runTestProg test_file_utils
 
 if [ $FAIL -ne 0 ]; then
 

@@ -19,6 +19,10 @@ temp.file*
 setgames
 TAGS
 
+MBATool/LeagName_test.Dat
+MBATool/Players_test.S
+MBATool/parks_test.dat
+
 # executables
 calc_avg_park_size
 check_games
@@ -79,3 +83,4 @@ MBATool/test_team_service
 MBATool/test_division_service
 MBATool/test_league_service
 MBATool/test_player_service_free
+MBATool/test_file_utils
