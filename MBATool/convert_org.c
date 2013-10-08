@@ -45,7 +45,7 @@ static org_s *createOrg( void )
      return org;
 }
 
-static league_division_s *convertDivisions( const fileleague_s *league_data, const int league_id )
+static league_division_s *convertDivisions( const fileleagname_s *league_data, const int league_id )
 {
      data_list_s        list            = { 0 };
      league_division_s  league_division = { 0 };
@@ -54,13 +54,13 @@ static league_division_s *convertDivisions( const fileleague_s *league_data, con
 
      if ( league_id == 1 )
      {
-          if ( (divisions[0] = createDivision( 1, league_data->division1 )) == NULL ) {                       return NULL; }
-          if ( (divisions[1] = createDivision( 2, league_data->division2 )) == NULL ) { free( divisions[0] ); return NULL; }
+          if ( (divisions[0] = createDivision( 1, league_data->divisions[0].name )) == NULL ) {                       return NULL; }
+          if ( (divisions[1] = createDivision( 2, league_data->divisions[1].name )) == NULL ) { free( divisions[0] ); return NULL; }
      }
      else
      {
-          if ( (divisions[0] = createDivision( 3, league_data->division3 )) == NULL ) {                       return NULL; }
-          if ( (divisions[1] = createDivision( 4, league_data->division4 )) == NULL ) { free( divisions[0] ); return NULL; }
+          if ( (divisions[0] = createDivision( 3, league_data->divisions[2].name )) == NULL ) {                       return NULL; }
+          if ( (divisions[1] = createDivision( 4, league_data->divisions[3].name )) == NULL ) { free( divisions[0] ); return NULL; }
      }
 
      league_division.league_id   =               league_id;
@@ -85,14 +85,14 @@ static league_division_s *convertDivisions( const fileleague_s *league_data, con
      return list.data;
 }
 
-static org_league_s *convertLeagues( const fileleague_s *league_data )
+static org_league_s *convertLeagues( const fileleagname_s *league_data )
 {
      data_list_s   list       = { 0 };
      org_league_s  org_league = { 0 };
      league_s     *leagues[2] = { 0 };
 
-     if ( (leagues[0] = createLeague( 1, league_data->league1 )) == NULL ) {                     return NULL; }
-     if ( (leagues[1] = createLeague( 2, league_data->league2 )) == NULL ) { free( leagues[0] ); return NULL; }
+     if ( (leagues[0] = createLeague( 1, league_data->leagues[0].name )) == NULL ) {                     return NULL; }
+     if ( (leagues[1] = createLeague( 2, league_data->leagues[1].name )) == NULL ) { free( leagues[0] ); return NULL; }
 
      if ( (leagues[0]->divisions = convertDivisions( league_data, leagues[0]->league_id )) == NULL )
      {
@@ -131,7 +131,7 @@ static org_league_s *convertLeagues( const fileleague_s *league_data )
      return list.data;
 }
 
-org_s *convertOrg( const fileleague_s *league_data )
+org_s *convertOrg( const fileleagname_s *league_data )
 {
      org_s *org = NULL;
 

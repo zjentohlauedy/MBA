@@ -32,6 +32,18 @@ typedef enum
 // ----  LEAGNAME.DAT  ----
 typedef struct
 {
+     unsigned char name [12];
+
+} fileleague_s;
+
+typedef struct
+{
+     unsigned char name [12];
+
+} filedivision_s;
+
+typedef struct
+{
      unsigned char name   [12];
      unsigned char color  [ 1];
      unsigned char wins   [ 1];
@@ -43,16 +55,12 @@ typedef struct
 
 typedef struct
 {
-     unsigned char header    [52];
-     unsigned char league1   [12];
-     unsigned char league2   [12];
-     unsigned char division1 [12];
-     unsigned char division2 [12];
-     unsigned char division3 [12];
-     unsigned char division4 [12];
-     fileteam_s    teams     [32];
+     unsigned char  header    [52];
+     fileleague_s   leagues   [ 2];
+     filedivision_s divisions [ 4];
+     fileteam_s     teams     [32];
 
-} fileleague_s;
+} fileleagname_s;
 
 
 // ----  PARKS.DAT  ----
@@ -256,8 +264,8 @@ void          untermName(             unsigned char *buffer,   const int        
 char         *getFileUtilsError(      void                                                     );
 fileplayer_s *readPlayersFile(  const char          *filename                                  );
 boolean_e     writePlayersFile( const char          *filename, const fileplayer_s *playersFile );
-fileleague_s *readLeagueFile(   const char          *filename                                  );
-boolean_e     writeLeagueFile(  const char          *filename, const fileleague_s *leagueFile  );
+fileleagname_s *readLeagueFile(   const char          *filename                                  );
+boolean_e     writeLeagueFile(  const char          *filename, const fileleagname_s *leagueFile  );
 fileparks_s  *readParksFile(    const char          *filename                                  );
 boolean_e     writeParksFile(   const char          *filename, const fileparks_s  *parksFile   );
 

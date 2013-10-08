@@ -13,12 +13,12 @@ static char *result;
 
 static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 {
-     fileleague_s  league_data  = { 0 };
-     char         *league1_name = "League1";
-     char         *league2_name = "League2";
+     fileleagname_s  league_data  = { 0 };
+     char           *league1_name = "League1";
+     char           *league2_name = "League2";
 
-     strcpy( league_data.league1, league1_name );
-     strcpy( league_data.league2, league2_name );
+     strcpy( league_data.leagues[0].name, league1_name );
+     strcpy( league_data.leagues[1].name, league2_name );
 
      org_s *org = convertOrg( &league_data );
 
@@ -45,20 +45,20 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 {
-     fileleague_s  league_data  = { 0 };
-     char         *league1_name = "League1";
-     char         *league2_name = "League2";
-     char         *div1_name    = "Division1";
-     char         *div2_name    = "Division2";
-     char         *div3_name    = "Division3";
-     char         *div4_name    = "Division4";
+     fileleagname_s  league_data  = { 0 };
+     char           *league1_name = "League1";
+     char           *league2_name = "League2";
+     char           *div1_name    = "Division1";
+     char           *div2_name    = "Division2";
+     char           *div3_name    = "Division3";
+     char           *div4_name    = "Division4";
 
-     strcpy( league_data.league1,   league1_name );
-     strcpy( league_data.league2,   league2_name );
-     strcpy( league_data.division1, div1_name    );
-     strcpy( league_data.division2, div2_name    );
-     strcpy( league_data.division3, div3_name    );
-     strcpy( league_data.division4, div4_name    );
+     strcpy( league_data.leagues[0].name,   league1_name );
+     strcpy( league_data.leagues[1].name,   league2_name );
+     strcpy( league_data.divisions[0].name, div1_name    );
+     strcpy( league_data.divisions[1].name, div2_name    );
+     strcpy( league_data.divisions[2].name, div3_name    );
+     strcpy( league_data.divisions[3].name, div4_name    );
 
      org_s *org = convertOrg( &league_data );
 

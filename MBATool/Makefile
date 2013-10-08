@@ -159,7 +159,7 @@ MBADATA_OBJECTS = sql_query.o \
 libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
-%.o: %.c player.h team.h division.h league.h sql_query.h unit_test.h
+%.o: %.c *.h
 	$(CC) $(CFLAGS) -c $<
 
 mba_test.db: schema.sql

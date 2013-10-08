@@ -165,15 +165,15 @@ boolean_e writePlayersFile( const char *filename, const fileplayer_s *players_fi
 }
 
 
-fileleague_s *readLeagueFile( const char *filename )
+fileleagname_s *readLeagueFile( const char *filename )
 {
-     return readFile( filename, sizeof(fileleague_s) );
+     return readFile( filename, sizeof(fileleagname_s) );
 }
 
 
-boolean_e writeLeagueFile( const char *filename, const fileleague_s *league_file )
+boolean_e writeLeagueFile( const char *filename, const fileleagname_s *league_file )
 {
-     return writeFile( filename, league_file, sizeof(fileleague_s) );
+     return writeFile( filename, league_file, sizeof(fileleagname_s) );
 }
 
 
@@ -185,5 +185,5 @@ fileparks_s *readParksFile( const char *filename )
 
 boolean_e writeParksFile( const char *filename, const fileparks_s *parks_file )
 {
-     return writeFile( filename, parks_file, sizeof(fileleague_s) );
+     return writeFile( filename, parks_file, sizeof(fileleagname_s) );
 }

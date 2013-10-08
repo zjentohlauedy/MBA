@@ -123,8 +123,8 @@ static char *readLeagueFile_ShouldReturnAPointerToAFileLeagueObject_GivenAFilena
 
 static char *writeLeagueFile_ShouldCreateALeagueFile_GivenALeagueObjectAndFilename()
 {
-     fileleague_s league_file             = { 0 };
-     char         temp_file_name[999 + 1] = { 0 };
+     fileleagname_s league_file             = { 0 };
+     char           temp_file_name[999 + 1] = { 0 };
 
      sprintf( temp_file_name, "%s.tmp", league_file_name );
 
