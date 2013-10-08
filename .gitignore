@@ -84,3 +84,4 @@ MBATool/test_division_service
 MBATool/test_league_service
 MBATool/test_player_service_free
 MBATool/test_file_utils
+MBATool/test_convert_org

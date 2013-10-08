@@ -76,6 +76,10 @@ TESTARGS="."
 
 runTestProg test_file_utils
 
+TESTARGS=
+
+runTestProg test_convert_org
+
 if [ $FAIL -ne 0 ]; then
 
     echo

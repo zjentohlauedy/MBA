@@ -1,9 +1,12 @@
 #ifndef __INC_LEAGUE_H__
 #define __INC_LEAGUE_H__
 
+#include <sqlite3.h>
 #include "data_list.h"
+#include "division.h"
 #include "season.h"
 
+#define LEAGUE_SENTINEL          { -1, { 0 }, NULL, NULL, NULL }
 #define LEAGUE_DIVISION_SENTINEL { -1, -1 }
 #define LEAGUE_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define LEAGUE_ACCOLADE_SENTINEL { -1, -1, lacc_None }
@@ -42,8 +45,9 @@ typedef struct
 
 typedef struct
 {
-     int  league_id;
-     int  division_id;
+     int         league_id;
+     int         division_id;
+     division_s *division;
 
 } league_division_s;
 

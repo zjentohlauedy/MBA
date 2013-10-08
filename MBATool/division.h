@@ -1,6 +1,7 @@
 #ifndef __INC_DIVISION_H__
 #define __INC_DIVISION_H__
 
+#include <sqlite3.h>
 #include "data_list.h"
 #include "season.h"
 

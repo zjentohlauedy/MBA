@@ -31,7 +31,8 @@ progs = \
    test_team_service \
    test_division_service \
    test_league_service \
-   test_file_utils
+   test_file_utils \
+   test_convert_org
 
 ALL: $(progs) mba_test.db TAGS
 
@@ -115,6 +116,9 @@ test_league_service: test_league_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_file_utils: test_file_utils.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_convert_org: test_convert_org.o convert_org.o data_list.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 MBADATA_OBJECTS = sql_query.o \
