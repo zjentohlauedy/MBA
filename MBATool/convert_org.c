@@ -45,88 +45,113 @@ static org_s *createOrg( void )
      return org;
 }
 
+static void freeDivisions( division_s *divisions[], const int count )
+{
+     for ( int i = 0; i < count; ++i )
+     {
+          if ( divisions[i] != NULL ) free_division( divisions[i] );
+     }
+}
+
+static void freeLeagues( league_s *leagues[], const int count )
+{
+     for ( int i = 0; i < count; ++i )
+     {
+          if ( leagues[i] != NULL ) free_league( leagues[i] );
+     }
+}
+
+static boolean_e addDivisionToList( data_list_s *list, const int league_id, division_s *division )
+{
+     league_division_s league_division = { 0 };
+
+     league_division.league_id   = league_id;
+     league_division.division_id = division->division_id;
+     league_division.division    = division;
+
+     if ( add_to_data_list( list, &league_division, sizeof(league_division_s), 5 ) < 0 ) return bl_False;
+
+     return bl_True;
+}
+
+static boolean_e addLeagueToList( data_list_s *list, league_s *league )
+{
+     org_league_s org_league = { 0 };
+
+     org_league.league = league;
+
+     if ( add_to_data_list( list, &org_league, sizeof(org_league_s), 5 ) < 0 ) return bl_False;
+
+     return bl_True;
+}
+
 static league_division_s *convertDivisions( const fileleagname_s *league_data, const int league_id )
 {
-     data_list_s        list            = { 0 };
-     league_division_s  league_division = { 0 };
-     league_division_s  sentinel        = LEAGUE_DIVISION_SENTINEL;
-     division_s        *divisions[2]    = { 0 };
+     data_list_s        list                            = { 0 };
+     league_division_s  sentinel                        = LEAGUE_DIVISION_SENTINEL;
+     division_s        *divisions[DIVISIONS_PER_LEAGUE] = { 0 };
 
-     if ( league_id == 1 )
+
+     int idx = (league_id - 1) * TOTAL_LEAGUES;
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
-          if ( (divisions[0] = createDivision( 1, league_data->divisions[0].name )) == NULL ) {                       return NULL; }
-          if ( (divisions[1] = createDivision( 2, league_data->divisions[1].name )) == NULL ) { free( divisions[0] ); return NULL; }
-     }
-     else
-     {
-          if ( (divisions[0] = createDivision( 3, league_data->divisions[2].name )) == NULL ) {                       return NULL; }
-          if ( (divisions[1] = createDivision( 4, league_data->divisions[3].name )) == NULL ) { free( divisions[0] ); return NULL; }
-     }
+          int division_id = idx + i + 1;
 
-     league_division.league_id   =               league_id;
-     league_division.division_id = divisions[0]->division_id;
-     league_division.division    = divisions[0];
+          if ( (divisions[i] = createDivision( division_id, league_data->divisions[idx + i].name )) == NULL )
+          {
+               freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
-     if ( add_to_data_list( &list, &league_division, sizeof(league_division_s), 5 ) < 0 )
-     {
-          free_division( divisions[0] );
-          free_division( divisions[1] );
+               return NULL;
+          }
 
-          return NULL;
+          if ( addDivisionToList( &list, league_id, divisions[i] ) != bl_True )
+          {
+               freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
+
+               return NULL;
+          }
      }
 
-     league_division.league_id   =               league_id;
-     league_division.division_id = divisions[1]->division_id;
-     league_division.division    = divisions[1];
-
-     add_to_data_list( &list, &league_division, sizeof(league_division_s), 5 );
-     add_to_data_list( &list, &sentinel,        sizeof(league_division_s), 5 );
+     add_to_data_list( &list, &sentinel, sizeof(league_division_s), 5 );
 
      return list.data;
 }
 
 static org_league_s *convertLeagues( const fileleagname_s *league_data )
 {
-     data_list_s   list       = { 0 };
-     org_league_s  org_league = { 0 };
-     league_s     *leagues[2] = { 0 };
+     data_list_s   list                   = { 0 };
+     org_league_s  sentinel               = { 0 };
+     league_s     *leagues[TOTAL_LEAGUES] = { 0 };
 
-     if ( (leagues[0] = createLeague( 1, league_data->leagues[0].name )) == NULL ) {                     return NULL; }
-     if ( (leagues[1] = createLeague( 2, league_data->leagues[1].name )) == NULL ) { free( leagues[0] ); return NULL; }
 
-     if ( (leagues[0]->divisions = convertDivisions( league_data, leagues[0]->league_id )) == NULL )
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
-          free_league( leagues[0] );
-          free_league( leagues[1] );
+          int league_id = i + 1;
 
-          return NULL;
+          if ( (leagues[i] = createLeague( league_id, league_data->leagues[i].name )) == NULL )
+          {
+               freeLeagues( leagues, TOTAL_LEAGUES );
+
+               return NULL;
+          }
+
+          if ( (leagues[i]->divisions = convertDivisions( league_data, league_id )) == NULL )
+          {
+               freeLeagues( leagues, TOTAL_LEAGUES );
+
+               return NULL;
+          }
+
+          if ( addLeagueToList( &list, leagues[i] ) != bl_True )
+          {
+               freeLeagues( leagues, TOTAL_LEAGUES );
+
+               return NULL;
+          }
      }
 
-     if ( (leagues[1]->divisions = convertDivisions( league_data, leagues[1]->league_id )) == NULL )
-     {
-          free_league( leagues[0] );
-          free_league( leagues[1] );
-
-          return NULL;
-     }
-
-     org_league.league = leagues[0];
-
-     if ( add_to_data_list( &list, &org_league, sizeof(org_league_s), 5 ) < 0 )
-     {
-          free_league( leagues[0] );
-          free_league( leagues[1] );
-
-          return NULL;
-     }
-
-     org_league.league = leagues[1];
-
-     add_to_data_list( &list, &org_league, sizeof(org_league_s), 5 );
-
-     org_league.league = NULL;
-
-     add_to_data_list( &list, &org_league, sizeof(org_league_s), 5 );
+     add_to_data_list( &list, &sentinel, sizeof(org_league_s), 5 );
 
      return list.data;
 }
@@ -147,21 +172,21 @@ org_s *convertOrg( const fileleagname_s *league_data )
      return org;
 }
 
-static void freeLeagues( org_league_s *leagues )
+static void freeOrgLeagues( org_league_s *org_leagues )
 {
-     for ( int i = 0; leagues[i].league != NULL; ++i )
+     for ( int i = 0; org_leagues[i].league != NULL; ++i )
      {
-          free_league( leagues[i].league );
+          free_league( org_leagues[i].league );
      }
 
-     free( leagues );
+     free( org_leagues );
 }
 
 void freeOrg( org_s *org )
 {
      if ( org->leagues != NULL )
      {
-          freeLeagues( org->leagues );
+          freeOrgLeagues( org->leagues );
      }
 
      free( org );
