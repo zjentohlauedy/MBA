@@ -228,9 +228,19 @@ int remove_division( sqlite3 *db, const division_s *division )
      return divisions_t_delete( db, division );
 }
 
+static void free_division_teams( division_team_s *division_teams )
+{
+     for ( int i = 0; division_teams[i].division_id >= 0; ++i )
+     {
+          if ( division_teams[i].team != NULL ) free_team( division_teams[i].team );
+     }
+
+     free( division_teams );
+}
+
 void free_division( division_s *division )
 {
-     if ( division->teams     != NULL ) free( division->teams     );
+     if ( division->teams     != NULL ) free_division_teams( division->teams     );
      if ( division->stats     != NULL ) free( division->stats     );
      if ( division->accolades != NULL ) free( division->accolades );
 

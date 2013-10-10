@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include "data_list.h"
 #include "season.h"
+#include "team.h"
 
 #define DIVISION_TEAM_SENTINEL     { -1, -1 }
 #define DIVISION_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
@@ -46,8 +47,9 @@ typedef struct
 
 typedef struct
 {
-     int   division_id;
-     int   team_id;
+     int     division_id;
+     int     team_id;
+     team_s *team;
 
 } division_team_s;
 

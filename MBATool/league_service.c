@@ -229,9 +229,19 @@ int remove_league( sqlite3 *db, const league_s *league )
      return leagues_t_delete( db, league );
 }
 
+static void free_league_divisions( league_division_s *league_divisions )
+{
+     for ( int i = 0; league_divisions[i].league_id >= 0; ++i )
+     {
+          if ( league_divisions[i].division != NULL ) free_division( league_divisions[i].division );
+     }
+
+     free( league_divisions );
+}
+
 void free_league( league_s *league )
 {
-     if ( league->divisions != NULL ) free( league->divisions );
+     if ( league->divisions != NULL ) free_league_divisions( league->divisions );
      if ( league->stats     != NULL ) free( league->stats     );
      if ( league->accolades != NULL ) free( league->accolades );
 

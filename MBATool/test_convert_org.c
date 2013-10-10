@@ -11,16 +11,37 @@
 static char *result;
 
 
+static fileleagname_s *buildFileLeagName( void )
+{
+     static fileleagname_s league_data = { 0 };
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          sprintf( league_data.leagues[i].name, "League%d", i + 1 );
+     }
+
+     for ( int i = 0; i < TOTAL_DIVISIONS; ++i )
+     {
+          sprintf( league_data.divisions[i].name, "Division%d", i + 1 );
+     }
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          sprintf( league_data.teams[i].name,       "Team%d", i + 1 );
+          /**/     league_data.teams[i].color [0] = i + 1;
+          /**/     league_data.teams[i].wins  [0] = i + 1;
+          /**/     league_data.teams[i].losses[0] = i + 1;
+     }
+
+     return &league_data;
+}
+
+
 static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 {
-     fileleagname_s  league_data  = { 0 };
-     char           *league1_name = "League1";
-     char           *league2_name = "League2";
+     fileleagname_s *league_data = buildFileLeagName();
 
-     strcpy( league_data.leagues[0].name, league1_name );
-     strcpy( league_data.leagues[1].name, league2_name );
-
-     org_s *org = convertOrg( &league_data );
+     org_s *org = convertOrg( league_data );
 
      assertNotNull( org );
 
@@ -28,13 +49,13 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 
      assertNotNull( leagues );
 
-     assertNotNull(                 leagues[0].league            );
-     assertEqualsInt( 1,            leagues[0].league->league_id );
-     assertEqualsStr( league1_name, leagues[0].league->name      );
+     assertNotNull(                                 leagues[0].league            );
+     assertEqualsInt( 1,                            leagues[0].league->league_id );
+     assertEqualsStr( league_data->leagues[0].name, leagues[0].league->name      );
 
-     assertNotNull(                 leagues[1].league            );
-     assertEqualsInt( 2,            leagues[1].league->league_id );
-     assertEqualsStr( league2_name, leagues[1].league->name      );
+     assertNotNull(                                 leagues[1].league            );
+     assertEqualsInt( 2,                            leagues[1].league->league_id );
+     assertEqualsStr( league_data->leagues[1].name, leagues[1].league->name      );
 
      assertNull( leagues[2].league );
 
@@ -45,22 +66,9 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 {
-     fileleagname_s  league_data  = { 0 };
-     char           *league1_name = "League1";
-     char           *league2_name = "League2";
-     char           *div1_name    = "Division1";
-     char           *div2_name    = "Division2";
-     char           *div3_name    = "Division3";
-     char           *div4_name    = "Division4";
+     fileleagname_s *league_data = buildFileLeagName();
 
-     strcpy( league_data.leagues[0].name,   league1_name );
-     strcpy( league_data.leagues[1].name,   league2_name );
-     strcpy( league_data.divisions[0].name, div1_name    );
-     strcpy( league_data.divisions[1].name, div2_name    );
-     strcpy( league_data.divisions[2].name, div3_name    );
-     strcpy( league_data.divisions[3].name, div4_name    );
-
-     org_s *org = convertOrg( &league_data );
+     org_s *org = convertOrg( league_data );
 
      org_league_s *leagues = org->leagues;
 
@@ -70,31 +78,130 @@ static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 
      assertNotNull( league1_divisions );
 
-     assertNotNull(              league1_divisions[0].division              );
-     assertEqualsInt( 1,         league1_divisions[0].division_id           );
-     assertEqualsInt( 1,         league1_divisions[0].division->division_id );
-     assertEqualsStr( div1_name, league1_divisions[0].division->name        );
+     assertNotNull(                                   league1_divisions[0].division              );
+     assertEqualsInt( 1,                              league1_divisions[0].league_id             );
+     assertEqualsInt( 1,                              league1_divisions[0].division_id           );
+     assertEqualsInt( 1,                              league1_divisions[0].division->division_id );
+     assertEqualsStr( league_data->divisions[0].name, league1_divisions[0].division->name        );
 
-     assertNotNull(              league1_divisions[1].division              );
-     assertEqualsInt( 2,         league1_divisions[1].division_id           );
-     assertEqualsInt( 2,         league1_divisions[1].division->division_id );
-     assertEqualsStr( div2_name, league1_divisions[1].division->name        );
+     assertNotNull(                                   league1_divisions[1].division              );
+     assertEqualsInt( 1,                              league1_divisions[1].league_id             );
+     assertEqualsInt( 2,                              league1_divisions[1].division_id           );
+     assertEqualsInt( 2,                              league1_divisions[1].division->division_id );
+     assertEqualsStr( league_data->divisions[1].name, league1_divisions[1].division->name        );
+
+     // check for sentinel
 
      league_division_s *league2_divisions = leagues[1].league->divisions;
 
      assertNotNull( league2_divisions );
 
-     assertNotNull(              league2_divisions[0].division              );
-     assertEqualsInt( 3,         league2_divisions[0].division_id           );
-     assertEqualsInt( 3,         league2_divisions[0].division->division_id );
-     assertEqualsStr( div3_name, league2_divisions[0].division->name        );
+     assertNotNull(                                   league2_divisions[0].division              );
+     assertEqualsInt( 2,                              league2_divisions[0].league_id             );
+     assertEqualsInt( 3,                              league2_divisions[0].division_id           );
+     assertEqualsInt( 3,                              league2_divisions[0].division->division_id );
+     assertEqualsStr( league_data->divisions[2].name, league2_divisions[0].division->name        );
 
-     assertNotNull(              league2_divisions[1].division              );
-     assertEqualsInt( 4,         league2_divisions[1].division_id           );
-     assertEqualsInt( 4,         league2_divisions[1].division->division_id );
-     assertEqualsStr( div4_name, league2_divisions[1].division->name        );
+     assertNotNull(                                   league2_divisions[1].division              );
+     assertEqualsInt( 2,                              league2_divisions[1].league_id             );
+     assertEqualsInt( 4,                              league2_divisions[1].division_id           );
+     assertEqualsInt( 4,                              league2_divisions[1].division->division_id );
+     assertEqualsStr( league_data->divisions[3].name, league2_divisions[1].division->name        );
 
-     assertNull( leagues[2].league );
+     freeOrg( org );
+
+     return NULL;
+}
+
+static char *convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileData()
+{
+     fileleagname_s *league_data = buildFileLeagName();
+
+     org_s *org = convertOrg( league_data );
+
+     org_league_s *leagues = org->leagues;
+
+     assertNotNull( leagues );
+
+     league_division_s *league1_divisions = leagues[0].league->divisions;
+
+     assertNotNull( league1_divisions );
+
+     division_s *division1 = league1_divisions[0].division;
+
+     assertNotNull( division1 );
+
+     division_team_s *division1_teams = division1->teams;
+
+     assertNotNull( division1_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull(                                division1_teams[i].team                );
+          assertEqualsInt( 1,                           division1_teams[i].division_id         );
+          assertEqualsInt( i + 1,                       division1_teams[i].team_id             );
+          assertEqualsInt( i + 1,                       division1_teams[i].team->team_id       );
+          assertEqualsStr( league_data->teams[i].name,  division1_teams[i].team->name          );
+          assertEqualsInt( league_data->teams[i].color, division1_teams[i].team->primary_color );
+     }
+
+     division_s *division2 = league1_divisions[1].division;
+
+     assertNotNull( division2 );
+
+     division_team_s *division2_teams = division2->teams;
+
+     assertNotNull( division2_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull(                                    division2_teams[i].team                );
+          assertEqualsInt( 2,                               division2_teams[i].division_id         );
+          assertEqualsInt( i + 9,                           division2_teams[i].team_id             );
+          assertEqualsInt( i + 9,                           division2_teams[i].team->team_id       );
+          assertEqualsStr( league_data->teams[i + 8].name,  division2_teams[i].team->name          );
+          assertEqualsInt( league_data->teams[i + 8].color, division2_teams[i].team->primary_color );
+     }
+
+     league_division_s *league2_divisions = leagues[1].league->divisions;
+
+     assertNotNull( league2_divisions );
+
+     division_s *division3 = league2_divisions[0].division;
+
+     assertNotNull( division3 );
+
+     division_team_s *division3_teams = division3->teams;
+
+     assertNotNull( division3_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull(                                     division3_teams[i].team                );
+          assertEqualsInt( 3,                                division3_teams[i].division_id         );
+          assertEqualsInt( i + 17,                           division3_teams[i].team_id             );
+          assertEqualsInt( i + 17,                           division3_teams[i].team->team_id       );
+          assertEqualsStr( league_data->teams[i + 16].name,  division3_teams[i].team->name          );
+          assertEqualsInt( league_data->teams[i + 16].color, division3_teams[i].team->primary_color );
+     }
+
+     division_s *division4 = league2_divisions[1].division;
+
+     assertNotNull( division4 );
+
+     division_team_s *division4_teams = division4->teams;
+
+     assertNotNull( division4_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull(                                     division4_teams[i].team                );
+          assertEqualsInt( 4,                                division4_teams[i].division_id         );
+          assertEqualsInt( i + 25,                           division4_teams[i].team_id             );
+          assertEqualsInt( i + 25,                           division4_teams[i].team->team_id       );
+          assertEqualsStr( league_data->teams[i + 24].name,  division4_teams[i].team->name          );
+          assertEqualsInt( league_data->teams[i + 24].color, division4_teams[i].team->primary_color );
+     }
 
      freeOrg( org );
 
@@ -105,6 +212,7 @@ static void run_all_tests()
 {
      run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,   null );
      run_test( convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData, null );
+     run_test( convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileData,     null );
 }
 
 int main( int argc, char *argv[] )

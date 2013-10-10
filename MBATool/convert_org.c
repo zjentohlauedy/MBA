@@ -6,6 +6,21 @@
 #include "org.h"
 
 
+static team_s *createTeam( const int team_id, const char *name, const int color )
+{
+     team_s *team = NULL;
+
+     if ( (team = malloc( sizeof(team_s) )) == NULL ) return NULL;
+
+     memset( team, '\0', sizeof(team_s) );
+
+     strcpy( team->name,           name    );
+     /**/    team->team_id       = team_id;
+     /**/    team->primary_color = color;
+
+     return team;
+}
+
 static division_s *createDivision( const int division_id, const char *name )
 {
      division_s *division = NULL;
@@ -45,6 +60,14 @@ static org_s *createOrg( void )
      return org;
 }
 
+static void freeTeams( team_s *teams[], const int count )
+{
+     for ( int i = 0; i < count; ++i )
+     {
+          if ( teams[i] != NULL ) free_team( teams[i] );
+     }
+}
+
 static void freeDivisions( division_s *divisions[], const int count )
 {
      for ( int i = 0; i < count; ++i )
@@ -59,6 +82,19 @@ static void freeLeagues( league_s *leagues[], const int count )
      {
           if ( leagues[i] != NULL ) free_league( leagues[i] );
      }
+}
+
+static boolean_e addTeamToList( data_list_s *list, const int division_id, team_s *team )
+{
+     division_team_s division_team = { 0 };
+
+     division_team.division_id = division_id;
+     division_team.team_id     = team->team_id;
+     division_team.team        = team;
+
+     if ( add_to_data_list( list, &division_team, sizeof(division_team_s), 10 ) < 0 ) return bl_False;
+
+     return bl_True;
 }
 
 static boolean_e addDivisionToList( data_list_s *list, const int league_id, division_s *division )
@@ -85,6 +121,39 @@ static boolean_e addLeagueToList( data_list_s *list, league_s *league )
      return bl_True;
 }
 
+static division_team_s *convertTeams( const fileleagname_s *league_data, const int division_id )
+{
+     data_list_s      list                      = { 0 };
+     division_team_s  sentinel                  = DIVISION_TEAM_SENTINEL;
+     team_s          *teams[TEAMS_PER_DIVISION] = { 0 };
+
+
+     int idx = (division_id - 1) * TEAMS_PER_DIVISION;
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          int team_id = idx + i + 1;
+
+          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, league_data->teams[idx + i].color )) == NULL )
+          {
+               freeTeams( teams, TEAMS_PER_DIVISION );
+
+               return NULL;
+          }
+
+          if ( addTeamToList( &list, division_id, teams[i] ) != bl_True )
+          {
+               freeTeams( teams, TEAMS_PER_DIVISION );
+
+               return NULL;
+          }
+     }
+
+     add_to_data_list( &list, &sentinel, sizeof(division_team_s), 10 );
+
+     return list.data;
+}
+
 static league_division_s *convertDivisions( const fileleagname_s *league_data, const int league_id )
 {
      data_list_s        list                            = { 0 };
@@ -92,13 +161,20 @@ static league_division_s *convertDivisions( const fileleagname_s *league_data, c
      division_s        *divisions[DIVISIONS_PER_LEAGUE] = { 0 };
 
 
-     int idx = (league_id - 1) * TOTAL_LEAGUES;
+     int idx = (league_id - 1) * DIVISIONS_PER_LEAGUE;
 
-     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     for ( int i = 0; i < DIVISIONS_PER_LEAGUE; ++i )
      {
           int division_id = idx + i + 1;
 
           if ( (divisions[i] = createDivision( division_id, league_data->divisions[idx + i].name )) == NULL )
+          {
+               freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
+
+               return NULL;
+          }
+
+          if ( (divisions[i]->teams = convertTeams( league_data, division_id )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
