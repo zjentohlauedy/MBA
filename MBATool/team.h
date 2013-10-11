@@ -2,10 +2,11 @@
 #define __INC_TEAM_H__
 
 #include <sqlite3.h>
+#include "player.h"
 #include "season.h"
 #include "data_list.h"
 
-#define TEAM_PLAYER_SENTINEL         { -1, -1, -1 }
+#define TEAM_PLAYER_SENTINEL         { -1, -1, -1, NULL }
 #define TEAM_STATS_SENTINEL          { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define TEAM_PITCHING_STATS_SENTINEL { -1, -1, sp_None, -1, -1, -1, -1, -1.0, -1, -1, -1, -1, -1 }
 #define TEAM_BATTING_STATS_SENTINEL  { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
@@ -103,9 +104,10 @@ typedef struct
 
 typedef struct
 {
-     int team_id;
-     int season;
-     int player_id;
+     int       team_id;
+     int       season;
+     int       player_id;
+     player_s *player;
 
 } team_player_s;
 

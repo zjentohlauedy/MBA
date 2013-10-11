@@ -15,7 +15,8 @@ typedef struct
 
 } org_s;
 
-org_s *convertOrg( const fileleagname_s *league_data, const fileparks_s *parks_data );
-void   freeOrg(          org_s          *org                                        );
+org_s *convertOrg( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data );
+
+void freeOrg( org_s *org );
 
 #endif

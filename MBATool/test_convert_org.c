@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "file_formats.h"
-#include "division.h"
-#include "league.h"
 #include "org.h"
 #include "unit_test.h"
 
@@ -48,13 +46,27 @@ static fileparks_s *buildFileParks( void )
      return &parks_data;
 }
 
+static fileplayer_s *buildFilePlayers( void )
+{
+     static fileplayer_s players_data[TOTAL_PLAYERS] = { 0 };
+
+     for ( int i = 0; i < TOTAL_PLAYERS; ++i )
+     {
+          sprintf( players_data[i].first_name, "First%d", i + 1 );
+          sprintf( players_data[i].last_name,  "Last%d",  i + 1 );
+     }
+
+     return players_data;
+}
+
 
 static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 {
-     fileleagname_s *league_data = buildFileLeagName();
-     fileparks_s    *parks_data  = buildFileParks();
+     fileleagname_s *league_data  = buildFileLeagName();
+     fileparks_s    *parks_data   = buildFileParks();
+     fileplayer_s   *players_data = buildFilePlayers();
 
-     org_s *org = convertOrg( league_data, parks_data );
+     org_s *org = convertOrg( league_data, parks_data, players_data );
 
      assertNotNull( org );
 
@@ -79,10 +91,11 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 {
-     fileleagname_s *league_data = buildFileLeagName();
-     fileparks_s    *parks_data  = buildFileParks();
+     fileleagname_s *league_data  = buildFileLeagName();
+     fileparks_s    *parks_data   = buildFileParks();
+     fileplayer_s   *players_data = buildFilePlayers();
 
-     org_s *org = convertOrg( league_data, parks_data );
+     org_s *org = convertOrg( league_data, parks_data, players_data );
 
      org_league_s *leagues = org->leagues;
 
@@ -129,10 +142,11 @@ static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData()
 {
-     fileleagname_s *league_data = buildFileLeagName();
-     fileparks_s    *parks_data  = buildFileParks();
+     fileleagname_s *league_data  = buildFileLeagName();
+     fileparks_s    *parks_data   = buildFileParks();
+     fileplayer_s   *players_data = buildFilePlayers();
 
-     org_s *org = convertOrg( league_data, parks_data );
+     org_s *org = convertOrg( league_data, parks_data, players_data );
 
      org_league_s *leagues = org->leagues;
 
@@ -231,11 +245,80 @@ static char *convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData
      return NULL;
 }
 
+static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
+{
+     fileleagname_s *league_data  = buildFileLeagName();
+     fileparks_s    *parks_data   = buildFileParks();
+     fileplayer_s   *players_data = buildFilePlayers();
+
+     org_s *org = convertOrg( league_data, parks_data, players_data );
+
+     org_league_s *leagues = org->leagues;
+
+     assertNotNull( leagues );
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          league_s *league = leagues[i].league;
+
+          assertNotNull( leagues[i].league );
+
+          league_division_s *league_divisions = league->divisions;
+
+          assertNotNull( league_divisions );
+
+          for ( int j = 0; j < DIVISIONS_PER_LEAGUE; ++j )
+          {
+               division_s *division = league_divisions[j].division;
+
+               assertNotNull( division );
+
+               division_team_s *division_teams = division->teams;
+
+               assertNotNull( division_teams );
+
+               for ( int k = 0; k < TEAMS_PER_DIVISION; ++k )
+               {
+                    team_s *team = division_teams[k].team;
+
+                    assertNotNull( team );
+
+                    team_player_s *team_players = team->players;
+
+                    assertNotNull( team_players );
+
+                    for ( int l = 0; l < PLAYERS_PER_TEAM; ++l )
+                    {
+                         int idx = l + (k * PLAYERS_PER_TEAM) + (j * PLAYERS_PER_DIVISION) + (i * PLAYERS_PER_LEAGUE);
+
+                         player_s *player = team_players[l].player;
+
+                         assertNotNull( player );
+
+                         assertEqualsInt( idx + 1,                      player->player_id  );
+                         assertEqualsStr( players_data[idx].first_name, player->first_name );
+                         assertEqualsStr( players_data[idx].last_name,  player->last_name  );
+                    }
+               }
+          }
+     }
+
+     freeOrg( org );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,           null );
      run_test( convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData,         null );
      run_test( convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData, null );
+     run_test( convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData,          null );
+
+     // TODO:
+     //   add the rest of the player data fields, including player id in fileplayers data
+     //   deal with the player name terminators (and maybe phoens too)
+     //   add support for seasons
 }
 
 int main( int argc, char *argv[] )
