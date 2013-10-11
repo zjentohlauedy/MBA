@@ -6,7 +6,7 @@
 #include "org.h"
 
 
-static team_s *createTeam( const int team_id, const char *name, const int color )
+static team_s *createTeam( const int team_id, const char *name, const char *location, const int color )
 {
      team_s *team = NULL;
 
@@ -14,9 +14,11 @@ static team_s *createTeam( const int team_id, const char *name, const int color 
 
      memset( team, '\0', sizeof(team_s) );
 
-     strcpy( team->name,           name    );
-     /**/    team->team_id       = team_id;
-     /**/    team->primary_color = color;
+     strcpy( team->name,             name     );
+     strcpy( team->location,         location );
+     /**/    team->team_id         = team_id;
+     /**/    team->primary_color   = color;
+     /**/    team->secondary_color = color;
 
      return team;
 }
@@ -121,7 +123,7 @@ static boolean_e addLeagueToList( data_list_s *list, league_s *league )
      return bl_True;
 }
 
-static division_team_s *convertTeams( const fileleagname_s *league_data, const int division_id )
+static division_team_s *convertTeams( const fileleagname_s *league_data, const fileparks_s *parks_data, const int division_id )
 {
      data_list_s      list                      = { 0 };
      division_team_s  sentinel                  = DIVISION_TEAM_SENTINEL;
@@ -134,7 +136,10 @@ static division_team_s *convertTeams( const fileleagname_s *league_data, const i
      {
           int team_id = idx + i + 1;
 
-          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, league_data->teams[idx + i].color )) == NULL )
+          if ( (teams[i] = createTeam( team_id,
+                                       league_data->teams[idx + i].name,
+                                       parks_data->park_names[idx + i].text,
+                                       league_data->teams[idx + i].color[0] )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 
@@ -154,7 +159,7 @@ static division_team_s *convertTeams( const fileleagname_s *league_data, const i
      return list.data;
 }
 
-static league_division_s *convertDivisions( const fileleagname_s *league_data, const int league_id )
+static league_division_s *convertDivisions( const fileleagname_s *league_data, const fileparks_s *parks_data, const int league_id )
 {
      data_list_s        list                            = { 0 };
      league_division_s  sentinel                        = LEAGUE_DIVISION_SENTINEL;
@@ -174,7 +179,7 @@ static league_division_s *convertDivisions( const fileleagname_s *league_data, c
                return NULL;
           }
 
-          if ( (divisions[i]->teams = convertTeams( league_data, division_id )) == NULL )
+          if ( (divisions[i]->teams = convertTeams( league_data, parks_data, division_id )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
@@ -194,7 +199,7 @@ static league_division_s *convertDivisions( const fileleagname_s *league_data, c
      return list.data;
 }
 
-static org_league_s *convertLeagues( const fileleagname_s *league_data )
+static org_league_s *convertLeagues( const fileleagname_s *league_data, const fileparks_s *parks_data )
 {
      data_list_s   list                   = { 0 };
      org_league_s  sentinel               = { 0 };
@@ -212,7 +217,7 @@ static org_league_s *convertLeagues( const fileleagname_s *league_data )
                return NULL;
           }
 
-          if ( (leagues[i]->divisions = convertDivisions( league_data, league_id )) == NULL )
+          if ( (leagues[i]->divisions = convertDivisions( league_data, parks_data, league_id )) == NULL )
           {
                freeLeagues( leagues, TOTAL_LEAGUES );
 
@@ -232,13 +237,13 @@ static org_league_s *convertLeagues( const fileleagname_s *league_data )
      return list.data;
 }
 
-org_s *convertOrg( const fileleagname_s *league_data )
+org_s *convertOrg( const fileleagname_s *league_data, const fileparks_s *parks_data )
 {
      org_s *org = NULL;
 
      if ( (org = createOrg()) == NULL ) return NULL;
 
-     if ( (org->leagues = convertLeagues( league_data )) == NULL )
+     if ( (org->leagues = convertLeagues( league_data, parks_data )) == NULL )
      {
           free( org );
 

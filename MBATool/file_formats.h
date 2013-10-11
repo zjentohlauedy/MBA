@@ -2,6 +2,7 @@
 #define _EWBFILES_H_
 
 
+#define TOTAL_PARKS            32
 #define PLAYERS_PER_TEAM       25
 #define TEAMS_PER_DIVISION      8
 #define PLAYERS_PER_DIVISION    (PLAYERS_PER_TEAM * TEAMS_PER_DIVISION)
@@ -56,10 +57,10 @@ typedef struct
 
 typedef struct
 {
-     unsigned char  header    [52];
-     fileleague_s   leagues   [ 2];
-     filedivision_s divisions [ 4];
-     fileteam_s     teams     [32];
+     unsigned char  header    [ 52              ];
+     fileleague_s   leagues   [ TOTAL_LEAGUES   ];
+     filedivision_s divisions [ TOTAL_DIVISIONS ];
+     fileteam_s     teams     [ TOTAL_TEAMS     ];
 
 } fileleagname_s;
 
@@ -117,9 +118,9 @@ typedef struct
 
 typedef struct
 {
-     unsigned char  filler       [52];
-     park_name_s    park_names   [32];
-     park_details_s park_details [32];
+     unsigned char  filler       [ 52          ];
+     park_name_s    park_names   [ TOTAL_PARKS ];
+     park_details_s park_details [ TOTAL_PARKS ];
 
 } fileparks_s;
 
