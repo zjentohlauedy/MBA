@@ -6,7 +6,20 @@
 #include "org.h"
 
 
-static player_s *createPlayer( const int player_id, const char *first_name, const char *last_name )
+static char *convertTerminatedBuffer( const char *buffer, const size_t length )
+{
+     static char result[99 + 1] = { 0 };
+
+     memset( result, '\0', sizeof(result) );
+
+     memcpy( result, buffer, length );
+
+     untermName( result, length );
+
+     return result;
+}
+
+static player_s *createPlayer( const int player_id, const fileplayer_s *players_data )
 {
      player_s *player = NULL;
 
@@ -14,9 +27,11 @@ static player_s *createPlayer( const int player_id, const char *first_name, cons
 
      memset( player, '\0', sizeof(player_s) );
 
-     strcpy( player->first_name,   first_name );
-     strcpy( player->last_name,    last_name  );
-     /**/    player->player_id   = player_id;
+     strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
+     strcpy( player->last_name,        convertTerminatedBuffer( players_data->last_name,   sizeof(players_data->last_name)   ) );
+     strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
+     strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
+     /**/    player->player_id         =                        player_id;
 
      return player;
 }
@@ -172,7 +187,7 @@ static team_player_s *convertPlayers( const fileleagname_s *league_data, const f
      {
           int player_id = idx + i + 1;
 
-          if ( (players[i] = createPlayer( player_id, players_data[idx + i].first_name, players_data[idx + i].last_name )) == NULL )
+          if ( (players[i] = createPlayer( player_id, &players_data[idx + i] )) == NULL )
           {
                freePlayers( players, PLAYERS_PER_TEAM );
 

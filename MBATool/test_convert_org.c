@@ -27,8 +27,6 @@ static fileleagname_s *buildFileLeagName( void )
      {
           sprintf( league_data.teams[i].name,       "Team%d", i + 1 );
           /**/     league_data.teams[i].color [0] = i + 1;
-          /**/     league_data.teams[i].wins  [0] = i + 1;
-          /**/     league_data.teams[i].losses[0] = i + 1;
      }
 
      return &league_data;
@@ -52,8 +50,10 @@ static fileplayer_s *buildFilePlayers( void )
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-          sprintf( players_data[i].first_name, "First%d", i + 1 );
-          sprintf( players_data[i].last_name,  "Last%d",  i + 1 );
+          sprintf( players_data[i].first_name,  "Fst%d",    i + 1 );
+          sprintf( players_data[i].last_name,   "Last%d",   i + 1 );
+          sprintf( players_data[i].first_phoen, "FIR3ST%d", i + 1 );
+          sprintf( players_data[i].last_phoen,  "LAH4ST%d", i + 1 );
      }
 
      return players_data;
@@ -261,7 +261,7 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
      {
           league_s *league = leagues[i].league;
 
-          assertNotNull( leagues[i].league );
+          assertNotNull( league );
 
           league_division_s *league_divisions = league->divisions;
 
@@ -295,9 +295,11 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 
                          assertNotNull( player );
 
-                         assertEqualsInt( idx + 1,                      player->player_id  );
-                         assertEqualsStr( players_data[idx].first_name, player->first_name );
-                         assertEqualsStr( players_data[idx].last_name,  player->last_name  );
+                         assertEqualsInt( idx + 1,                       player->player_id      );
+                         assertEqualsStr( players_data[idx].first_name,  player->first_name     );
+                         assertEqualsStr( players_data[idx].last_name,   player->last_name      );
+                         assertEqualsStr( players_data[idx].first_phoen, player->first_phonetic );
+                         assertEqualsStr( players_data[idx].last_phoen,  player->last_phonetic  );
                     }
                }
           }
@@ -308,16 +310,81 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
      return NULL;
 }
 
+static char *convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData()
+{
+     fileleagname_s *league_data  = buildFileLeagName();
+     fileparks_s    *parks_data   = buildFileParks();
+     fileplayer_s   *players_data = buildFilePlayers();
+     char           *first_name   = "FULLBUFF";
+     char           *last_name    = "FULLBUFFER";
+     char           *first_phoen  = "FULLBUFFERTO";
+     char           *last_phoen   = "FULLBUFFERALSO";
+
+
+     memcpy( players_data[0].first_name,  first_name,  strlen(first_name)  );
+     memcpy( players_data[0].last_name,   last_name,   strlen(last_name)   );
+     memcpy( players_data[0].first_phoen, first_phoen, strlen(first_phoen) );
+     memcpy( players_data[0].last_phoen,  last_phoen,  strlen(last_phoen)  );
+
+     termName( players_data[0].first_name,  sizeof(players_data[0].first_name)  );
+     termName( players_data[0].last_name,   sizeof(players_data[0].last_name)   );
+     termName( players_data[0].first_phoen, sizeof(players_data[0].first_phoen) );
+     termName( players_data[0].last_phoen,  sizeof(players_data[0].last_phoen)  );
+
+     org_s *org = convertOrg( league_data, parks_data, players_data );
+
+     org_league_s *leagues = org->leagues;
+
+     assertNotNull( leagues );
+
+     league_s *league = leagues[0].league;
+
+     assertNotNull( league );
+
+     league_division_s *league_divisions = league->divisions;
+
+     assertNotNull( league_divisions );
+
+     division_s *division = league_divisions[0].division;
+
+     assertNotNull( division );
+
+     division_team_s *division_teams = division->teams;
+
+     assertNotNull( division_teams );
+
+     team_s *team = division_teams[0].team;
+
+     assertNotNull( team );
+
+     team_player_s *team_players = team->players;
+
+     assertNotNull( team_players );
+
+     player_s *player = team_players[0].player;
+
+     assertNotNull( player );
+
+     assertEqualsStr( first_name,  player->first_name     );
+     assertEqualsStr( last_name,   player->last_name      );
+     assertEqualsStr( first_phoen, player->first_phonetic );
+     assertEqualsStr( last_phoen,  player->last_phonetic  );
+
+     freeOrg( org );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
-     run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,           null );
-     run_test( convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData,         null );
-     run_test( convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData, null );
-     run_test( convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData,          null );
+     run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,                         null );
+     run_test( convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData,                       null );
+     run_test( convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData,               null );
+     run_test( convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData,                        null );
+     run_test( convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData, null );
 
      // TODO:
      //   add the rest of the player data fields, including player id in fileplayers data
-     //   deal with the player name terminators (and maybe phoens too)
      //   add support for seasons
 }
 
