@@ -44,16 +44,90 @@ static fileparks_s *buildFileParks( void )
      return &parks_data;
 }
 
+static fileposition_e pickPosition( void )
+{
+     struct
+     {
+          fileposition_e pos;
+          int            weight;
+
+     } possibilities[] = { { fpos_Pitcher,       288 },
+                           { fpos_Catcher,        54 },
+                           { fpos_FirstBaseman,   54 },
+                           { fpos_SecondBaseman,  54 },
+                           { fpos_ThirdBaseman,   54 },
+                           { fpos_ShortStop,      54 },
+                           { fpos_LeftField,      54 },
+                           { fpos_CenterField,    54 },
+                           { fpos_RightField,     54 }
+     };
+
+     const static int total = 720;
+
+     int x = (rand() % total) + 1;
+
+     for ( int i = 0; i < 8; ++i )
+     {
+          if ( (x -= possibilities[i].weight) <= 0 ) return possibilities[i].pos;
+     }
+
+     return fpos_Pitcher;
+}
+
 static fileplayer_s *buildFilePlayers( void )
 {
      static fileplayer_s players_data[TOTAL_PLAYERS] = { 0 };
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-          sprintf( players_data[i].first_name,  "Fst%d",    i + 1 );
-          sprintf( players_data[i].last_name,   "Last%d",   i + 1 );
-          sprintf( players_data[i].first_phoen, "FIR3ST%d", i + 1 );
-          sprintf( players_data[i].last_phoen,  "LAH4ST%d", i + 1 );
+          unsigned char pos       = pickPosition();
+          unsigned char hand      = ((rand() % 100)) > 49 ? fh_Right : fh_Left;
+          unsigned char color     = ((rand() % 100)) > 49 ? fc_Light : fc_Dark;
+          unsigned char longevity = (rand() % 10) + 1;
+          unsigned char position;
+          int           year      = YEAR_SEASON_OFFSET + (i / 100);
+
+          if ( pos == fpos_Pitcher )
+          {
+               struct pitching_s *pitching = &(players_data[i].filestats.filepitching);
+
+               unsigned char speed     = (rand() % 10) + 1;
+               unsigned char control   = (rand() % 10) + 1;
+               unsigned char fatigue   = (rand() % 10) + 1;
+
+               position = (pos << 4) + hand;
+
+               pitching->color[0]   = color;
+               pitching->ratings[0] = (speed   << 4) + control;
+               pitching->ratings[1] = (fatigue << 4) + longevity;
+          }
+          else
+          {
+               struct batting_s *batting = &(players_data[i].filestats.filebatting);
+
+               unsigned char pos2      = pickPosition();
+               unsigned char power     = (rand() % 10) + 1;
+               unsigned char hit_n_run = (rand() % 10) + 1;
+               unsigned char bunt      = (rand() % 10) + 1;
+               unsigned char running   = (rand() % 10) + 1;
+               unsigned char range     = (rand() % 10) + 1;
+               unsigned char arm       = (rand() % 10) + 1;
+
+               position = (pos << 4) + pos2;
+
+               batting->color[0]   = color;
+               batting->ratings[0] = (hand    << 4) + arm;
+               batting->ratings[1] = (running << 4) + range;
+               batting->ratings[2] = (power   << 4) + longevity;
+               batting->ratings[3] = (bunt    << 4) + hit_n_run;
+          }
+
+          sprintf( players_data[i].first_name,   "Fst%d",    i + 1 );
+          sprintf( players_data[i].last_name,    "Last%d",   i + 1 );
+          sprintf( players_data[i].first_phoen,  "FIR3ST%d", i + 1 );
+          sprintf( players_data[i].last_phoen,   "LAH4ST%d", i + 1 );
+          /**/     players_data[i].year[0]      = year;
+          /**/     players_data[i].position[0]  = position;
      }
 
      return players_data;
@@ -295,11 +369,105 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 
                          assertNotNull( player );
 
-                         assertEqualsInt( idx + 1,                       player->player_id      );
-                         assertEqualsStr( players_data[idx].first_name,  player->first_name     );
-                         assertEqualsStr( players_data[idx].last_name,   player->last_name      );
-                         assertEqualsStr( players_data[idx].first_phoen, player->first_phonetic );
-                         assertEqualsStr( players_data[idx].last_phoen,  player->last_phonetic  );
+                         int            rookie_season = players_data[idx].year[0] - YEAR_SEASON_OFFSET;
+                         fileposition_e position      = nibble( players_data[idx].position[0], n_High );
+                         filehand_e     hand;
+                         filecolor_e    color;
+
+                         assertEqualsInt( idx + 1,                         player->player_id      );
+                         assertEqualsStr( players_data[idx].first_name,    player->first_name     );
+                         assertEqualsStr( players_data[idx].last_name,     player->last_name      );
+                         assertEqualsStr( players_data[idx].first_phoen,   player->first_phonetic );
+                         assertEqualsStr( players_data[idx].last_phoen,    player->last_phonetic  );
+                         assertEqualsInt(                   rookie_season, player->rookie_season  );
+
+                         if ( position == fpos_Pitcher )
+                         {
+                              struct pitching_s *pitching = &(players_data[idx].filestats.filepitching);
+
+                              hand = nibble( players_data[idx].position[0], n_Low );
+
+                              assertEqualsInt( pt_Pitcher, player->player_type );
+
+                              pitcher_s *pitcher = player->details.pitching;
+
+                              assertNotNull( pitcher );
+
+                              int speed     = nibble( pitching->ratings[0], n_High );
+                              int control   = nibble( pitching->ratings[0], n_Low  );
+                              int fatigue   = nibble( pitching->ratings[1], n_High );
+                              int longevity = nibble( pitching->ratings[1], n_Low  );
+                              /**/color     =         pitching->color[0];
+
+                              assertEqualsInt( idx + 1,   pitcher->player_id );
+                              assertEqualsInt( speed,     pitcher->speed     );
+                              assertEqualsInt( control,   pitcher->control   );
+                              assertEqualsInt( longevity, pitcher->bunt      );
+                              assertEqualsInt( fatigue,   pitcher->fatigue   );
+                              assertEqualsInt( longevity, player->longevity  );
+                         }
+                         else
+                         {
+                              struct batting_s *batting = &(players_data[idx].filestats.filebatting);
+
+                              assertEqualsInt( pt_Batter, player->player_type );
+
+                              batter_s *batter = player->details.batting;
+
+                              assertNotNull( batter );
+
+                              int pos1      = nibble( players_data[idx].position[0], n_High );
+                              int pos2      = nibble( players_data[idx].position[0], n_Low  );
+
+                              int power     = nibble( batting->ratings[2], n_High );
+                              int hit_n_run = nibble( batting->ratings[3], n_Low  );
+                              int bunt      = nibble( batting->ratings[3], n_High );
+                              int running   = nibble( batting->ratings[1], n_High );
+                              int range     = nibble( batting->ratings[1], n_Low  );
+                              int arm       = nibble( batting->ratings[0], n_Low  );
+                              int longevity = nibble( batting->ratings[2], n_Low  );
+                              /**/hand      = nibble( batting->ratings[0], n_High );
+                              /**/color     =         batting->color[0];
+
+                              switch ( pos1 )
+                              {
+                              case fpos_Catcher:         assertEqualsInt( pos_Catcher,     batter->primary_position ); break;
+                              case fpos_FirstBaseman:    assertEqualsInt( pos_FirstBase,   batter->primary_position ); break;
+                              case fpos_SecondBaseman:   assertEqualsInt( pos_SecondBase,  batter->primary_position ); break;
+                              case fpos_ThirdBaseman:    assertEqualsInt( pos_ThirdBase,   batter->primary_position ); break;
+                              case fpos_ShortStop:       assertEqualsInt( pos_ShortStop,   batter->primary_position ); break;
+                              case fpos_LeftField:       assertEqualsInt( pos_LeftField,   batter->primary_position ); break;
+                              case fpos_CenterField:     assertEqualsInt( pos_CenterField, batter->primary_position ); break;
+                              case fpos_RightField:      assertEqualsInt( pos_RightField,  batter->primary_position ); break;
+                              }
+
+                              switch ( pos2 )
+                              {
+                              case fpos_Catcher:         assertEqualsInt( pos_Catcher,     batter->secondary_position ); break;
+                              case fpos_FirstBaseman:    assertEqualsInt( pos_FirstBase,   batter->secondary_position ); break;
+                              case fpos_SecondBaseman:   assertEqualsInt( pos_SecondBase,  batter->secondary_position ); break;
+                              case fpos_ThirdBaseman:    assertEqualsInt( pos_ThirdBase,   batter->secondary_position ); break;
+                              case fpos_ShortStop:       assertEqualsInt( pos_ShortStop,   batter->secondary_position ); break;
+                              case fpos_LeftField:       assertEqualsInt( pos_LeftField,   batter->secondary_position ); break;
+                              case fpos_CenterField:     assertEqualsInt( pos_CenterField, batter->secondary_position ); break;
+                              case fpos_RightField:      assertEqualsInt( pos_RightField,  batter->secondary_position ); break;
+                              }
+
+                              assertEqualsInt( idx + 1,       batter->player_id          );
+                              assertEqualsInt( power,         batter->power              );
+                              assertEqualsInt( hit_n_run,     batter->hit_n_run          );
+                              assertEqualsInt( bunt,          batter->bunt               );
+                              assertEqualsInt( running,       batter->running            );
+                              assertEqualsInt( range,         batter->range              );
+                              assertEqualsInt( arm,           batter->arm                );
+                              assertEqualsInt( longevity,     player->longevity          );
+                         }
+
+                         if   ( hand == fh_Right ) assertEqualsInt( hnd_Right, player->handedness );
+                         else                      assertEqualsInt( hnd_Left,  player->handedness );
+
+                         if   ( color == fc_Light ) assertEqualsInt( st_Light, player->skin_tone );
+                         else                       assertEqualsInt( st_Dark,  player->skin_tone );
                     }
                }
           }
@@ -386,6 +554,7 @@ static void run_all_tests()
      // TODO:
      //   add the rest of the player data fields, including player id in fileplayers data
      //   add support for seasons
+     //   make sure all the frees are inclusive
 }
 
 int main( int argc, char *argv[] )

@@ -14,6 +14,8 @@
 #define TOTAL_TEAMS             (TEAMS_PER_LEAGUE * TOTAL_LEAGUES)
 #define TOTAL_PLAYERS           (PLAYERS_PER_LEAGUE * TOTAL_LEAGUES)
 
+#define YEAR_SEASON_OFFSET      (2000 - 1845)
+
 
 typedef enum
 {
@@ -29,6 +31,39 @@ typedef enum
      n_High // the A in A0
 
 } nibble_e;
+
+
+typedef enum
+{
+     fpos_Pitcher          =  0,
+     fpos_Catcher          =  1,
+     fpos_FirstBaseman     =  2,
+     fpos_SecondBaseman    =  3,
+     fpos_ThirdBaseman     =  4,
+     fpos_ShortStop        =  5,
+     fpos_Infield          =  6,
+     fpos_LeftField        =  7,
+     fpos_CenterField      =  8,
+     fpos_RightField       =  9,
+     fpos_Outfield         = 10,
+     fpos_DesignatedHitter = 12
+
+} fileposition_e;
+
+
+typedef enum
+{
+     fh_Right = 0,
+     fh_Left  = 1
+
+} filehand_e;
+
+typedef enum
+{
+     fc_Light = 0,
+     fc_Dark  = 64
+
+} filecolor_e;
 
 
 // ----  LEAGNAME.DAT  ----
@@ -174,7 +209,7 @@ typedef struct
      {
 	  struct batting_s
 	  {
-	       unsigned char ratings     [ 4]; // by nibble: bats R = 0/L = 1/S = 2,arm,runs,range,power,not used,bunt,h&r
+	       unsigned char ratings     [ 4]; // by nibble: bats R = 0/L = 1/S = 2,arm,runs,range,power,longevity,bunt,h&r
 	       unsigned char real_games  [ 1];
 	       unsigned char real_runs   [ 1];
 	       unsigned char real_rbi    [ 1];
@@ -214,7 +249,7 @@ typedef struct
 
 	  struct pitching_s
 	  {
-	       unsigned char ratings     [ 2]; // by nibble: speed,control,fatigue,bunt
+	       unsigned char ratings     [ 2]; // by nibble: speed,control,fatigue,bunt/longevity
 	       unsigned char real_wins   [ 1];
 	       unsigned char real_losses [ 1];
 	       unsigned char real_games  [ 1];

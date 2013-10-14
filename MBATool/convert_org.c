@@ -19,6 +19,83 @@ static char *convertTerminatedBuffer( const char *buffer, const size_t length )
      return result;
 }
 
+static handedness_e mapHandedness( const filehand_e filehandedness )
+{
+     switch ( filehandedness )
+     {
+     case fh_Right: return hnd_Right;
+     case fh_Left:  return hnd_Left;
+     }
+
+     return hnd_None;
+}
+
+static skin_tone_e mapSkinTone( const filecolor_e color )
+{
+     switch ( color )
+     {
+     case fc_Light: return st_Light;
+     case fc_Dark:  return st_Dark;
+     }
+
+     return st_None;
+}
+
+static position_e mapPosition( const fileposition_e pos )
+{
+     switch ( pos )
+     {
+     case fpos_Catcher:       return pos_Catcher;
+     case fpos_FirstBaseman:  return pos_FirstBase;
+     case fpos_SecondBaseman: return pos_SecondBase;
+     case fpos_ThirdBaseman:  return pos_ThirdBase;
+     case fpos_ShortStop:     return pos_ShortStop;
+     case fpos_LeftField:     return pos_LeftField;
+     case fpos_CenterField:   return pos_CenterField;
+     case fpos_RightField:    return pos_RightField;
+     }
+
+     return pos_None;
+}
+
+static batter_s *createBatter( const int player_id, const struct batting_s *batter_data, const unsigned char positions )
+{
+     batter_s *batter = NULL;
+
+     if ( (batter = malloc( sizeof(batter_s) )) == NULL ) return NULL;
+
+     memset( batter, '\0', sizeof(batter_s) );
+
+     batter->player_id          = player_id;
+     batter->primary_position   = mapPosition( nibble( positions,               n_High ) );
+     batter->secondary_position = mapPosition( nibble( positions,               n_Low  ) );
+     batter->power              =              nibble( batter_data->ratings[2], n_High );
+     batter->hit_n_run          =              nibble( batter_data->ratings[3], n_Low  );
+     batter->bunt               =              nibble( batter_data->ratings[3], n_High );
+     batter->running            =              nibble( batter_data->ratings[1], n_High );
+     batter->range              =              nibble( batter_data->ratings[1], n_Low  );
+     batter->arm                =              nibble( batter_data->ratings[0], n_Low  );
+
+     return batter;
+}
+
+static pitcher_s *createPitcher( const int player_id, const struct pitching_s *pitcher_data )
+{
+     pitcher_s *pitcher = NULL;
+
+     if ( (pitcher = malloc( sizeof(pitcher_s) )) == NULL ) return NULL;
+
+     memset( pitcher, '\0', sizeof(pitcher_s) );
+
+     pitcher->player_id = player_id;
+     pitcher->speed     = nibble( pitcher_data->ratings[0], n_High );
+     pitcher->control   = nibble( pitcher_data->ratings[0], n_Low  );
+     pitcher->bunt      = nibble( pitcher_data->ratings[1], n_Low  );
+     pitcher->fatigue   = nibble( pitcher_data->ratings[1], n_High );
+
+     return pitcher;
+}
+
 static player_s *createPlayer( const int player_id, const fileplayer_s *players_data )
 {
      player_s *player = NULL;
@@ -27,11 +104,47 @@ static player_s *createPlayer( const int player_id, const fileplayer_s *players_
 
      memset( player, '\0', sizeof(player_s) );
 
+     int pos = nibble( players_data->position[0], n_High );
+
      strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
      strcpy( player->last_name,        convertTerminatedBuffer( players_data->last_name,   sizeof(players_data->last_name)   ) );
      strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
      strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
      /**/    player->player_id         =                        player_id;
+     /**/    player->rookie_season     =                        players_data->year[0] - YEAR_SEASON_OFFSET;
+
+     if ( pos == fpos_Pitcher )
+     {
+          const struct pitching_s *pitcher_data = &(players_data->filestats.filepitching);
+
+          if ( (player->details.pitching = createPitcher( player_id, pitcher_data )) == NULL )
+          {
+               free( player );
+
+               return NULL;
+          }
+
+          player->player_type = pt_Pitcher;
+          player->handedness  = mapHandedness( nibble( players_data->position[0], n_Low ) );
+          player->skin_tone   = mapSkinTone(           pitcher_data->color[0]             );
+          player->longevity   =                nibble( pitcher_data->ratings[1],  n_Low   );
+     }
+     else
+     {
+          const struct batting_s *batter_data = &(players_data->filestats.filebatting);
+
+          if ( (player->details.batting = createBatter( player_id, batter_data, players_data->position[0] )) == NULL )
+          {
+               free( player );
+
+               return NULL;
+          }
+
+          player->player_type = pt_Batter;
+          player->handedness  = mapHandedness( nibble( batter_data->ratings[0], n_High ) );
+          player->skin_tone   = mapSkinTone(           batter_data->color[0]             );
+          player->longevity   =                nibble( batter_data->ratings[2],  n_Low   );
+     }
 
      return player;
 }
