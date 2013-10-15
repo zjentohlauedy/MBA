@@ -74,6 +74,20 @@ static fileposition_e pickPosition( void )
      return fpos_Pitcher;
 }
 
+static unsigned char calcChecksum( int value )
+{
+     unsigned char checksum = 0;
+
+     while ( value > 0 )
+     {
+          checksum += value % 10;
+
+          value /= 10;
+     }
+
+     return checksum;
+}
+
 static fileplayer_s *buildFilePlayers( void )
 {
      static fileplayer_s players_data[TOTAL_PLAYERS] = { 0 };
@@ -86,6 +100,7 @@ static fileplayer_s *buildFilePlayers( void )
           unsigned char longevity = (rand() % 10) + 1;
           unsigned char position;
           int           year      = YEAR_SEASON_OFFSET + (i / 100);
+          int           player_id = (rand() % 50000) + 1;
 
           if ( pos == fpos_Pitcher )
           {
@@ -100,6 +115,11 @@ static fileplayer_s *buildFilePlayers( void )
                pitching->color[0]   = color;
                pitching->ratings[0] = (speed   << 4) + control;
                pitching->ratings[1] = (fatigue << 4) + longevity;
+
+               acc_player_id_s *player_id_data = (acc_player_id_s *)&(pitching->action);
+
+               int2word( player_id_data->player_id,                  player_id );
+               /**/      player_id_data->checksum[0] = calcChecksum( player_id );
           }
           else
           {
@@ -120,6 +140,11 @@ static fileplayer_s *buildFilePlayers( void )
                batting->ratings[1] = (running << 4) + range;
                batting->ratings[2] = (power   << 4) + longevity;
                batting->ratings[3] = (bunt    << 4) + hit_n_run;
+
+               acc_player_id_s *player_id_data = (acc_player_id_s *)&(batting->action);
+
+               int2word( player_id_data->player_id,                  player_id );
+               /**/      player_id_data->checksum[0] = calcChecksum( player_id );
           }
 
           sprintf( players_data[i].first_name,   "Fst%d",    i + 1 );
@@ -136,15 +161,18 @@ static fileplayer_s *buildFilePlayers( void )
 
 static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 {
-     fileleagname_s *league_data  = buildFileLeagName();
-     fileparks_s    *parks_data   = buildFileParks();
-     fileplayer_s   *players_data = buildFilePlayers();
+     org_data_s org_data = { 0 };
 
-     org_s *org = convertOrg( league_data, parks_data, players_data );
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+
+     org_s *org = convertOrg( &org_data );
 
      assertNotNull( org );
 
-     org_league_s *leagues = org->leagues;
+     fileleagname_s *league_data = org_data.league_data;
+     org_league_s   *leagues     = org->leagues;
 
      assertNotNull( leagues );
 
@@ -165,13 +193,16 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 {
-     fileleagname_s *league_data  = buildFileLeagName();
-     fileparks_s    *parks_data   = buildFileParks();
-     fileplayer_s   *players_data = buildFilePlayers();
+     org_data_s org_data = { 0 };
 
-     org_s *org = convertOrg( league_data, parks_data, players_data );
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
 
-     org_league_s *leagues = org->leagues;
+     org_s *org = convertOrg( &org_data );
+
+     fileleagname_s *league_data = org_data.league_data;
+     org_league_s   *leagues     = org->leagues;
 
      assertNotNull( leagues );
 
@@ -216,13 +247,17 @@ static char *convertOrg_ShouldReturnOrgWithDivisions_GivenLeagueFileData()
 
 static char *convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData()
 {
-     fileleagname_s *league_data  = buildFileLeagName();
-     fileparks_s    *parks_data   = buildFileParks();
-     fileplayer_s   *players_data = buildFilePlayers();
+     org_data_s org_data = { 0 };
 
-     org_s *org = convertOrg( league_data, parks_data, players_data );
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
 
-     org_league_s *leagues = org->leagues;
+     org_s *org = convertOrg( &org_data );
+
+     fileleagname_s *league_data = org_data.league_data;
+     fileparks_s    *parks_data  = org_data.parks_data;
+     org_league_s   *leagues     = org->leagues;
 
      assertNotNull( leagues );
 
@@ -321,11 +356,14 @@ static char *convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData
 
 static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 {
-     fileleagname_s *league_data  = buildFileLeagName();
-     fileparks_s    *parks_data   = buildFileParks();
-     fileplayer_s   *players_data = buildFilePlayers();
+     org_data_s org_data = { 0 };
 
-     org_s *org = convertOrg( league_data, parks_data, players_data );
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.season       = 13;
+
+     org_s *org = convertOrg( &org_data );
 
      org_league_s *leagues = org->leagues;
 
@@ -363,9 +401,11 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 
                     for ( int l = 0; l < PLAYERS_PER_TEAM; ++l )
                     {
-                         int idx = l + (k * PLAYERS_PER_TEAM) + (j * PLAYERS_PER_DIVISION) + (i * PLAYERS_PER_LEAGUE);
+                         int idx     = l + (k * PLAYERS_PER_TEAM) + (j * PLAYERS_PER_DIVISION) + (i * PLAYERS_PER_LEAGUE);
+                         int team_id = 1 + k + (j * TEAMS_PER_DIVISION) + (i * TEAMS_PER_LEAGUE);
 
-                         player_s *player = team_players[l].player;
+                         fileplayer_s *players_data = org_data.players_data;
+                         player_s     *player       = team_players[l].player;
 
                          assertNotNull( player );
 
@@ -373,19 +413,12 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
                          fileposition_e position      = nibble( players_data[idx].position[0], n_High );
                          filehand_e     hand;
                          filecolor_e    color;
-
-                         assertEqualsInt( idx + 1,                         player->player_id      );
-                         assertEqualsStr( players_data[idx].first_name,    player->first_name     );
-                         assertEqualsStr( players_data[idx].last_name,     player->last_name      );
-                         assertEqualsStr( players_data[idx].first_phoen,   player->first_phonetic );
-                         assertEqualsStr( players_data[idx].last_phoen,    player->last_phonetic  );
-                         assertEqualsInt(                   rookie_season, player->rookie_season  );
+                         int            player_id;
 
                          if ( position == fpos_Pitcher )
                          {
                               struct pitching_s *pitching = &(players_data[idx].filestats.filepitching);
-
-                              hand = nibble( players_data[idx].position[0], n_Low );
+                              acc_player_id_s   *id_info  = (acc_player_id_s *)&(pitching->action);
 
                               assertEqualsInt( pt_Pitcher, player->player_type );
 
@@ -393,13 +426,15 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 
                               assertNotNull( pitcher );
 
-                              int speed     = nibble( pitching->ratings[0], n_High );
-                              int control   = nibble( pitching->ratings[0], n_Low  );
-                              int fatigue   = nibble( pitching->ratings[1], n_High );
-                              int longevity = nibble( pitching->ratings[1], n_Low  );
-                              /**/color     =         pitching->color[0];
+                              int speed     = nibble(   pitching->ratings[0],          n_High );
+                              int control   = nibble(   pitching->ratings[0],          n_Low  );
+                              int fatigue   = nibble(   pitching->ratings[1],          n_High );
+                              int longevity = nibble(   pitching->ratings[1],          n_Low  );
+                              /**/color     =           pitching->color[0];
+                              /**/hand      = nibble(   players_data[idx].position[0], n_Low );
+                              /**/player_id = word2int( id_info->player_id                   );
 
-                              assertEqualsInt( idx + 1,   pitcher->player_id );
+                              assertEqualsInt( player_id, pitcher->player_id );
                               assertEqualsInt( speed,     pitcher->speed     );
                               assertEqualsInt( control,   pitcher->control   );
                               assertEqualsInt( longevity, pitcher->bunt      );
@@ -409,6 +444,7 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
                          else
                          {
                               struct batting_s *batting = &(players_data[idx].filestats.filebatting);
+                              acc_player_id_s  *id_info = (acc_player_id_s *)&(batting->action);
 
                               assertEqualsInt( pt_Batter, player->player_type );
 
@@ -419,15 +455,16 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
                               int pos1      = nibble( players_data[idx].position[0], n_High );
                               int pos2      = nibble( players_data[idx].position[0], n_Low  );
 
-                              int power     = nibble( batting->ratings[2], n_High );
-                              int hit_n_run = nibble( batting->ratings[3], n_Low  );
-                              int bunt      = nibble( batting->ratings[3], n_High );
-                              int running   = nibble( batting->ratings[1], n_High );
-                              int range     = nibble( batting->ratings[1], n_Low  );
-                              int arm       = nibble( batting->ratings[0], n_Low  );
-                              int longevity = nibble( batting->ratings[2], n_Low  );
-                              /**/hand      = nibble( batting->ratings[0], n_High );
-                              /**/color     =         batting->color[0];
+                              int power     = nibble(   batting->ratings[2], n_High );
+                              int hit_n_run = nibble(   batting->ratings[3], n_Low  );
+                              int bunt      = nibble(   batting->ratings[3], n_High );
+                              int running   = nibble(   batting->ratings[1], n_High );
+                              int range     = nibble(   batting->ratings[1], n_Low  );
+                              int arm       = nibble(   batting->ratings[0], n_Low  );
+                              int longevity = nibble(   batting->ratings[2], n_Low  );
+                              /**/hand      = nibble(   batting->ratings[0], n_High );
+                              /**/color     =           batting->color[0];
+                              /**/player_id = word2int( id_info->player_id          );
 
                               switch ( pos1 )
                               {
@@ -453,7 +490,7 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
                               case fpos_RightField:      assertEqualsInt( pos_RightField,  batter->secondary_position ); break;
                               }
 
-                              assertEqualsInt( idx + 1,       batter->player_id          );
+                              assertEqualsInt( player_id,     batter->player_id          );
                               assertEqualsInt( power,         batter->power              );
                               assertEqualsInt( hit_n_run,     batter->hit_n_run          );
                               assertEqualsInt( bunt,          batter->bunt               );
@@ -462,6 +499,16 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
                               assertEqualsInt( arm,           batter->arm                );
                               assertEqualsInt( longevity,     player->longevity          );
                          }
+
+                         assertEqualsInt( team_id,         team_players[l].team_id );
+                         assertEqualsInt( org_data.season, team_players[l].season  );
+
+                         assertEqualsInt( player_id,                       player->player_id      );
+                         assertEqualsStr( players_data[idx].first_name,    player->first_name     );
+                         assertEqualsStr( players_data[idx].last_name,     player->last_name      );
+                         assertEqualsStr( players_data[idx].first_phoen,   player->first_phonetic );
+                         assertEqualsStr( players_data[idx].last_phoen,    player->last_phonetic  );
+                         assertEqualsInt(                   rookie_season, player->rookie_season  );
 
                          if   ( hand == fh_Right ) assertEqualsInt( hnd_Right, player->handedness );
                          else                      assertEqualsInt( hnd_Left,  player->handedness );
@@ -480,14 +527,18 @@ static char *convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData()
 
 static char *convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData()
 {
-     fileleagname_s *league_data  = buildFileLeagName();
-     fileparks_s    *parks_data   = buildFileParks();
-     fileplayer_s   *players_data = buildFilePlayers();
-     char           *first_name   = "FULLBUFF";
-     char           *last_name    = "FULLBUFFER";
-     char           *first_phoen  = "FULLBUFFERTO";
-     char           *last_phoen   = "FULLBUFFERALSO";
+     org_data_s  org_data    = { 0 };
+     char       *first_name  = "FULLBUFF";
+     char       *last_name   = "FULLBUFFER";
+     char       *first_phoen = "FULLBUFFERTO";
+     char       *last_phoen  = "FULLBUFFERALSO";
 
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+
+     fileplayer_s *players_data = org_data.players_data;
 
      memcpy( players_data[0].first_name,  first_name,  strlen(first_name)  );
      memcpy( players_data[0].last_name,   last_name,   strlen(last_name)   );
@@ -499,7 +550,7 @@ static char *convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenP
      termName( players_data[0].first_phoen, sizeof(players_data[0].first_phoen) );
      termName( players_data[0].last_phoen,  sizeof(players_data[0].last_phoen)  );
 
-     org_s *org = convertOrg( league_data, parks_data, players_data );
+     org_s *org = convertOrg( &org_data );
 
      org_league_s *leagues = org->leagues;
 
@@ -543,6 +594,63 @@ static char *convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenP
      return NULL;
 }
 
+static char *convertOrg_ShouldSkipEmptyPlayers_GivenPlayersFileData()
+{
+     fileplayer_s  players_data[TOTAL_PLAYERS] = { 0 };
+     org_data_s    org_data                    = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = players_data;
+
+     org_s *org = convertOrg( &org_data );
+
+     org_league_s *leagues = org->leagues;
+
+     assertNotNull( leagues );
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          league_s *league = leagues[i].league;
+
+          assertNotNull( league );
+
+          league_division_s *league_divisions = league->divisions;
+
+          assertNotNull( league_divisions );
+
+          for ( int j = 0; j < DIVISIONS_PER_LEAGUE; ++j )
+          {
+               division_s *division = league_divisions[j].division;
+
+               assertNotNull( division );
+
+               division_team_s *division_teams = division->teams;
+
+               assertNotNull( division_teams );
+
+               for ( int k = 0; k < TEAMS_PER_DIVISION; ++k )
+               {
+                    team_s *team = division_teams[k].team;
+
+                    assertNotNull( team );
+
+                    team_player_s *team_players = team->players;
+                    team_player_s  sentinel     = TEAM_PLAYER_SENTINEL;
+
+                    assertNotNull( team_players );
+
+                    assertEqualsInt( sentinel.team_id,   team_players->team_id   );
+                    assertEqualsInt( sentinel.player_id, team_players->player_id );
+               }
+          }
+     }
+
+     freeOrg( org );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,                         null );
@@ -550,11 +658,7 @@ static void run_all_tests()
      run_test( convertOrg_ShouldReturnOrgWithTeams_GivenLeagueFileAndParksFileData,               null );
      run_test( convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData,                        null );
      run_test( convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData, null );
-
-     // TODO:
-     //   add the rest of the player data fields, including player id in fileplayers data
-     //   add support for seasons
-     //   make sure all the frees are inclusive
+     run_test( convertOrg_ShouldSkipEmptyPlayers_GivenPlayersFileData,                            null );
 }
 
 int main( int argc, char *argv[] )

@@ -197,6 +197,15 @@ typedef struct
 
 typedef struct
 {
+     unsigned char player_id   [ 2];
+     unsigned char checksum    [ 1];
+     unsigned char filler      [11];
+
+} acc_player_id_s;
+
+
+typedef struct
+{
      /**/     char last_name   [10];
      /**/     char first_name  [ 8];
      /**/     char last_phoen  [14];

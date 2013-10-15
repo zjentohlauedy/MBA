@@ -96,9 +96,10 @@ static pitcher_s *createPitcher( const int player_id, const struct pitching_s *p
      return pitcher;
 }
 
-static player_s *createPlayer( const int player_id, const fileplayer_s *players_data )
+static player_s *createPlayer( const fileplayer_s *players_data )
 {
-     player_s *player = NULL;
+     player_s *player    = NULL;
+     int       player_id = 0;
 
      if ( (player = malloc( sizeof(player_s) )) == NULL ) return NULL;
 
@@ -106,16 +107,12 @@ static player_s *createPlayer( const int player_id, const fileplayer_s *players_
 
      int pos = nibble( players_data->position[0], n_High );
 
-     strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
-     strcpy( player->last_name,        convertTerminatedBuffer( players_data->last_name,   sizeof(players_data->last_name)   ) );
-     strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
-     strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
-     /**/    player->player_id         =                        player_id;
-     /**/    player->rookie_season     =                        players_data->year[0] - YEAR_SEASON_OFFSET;
-
      if ( pos == fpos_Pitcher )
      {
           const struct pitching_s *pitcher_data = &(players_data->filestats.filepitching);
+          const acc_player_id_s   *id_info      = (acc_player_id_s *)&(pitcher_data->action);
+
+          player_id = word2int( id_info->player_id );
 
           if ( (player->details.pitching = createPitcher( player_id, pitcher_data )) == NULL )
           {
@@ -132,6 +129,9 @@ static player_s *createPlayer( const int player_id, const fileplayer_s *players_
      else
      {
           const struct batting_s *batter_data = &(players_data->filestats.filebatting);
+          const acc_player_id_s  *id_info     = (acc_player_id_s *)&(batter_data->action);
+
+          player_id = word2int( id_info->player_id );
 
           if ( (player->details.batting = createBatter( player_id, batter_data, players_data->position[0] )) == NULL )
           {
@@ -145,6 +145,13 @@ static player_s *createPlayer( const int player_id, const fileplayer_s *players_
           player->skin_tone   = mapSkinTone(           batter_data->color[0]             );
           player->longevity   =                nibble( batter_data->ratings[2],  n_Low   );
      }
+
+     strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
+     strcpy( player->last_name,        convertTerminatedBuffer( players_data->last_name,   sizeof(players_data->last_name)   ) );
+     strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
+     strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
+     /**/    player->player_id         =                        player_id;
+     /**/    player->rookie_season     =                        players_data->year[0] - YEAR_SEASON_OFFSET;
 
      return player;
 }
@@ -237,11 +244,12 @@ static void freeLeagues( league_s *leagues[], const int count )
      }
 }
 
-static boolean_e addPlayerToList( data_list_s *list, const int team_id, player_s *player )
+static boolean_e addPlayerToList( data_list_s *list, const int team_id, const int season, player_s *player )
 {
      team_player_s team_player = { 0 };
 
      team_player.team_id   = team_id;
+     team_player.season    = season;
      team_player.player_id = player->player_id;
      team_player.player    = player;
 
@@ -287,7 +295,7 @@ static boolean_e addLeagueToList( data_list_s *list, league_s *league )
      return bl_True;
 }
 
-static team_player_s *convertPlayers( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data, const int team_id )
+static team_player_s *convertPlayers( const org_data_s *org_data, const int team_id )
 {
      data_list_s    list                      = { 0 };
      team_player_s  sentinel                  = TEAM_PLAYER_SENTINEL;
@@ -298,16 +306,16 @@ static team_player_s *convertPlayers( const fileleagname_s *league_data, const f
 
      for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
      {
-          int player_id = idx + i + 1;
+          if ( org_data->players_data[idx + i].last_name[0] == '\0' ) continue;
 
-          if ( (players[i] = createPlayer( player_id, &players_data[idx + i] )) == NULL )
+          if ( (players[i] = createPlayer( &(org_data->players_data[idx + i]) )) == NULL )
           {
                freePlayers( players, PLAYERS_PER_TEAM );
 
                return NULL;
           }
 
-          if ( addPlayerToList( &list, team_id, players[i] ) != bl_True )
+          if ( addPlayerToList( &list, team_id, org_data->season, players[i] ) != bl_True )
           {
                freePlayers( players, PLAYERS_PER_TEAM );
 
@@ -320,12 +328,14 @@ static team_player_s *convertPlayers( const fileleagname_s *league_data, const f
      return list.data;
 }
 
-static division_team_s *convertTeams( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data, const int division_id )
+static division_team_s *convertTeams( const org_data_s *org_data, const int division_id )
 {
      data_list_s      list                      = { 0 };
      division_team_s  sentinel                  = DIVISION_TEAM_SENTINEL;
      team_s          *teams[TEAMS_PER_DIVISION] = { 0 };
 
+     fileleagname_s *league_data = org_data->league_data;
+     fileparks_s    *parks_data  = org_data->parks_data;
 
      int idx = (division_id - 1) * TEAMS_PER_DIVISION;
 
@@ -340,7 +350,7 @@ static division_team_s *convertTeams( const fileleagname_s *league_data, const f
                return NULL;
           }
 
-          if ( (teams[i]->players = convertPlayers( league_data, parks_data, players_data, team_id )) == NULL )
+          if ( (teams[i]->players = convertPlayers( org_data, team_id )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 
@@ -360,7 +370,7 @@ static division_team_s *convertTeams( const fileleagname_s *league_data, const f
      return list.data;
 }
 
-static league_division_s *convertDivisions( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data, const int league_id )
+static league_division_s *convertDivisions( const org_data_s *org_data, const int league_id )
 {
      data_list_s        list                            = { 0 };
      league_division_s  sentinel                        = LEAGUE_DIVISION_SENTINEL;
@@ -373,14 +383,14 @@ static league_division_s *convertDivisions( const fileleagname_s *league_data, c
      {
           int division_id = idx + i + 1;
 
-          if ( (divisions[i] = createDivision( division_id, league_data->divisions[idx + i].name )) == NULL )
+          if ( (divisions[i] = createDivision( division_id, org_data->league_data->divisions[idx + i].name )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
                return NULL;
           }
 
-          if ( (divisions[i]->teams = convertTeams( league_data, parks_data, players_data, division_id )) == NULL )
+          if ( (divisions[i]->teams = convertTeams( org_data, division_id )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
@@ -400,7 +410,7 @@ static league_division_s *convertDivisions( const fileleagname_s *league_data, c
      return list.data;
 }
 
-static org_league_s *convertLeagues( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data )
+static org_league_s *convertLeagues( const org_data_s *org_data )
 {
      data_list_s   list                   = { 0 };
      org_league_s  sentinel               = { 0 };
@@ -411,14 +421,14 @@ static org_league_s *convertLeagues( const fileleagname_s *league_data, const fi
      {
           int league_id = i + 1;
 
-          if ( (leagues[i] = createLeague( league_id, league_data->leagues[i].name )) == NULL )
+          if ( (leagues[i] = createLeague( league_id, org_data->league_data->leagues[i].name )) == NULL )
           {
                freeLeagues( leagues, TOTAL_LEAGUES );
 
                return NULL;
           }
 
-          if ( (leagues[i]->divisions = convertDivisions( league_data, parks_data, players_data, league_id )) == NULL )
+          if ( (leagues[i]->divisions = convertDivisions( org_data, league_id )) == NULL )
           {
                freeLeagues( leagues, TOTAL_LEAGUES );
 
@@ -438,13 +448,13 @@ static org_league_s *convertLeagues( const fileleagname_s *league_data, const fi
      return list.data;
 }
 
-org_s *convertOrg( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data )
+org_s *convertOrg( const org_data_s *org_data )
 {
      org_s *org = NULL;
 
      if ( (org = createOrg()) == NULL ) return NULL;
 
-     if ( (org->leagues = convertLeagues( league_data, parks_data, players_data )) == NULL )
+     if ( (org->leagues = convertLeagues( org_data )) == NULL )
      {
           free( org );
 

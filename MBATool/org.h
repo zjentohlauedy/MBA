@@ -1,6 +1,7 @@
 #ifndef __INC_ORG_H__
 #define __INC_ORG_H__
 
+#include "file_formats.h"
 #include "league.h"
 
 typedef struct
@@ -15,7 +16,16 @@ typedef struct
 
 } org_s;
 
-org_s *convertOrg( const fileleagname_s *league_data, const fileparks_s *parks_data, const fileplayer_s *players_data );
+typedef struct
+{
+     fileleagname_s *league_data;
+     fileparks_s    *parks_data;
+     fileplayer_s   *players_data;
+     int             season;
+
+} org_data_s;
+
+org_s *convertOrg( const org_data_s *org_data );
 
 void freeOrg( org_s *org );
 

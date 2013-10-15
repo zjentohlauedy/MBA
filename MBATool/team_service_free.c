@@ -4,6 +4,16 @@
 #include "team.h"
 
 
+static void free_team_players( team_player_s *team_players )
+{
+     for ( int i = 0; team_players[i].team_id >= 0; ++i )
+     {
+          if ( team_players[i].player != NULL ) free_player( team_players[i].player );
+     }
+
+     free( team_players );
+}
+
 void free_team( team_s *team )
 {
      if ( team->players        != NULL ) free( team->players        );
