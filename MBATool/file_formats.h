@@ -302,17 +302,18 @@ typedef struct
 } fileplayer_s;
 
 
-int           word2int(         const unsigned char *word                                      );
-void          int2word(               unsigned char *word,     const int           value       );
-int           nibble(           const unsigned char  byte,     const nibble_e      position    );
-void          termName(               unsigned char *buffer,   const int           len         );
-void          untermName(             unsigned char *buffer,   const int           len         );
-char         *getFileUtilsError(      void                                                     );
-fileplayer_s *readPlayersFile(  const char          *filename                                  );
-boolean_e     writePlayersFile( const char          *filename, const fileplayer_s *playersFile );
+int             word2int(         const unsigned char *word                                      );
+void            int2word(               unsigned char *word,     const int           value       );
+int             nibble(           const unsigned char  byte,     const nibble_e      position    );
+void            termName(               unsigned char *buffer,   const int           len         );
+void            untermName(             unsigned char *buffer,   const int           len         );
+unsigned char   calcChecksum(           int            value                                     );
+char           *getFileUtilsError(      void                                                     );
+fileplayer_s   *readPlayersFile(  const char          *filename                                  );
+boolean_e       writePlayersFile( const char          *filename, const fileplayer_s *playersFile );
 fileleagname_s *readLeagueFile(   const char          *filename                                  );
-boolean_e     writeLeagueFile(  const char          *filename, const fileleagname_s *leagueFile  );
-fileparks_s  *readParksFile(    const char          *filename                                  );
-boolean_e     writeParksFile(   const char          *filename, const fileparks_s  *parksFile   );
+boolean_e       writeLeagueFile(  const char          *filename, const fileleagname_s *leagueFile  );
+fileparks_s    *readParksFile(    const char          *filename                                  );
+boolean_e       writeParksFile(   const char          *filename, const fileparks_s  *parksFile   );
 
 #endif

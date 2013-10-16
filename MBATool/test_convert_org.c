@@ -74,20 +74,6 @@ static fileposition_e pickPosition( void )
      return fpos_Pitcher;
 }
 
-static unsigned char calcChecksum( int value )
-{
-     unsigned char checksum = 0;
-
-     while ( value > 0 )
-     {
-          checksum += value % 10;
-
-          value /= 10;
-     }
-
-     return checksum;
-}
-
 static fileplayer_s *buildFilePlayers( void )
 {
      static fileplayer_s players_data[TOTAL_PLAYERS] = { 0 };
@@ -651,6 +637,41 @@ static char *convertOrg_ShouldSkipEmptyPlayers_GivenPlayersFileData()
      return NULL;
 }
 
+static char *convertOrg_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlayersFileData()
+{
+     org_data_s org_data = { 0 };
+
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+
+     fileplayer_s *players_data = org_data.players_data;
+
+     if ( nibble( players_data[0].position[0], n_High ) == fpos_Pitcher )
+     {
+          struct pitching_s *pitching = &(players_data[0].filestats.filepitching);
+
+          acc_player_id_s *player_id_data = (acc_player_id_s *)&(pitching->action);
+
+          player_id_data->checksum[0]++;
+     }
+     else
+     {
+          struct batting_s *batting = &(players_data[0].filestats.filebatting);
+
+          acc_player_id_s *player_id_data = (acc_player_id_s *)&(batting->action);
+
+          player_id_data->checksum[0]++;
+     }
+
+     org_s *org = convertOrg( &org_data );
+
+     assertNull( org );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData,                         null );
@@ -659,6 +680,7 @@ static void run_all_tests()
      run_test( convertOrg_ShouldReturnOrgWithPlayers_GivenPlayersFileData,                        null );
      run_test( convertOrg_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData, null );
      run_test( convertOrg_ShouldSkipEmptyPlayers_GivenPlayersFileData,                            null );
+     run_test( convertOrg_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlayersFileData,         null );
 }
 
 int main( int argc, char *argv[] )

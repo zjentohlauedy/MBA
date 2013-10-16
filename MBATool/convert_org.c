@@ -114,6 +114,13 @@ static player_s *createPlayer( const fileplayer_s *players_data )
 
           player_id = word2int( id_info->player_id );
 
+          if ( calcChecksum( player_id ) != id_info->checksum[0] )
+          {
+               free( player );
+
+               return NULL;
+          }
+
           if ( (player->details.pitching = createPitcher( player_id, pitcher_data )) == NULL )
           {
                free( player );
@@ -132,6 +139,13 @@ static player_s *createPlayer( const fileplayer_s *players_data )
           const acc_player_id_s  *id_info     = (acc_player_id_s *)&(batter_data->action);
 
           player_id = word2int( id_info->player_id );
+
+          if ( calcChecksum( player_id ) != id_info->checksum[0] )
+          {
+               free( player );
+
+               return NULL;
+          }
 
           if ( (player->details.batting = createBatter( player_id, batter_data, players_data->position[0] )) == NULL )
           {

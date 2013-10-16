@@ -153,6 +153,21 @@ void untermName( unsigned char *buffer, const int len )
 }
 
 
+unsigned char calcChecksum( int value )
+{
+     unsigned char checksum = 0;
+
+     while ( value > 0 )
+     {
+          checksum += value % 10;
+
+          value /= 10;
+     }
+
+     return checksum * 3;
+}
+
+
 fileplayer_s *readPlayersFile( const char *filename )
 {
      return readFile( filename, sizeof(fileplayer_s) * TOTAL_PLAYERS );

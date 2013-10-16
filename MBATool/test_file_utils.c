@@ -91,6 +91,20 @@ static char *untermName_ShouldRemoveTerminatorFromLastByte_GivenAPlayerNameBuffe
      return NULL;
 }
 
+static char *calcChecksum_ShouldCalculateProperChecksum_GivenAPlayerId()
+{
+     assertEquals(   0, calcChecksum(     0 ) );
+     assertEquals(   3, calcChecksum(     1 ) );
+     assertEquals(  45, calcChecksum(    69 ) );
+     assertEquals(  18, calcChecksum(   123 ) );
+     assertEquals(  18, calcChecksum(   420 ) );
+     assertEquals(  81, calcChecksum(   999 ) );
+     assertEquals( 123, calcChecksum( 59999 ) );
+     assertEquals(  72, calcChecksum( 65535 ) );
+
+     return NULL;
+}
+
 static char *readPlayersFile_ShouldReturnAPointerToAFilePlayerObject_GivenAFilename()
 {
      assertNotNull( readPlayersFile( players_file_name ) );
@@ -173,6 +187,7 @@ static void run_all_tests()
      run_test( nibble_ShouldReturnTheValueOfTheHighNibble_GivenAByteAndHighPosition,   null );
      run_test( termName_ShouldConvertTheLastByteToATerminator_GivenAPlayerNameBuffer,  null );
      run_test( untermName_ShouldRemoveTerminatorFromLastByte_GivenAPlayerNameBuffer,   null );
+     run_test( calcChecksum_ShouldCalculateProperChecksum_GivenAPlayerId,              null );
 
      run_test( readPlayersFile_ShouldReturnAPointerToAFilePlayerObject_GivenAFilename,   check_file_utils_error );
      run_test( writePlayersFile_ShouldCreateAPlayersFile_GivenAPlayersObjectAndFilename, check_file_utils_error );
