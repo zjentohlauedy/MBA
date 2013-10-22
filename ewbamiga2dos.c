@@ -63,11 +63,7 @@ int main( const int argc, const char *argv[] )
 		    acc_bat_stats_s act = batting->action;
 
 		    batting->action    = batting->simulated;
-
-		    memset( &(batting->simulated), 0, sizeof(acc_bat_stats_s) );
-
-		    batting->simulated.acc_rbi[0]  = act.acc_rbi[0];
-		    batting->simulated.acc_runs[0] = act.acc_so[0];
+                    batting->simulated = act;
 	       }
 	       else
 	       {
