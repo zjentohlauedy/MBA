@@ -198,6 +198,15 @@ typedef struct
 
 typedef struct
 {
+     unsigned char player_id   [ 2];
+     unsigned char checksum    [ 1];
+     unsigned char filler      [11];
+
+} acc_player_id_s;
+
+
+typedef struct
+{
      /**/     char last_name   [10];
      /**/     char first_name  [ 8];
      /**/     char last_phoen  [14];
@@ -299,6 +308,7 @@ void          int2word(               unsigned char *word,     const int        
 int           nibble(           const unsigned char  byte,     const nibble_e      position    );
 void          termName(               unsigned char *buffer,   const int           len         );
 void          untermName(             unsigned char *buffer,   const int           len         );
+unsigned char calcChecksum(           int            value                                     );
 char         *getColorName(     const unsigned int   color                                     );
 char         *getParkColorName( const unsigned int   color                                     );
 char         *positionName(     const int            position                                  );
