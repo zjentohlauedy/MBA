@@ -83,6 +83,7 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 	  pitcher->control      = (p->ratings[0] & 0x0F);
 	  pitcher->fatigue      = (p->ratings[1]>>4);
 	  pitcher->bunt         = (p->ratings[1] & 0x0F);
+	  pitcher->longevity    = (p->ratings[1] & 0x0F);
           pitcher->fielding_avg = 1.0 - (((float)p->real_fa[0]) / 1000.0);
 
 	  pitching_s *stats = &(pitcher->potential);
@@ -121,6 +122,10 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
           int   est_ab    = (int)(norm_inn * 3) + stats->hits + stats->walks;
 
           stats->at_bats = est_ab;
+
+          const acc_player_id_s *id_info = (acc_player_id_s *)&(p->action);
+
+          player->player_id = word2int( id_info->player_id );
      }
      else
      {
@@ -150,6 +155,7 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 	  batter->running   = (b->ratings[1]>>4);
 	  batter->range     = (b->ratings[1] & 0x0F);
 	  batter->arm       = (b->ratings[0] & 0x0F);
+	  batter->longevity = (b->ratings[2] & 0x0F);
 
           fielding_s *fielding = &(batter->fielding);
 
@@ -190,6 +196,10 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 	  stats->strike_outs  = (simulated->acc_so[0] + action->acc_so[0]);
 	  stats->stolen_bases = (simulated->acc_sb[0]);
 	  stats->errors       = (simulated->acc_err[0]);
+
+          const acc_player_id_s *id_info = (acc_player_id_s *)&(b->action);
+
+          player->player_id = word2int( id_info->player_id );
      }
 }
 

@@ -41,6 +41,7 @@ typedef struct
      int         control;
      int         fatigue;
      int         bunt;
+     int         longevity;
      pitching_s  potential;
      pitching_s  simulated;
      float       fielding_avg;
@@ -86,6 +87,7 @@ typedef struct
      int         running;
      int         range;
      int         arm;
+     int         longevity;
      hitting_s   potential;
      hitting_s   simulated;
      fielding_s  fielding;
@@ -94,6 +96,7 @@ typedef struct
 
 typedef struct
 {
+     int          player_id;
      playertype_e type;
      int          injury_days;
 

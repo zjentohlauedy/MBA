@@ -18,7 +18,6 @@ lottery \
 print_colors \
 print_parks \
 print_rosters \
-print_rosters2 \
 print_team_totals \
 rating_ratios \
 readgames \
@@ -85,9 +84,6 @@ print_parks: print_parks.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 print_rosters: print_rosters.o ewbfiles.o convert_league.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-print_rosters2: print_rosters2.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 print_team_totals: print_team_totals.o ewbfiles.o convert_league.o
