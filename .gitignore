@@ -58,6 +58,8 @@ updateewbplayers2
 updateewbratings
 updateewbstats
 
+MBATool/gen_player_ids
+
 MBATool/test_players_t
 MBATool/test_player_accolades_t
 MBATool/test_pitchers_t
@@ -87,3 +89,4 @@ MBATool/test_league_service
 MBATool/test_player_service_free
 MBATool/test_file_utils
 MBATool/test_convert_org
+MBATool/test_gen_player_ids

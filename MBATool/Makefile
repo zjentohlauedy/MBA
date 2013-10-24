@@ -5,6 +5,10 @@ CFLAGS = -std=c99 -g -Werror-implicit-function-declaration
 LDFLAGS = -L. -lm -lsqlite3
 
 progs = \
+   gen_player_ids
+
+tests = \
+   test_gen_player_ids \
    test_players_t \
    test_player_accolades_t \
    test_pitchers_t \
@@ -34,8 +38,17 @@ progs = \
    test_file_utils \
    test_convert_org
 
-ALL: $(progs) mba_test.db TAGS
+ALL: PROGS TESTS
 
+PROGS: $(progs) TAGS
+
+gen_player_ids: gen_player_ids_main.o gen_player_ids.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+TESTS: $(tests) mba_test.db TAGS
+
+test_gen_player_ids: test_gen_player_ids.o gen_player_ids.o file_utils.o libmbabuilders.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_players_t: test_players_t.o players_t.o sql_query.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
@@ -118,10 +131,11 @@ test_league_service: test_league_service.o libmbadata.a
 test_file_utils: test_file_utils.o file_utils.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_convert_org: test_convert_org.o convert_org.o data_list.o file_utils.o libmbadata.a
+test_convert_org: test_convert_org.o convert_org.o data_list.o file_utils.o libmbadata.a libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-MBADATA_OBJECTS = sql_query.o \
+MBADATA_OBJECTS = \
+ sql_query.o \
  data_list.o \
  batter_accolades_t.o \
  batter_stats_t.o \
@@ -159,6 +173,14 @@ MBADATA_OBJECTS = sql_query.o \
 libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
+MBABUILDERS_OBJECTS = \
+ build_file_leagname.o \
+ build_file_parks.o \
+ build_file_players.o
+
+libmbabuilders.a: $(MBABUILDERS_OBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
+
 %.o: %.c *.h
 	$(CC) $(CFLAGS) -c $<
 
@@ -170,4 +192,4 @@ TAGS: *.h *.c
 
 .PHONY: clean
 clean:
-	rm $(progs) *.o *.a
+	rm $(tests) $(progs) *.o *.a

@@ -316,4 +316,7 @@ boolean_e       writeLeagueFile(  const char          *filename, const fileleagn
 fileparks_s    *readParksFile(    const char          *filename                                  );
 boolean_e       writeParksFile(   const char          *filename, const fileparks_s  *parksFile   );
 
+// Utility program methods:
+boolean_e genPlayerIds( fileplayer_s *players_file );
+
 #endif
