@@ -80,6 +80,7 @@ TESTARGS=
 
 runTestProg test_convert_org
 runTestProg test_gen_player_ids
+runTestProg test_copy_player_ids
 
 if [ $FAIL -ne 0 ]; then
 

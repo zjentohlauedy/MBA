@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "builders.h"
 #include "file_formats.h"
 
@@ -67,6 +68,8 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
+          memset( &players_data[i], '\0', sizeof(fileplayer_s) );
+
           unsigned char pos       = pickPosition();
           unsigned char hand      = ((rand() % 100)) > 49 ? fh_Right : fh_Left;
           unsigned char color     = ((rand() % 100)) > 49 ? fc_Light : fc_Dark;

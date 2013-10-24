@@ -153,6 +153,25 @@ void untermName( unsigned char *buffer, const int len )
 }
 
 
+int getPlayerId( const fileplayer_s *players_file )
+{
+     unsigned char pos = nibble( players_file->position[0], n_High );
+
+     if ( pos == fpos_Pitcher )
+     {
+          const acc_player_id_s *player_id_data = (acc_player_id_s *)&(players_file->filestats.filepitching.action);
+
+          return word2int( player_id_data->player_id );
+     }
+     else
+     {
+          const acc_player_id_s *player_id_data = (acc_player_id_s *)&(players_file->filestats.filebatting.action);
+
+          return word2int( player_id_data->player_id );
+     }
+}
+
+
 unsigned char calcChecksum( int value )
 {
      unsigned char checksum = 0;

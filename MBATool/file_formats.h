@@ -307,6 +307,7 @@ void            int2word(               unsigned char *word,     const int      
 int             nibble(           const unsigned char  byte,     const nibble_e      position    );
 void            termName(               unsigned char *buffer,   const int           len         );
 void            untermName(             unsigned char *buffer,   const int           len         );
+int             getPlayerId(      const fileplayer_s  *players_file );
 unsigned char   calcChecksum(           int            value                                     );
 char           *getFileUtilsError(      void                                                     );
 fileplayer_s   *readPlayersFile(  const char          *filename                                  );
@@ -317,6 +318,7 @@ fileparks_s    *readParksFile(    const char          *filename                 
 boolean_e       writeParksFile(   const char          *filename, const fileparks_s  *parksFile   );
 
 // Utility program methods:
-boolean_e genPlayerIds( fileplayer_s *players_file );
+boolean_e genPlayerIds(  fileplayer_s *players_file                               );
+boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file2 );
 
 #endif
