@@ -30,8 +30,6 @@ standings \
 updateewbcolors \
 updateewbfielding \
 updateewbpitching \
-updateewbplayers \
-updateewbplayers2 \
 updateewbratings \
 updateewbstats
 
@@ -120,12 +118,6 @@ updateewbfielding: updateewbfielding.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 updateewbpitching: updateewbpitching.o ewbfiles.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-updateewbplayers: updateewbplayers.o ewbfiles.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-updateewbplayers2: updateewbplayers2.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 updateewbratings: updateewbratings.o ewbfiles.o
