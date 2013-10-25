@@ -6,11 +6,15 @@ LDFLAGS = -L. -lm -lsqlite3
 
 progs = \
    gen_player_ids \
-   copy_player_ids
+   copy_player_ids \
+   set_longevity \
+   copy_longevity
 
 tests = \
    test_gen_player_ids \
    test_copy_player_ids \
+   test_set_longevity \
+   test_copy_longevity \
    test_players_t \
    test_player_accolades_t \
    test_pitchers_t \
@@ -50,12 +54,24 @@ gen_player_ids: gen_player_ids_main.o gen_player_ids.o file_utils.o
 copy_player_ids: copy_player_ids.o copy_player_ids_main.o file_utils.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+set_longevity: set_longevity.o set_longevity_main.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+copy_longevity: copy_longevity.o copy_longevity_main.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 TESTS: $(tests) mba_test.db TAGS
 
 test_gen_player_ids: test_gen_player_ids.o gen_player_ids.o file_utils.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_copy_player_ids: test_copy_player_ids.o copy_player_ids.o file_utils.o libmbabuilders.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_set_longevity: test_set_longevity.o set_longevity.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_copy_longevity: test_copy_longevity.o copy_longevity.o file_utils.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_players_t: test_players_t.o players_t.o sql_query.o

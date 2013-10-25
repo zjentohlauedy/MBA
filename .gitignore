@@ -60,6 +60,8 @@ updateewbstats
 
 MBATool/gen_player_ids
 MBATool/copy_player_ids
+MBATool/copy_longevity.c
+MBATool/set_longevity
 
 MBATool/test_players_t
 MBATool/test_player_accolades_t
@@ -92,3 +94,5 @@ MBATool/test_file_utils
 MBATool/test_convert_org
 MBATool/test_gen_player_ids
 MBATool/test_copy_player_ids
+MBATool/test_copy_longevity
+MBATool/test_set_longevity

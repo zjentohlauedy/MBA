@@ -2,19 +2,6 @@
 #include <string.h>
 #include "file_formats.h"
 
-static fileplayer_s *findMatchingPlayer( fileplayer_s *player, fileplayer_s *players )
-{
-     for ( int i = 0; i < TOTAL_PLAYERS; ++i )
-     {
-          if ( memcmp( player->first_name, players[i].first_name, sizeof(player->first_name) ) == 0 &&
-               memcmp( player->last_name,  players[i].last_name,  sizeof(player->last_name)  ) == 0    )
-          {
-               return &players[i];
-          }
-     }
-
-     return NULL;
-}
 
 boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file2 )
 {
@@ -55,8 +42,6 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
 
                id_info1 = (acc_player_id_s *)&(batting1->action);
                id_info2 = (acc_player_id_s *)&(batting2->action);
-
-               players_file1[idx].filestats.filebatting.ratings[2] = matchingPlayer->filestats.filebatting.ratings[2];
           }
 
           if ( word2int( id_info1->player_id ) != 0 )

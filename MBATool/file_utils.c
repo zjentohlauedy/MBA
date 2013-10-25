@@ -187,6 +187,21 @@ unsigned char calcChecksum( int value )
 }
 
 
+fileplayer_s *findMatchingPlayer( const fileplayer_s *player, fileplayer_s *players )
+{
+     for ( int i = 0; i < TOTAL_PLAYERS; ++i )
+     {
+          if ( memcmp( player->first_name, players[i].first_name, sizeof(player->first_name) ) == 0 &&
+               memcmp( player->last_name,  players[i].last_name,  sizeof(player->last_name)  ) == 0    )
+          {
+               return &players[i];
+          }
+     }
+
+     return NULL;
+}
+
+
 fileplayer_s *readPlayersFile( const char *filename )
 {
      return readFile( filename, sizeof(fileplayer_s) * TOTAL_PLAYERS );

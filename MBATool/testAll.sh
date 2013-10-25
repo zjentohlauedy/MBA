@@ -81,6 +81,8 @@ TESTARGS=
 runTestProg test_convert_org
 runTestProg test_gen_player_ids
 runTestProg test_copy_player_ids
+runTestProg test_set_longevity
+runTestProg test_copy_longevity
 
 if [ $FAIL -ne 0 ]; then
 

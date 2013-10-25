@@ -67,6 +67,16 @@ static int  __unit_tests_failed__ = 0;
           }                                                        \
      } while ( 0 )
 
+#define assertNonZero( actual )                                    \
+     do                                                            \
+     {                                                             \
+          if ( (actual) == 0 )                                     \
+          {                                                        \
+               sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected to not be zero but was zero\033[0m", #actual ); \
+               return __unit_test_msgbuf__;                        \
+          }                                                        \
+     } while ( 0 )
+
 #define assertEquals assertEqualsInt
 
 #define run_test(test, callback)                           \
