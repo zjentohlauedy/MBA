@@ -161,6 +161,8 @@ int team_accolades_t_delete(       sqlite3 *db,                    const team_ac
 team_s *get_team(    sqlite3 *db, const int     team_id );
 int     save_team(   sqlite3 *db, const team_s *team    );
 int     remove_team( sqlite3 *db, const team_s *team    );
-void    free_team(                      team_s *team    );
+
+void free_team(         team_s        *team         );
+void free_team_players( team_player_s *team_players );
 
 #endif

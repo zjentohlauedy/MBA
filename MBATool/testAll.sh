@@ -79,6 +79,10 @@ runTestProg test_file_utils
 TESTARGS=
 
 runTestProg test_convert_org
+runTestProg test_convert_leagues
+runTestProg test_convert_divisions
+runTestProg test_convert_teams
+runTestProg test_convert_players
 runTestProg test_gen_player_ids
 runTestProg test_copy_player_ids
 runTestProg test_set_longevity

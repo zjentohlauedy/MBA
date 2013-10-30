@@ -86,6 +86,7 @@ int division_accolades_t_delete(           sqlite3 *db,                        c
 division_s *get_division(    sqlite3 *db, const int         division_id );
 int         save_division(   sqlite3 *db, const division_s *division    );
 int         remove_division( sqlite3 *db, const division_s *division    );
-void        free_division(                      division_s *division    );
 
+void free_division(       division_s      *division       );
+void free_division_teams( division_team_s *division_teams );
 #endif

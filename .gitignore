@@ -92,6 +92,10 @@ MBATool/test_league_service
 MBATool/test_player_service_free
 MBATool/test_file_utils
 MBATool/test_convert_org
+MBATool/test_convert_divisions
+MBATool/test_convert_leagues
+MBATool/test_convert_players
+MBATool/test_convert_teams
 MBATool/test_gen_player_ids
 MBATool/test_copy_player_ids
 MBATool/test_copy_longevity

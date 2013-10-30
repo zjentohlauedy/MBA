@@ -83,6 +83,7 @@ int league_accolades_t_delete(         sqlite3 *db,                      const l
 league_s *get_league(    sqlite3 *db, const int       league_id );
 int       save_league(   sqlite3 *db, const league_s *league    );
 int       remove_league( sqlite3 *db, const league_s *league    );
-void      free_league(                      league_s *league    );
 
+void      free_league(           league_s          *league           );
+void      free_league_divisions( league_division_s *league_divisions );
 #endif

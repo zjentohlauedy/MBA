@@ -42,7 +42,11 @@ tests = \
    test_division_service \
    test_league_service \
    test_file_utils \
-   test_convert_org
+   test_convert_org \
+   test_convert_leagues \
+   test_convert_divisions \
+   test_convert_teams \
+   test_convert_players
 
 ALL: PROGS TESTS
 
@@ -155,8 +159,20 @@ test_league_service: test_league_service.o libmbadata.a
 test_file_utils: test_file_utils.o file_utils.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_convert_org: test_convert_org.o convert_org.o data_list.o file_utils.o libmbadata.a libmbabuilders.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+test_convert_org: test_convert_org.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+
+test_convert_leagues: test_convert_leagues.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+
+test_convert_divisions: test_convert_divisions.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+
+test_convert_teams: test_convert_teams.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+
+test_convert_players: test_convert_players.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
 MBADATA_OBJECTS = \
  sql_query.o \
@@ -203,6 +219,16 @@ MBABUILDERS_OBJECTS = \
  build_file_players.o
 
 libmbabuilders.a: $(MBABUILDERS_OBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
+
+MBACONVERSION_OBJECTS = \
+ convert_org.o \
+ convert_leagues.o \
+ convert_divisions.o \
+ convert_teams.o \
+ convert_players.o
+
+libmbaconversion.a: $(MBACONVERSION_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
 %.o: %.c *.h
