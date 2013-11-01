@@ -55,7 +55,38 @@ static position_e mapPosition( const fileposition_e pos )
      return pos_None;
 }
 
-static batter_s *createBatter( const int player_id, const struct batting_s *batter_data, const unsigned char positions )
+static batter_stats_s *convertBatterStats( const int player_id, const int season, const season_phase_e season_phase, const acc_bat_stats_s *stats, const acc_bat_stats_s *addtl_stats )
+{
+     data_list_s      list         = { 0 };
+     batter_stats_s   sentinel     = BATTER_STATS_SENTINEL;
+     batter_stats_s   batter_stats = { 0 };
+
+     int rbi = stats->acc_rbi[0] + addtl_stats->acc_rbi[0];
+     int so  = stats->acc_so[0]  + addtl_stats->acc_so[0];
+
+     batter_stats.player_id      =                  player_id;
+     batter_stats.season         =                  season;
+     batter_stats.season_phase   =                  season_phase;
+     batter_stats.games          =           stats->acc_games[0];
+     batter_stats.at_bats        = word2int( stats->acc_ab        );
+     batter_stats.runs           =           stats->acc_runs[0];
+     batter_stats.hits           = word2int( stats->acc_hits      );
+     batter_stats.doubles        =           stats->acc_2b[0];
+     batter_stats.triples        =           stats->acc_3b[0];
+     batter_stats.home_runs      =           stats->acc_hr[0];
+     batter_stats.runs_batted_in =                  rbi;
+     batter_stats.walks          =           stats->acc_bb[0];
+     batter_stats.strike_outs    =                  so;
+     batter_stats.steals         =           stats->acc_sb[0];
+     batter_stats.errors         =           stats->acc_err[0];
+
+     if ( add_to_data_list( &list, &batter_stats, sizeof(batter_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,     sizeof(batter_stats_s), 5 );
+
+     return list.data;
+}
+
+static batter_s *createBatter( const int player_id, const int season, const season_phase_e season_phase, const struct batting_s *batter_data, const unsigned char positions )
 {
      batter_s *batter = NULL;
 
@@ -73,10 +104,43 @@ static batter_s *createBatter( const int player_id, const struct batting_s *batt
      batter->range              =              nibble( batter_data->ratings[1], n_Low  );
      batter->arm                =              nibble( batter_data->ratings[0], n_Low  );
 
+     if ( (batter->stats = convertBatterStats( player_id, season, season_phase, &(batter_data->simulated), &(batter_data->action) )) == NULL )
+     {
+          free( batter );
+
+          return NULL;
+     }
+
      return batter;
 }
 
-static pitcher_s *createPitcher( const int player_id, const struct pitching_s *pitcher_data )
+static pitcher_stats_s *convertPitcherStats( const int player_id, const int season, const season_phase_e season_phase, const acc_pch_stats_s *stats )
+{
+     data_list_s      list          = { 0 };
+     pitcher_stats_s  sentinel      = PITCHER_STATS_SENTINEL;
+     pitcher_stats_s  pitcher_stats = { 0 };
+
+     pitcher_stats.player_id    =                         player_id;
+     pitcher_stats.season       =                         season;
+     pitcher_stats.season_phase =                         season_phase;
+     pitcher_stats.wins         =                  stats->acc_wins[0];
+     pitcher_stats.losses       =                  stats->acc_losses[0];
+     pitcher_stats.games        =                  stats->acc_starts[0];
+     pitcher_stats.saves        =                  stats->acc_saves[0];
+     pitcher_stats.innings      = (float)word2int( stats->acc_innings   ) / 10.0;
+     pitcher_stats.hits         =        word2int( stats->acc_hits      );
+     pitcher_stats.earned_runs  =        word2int( stats->acc_er        );
+     pitcher_stats.home_runs    =                  stats->acc_hr[0];
+     pitcher_stats.walks        =                  stats->acc_bb[0];
+     pitcher_stats.strike_outs  =        word2int( stats->acc_so        );
+
+     if ( add_to_data_list( &list, &pitcher_stats, sizeof(pitcher_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,      sizeof(pitcher_stats_s), 5 );
+
+     return list.data;
+}
+
+static pitcher_s *createPitcher( const int player_id, const int season, const season_phase_e season_phase, const struct pitching_s *pitcher_data )
 {
      pitcher_s *pitcher = NULL;
 
@@ -90,10 +154,17 @@ static pitcher_s *createPitcher( const int player_id, const struct pitching_s *p
      pitcher->bunt      = nibble( pitcher_data->ratings[1], n_Low  );
      pitcher->fatigue   = nibble( pitcher_data->ratings[1], n_High );
 
+     if ( (pitcher->stats = convertPitcherStats( player_id, season, season_phase, &(pitcher_data->simulated) )) == NULL )
+     {
+          free( pitcher );
+
+          return NULL;
+     }
+
      return pitcher;
 }
 
-static player_s *createPlayer( const fileplayer_s *players_data )
+static player_s *createPlayer( const int season, const season_phase_e season_phase, const fileplayer_s *players_data )
 {
      player_s *player    = NULL;
      int       player_id = 0;
@@ -118,7 +189,7 @@ static player_s *createPlayer( const fileplayer_s *players_data )
                return NULL;
           }
 
-          if ( (player->details.pitching = createPitcher( player_id, pitcher_data )) == NULL )
+          if ( (player->details.pitching = createPitcher( player_id, season, season_phase, pitcher_data )) == NULL )
           {
                free( player );
 
@@ -144,7 +215,7 @@ static player_s *createPlayer( const fileplayer_s *players_data )
                return NULL;
           }
 
-          if ( (player->details.batting = createBatter( player_id, batter_data, players_data->position[0] )) == NULL )
+          if ( (player->details.batting = createBatter( player_id, season, season_phase, batter_data, players_data->position[0] )) == NULL )
           {
                free( player );
 
@@ -202,7 +273,7 @@ team_player_s *convertPlayers( const org_data_s *org_data, const int team_id )
      {
           if ( org_data->players_data[idx + i].last_name[0] == '\0' ) continue;
 
-          if ( (players[i] = createPlayer( &(org_data->players_data[idx + i]) )) == NULL )
+          if ( (players[i] = createPlayer( org_data->season, org_data->season_phase, &(org_data->players_data[idx + i]) )) == NULL )
           {
                freePlayers( players, PLAYERS_PER_TEAM );
 

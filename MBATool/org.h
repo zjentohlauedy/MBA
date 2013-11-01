@@ -22,6 +22,7 @@ typedef struct
      fileparks_s    *parks_data;
      fileplayer_s   *players_data;
      int             season;
+     season_phase_e  season_phase;
 
 } org_data_s;
 

@@ -34,6 +34,43 @@ static fileposition_e pickPosition( void )
      return fpos_Pitcher;
 }
 
+static void buildBatterStats( acc_bat_stats_s *stats, acc_bat_stats_s *overflow )
+{
+     int rbi = rand() % 500;
+     int so  = rand() % 500;
+
+     int2word( stats->acc_ab,        rand() % 50000 );
+     int2word( stats->acc_hits,      rand() % 50000 );
+     /**/      stats->acc_2b[0]    = rand() % 250;
+     /**/      stats->acc_3b[0]    = rand() % 250;
+     /**/      stats->acc_hr[0]    = rand() % 250;
+     /**/      stats->acc_bb[0]    = rand() % 250;
+     /**/      stats->acc_games[0] = rand() % 250;
+     /**/      stats->acc_runs[0]  = rand() % 250;
+     /**/      stats->acc_sb[0]    = rand() % 250;
+     /**/      stats->acc_err[0]   = rand() % 250;
+
+     if   ( rbi <= 250 ) { stats->acc_rbi[0] = rbi;                                   }
+     else                { stats->acc_rbi[0] = 250; overflow->acc_rbi[0] = rbi - 250; }
+
+     if   ( so  <= 250 ) { stats->acc_so[0]  = so;                                    }
+     else                { stats->acc_so[0]  = 250; overflow->acc_so[0]  = so  - 250; }
+}
+
+static void buildPitcherStats( acc_pch_stats_s *stats )
+{
+     /**/      stats->acc_wins[0]   =  rand() % 250;
+     /**/      stats->acc_losses[0] =  rand() % 250;
+     /**/      stats->acc_starts[0] =  rand() % 250;
+     /**/      stats->acc_saves[0]  =  rand() % 250;
+     int2word( stats->acc_innings,    (rand() % 5000) + (rand() % 3) );
+     int2word( stats->acc_hits,        rand() % 50000                );
+     int2word( stats->acc_er,          rand() % 50000                );
+     /**/      stats->acc_hr[0]     =  rand() % 250;
+     /**/      stats->acc_bb[0]     =  rand() % 250;
+     int2word( stats->acc_so,          rand() % 50000                );
+}
+
 fileplayer_s *buildFilePlayers( void )
 {
      fileplayer_s *players_data = buildFilePlayersWithoutIds();
@@ -90,6 +127,8 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                pitching->color[0]   = color;
                pitching->ratings[0] = (speed   << 4) + control;
                pitching->ratings[1] = (fatigue << 4) + longevity;
+
+               buildPitcherStats( &(pitching->simulated) );
           }
           else
           {
@@ -110,6 +149,8 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                batting->ratings[1] = (running << 4) + range;
                batting->ratings[2] = (power   << 4) + longevity;
                batting->ratings[3] = (bunt    << 4) + hit_n_run;
+
+               buildBatterStats( &(batting->simulated), &(batting->action) );
           }
 
           sprintf( players_data[i].first_name,   "Fst%d",    i + 1 );

@@ -252,12 +252,114 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
      return NULL;
 }
 
+static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAndTeamId()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.season       = 13;
+     org_data.season_phase = sp_Regular;
+
+     fileplayer_s  *players_data = org_data.players_data;
+
+     team_player_s *team_players = convertPlayers( &org_data, 1 );
+
+     assertNotNull( team_players );
+
+     for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
+     {
+          assertNotNull( team_players[i].player );
+
+          fileposition_e position = nibble( players_data[i].position[0], n_High );
+
+          if ( position == fpos_Pitcher )
+          {
+               pitcher_s *pitcher = team_players[i].player->details.pitching;
+
+               assertNotNull( pitcher );
+
+               acc_pch_stats_s *expected_stats = &(players_data[i].filestats.filepitching.simulated);
+               pitcher_stats_s *actual_stats   = pitcher->stats;
+
+               float expected_innings = (float)word2int( expected_stats->acc_innings ) / 10.0;
+
+               assertNotNull( actual_stats );
+
+               assertEqualsInt(           pitcher->player_id,               actual_stats[0].player_id    );
+               assertEqualsInt(           org_data.season,                  actual_stats[0].season       );
+               assertEqualsInt(           org_data.season_phase,            actual_stats[0].season_phase );
+               assertEqualsInt(           expected_stats->acc_wins[0],      actual_stats[0].wins         );
+               assertEqualsInt(           expected_stats->acc_losses[0],    actual_stats[0].losses       );
+               assertEqualsInt(           expected_stats->acc_starts[0],    actual_stats[0].games        );
+               assertEqualsInt(           expected_stats->acc_saves[0],     actual_stats[0].saves        );
+               assertEqualsInt(           expected_innings,                 actual_stats[0].innings      );
+               assertEqualsInt( word2int( expected_stats->acc_hits       ), actual_stats[0].hits         );
+               assertEqualsInt( word2int( expected_stats->acc_er         ), actual_stats[0].earned_runs  );
+               assertEqualsInt(           expected_stats->acc_hr[0],        actual_stats[0].home_runs    );
+               assertEqualsInt(           expected_stats->acc_bb[0],        actual_stats[0].walks        );
+               assertEqualsInt( word2int( expected_stats->acc_so         ), actual_stats[0].strike_outs  );
+
+               pitcher_stats_s sentinel = PITCHER_STATS_SENTINEL;
+
+               assertEquals( sentinel.player_id,    actual_stats[1].player_id    );
+               assertEquals( sentinel.season,       actual_stats[1].season       );
+               assertEquals( sentinel.season_phase, actual_stats[1].season_phase );
+          }
+          else
+          {
+               batter_s *batter = team_players[i].player->details.batting;
+
+               assertNotNull( batter );
+
+               acc_bat_stats_s *expected_stats = &(players_data[i].filestats.filebatting.simulated);
+               acc_bat_stats_s *extended_stats = &(players_data[i].filestats.filebatting.action);
+               batter_stats_s  *actual_stats   = batter->stats;
+
+               int expected_rbi = expected_stats->acc_rbi[0] + extended_stats->acc_rbi[0];
+               int expected_so  = expected_stats->acc_so[0]  + extended_stats->acc_so[0];
+
+               assertNotNull( actual_stats );
+
+               assertEqualsInt(           batter->player_id,               actual_stats[0].player_id      );
+               assertEqualsInt(           org_data.season,                 actual_stats[0].season         );
+               assertEqualsInt(           org_data.season_phase,           actual_stats[0].season_phase   );
+               assertEqualsInt(           expected_stats->acc_games[0],    actual_stats[0].games          );
+               assertEqualsInt( word2int( expected_stats->acc_ab        ), actual_stats[0].at_bats        );
+               assertEqualsInt(           expected_stats->acc_runs[0],     actual_stats[0].runs           );
+               assertEqualsInt( word2int( expected_stats->acc_hits      ), actual_stats[0].hits           );
+               assertEqualsInt(           expected_stats->acc_2b[0],       actual_stats[0].doubles        );
+               assertEqualsInt(           expected_stats->acc_3b[0],       actual_stats[0].triples        );
+               assertEqualsInt(           expected_stats->acc_hr[0],       actual_stats[0].home_runs      );
+               assertEqualsInt(           expected_rbi,                    actual_stats[0].runs_batted_in );
+               assertEqualsInt(           expected_stats->acc_bb[0],       actual_stats[0].walks          );
+               assertEqualsInt(           expected_so,                     actual_stats[0].strike_outs    );
+               assertEqualsInt(           expected_stats->acc_sb[0],       actual_stats[0].steals         );
+               assertEqualsInt(           expected_stats->acc_err[0],      actual_stats[0].errors         );
+
+               batter_stats_s sentinel = BATTER_STATS_SENTINEL;
+
+               assertEquals( sentinel.player_id,    actual_stats[1].player_id    );
+               assertEquals( sentinel.season,       actual_stats[1].season       );
+               assertEquals( sentinel.season_phase, actual_stats[1].season_phase );
+          }
+     }
+
+     free_team_players( team_players );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataAndTeamId,           null );
      run_test( convertPlayers_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData, null );
      run_test( convertPlayers_ShouldSkipEmptyPlayers_GivenPlayersFileData,                            null );
      run_test( convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlayersFileData,         null );
+
+     // stats...
+     run_test( convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAndTeamId,             null );
 }
 
 int main( int argc, char *argv[] )
