@@ -41,6 +41,74 @@ static boolean_e addTeamToList( data_list_s *list, const int division_id, team_s
      return bl_True;
 }
 
+static team_batting_stats_s *convertBattingStats( const team_player_s *players, const int team_id )
+{
+     data_list_s           list              = { 0 };
+     team_batting_stats_s sentinel           = TEAM_BATTING_STATS_SENTINEL;
+     team_batting_stats_s team_batting_stats = { 0 };
+
+     for ( int i = 0; players[i].team_id >= 0; ++i )
+     {
+          if ( players[i].player->player_type == pt_Pitcher ) continue;
+
+          batter_stats_s *batter_stats = players[i].player->details.batting->stats;
+
+          team_batting_stats.team_id         = players[i].team_id;
+          team_batting_stats.season          = batter_stats[0].season;
+          team_batting_stats.season_phase    = batter_stats[0].season_phase;
+          team_batting_stats.games          += batter_stats[0].games;
+          team_batting_stats.at_bats        += batter_stats[0].at_bats;
+          team_batting_stats.runs           += batter_stats[0].runs;
+          team_batting_stats.hits           += batter_stats[0].hits;
+          team_batting_stats.doubles        += batter_stats[0].doubles;
+          team_batting_stats.triples        += batter_stats[0].triples;
+          team_batting_stats.home_runs      += batter_stats[0].home_runs;
+          team_batting_stats.runs_batted_in += batter_stats[0].runs_batted_in;
+          team_batting_stats.walks          += batter_stats[0].walks;
+          team_batting_stats.strike_outs    += batter_stats[0].strike_outs;
+          team_batting_stats.steals         += batter_stats[0].steals;
+          team_batting_stats.errors         += batter_stats[0].errors;
+     }
+
+     if ( add_to_data_list( &list, &team_batting_stats, sizeof(team_batting_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,           sizeof(team_batting_stats_s), 5 );
+
+     return list.data;
+}
+
+static team_pitching_stats_s *convertPitchingStats( const team_player_s *players, const int team_id )
+{
+     data_list_s           list                = { 0 };
+     team_pitching_stats_s sentinel            = TEAM_PITCHING_STATS_SENTINEL;
+     team_pitching_stats_s team_pitching_stats = { 0 };
+
+     for ( int i = 0; players[i].team_id >= 0; ++i )
+     {
+          if ( players[i].player->player_type != pt_Pitcher ) continue;
+
+          pitcher_stats_s *pitcher_stats = players[i].player->details.pitching->stats;
+
+          team_pitching_stats.team_id       = players[i].team_id;
+          team_pitching_stats.season        = pitcher_stats[0].season;
+          team_pitching_stats.season_phase  = pitcher_stats[0].season_phase;
+          team_pitching_stats.wins         += pitcher_stats[0].wins;
+          team_pitching_stats.losses       += pitcher_stats[0].losses;
+          team_pitching_stats.games        += pitcher_stats[0].games;
+          team_pitching_stats.saves        += pitcher_stats[0].saves;
+          team_pitching_stats.innings      += pitcher_stats[0].innings;
+          team_pitching_stats.hits         += pitcher_stats[0].hits;
+          team_pitching_stats.earned_runs  += pitcher_stats[0].earned_runs;
+          team_pitching_stats.home_runs    += pitcher_stats[0].home_runs;
+          team_pitching_stats.walks        += pitcher_stats[0].walks;
+          team_pitching_stats.strike_outs  += pitcher_stats[0].strike_outs;
+     }
+
+     if ( add_to_data_list( &list, &team_pitching_stats, sizeof(team_pitching_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,            sizeof(team_pitching_stats_s), 5 );
+
+     return list.data;
+}
+
 division_team_s *convertTeams( const org_data_s *org_data, const int division_id )
 {
      data_list_s      list                      = { 0 };
@@ -64,6 +132,20 @@ division_team_s *convertTeams( const org_data_s *org_data, const int division_id
           }
 
           if ( (teams[i]->players = convertPlayers( org_data, team_id )) == NULL )
+          {
+               freeTeams( teams, TEAMS_PER_DIVISION );
+
+               return NULL;
+          }
+
+          if ( (teams[i]->pitching_stats = convertPitchingStats( teams[i]->players, team_id )) == NULL )
+          {
+               freeTeams( teams, TEAMS_PER_DIVISION );
+
+               return NULL;
+          }
+
+          if ( (teams[i]->batting_stats = convertBattingStats( teams[i]->players, team_id )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 

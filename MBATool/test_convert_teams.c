@@ -10,7 +10,82 @@
 static char *result;
 
 
-static char *convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenALeagueDataFileParksDataFileAndDivisionId()
+static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int team_id )
+{
+     static team_batting_stats_s team_batting_stats = { 0 };
+
+     memset( &team_batting_stats, '\0', sizeof(team_batting_stats_s) );
+
+     team_batting_stats.team_id = team_id;
+
+     int start = (team_id - 1) * PLAYERS_PER_TEAM;
+
+     for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
+     {
+          fileplayer_s *player = &players_data[start + i];
+
+          if (         player->last_name[0]          == '\0'         ) continue;
+          if ( nibble( player->position[0], n_High ) == fpos_Pitcher ) continue;
+
+          acc_bat_stats_s *batting_stats = &(player->filestats.filebatting.simulated);
+          acc_bat_stats_s *overflow      = &(player->filestats.filebatting.action);
+
+          int rbi = batting_stats->acc_rbi[0] + overflow->acc_rbi[0];
+          int so  = batting_stats->acc_so[0]  + overflow->acc_so[0];
+
+          team_batting_stats.games          +=           batting_stats->acc_games[0];
+          team_batting_stats.at_bats        += word2int( batting_stats->acc_ab        );
+          team_batting_stats.runs           +=           batting_stats->acc_runs[0];
+          team_batting_stats.hits           += word2int( batting_stats->acc_hits      );
+          team_batting_stats.doubles        +=           batting_stats->acc_2b[0];
+          team_batting_stats.triples        +=           batting_stats->acc_3b[0];
+          team_batting_stats.home_runs      +=           batting_stats->acc_hr[0];
+          team_batting_stats.runs_batted_in +=                          rbi;
+          team_batting_stats.walks          +=           batting_stats->acc_bb[0];
+          team_batting_stats.strike_outs    +=                          so;
+          team_batting_stats.steals         +=           batting_stats->acc_sb[0];
+          team_batting_stats.errors         +=           batting_stats->acc_err[0];
+     }
+
+     return &team_batting_stats;
+}
+
+static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int team_id )
+{
+     static team_pitching_stats_s team_pitching_stats = { 0 };
+
+     memset( &team_pitching_stats, '\0', sizeof(team_pitching_stats_s) );
+
+     team_pitching_stats.team_id = team_id;
+
+     int start = (team_id - 1) * PLAYERS_PER_TEAM;
+
+     for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
+     {
+          fileplayer_s *player = &players_data[start + i];
+
+          if (         player->last_name[0]          == '\0'         ) continue;
+          if ( nibble( player->position[0], n_High ) != fpos_Pitcher ) continue;
+
+          acc_pch_stats_s *pitching_stats = &(player->filestats.filepitching.simulated);
+
+          team_pitching_stats.wins         +=                  pitching_stats->acc_wins[0];
+          team_pitching_stats.losses       +=                  pitching_stats->acc_losses[0];
+          team_pitching_stats.games        +=                  pitching_stats->acc_starts[0];
+          team_pitching_stats.saves        +=                  pitching_stats->acc_saves[0];
+          team_pitching_stats.innings      += (float)word2int( pitching_stats->acc_innings    ) / 10.0;
+          team_pitching_stats.hits         +=        word2int( pitching_stats->acc_hits       );
+          team_pitching_stats.earned_runs  +=        word2int( pitching_stats->acc_er         );
+          team_pitching_stats.home_runs    +=                  pitching_stats->acc_hr[0];
+          team_pitching_stats.walks        +=                  pitching_stats->acc_bb[0];
+          team_pitching_stats.strike_outs  +=        word2int( pitching_stats->acc_so         );
+     }
+
+     return &team_pitching_stats;
+}
+
+
+static char *convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -97,10 +172,108 @@ static char *convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId
      return NULL;
 }
 
+static char *convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.season       = 3;
+
+     fileleagname_s  *league_data    = org_data.league_data;
+     fileparks_s     *parks_data     = org_data.parks_data;
+     fileplayer_s    *players_data   = org_data.players_data;
+
+     division_team_s *division_teams = convertTeams( &org_data, 1 );
+
+     assertNotNull( division_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull( division_teams[i].team );
+
+          team_pitching_stats_s *team_pitching_stats = division_teams[i].team->pitching_stats;
+
+          assertNotNull( team_pitching_stats );
+
+          team_pitching_stats_s *expected = calcPitchingStats( players_data, division_teams[i].team_id );
+
+          assertEqualsInt( expected->team_id,      team_pitching_stats[0].team_id      );
+          assertEqualsInt( org_data.season,        team_pitching_stats[0].season       );
+          assertEqualsInt( org_data.season_phase,  team_pitching_stats[0].season_phase );
+          assertEqualsInt( expected->wins,         team_pitching_stats[0].wins         );
+          assertEqualsInt( expected->losses,       team_pitching_stats[0].losses       );
+          assertEqualsInt( expected->games,        team_pitching_stats[0].games        );
+          assertEqualsInt( expected->saves,        team_pitching_stats[0].saves        );
+          assertEqualsDbl( expected->innings,      team_pitching_stats[0].innings      );
+          assertEqualsInt( expected->hits,         team_pitching_stats[0].hits         );
+          assertEqualsInt( expected->earned_runs,  team_pitching_stats[0].earned_runs  );
+          assertEqualsInt( expected->home_runs,    team_pitching_stats[0].home_runs    );
+          assertEqualsInt( expected->walks,        team_pitching_stats[0].walks        );
+          assertEqualsInt( expected->strike_outs,  team_pitching_stats[0].strike_outs  );
+
+          team_pitching_stats_s sentinel = TEAM_PITCHING_STATS_SENTINEL;
+
+          assertEqualsInt( sentinel.team_id,      team_pitching_stats[1].team_id      );
+          assertEqualsInt( sentinel.season,       team_pitching_stats[1].season       );
+          assertEqualsInt( sentinel.season_phase, team_pitching_stats[1].season_phase );
+     }
+
+     free_division_teams( division_teams );
+
+     return NULL;
+}
+
+static char *convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.season       = 3;
+
+     fileleagname_s  *league_data    = org_data.league_data;
+     fileparks_s     *parks_data     = org_data.parks_data;
+     fileplayer_s    *players_data   = org_data.players_data;
+
+     division_team_s *division_teams = convertTeams( &org_data, 1 );
+
+     assertNotNull( division_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull( division_teams[i].team );
+
+          team_batting_stats_s *team_batting_stats = division_teams[i].team->batting_stats;
+
+          assertNotNull( team_batting_stats );
+
+          team_batting_stats_s *expected = calcBattingStats( players_data, division_teams[i].team_id );
+
+          assertEqualsInt( expected->team_id,      team_batting_stats[0].team_id      );
+          assertEqualsInt( org_data.season,        team_batting_stats[0].season       );
+          assertEqualsInt( org_data.season_phase,  team_batting_stats[0].season_phase );
+
+          team_batting_stats_s sentinel = TEAM_BATTING_STATS_SENTINEL;
+
+          assertEqualsInt( sentinel.team_id,      team_batting_stats[1].team_id      );
+          assertEqualsInt( sentinel.season,       team_batting_stats[1].season       );
+          assertEqualsInt( sentinel.season_phase, team_batting_stats[1].season_phase );
+     }
+
+     free_division_teams( division_teams );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
-     run_test( convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenALeagueDataFileParksDataFileAndDivisionId, null );
-     run_test( convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId,                                null );
+     run_test( convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId, null );
+     run_test( convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId,           null );
+     run_test( convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId,     null );
+     run_test( convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
 }
 
 int main( int argc, char *argv[] )
