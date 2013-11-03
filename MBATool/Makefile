@@ -87,7 +87,7 @@ test_player_accolades_t: test_player_accolades_t.o player_accolades_t.o sql_quer
 test_pitchers_t: test_pitchers_t.o pitchers_t.o sql_query.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_pitcher_stats_t: test_pitcher_stats_t.o pitcher_stats_t.o sql_query.o data_list.o
+test_pitcher_stats_t: test_pitcher_stats_t.o pitcher_stats_t.o sql_query.o data_list.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_pitcher_accolades_t: test_pitcher_accolades_t.o pitcher_accolades_t.o sql_query.o data_list.o
@@ -111,7 +111,7 @@ test_team_players_t: test_team_players_t.o team_players_t.o sql_query.o data_lis
 test_team_stats_t: test_team_stats_t.o team_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_team_pitching_stats_t: test_team_pitching_stats_t.o team_pitching_stats_t.o sql_query.o data_list.o
+test_team_pitching_stats_t: test_team_pitching_stats_t.o team_pitching_stats_t.o sql_query.o data_list.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_team_batting_stats_t: test_team_batting_stats_t.o team_batting_stats_t.o sql_query.o data_list.o
@@ -144,10 +144,10 @@ test_league_stats_t: test_league_stats_t.o league_stats_t.o sql_query.o data_lis
 test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_player_service: test_player_service.o libmbadata.a
+test_player_service: test_player_service.o libmbadata.a libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_team_service: test_team_service.o libmbadata.a
+test_team_service: test_team_service.o libmbadata.a libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_division_service: test_division_service.o libmbadata.a
@@ -168,8 +168,8 @@ test_convert_leagues: test_convert_leagues.o data_list.o file_utils.o libmbadata
 test_convert_divisions: test_convert_divisions.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
-test_convert_teams: test_convert_teams.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+test_convert_teams: test_convert_teams.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbacompares.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbacompares -lmbaconversion
 
 test_convert_players: test_convert_players.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
@@ -214,11 +214,20 @@ libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
 MBABUILDERS_OBJECTS = \
+ build_pitcher_stats.o \
+ build_team_pitching_stats.o \
  build_file_leagname.o \
  build_file_parks.o \
  build_file_players.o
 
 libmbabuilders.a: $(MBABUILDERS_OBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
+
+MBACOMPARES_OBJECTS = \
+ compare_pitcher_stats.o \
+ compare_team_pitching_stats.o
+
+libmbacompares.a: $(MBACOMPARES_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
 MBACONVERSION_OBJECTS = \

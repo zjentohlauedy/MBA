@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "builders.h"
+#include "compares.h"
 #include "file_formats.h"
 #include "org.h"
 #include "unit_test.h"
@@ -69,17 +70,21 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
 
           acc_pch_stats_s *pitching_stats = &(player->filestats.filepitching.simulated);
 
-          team_pitching_stats.wins         +=                  pitching_stats->acc_wins[0];
-          team_pitching_stats.losses       +=                  pitching_stats->acc_losses[0];
-          team_pitching_stats.games        +=                  pitching_stats->acc_starts[0];
-          team_pitching_stats.saves        +=                  pitching_stats->acc_saves[0];
-          team_pitching_stats.innings      += (float)word2int( pitching_stats->acc_innings    ) / 10.0;
-          team_pitching_stats.hits         +=        word2int( pitching_stats->acc_hits       );
-          team_pitching_stats.earned_runs  +=        word2int( pitching_stats->acc_er         );
-          team_pitching_stats.home_runs    +=                  pitching_stats->acc_hr[0];
-          team_pitching_stats.walks        +=                  pitching_stats->acc_bb[0];
-          team_pitching_stats.strike_outs  +=        word2int( pitching_stats->acc_so         );
+          team_pitching_stats.wins            +=           pitching_stats->acc_wins[0];
+          team_pitching_stats.losses          +=           pitching_stats->acc_losses[0];
+          team_pitching_stats.games           +=           pitching_stats->acc_starts[0];
+          team_pitching_stats.saves           +=           pitching_stats->acc_saves[0];
+          team_pitching_stats.innings.innings += word2int( pitching_stats->acc_innings    ) / 10;
+          team_pitching_stats.innings.outs    += word2int( pitching_stats->acc_innings    ) % 10;
+          team_pitching_stats.hits            += word2int( pitching_stats->acc_hits       );
+          team_pitching_stats.earned_runs     += word2int( pitching_stats->acc_er         );
+          team_pitching_stats.home_runs       +=           pitching_stats->acc_hr[0];
+          team_pitching_stats.walks           +=           pitching_stats->acc_bb[0];
+          team_pitching_stats.strike_outs     += word2int( pitching_stats->acc_so         );
      }
+
+     team_pitching_stats.innings.innings += (team_pitching_stats.innings.outs / 3);
+     team_pitching_stats.innings.outs     = (team_pitching_stats.innings.outs % 3);
 
      return &team_pitching_stats;
 }
@@ -197,27 +202,14 @@ static char *convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivi
 
           assertNotNull( team_pitching_stats );
 
+          team_pitching_stats_s  sentinel = TEAM_PITCHING_STATS_SENTINEL;
           team_pitching_stats_s *expected = calcPitchingStats( players_data, division_teams[i].team_id );
 
-          assertEqualsInt( expected->team_id,      team_pitching_stats[0].team_id      );
-          assertEqualsInt( org_data.season,        team_pitching_stats[0].season       );
-          assertEqualsInt( org_data.season_phase,  team_pitching_stats[0].season_phase );
-          assertEqualsInt( expected->wins,         team_pitching_stats[0].wins         );
-          assertEqualsInt( expected->losses,       team_pitching_stats[0].losses       );
-          assertEqualsInt( expected->games,        team_pitching_stats[0].games        );
-          assertEqualsInt( expected->saves,        team_pitching_stats[0].saves        );
-          assertEqualsDbl( expected->innings,      team_pitching_stats[0].innings      );
-          assertEqualsInt( expected->hits,         team_pitching_stats[0].hits         );
-          assertEqualsInt( expected->earned_runs,  team_pitching_stats[0].earned_runs  );
-          assertEqualsInt( expected->home_runs,    team_pitching_stats[0].home_runs    );
-          assertEqualsInt( expected->walks,        team_pitching_stats[0].walks        );
-          assertEqualsInt( expected->strike_outs,  team_pitching_stats[0].strike_outs  );
+          expected->season       = org_data.season;
+          expected->season_phase = org_data.season_phase;
 
-          team_pitching_stats_s sentinel = TEAM_PITCHING_STATS_SENTINEL;
-
-          assertEqualsInt( sentinel.team_id,      team_pitching_stats[1].team_id      );
-          assertEqualsInt( sentinel.season,       team_pitching_stats[1].season       );
-          assertEqualsInt( sentinel.season_phase, team_pitching_stats[1].season_phase );
+          compareTeamPitchingStats(  expected, &team_pitching_stats[0] );
+          compareTeamPitchingStats( &sentinel, &team_pitching_stats[1] );
      }
 
      free_division_teams( division_teams );

@@ -1,11 +1,12 @@
 #ifndef __INC_PLAYER_H__
 #define __INC_PLAYER_H__
 
+#include <sqlite3.h>
 #include "season.h"
 #include "data_list.h"
 
 #define PLAYER_ACCOLADE_SENTINEL  { -1, -1, acc_None }
-#define PITCHER_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1.0, -1, -1, -1, -1, -1 }
+#define PITCHER_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, { -1, -1 }, -1, -1, -1, -1, -1 }
 #define PITCHER_ACCOLADE_SENTINEL { -1, -1, pacc_None }
 #define BATTER_STATS_SENTINEL     { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define BATTER_ACCOLADE_SENTINEL  { -1, -1, bacc_None }
@@ -114,6 +115,13 @@ typedef enum
 
 typedef struct
 {
+     int innings;
+     int outs;
+
+} innings_s;
+
+typedef struct
+{
      int                player_id;
      int                season;
      batting_accolade_e accolade;
@@ -173,7 +181,7 @@ typedef struct
      int            losses;
      int            games;
      int            saves;
-     float          innings;
+     innings_s      innings;
      int            hits;
      int            earned_runs;
      int            home_runs;

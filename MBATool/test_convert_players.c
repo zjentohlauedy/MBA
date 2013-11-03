@@ -283,23 +283,25 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
                acc_pch_stats_s *expected_stats = &(players_data[i].filestats.filepitching.simulated);
                pitcher_stats_s *actual_stats   = pitcher->stats;
 
-               float expected_innings = (float)word2int( expected_stats->acc_innings ) / 10.0;
+               int expected_innings = word2int( expected_stats->acc_innings ) / 10;
+               int expected_outs    = word2int( expected_stats->acc_innings ) % 10;
 
                assertNotNull( actual_stats );
 
-               assertEqualsInt(           pitcher->player_id,               actual_stats[0].player_id    );
-               assertEqualsInt(           org_data.season,                  actual_stats[0].season       );
-               assertEqualsInt(           org_data.season_phase,            actual_stats[0].season_phase );
-               assertEqualsInt(           expected_stats->acc_wins[0],      actual_stats[0].wins         );
-               assertEqualsInt(           expected_stats->acc_losses[0],    actual_stats[0].losses       );
-               assertEqualsInt(           expected_stats->acc_starts[0],    actual_stats[0].games        );
-               assertEqualsInt(           expected_stats->acc_saves[0],     actual_stats[0].saves        );
-               assertEqualsInt(           expected_innings,                 actual_stats[0].innings      );
-               assertEqualsInt( word2int( expected_stats->acc_hits       ), actual_stats[0].hits         );
-               assertEqualsInt( word2int( expected_stats->acc_er         ), actual_stats[0].earned_runs  );
-               assertEqualsInt(           expected_stats->acc_hr[0],        actual_stats[0].home_runs    );
-               assertEqualsInt(           expected_stats->acc_bb[0],        actual_stats[0].walks        );
-               assertEqualsInt( word2int( expected_stats->acc_so         ), actual_stats[0].strike_outs  );
+               assertEqualsInt(           pitcher->player_id,               actual_stats[0].player_id       );
+               assertEqualsInt(           org_data.season,                  actual_stats[0].season          );
+               assertEqualsInt(           org_data.season_phase,            actual_stats[0].season_phase    );
+               assertEqualsInt(           expected_stats->acc_wins[0],      actual_stats[0].wins            );
+               assertEqualsInt(           expected_stats->acc_losses[0],    actual_stats[0].losses          );
+               assertEqualsInt(           expected_stats->acc_starts[0],    actual_stats[0].games           );
+               assertEqualsInt(           expected_stats->acc_saves[0],     actual_stats[0].saves           );
+               assertEqualsInt(           expected_innings,                 actual_stats[0].innings.innings );
+               assertEqualsInt(           expected_outs,                    actual_stats[0].innings.outs    );
+               assertEqualsInt( word2int( expected_stats->acc_hits       ), actual_stats[0].hits            );
+               assertEqualsInt( word2int( expected_stats->acc_er         ), actual_stats[0].earned_runs     );
+               assertEqualsInt(           expected_stats->acc_hr[0],        actual_stats[0].home_runs       );
+               assertEqualsInt(           expected_stats->acc_bb[0],        actual_stats[0].walks           );
+               assertEqualsInt( word2int( expected_stats->acc_so         ), actual_stats[0].strike_outs     );
 
                pitcher_stats_s sentinel = PITCHER_STATS_SENTINEL;
 

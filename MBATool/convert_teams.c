@@ -88,20 +88,24 @@ static team_pitching_stats_s *convertPitchingStats( const team_player_s *players
 
           pitcher_stats_s *pitcher_stats = players[i].player->details.pitching->stats;
 
-          team_pitching_stats.team_id       = players[i].team_id;
-          team_pitching_stats.season        = pitcher_stats[0].season;
-          team_pitching_stats.season_phase  = pitcher_stats[0].season_phase;
-          team_pitching_stats.wins         += pitcher_stats[0].wins;
-          team_pitching_stats.losses       += pitcher_stats[0].losses;
-          team_pitching_stats.games        += pitcher_stats[0].games;
-          team_pitching_stats.saves        += pitcher_stats[0].saves;
-          team_pitching_stats.innings      += pitcher_stats[0].innings;
-          team_pitching_stats.hits         += pitcher_stats[0].hits;
-          team_pitching_stats.earned_runs  += pitcher_stats[0].earned_runs;
-          team_pitching_stats.home_runs    += pitcher_stats[0].home_runs;
-          team_pitching_stats.walks        += pitcher_stats[0].walks;
-          team_pitching_stats.strike_outs  += pitcher_stats[0].strike_outs;
+          team_pitching_stats.team_id          = players[i].team_id;
+          team_pitching_stats.season           = pitcher_stats[0].season;
+          team_pitching_stats.season_phase     = pitcher_stats[0].season_phase;
+          team_pitching_stats.wins            += pitcher_stats[0].wins;
+          team_pitching_stats.losses          += pitcher_stats[0].losses;
+          team_pitching_stats.games           += pitcher_stats[0].games;
+          team_pitching_stats.saves           += pitcher_stats[0].saves;
+          team_pitching_stats.innings.innings += pitcher_stats[0].innings.innings;
+          team_pitching_stats.innings.outs    += pitcher_stats[0].innings.outs;
+          team_pitching_stats.hits            += pitcher_stats[0].hits;
+          team_pitching_stats.earned_runs     += pitcher_stats[0].earned_runs;
+          team_pitching_stats.home_runs       += pitcher_stats[0].home_runs;
+          team_pitching_stats.walks           += pitcher_stats[0].walks;
+          team_pitching_stats.strike_outs     += pitcher_stats[0].strike_outs;
      }
+
+     team_pitching_stats.innings.innings += (team_pitching_stats.innings.outs / 3);
+     team_pitching_stats.innings.outs     = (team_pitching_stats.innings.outs % 3);
 
      if ( add_to_data_list( &list, &team_pitching_stats, sizeof(team_pitching_stats_s), 5 ) < 0 ) return NULL;
      /**/ add_to_data_list( &list, &sentinel,            sizeof(team_pitching_stats_s), 5 );

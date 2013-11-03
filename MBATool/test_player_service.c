@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
+#include "builders.h"
+#include "compares.h"
 #include "player.h"
 #include "unit_test.h"
 
@@ -167,10 +169,10 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingDetails_GivenA
 
 static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingStats_GivenAPlayerId()
 {
-     player_s        expected                = { 0 };
-     pitcher_s       expected_pitcher        = { 0 };
-     pitcher_stats_s expected_pitcher_stats1 = { 0 };
-     pitcher_stats_s expected_pitcher_stats2 = { 0 };
+     player_s         expected                = { 0 };
+     pitcher_s        expected_pitcher        = { 0 };
+     pitcher_stats_s *expected_pitcher_stats1 = buildPitcherStats( 1, 1, sp_Regular );
+     pitcher_stats_s *expected_pitcher_stats2 = buildPitcherStats( 1, 1, sp_Playoff );
 
      /**/    expected.player_id       = 1;
      strcpy( expected.first_name,      "FirstName1" );
@@ -193,36 +195,8 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingStats_GivenAPl
 
      assertEquals( SQLITE_OK, pitchers_t_create( db, &expected_pitcher ) );
 
-     expected_pitcher_stats1.player_id    = 1;
-     expected_pitcher_stats1.season       = 1;
-     expected_pitcher_stats1.season_phase = sp_Regular;
-     expected_pitcher_stats1.wins         = 12;
-     expected_pitcher_stats1.losses       = 15;
-     expected_pitcher_stats1.games        = 54;
-     expected_pitcher_stats1.saves        = 11;
-     expected_pitcher_stats1.innings      = 321.2;
-     expected_pitcher_stats1.hits         = 165;
-     expected_pitcher_stats1.earned_runs  = 23;
-     expected_pitcher_stats1.home_runs    = 14;
-     expected_pitcher_stats1.walks        = 25;
-     expected_pitcher_stats1.strike_outs  = 234;
-
-     expected_pitcher_stats2.player_id    = 1;
-     expected_pitcher_stats2.season       = 1;
-     expected_pitcher_stats2.season_phase = sp_Playoff;
-     expected_pitcher_stats2.wins         = 2;
-     expected_pitcher_stats2.losses       = 1;
-     expected_pitcher_stats2.games        = 3;
-     expected_pitcher_stats2.saves        = 0;
-     expected_pitcher_stats2.innings      = 25.2;
-     expected_pitcher_stats2.hits         = 20;
-     expected_pitcher_stats2.earned_runs  = 5;
-     expected_pitcher_stats2.home_runs    = 1;
-     expected_pitcher_stats2.walks        = 3;
-     expected_pitcher_stats2.strike_outs  = 25;
-
-     assertEquals( SQLITE_OK, pitcher_stats_t_create( db, &expected_pitcher_stats1 ) );
-     assertEquals( SQLITE_OK, pitcher_stats_t_create( db, &expected_pitcher_stats2 ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_create( db, expected_pitcher_stats1 ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_create( db, expected_pitcher_stats2 ) );
 
      player_s *actual = get_player( db, expected.player_id );
 
@@ -238,54 +212,18 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingStats_GivenAPl
 
      assertNotNull( actual_pitcher_stats );
 
-     assertEqualsInt( expected_pitcher_stats1.player_id,    actual_pitcher_stats[0].player_id    );
-     assertEqualsInt( expected_pitcher_stats1.season,       actual_pitcher_stats[0].season       );
-     assertEqualsInt( expected_pitcher_stats1.season_phase, actual_pitcher_stats[0].season_phase );
-     assertEqualsInt( expected_pitcher_stats1.wins,         actual_pitcher_stats[0].wins         );
-     assertEqualsInt( expected_pitcher_stats1.losses,       actual_pitcher_stats[0].losses       );
-     assertEqualsInt( expected_pitcher_stats1.games,        actual_pitcher_stats[0].games        );
-     assertEqualsInt( expected_pitcher_stats1.saves,        actual_pitcher_stats[0].saves        );
-     assertEqualsDbl( expected_pitcher_stats1.innings,      actual_pitcher_stats[0].innings      );
-     assertEqualsInt( expected_pitcher_stats1.hits,         actual_pitcher_stats[0].hits         );
-     assertEqualsInt( expected_pitcher_stats1.earned_runs,  actual_pitcher_stats[0].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats1.home_runs,    actual_pitcher_stats[0].home_runs    );
-     assertEqualsInt( expected_pitcher_stats1.walks,        actual_pitcher_stats[0].walks        );
-     assertEqualsInt( expected_pitcher_stats1.strike_outs,  actual_pitcher_stats[0].strike_outs  );
-
-     assertEqualsInt( expected_pitcher_stats2.player_id,    actual_pitcher_stats[1].player_id    );
-     assertEqualsInt( expected_pitcher_stats2.season,       actual_pitcher_stats[1].season       );
-     assertEqualsInt( expected_pitcher_stats2.season_phase, actual_pitcher_stats[1].season_phase );
-     assertEqualsInt( expected_pitcher_stats2.wins,         actual_pitcher_stats[1].wins         );
-     assertEqualsInt( expected_pitcher_stats2.losses,       actual_pitcher_stats[1].losses       );
-     assertEqualsInt( expected_pitcher_stats2.games,        actual_pitcher_stats[1].games        );
-     assertEqualsInt( expected_pitcher_stats2.saves,        actual_pitcher_stats[1].saves        );
-     assertEqualsDbl( expected_pitcher_stats2.innings,      actual_pitcher_stats[1].innings      );
-     assertEqualsInt( expected_pitcher_stats2.hits,         actual_pitcher_stats[1].hits         );
-     assertEqualsInt( expected_pitcher_stats2.earned_runs,  actual_pitcher_stats[1].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats2.home_runs,    actual_pitcher_stats[1].home_runs    );
-     assertEqualsInt( expected_pitcher_stats2.walks,        actual_pitcher_stats[1].walks        );
-     assertEqualsInt( expected_pitcher_stats2.strike_outs,  actual_pitcher_stats[1].strike_outs  );
-
-     assertEqualsInt( pitcher_stats_sentinel.player_id,    actual_pitcher_stats[2].player_id    );
-     assertEqualsInt( pitcher_stats_sentinel.season,       actual_pitcher_stats[2].season       );
-     assertEqualsInt( pitcher_stats_sentinel.season_phase, actual_pitcher_stats[2].season_phase );
-     assertEqualsInt( pitcher_stats_sentinel.wins,         actual_pitcher_stats[2].wins         );
-     assertEqualsInt( pitcher_stats_sentinel.losses,       actual_pitcher_stats[2].losses       );
-     assertEqualsInt( pitcher_stats_sentinel.games,        actual_pitcher_stats[2].games        );
-     assertEqualsInt( pitcher_stats_sentinel.saves,        actual_pitcher_stats[2].saves        );
-     assertEqualsDbl( pitcher_stats_sentinel.innings,      actual_pitcher_stats[2].innings      );
-     assertEqualsInt( pitcher_stats_sentinel.hits,         actual_pitcher_stats[2].hits         );
-     assertEqualsInt( pitcher_stats_sentinel.earned_runs,  actual_pitcher_stats[2].earned_runs  );
-     assertEqualsInt( pitcher_stats_sentinel.home_runs,    actual_pitcher_stats[2].home_runs    );
-     assertEqualsInt( pitcher_stats_sentinel.walks,        actual_pitcher_stats[2].walks        );
-     assertEqualsInt( pitcher_stats_sentinel.strike_outs,  actual_pitcher_stats[2].strike_outs  );
-
-     free_player( actual );
+     comparePitcherStats( expected_pitcher_stats1, &actual_pitcher_stats[0] );
+     comparePitcherStats( expected_pitcher_stats2, &actual_pitcher_stats[1] );
+     comparePitcherStats( &pitcher_stats_sentinel, &actual_pitcher_stats[2] );
 
      assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
      assertEquals( SQLITE_OK, pitchers_t_delete( db, &expected_pitcher ) );
-     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, &expected_pitcher_stats1 ) );
-     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, &expected_pitcher_stats2 ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, expected_pitcher_stats1 ) );
+     assertEquals( SQLITE_OK, pitcher_stats_t_delete( db, expected_pitcher_stats2 ) );
+
+     free( expected_pitcher_stats1 );
+     free( expected_pitcher_stats2 );
+     free_player( actual );
 
      return NULL;
 }
@@ -800,33 +738,8 @@ static char *save_player__ShouldSavePitcherStatsToTheDatabase_GivenAPlayerWithPi
      expected_pitcher.bunt      = 3;
      expected_pitcher.fatigue   = 8;
 
-     expected_pitcher_stats[0].player_id    = 1;
-     expected_pitcher_stats[0].season       = 1;
-     expected_pitcher_stats[0].season_phase = sp_Regular;
-     expected_pitcher_stats[0].wins         = 12;
-     expected_pitcher_stats[0].losses       = 15;
-     expected_pitcher_stats[0].games        = 54;
-     expected_pitcher_stats[0].saves        = 11;
-     expected_pitcher_stats[0].innings      = 321.2;
-     expected_pitcher_stats[0].hits         = 165;
-     expected_pitcher_stats[0].earned_runs  = 23;
-     expected_pitcher_stats[0].home_runs    = 14;
-     expected_pitcher_stats[0].walks        = 25;
-     expected_pitcher_stats[0].strike_outs  = 234;
-
-     expected_pitcher_stats[1].player_id    = 1;
-     expected_pitcher_stats[1].season       = 1;
-     expected_pitcher_stats[1].season_phase = sp_Playoff;
-     expected_pitcher_stats[1].wins         = 2;
-     expected_pitcher_stats[1].losses       = 1;
-     expected_pitcher_stats[1].games        = 3;
-     expected_pitcher_stats[1].saves        = 0;
-     expected_pitcher_stats[1].innings      = 25.2;
-     expected_pitcher_stats[1].hits         = 20;
-     expected_pitcher_stats[1].earned_runs  = 5;
-     expected_pitcher_stats[1].home_runs    = 1;
-     expected_pitcher_stats[1].walks        = 3;
-     expected_pitcher_stats[1].strike_outs  = 25;
+     buildIntoPitcherStats( &expected_pitcher_stats[0], 1, 1, sp_Regular );
+     buildIntoPitcherStats( &expected_pitcher_stats[1], 1, 1, sp_Playoff );
 
      expected_pitcher_stats[2] = pitcher_stats_sentinel;
 
@@ -845,33 +758,8 @@ static char *save_player__ShouldSavePitcherStatsToTheDatabase_GivenAPlayerWithPi
 
      assertNotNull( actual_pitcher_stats );
 
-     assertEqualsInt( expected_pitcher_stats[0].player_id,    actual_pitcher_stats[0].player_id    );
-     assertEqualsInt( expected_pitcher_stats[0].season,       actual_pitcher_stats[0].season       );
-     assertEqualsInt( expected_pitcher_stats[0].season_phase, actual_pitcher_stats[0].season_phase );
-     assertEqualsInt( expected_pitcher_stats[0].wins,         actual_pitcher_stats[0].wins         );
-     assertEqualsInt( expected_pitcher_stats[0].losses,       actual_pitcher_stats[0].losses       );
-     assertEqualsInt( expected_pitcher_stats[0].games,        actual_pitcher_stats[0].games        );
-     assertEqualsInt( expected_pitcher_stats[0].saves,        actual_pitcher_stats[0].saves        );
-     assertEqualsDbl( expected_pitcher_stats[0].innings,      actual_pitcher_stats[0].innings      );
-     assertEqualsInt( expected_pitcher_stats[0].hits,         actual_pitcher_stats[0].hits         );
-     assertEqualsInt( expected_pitcher_stats[0].earned_runs,  actual_pitcher_stats[0].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats[0].home_runs,    actual_pitcher_stats[0].home_runs    );
-     assertEqualsInt( expected_pitcher_stats[0].walks,        actual_pitcher_stats[0].walks        );
-     assertEqualsInt( expected_pitcher_stats[0].strike_outs,  actual_pitcher_stats[0].strike_outs  );
-
-     assertEqualsInt( expected_pitcher_stats[1].player_id,    actual_pitcher_stats[1].player_id    );
-     assertEqualsInt( expected_pitcher_stats[1].season,       actual_pitcher_stats[1].season       );
-     assertEqualsInt( expected_pitcher_stats[1].season_phase, actual_pitcher_stats[1].season_phase );
-     assertEqualsInt( expected_pitcher_stats[1].wins,         actual_pitcher_stats[1].wins         );
-     assertEqualsInt( expected_pitcher_stats[1].losses,       actual_pitcher_stats[1].losses       );
-     assertEqualsInt( expected_pitcher_stats[1].games,        actual_pitcher_stats[1].games        );
-     assertEqualsInt( expected_pitcher_stats[1].saves,        actual_pitcher_stats[1].saves        );
-     assertEqualsDbl( expected_pitcher_stats[1].innings,      actual_pitcher_stats[1].innings      );
-     assertEqualsInt( expected_pitcher_stats[1].hits,         actual_pitcher_stats[1].hits         );
-     assertEqualsInt( expected_pitcher_stats[1].earned_runs,  actual_pitcher_stats[1].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats[1].home_runs,    actual_pitcher_stats[1].home_runs    );
-     assertEqualsInt( expected_pitcher_stats[1].walks,        actual_pitcher_stats[1].walks        );
-     assertEqualsInt( expected_pitcher_stats[1].strike_outs,  actual_pitcher_stats[1].strike_outs  );
+     comparePitcherStats( &expected_pitcher_stats[0], &actual_pitcher_stats[0] );
+     comparePitcherStats( &expected_pitcher_stats[1], &actual_pitcher_stats[1] );
 
      free( actual_pitcher_stats );
 
@@ -984,33 +872,8 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      expected_pitcher.bunt      = 3;
      expected_pitcher.fatigue   = 8;
 
-     expected_pitcher_stats[0].player_id    = 1;
-     expected_pitcher_stats[0].season       = 1;
-     expected_pitcher_stats[0].season_phase = sp_Regular;
-     expected_pitcher_stats[0].wins         = 12;
-     expected_pitcher_stats[0].losses       = 15;
-     expected_pitcher_stats[0].games        = 54;
-     expected_pitcher_stats[0].saves        = 11;
-     expected_pitcher_stats[0].innings      = 321.2;
-     expected_pitcher_stats[0].hits         = 165;
-     expected_pitcher_stats[0].earned_runs  = 23;
-     expected_pitcher_stats[0].home_runs    = 14;
-     expected_pitcher_stats[0].walks        = 25;
-     expected_pitcher_stats[0].strike_outs  = 234;
-
-     expected_pitcher_stats[1].player_id    = 1;
-     expected_pitcher_stats[1].season       = 1;
-     expected_pitcher_stats[1].season_phase = sp_Playoff;
-     expected_pitcher_stats[1].wins         = 2;
-     expected_pitcher_stats[1].losses       = 1;
-     expected_pitcher_stats[1].games        = 3;
-     expected_pitcher_stats[1].saves        = 0;
-     expected_pitcher_stats[1].innings      = 25.2;
-     expected_pitcher_stats[1].hits         = 20;
-     expected_pitcher_stats[1].earned_runs  = 5;
-     expected_pitcher_stats[1].home_runs    = 1;
-     expected_pitcher_stats[1].walks        = 3;
-     expected_pitcher_stats[1].strike_outs  = 25;
+     buildIntoPitcherStats( &expected_pitcher_stats[0], 1, 1, sp_Regular );
+     buildIntoPitcherStats( &expected_pitcher_stats[1], 1, 1, sp_Playoff );
 
      expected_pitcher_stats[2] = pitcher_stats_sentinel;
 
@@ -1109,33 +972,8 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      assertNotNull( actual_pitcher_stats );
 
-     assertEqualsInt( expected_pitcher_stats[0].player_id,    actual_pitcher_stats[0].player_id    );
-     assertEqualsInt( expected_pitcher_stats[0].season,       actual_pitcher_stats[0].season       );
-     assertEqualsInt( expected_pitcher_stats[0].season_phase, actual_pitcher_stats[0].season_phase );
-     assertEqualsInt( expected_pitcher_stats[0].wins,         actual_pitcher_stats[0].wins         );
-     assertEqualsInt( expected_pitcher_stats[0].losses,       actual_pitcher_stats[0].losses       );
-     assertEqualsInt( expected_pitcher_stats[0].games,        actual_pitcher_stats[0].games        );
-     assertEqualsInt( expected_pitcher_stats[0].saves,        actual_pitcher_stats[0].saves        );
-     assertEqualsDbl( expected_pitcher_stats[0].innings,      actual_pitcher_stats[0].innings      );
-     assertEqualsInt( expected_pitcher_stats[0].hits,         actual_pitcher_stats[0].hits         );
-     assertEqualsInt( expected_pitcher_stats[0].earned_runs,  actual_pitcher_stats[0].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats[0].home_runs,    actual_pitcher_stats[0].home_runs    );
-     assertEqualsInt( expected_pitcher_stats[0].walks,        actual_pitcher_stats[0].walks        );
-     assertEqualsInt( expected_pitcher_stats[0].strike_outs,  actual_pitcher_stats[0].strike_outs  );
-
-     assertEqualsInt( expected_pitcher_stats[1].player_id,    actual_pitcher_stats[1].player_id    );
-     assertEqualsInt( expected_pitcher_stats[1].season,       actual_pitcher_stats[1].season       );
-     assertEqualsInt( expected_pitcher_stats[1].season_phase, actual_pitcher_stats[1].season_phase );
-     assertEqualsInt( expected_pitcher_stats[1].wins,         actual_pitcher_stats[1].wins         );
-     assertEqualsInt( expected_pitcher_stats[1].losses,       actual_pitcher_stats[1].losses       );
-     assertEqualsInt( expected_pitcher_stats[1].games,        actual_pitcher_stats[1].games        );
-     assertEqualsInt( expected_pitcher_stats[1].saves,        actual_pitcher_stats[1].saves        );
-     assertEqualsDbl( expected_pitcher_stats[1].innings,      actual_pitcher_stats[1].innings      );
-     assertEqualsInt( expected_pitcher_stats[1].hits,         actual_pitcher_stats[1].hits         );
-     assertEqualsInt( expected_pitcher_stats[1].earned_runs,  actual_pitcher_stats[1].earned_runs  );
-     assertEqualsInt( expected_pitcher_stats[1].home_runs,    actual_pitcher_stats[1].home_runs    );
-     assertEqualsInt( expected_pitcher_stats[1].walks,        actual_pitcher_stats[1].walks        );
-     assertEqualsInt( expected_pitcher_stats[1].strike_outs,  actual_pitcher_stats[1].strike_outs  );
+     comparePitcherStats( &expected_pitcher_stats[0], &actual_pitcher_stats[0] );
+     comparePitcherStats( &expected_pitcher_stats[1], &actual_pitcher_stats[1] );
 
      free( actual_pitcher_stats );
 
@@ -1790,33 +1628,8 @@ static char *remove_player__ShouldRemoveThePitchingStatsFromTheDatabase_GivenAPl
 
      assertEquals( SQLITE_OK, pitchers_t_create( db, &expected_pitcher ) );
 
-     expected_pitcher_stats[0].player_id    = 1;
-     expected_pitcher_stats[0].season       = 1;
-     expected_pitcher_stats[0].season_phase = sp_Regular;
-     expected_pitcher_stats[0].wins         = 12;
-     expected_pitcher_stats[0].losses       = 15;
-     expected_pitcher_stats[0].games        = 54;
-     expected_pitcher_stats[0].saves        = 11;
-     expected_pitcher_stats[0].innings      = 321.2;
-     expected_pitcher_stats[0].hits         = 165;
-     expected_pitcher_stats[0].earned_runs  = 23;
-     expected_pitcher_stats[0].home_runs    = 14;
-     expected_pitcher_stats[0].walks        = 25;
-     expected_pitcher_stats[0].strike_outs  = 234;
-
-     expected_pitcher_stats[1].player_id    = 1;
-     expected_pitcher_stats[1].season       = 1;
-     expected_pitcher_stats[1].season_phase = sp_Playoff;
-     expected_pitcher_stats[1].wins         = 2;
-     expected_pitcher_stats[1].losses       = 1;
-     expected_pitcher_stats[1].games        = 3;
-     expected_pitcher_stats[1].saves        = 0;
-     expected_pitcher_stats[1].innings      = 25.2;
-     expected_pitcher_stats[1].hits         = 20;
-     expected_pitcher_stats[1].earned_runs  = 5;
-     expected_pitcher_stats[1].home_runs    = 1;
-     expected_pitcher_stats[1].walks        = 3;
-     expected_pitcher_stats[1].strike_outs  = 25;
+     buildIntoPitcherStats( &expected_pitcher_stats[0], 1, 1, sp_Regular );
+     buildIntoPitcherStats( &expected_pitcher_stats[1], 1, 1, sp_Playoff );
 
      expected_pitcher_stats[2] = pitcher_stats_sentinel;
 

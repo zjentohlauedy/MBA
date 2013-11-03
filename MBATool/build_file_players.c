@@ -34,7 +34,7 @@ static fileposition_e pickPosition( void )
      return fpos_Pitcher;
 }
 
-static void buildBatterStats( acc_bat_stats_s *stats, acc_bat_stats_s *overflow )
+static void buildFileBatterStats( acc_bat_stats_s *stats, acc_bat_stats_s *overflow )
 {
      int rbi = rand() % 500;
      int so  = rand() % 500;
@@ -57,7 +57,7 @@ static void buildBatterStats( acc_bat_stats_s *stats, acc_bat_stats_s *overflow 
      else                { stats->acc_so[0]  = 250; overflow->acc_so[0]  = so  - 250; }
 }
 
-static void buildPitcherStats( acc_pch_stats_s *stats )
+static void buildFilePitcherStats( acc_pch_stats_s *stats )
 {
      /**/      stats->acc_wins[0]   =  rand() % 250;
      /**/      stats->acc_losses[0] =  rand() % 250;
@@ -128,7 +128,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                pitching->ratings[0] = (speed   << 4) + control;
                pitching->ratings[1] = (fatigue << 4) + longevity;
 
-               buildPitcherStats( &(pitching->simulated) );
+               buildFilePitcherStats( &(pitching->simulated) );
           }
           else
           {
@@ -150,7 +150,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                batting->ratings[2] = (power   << 4) + longevity;
                batting->ratings[3] = (bunt    << 4) + hit_n_run;
 
-               buildBatterStats( &(batting->simulated), &(batting->action) );
+               buildFileBatterStats( &(batting->simulated), &(batting->action) );
           }
 
           sprintf( players_data[i].first_name,   "Fst%d",    i + 1 );

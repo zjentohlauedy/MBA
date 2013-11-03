@@ -120,19 +120,20 @@ static pitcher_stats_s *convertPitcherStats( const int player_id, const int seas
      pitcher_stats_s  sentinel      = PITCHER_STATS_SENTINEL;
      pitcher_stats_s  pitcher_stats = { 0 };
 
-     pitcher_stats.player_id    =                         player_id;
-     pitcher_stats.season       =                         season;
-     pitcher_stats.season_phase =                         season_phase;
-     pitcher_stats.wins         =                  stats->acc_wins[0];
-     pitcher_stats.losses       =                  stats->acc_losses[0];
-     pitcher_stats.games        =                  stats->acc_starts[0];
-     pitcher_stats.saves        =                  stats->acc_saves[0];
-     pitcher_stats.innings      = (float)word2int( stats->acc_innings   ) / 10.0;
-     pitcher_stats.hits         =        word2int( stats->acc_hits      );
-     pitcher_stats.earned_runs  =        word2int( stats->acc_er        );
-     pitcher_stats.home_runs    =                  stats->acc_hr[0];
-     pitcher_stats.walks        =                  stats->acc_bb[0];
-     pitcher_stats.strike_outs  =        word2int( stats->acc_so        );
+     pitcher_stats.player_id       =                  player_id;
+     pitcher_stats.season          =                  season;
+     pitcher_stats.season_phase    =                  season_phase;
+     pitcher_stats.wins            =           stats->acc_wins[0];
+     pitcher_stats.losses          =           stats->acc_losses[0];
+     pitcher_stats.games           =           stats->acc_starts[0];
+     pitcher_stats.saves           =           stats->acc_saves[0];
+     pitcher_stats.innings.innings = word2int( stats->acc_innings   ) / 10;
+     pitcher_stats.innings.outs    = word2int( stats->acc_innings   ) % 10;
+     pitcher_stats.hits            = word2int( stats->acc_hits      );
+     pitcher_stats.earned_runs     = word2int( stats->acc_er        );
+     pitcher_stats.home_runs       =           stats->acc_hr[0];
+     pitcher_stats.walks           =           stats->acc_bb[0];
+     pitcher_stats.strike_outs     = word2int( stats->acc_so        );
 
      if ( add_to_data_list( &list, &pitcher_stats, sizeof(pitcher_stats_s), 5 ) < 0 ) return NULL;
      /**/ add_to_data_list( &list, &sentinel,      sizeof(pitcher_stats_s), 5 );

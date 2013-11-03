@@ -13,19 +13,20 @@ static int team_pitching_stats_t_create_bindings( sqlite3_stmt *statement, const
 
      const team_pitching_stats_s *team_pitching_stats = (team_pitching_stats_s *)data;
 
-     BIND_INT( statement,  1, team_pitching_stats->team_id      );
-     BIND_INT( statement,  2, team_pitching_stats->season       );
-     BIND_INT( statement,  3, team_pitching_stats->season_phase );
-     BIND_INT( statement,  4, team_pitching_stats->wins         );
-     BIND_INT( statement,  5, team_pitching_stats->losses       );
-     BIND_INT( statement,  6, team_pitching_stats->games        );
-     BIND_INT( statement,  7, team_pitching_stats->saves        );
-     BIND_DBL( statement,  8, team_pitching_stats->innings      );
-     BIND_INT( statement,  9, team_pitching_stats->hits         );
-     BIND_INT( statement, 10, team_pitching_stats->earned_runs  );
-     BIND_INT( statement, 11, team_pitching_stats->home_runs    );
-     BIND_INT( statement, 12, team_pitching_stats->walks        );
-     BIND_INT( statement, 13, team_pitching_stats->strike_outs  );
+     BIND_INT( statement,  1, team_pitching_stats->team_id         );
+     BIND_INT( statement,  2, team_pitching_stats->season          );
+     BIND_INT( statement,  3, team_pitching_stats->season_phase    );
+     BIND_INT( statement,  4, team_pitching_stats->wins            );
+     BIND_INT( statement,  5, team_pitching_stats->losses          );
+     BIND_INT( statement,  6, team_pitching_stats->games           );
+     BIND_INT( statement,  7, team_pitching_stats->saves           );
+     BIND_DBL( statement,  8, team_pitching_stats->innings.innings );
+     BIND_DBL( statement,  9, team_pitching_stats->innings.outs    );
+     BIND_INT( statement, 10, team_pitching_stats->hits            );
+     BIND_INT( statement, 11, team_pitching_stats->earned_runs     );
+     BIND_INT( statement, 12, team_pitching_stats->home_runs       );
+     BIND_INT( statement, 13, team_pitching_stats->walks           );
+     BIND_INT( statement, 14, team_pitching_stats->strike_outs     );
 
      return SQLITE_OK;
 }
@@ -33,8 +34,8 @@ static int team_pitching_stats_t_create_bindings( sqlite3_stmt *statement, const
 
 int team_pitching_stats_t_create( sqlite3 *db, const team_pitching_stats_s *team_pitching_stats )
 {
-     static char query[]   = "INSERT INTO Team_Pitching_Stats_T ( Team_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs )"
-          /**/                                          "VALUES ( ?,"     "?,"    "?,"          "?,"  "?,"    "?,"   "?,"   "?,"     "?,"  "?,"         "?,"       "?,"   "?"         ")";
+     static char query[]   = "INSERT INTO Team_Pitching_Stats_T ( Team_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Outs, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs )"
+          /**/                                          "VALUES ( ?,"     "?,"    "?,"          "?,"  "?,"    "?,"   "?,"   "?,"     "?,"  "?,"  "?,"         "?,"       "?,"   "?"         ")";
 
      return execute_update_old( db, query, team_pitching_stats_t_create_bindings, team_pitching_stats, NULL, NULL );
 }
@@ -59,23 +60,24 @@ static int team_pitching_stats_t_read_retrieve( sqlite3_stmt *statement, const v
 {
      team_pitching_stats_s *team_pitching_stats = (team_pitching_stats_s *)data;
 
-     team_pitching_stats->wins        = sqlite3_column_int(    statement, 0 );
-     team_pitching_stats->losses      = sqlite3_column_int(    statement, 1 );
-     team_pitching_stats->games       = sqlite3_column_int(    statement, 2 );
-     team_pitching_stats->saves       = sqlite3_column_int(    statement, 3 );
-     team_pitching_stats->innings     = sqlite3_column_double( statement, 4 );
-     team_pitching_stats->hits        = sqlite3_column_int(    statement, 5 );
-     team_pitching_stats->earned_runs = sqlite3_column_int(    statement, 6 );
-     team_pitching_stats->home_runs   = sqlite3_column_int(    statement, 7 );
-     team_pitching_stats->walks       = sqlite3_column_int(    statement, 8 );
-     team_pitching_stats->strike_outs = sqlite3_column_int(    statement, 9 );
+     team_pitching_stats->wins            = sqlite3_column_int( statement,  0 );
+     team_pitching_stats->losses          = sqlite3_column_int( statement,  1 );
+     team_pitching_stats->games           = sqlite3_column_int( statement,  2 );
+     team_pitching_stats->saves           = sqlite3_column_int( statement,  3 );
+     team_pitching_stats->innings.innings = sqlite3_column_int( statement,  4 );
+     team_pitching_stats->innings.outs    = sqlite3_column_int( statement,  5 );
+     team_pitching_stats->hits            = sqlite3_column_int( statement,  6 );
+     team_pitching_stats->earned_runs     = sqlite3_column_int( statement,  7 );
+     team_pitching_stats->home_runs       = sqlite3_column_int( statement,  8 );
+     team_pitching_stats->walks           = sqlite3_column_int( statement,  9 );
+     team_pitching_stats->strike_outs     = sqlite3_column_int( statement, 10 );
 
      return SQLITE_OK;
 }
 
 int team_pitching_stats_t_read( sqlite3 *db, team_pitching_stats_s *team_pitching_stats )
 {
-     static char query[]   = "SELECT Wins, Losses, Games, Saves, Innings, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs "
+     static char query[]   = "SELECT Wins, Losses, Games, Saves, Innings, Outs, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs "
           /**/               "FROM   Team_Pitching_Stats_T "
           /**/               "WHERE  Team_Id      = ? "
           /**/               "AND    Season       = ? "
@@ -98,19 +100,20 @@ static int team_pitching_stats_t_read_by_team_retrieve( sqlite3_stmt *statement,
 
      team_pitching_stats_s team_pitching_stats = { 0 };
 
-     team_pitching_stats.team_id      = sqlite3_column_int(    statement,  0 );
-     team_pitching_stats.season       = sqlite3_column_int(    statement,  1 );
-     team_pitching_stats.season_phase = sqlite3_column_int(    statement,  2 );
-     team_pitching_stats.wins         = sqlite3_column_int(    statement,  3 );
-     team_pitching_stats.losses       = sqlite3_column_int(    statement,  4 );
-     team_pitching_stats.games        = sqlite3_column_int(    statement,  5 );
-     team_pitching_stats.saves        = sqlite3_column_int(    statement,  6 );
-     team_pitching_stats.innings      = sqlite3_column_double( statement,  7 );
-     team_pitching_stats.hits         = sqlite3_column_int(    statement,  8 );
-     team_pitching_stats.earned_runs  = sqlite3_column_int(    statement,  9 );
-     team_pitching_stats.home_runs    = sqlite3_column_int(    statement, 10 );
-     team_pitching_stats.walks        = sqlite3_column_int(    statement, 11 );
-     team_pitching_stats.strike_outs  = sqlite3_column_int(    statement, 12 );
+     team_pitching_stats.team_id         = sqlite3_column_int( statement,  0 );
+     team_pitching_stats.season          = sqlite3_column_int( statement,  1 );
+     team_pitching_stats.season_phase    = sqlite3_column_int( statement,  2 );
+     team_pitching_stats.wins            = sqlite3_column_int( statement,  3 );
+     team_pitching_stats.losses          = sqlite3_column_int( statement,  4 );
+     team_pitching_stats.games           = sqlite3_column_int( statement,  5 );
+     team_pitching_stats.saves           = sqlite3_column_int( statement,  6 );
+     team_pitching_stats.innings.innings = sqlite3_column_int( statement,  7 );
+     team_pitching_stats.innings.outs    = sqlite3_column_int( statement,  8 );
+     team_pitching_stats.hits            = sqlite3_column_int( statement,  9 );
+     team_pitching_stats.earned_runs     = sqlite3_column_int( statement, 10 );
+     team_pitching_stats.home_runs       = sqlite3_column_int( statement, 11 );
+     team_pitching_stats.walks           = sqlite3_column_int( statement, 12 );
+     team_pitching_stats.strike_outs     = sqlite3_column_int( statement, 13 );
 
      if ( add_to_data_list( data_list, &team_pitching_stats, sizeof(team_pitching_stats_s), 10 ) < 0 ) return SQLITE_ERROR;
 
@@ -119,7 +122,7 @@ static int team_pitching_stats_t_read_by_team_retrieve( sqlite3_stmt *statement,
 
 int team_pitching_stats_t_read_by_team( sqlite3 *db, const int team_id, data_list_s *team_pitching_stats )
 {
-     static char query[] = "SELECT Team_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs FROM Team_Pitching_Stats_T WHERE Team_Id = ?";
+     static char query[] = "SELECT Team_Id, Season, Season_Phase, Wins, Losses, Games, Saves, Innings, Outs, Hits, Earned_Runs, Home_Runs, Walks, Strike_Outs FROM Team_Pitching_Stats_T WHERE Team_Id = ?";
 
      return execute_query( db, query, team_pitching_stats_t_read_by_team_bindings, &team_id, team_pitching_stats_t_read_by_team_retrieve, team_pitching_stats );
 }
@@ -132,20 +135,21 @@ static int team_pitching_stats_t_update_bindings( sqlite3_stmt *statement, const
 
      const team_pitching_stats_s *team_pitching_stats = (team_pitching_stats_s *)data;
 
-     BIND_INT(  statement,  1, team_pitching_stats->wins        );
-     BIND_INT(  statement,  2, team_pitching_stats->losses      );
-     BIND_INT(  statement,  3, team_pitching_stats->games       );
-     BIND_INT(  statement,  4, team_pitching_stats->saves       );
-     BIND_DBL(  statement,  5, team_pitching_stats->innings     );
-     BIND_INT(  statement,  6, team_pitching_stats->hits        );
-     BIND_INT(  statement,  7, team_pitching_stats->earned_runs );
-     BIND_INT(  statement,  8, team_pitching_stats->home_runs   );
-     BIND_INT(  statement,  9, team_pitching_stats->walks       );
-     BIND_INT(  statement, 10, team_pitching_stats->strike_outs );
+     BIND_INT(  statement,  1, team_pitching_stats->wins            );
+     BIND_INT(  statement,  2, team_pitching_stats->losses          );
+     BIND_INT(  statement,  3, team_pitching_stats->games           );
+     BIND_INT(  statement,  4, team_pitching_stats->saves           );
+     BIND_DBL(  statement,  5, team_pitching_stats->innings.innings );
+     BIND_DBL(  statement,  6, team_pitching_stats->innings.outs    );
+     BIND_INT(  statement,  7, team_pitching_stats->hits            );
+     BIND_INT(  statement,  8, team_pitching_stats->earned_runs     );
+     BIND_INT(  statement,  9, team_pitching_stats->home_runs       );
+     BIND_INT(  statement, 10, team_pitching_stats->walks           );
+     BIND_INT(  statement, 11, team_pitching_stats->strike_outs     );
 
-     BIND_INT(  statement, 11, team_pitching_stats->team_id      );
-     BIND_INT(  statement, 12, team_pitching_stats->season       );
-     BIND_INT(  statement, 13, team_pitching_stats->season_phase );
+     BIND_INT(  statement, 12, team_pitching_stats->team_id      );
+     BIND_INT(  statement, 13, team_pitching_stats->season       );
+     BIND_INT(  statement, 14, team_pitching_stats->season_phase );
 
      return SQLITE_OK;
 }
@@ -160,6 +164,7 @@ int team_pitching_stats_t_update( sqlite3 *db, const team_pitching_stats_s *team
           /**/                      "Games       = ?,"
           /**/                      "Saves       = ?,"
           /**/                      "Innings     = ?,"
+          /**/                      "Outs        = ?,"
           /**/                      "Hits        = ?,"
           /**/                      "Earned_Runs = ?,"
           /**/                      "Home_Runs   = ?,"

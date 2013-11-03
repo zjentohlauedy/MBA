@@ -8,7 +8,7 @@
 
 #define TEAM_PLAYER_SENTINEL         { -1, -1, -1, NULL }
 #define TEAM_STATS_SENTINEL          { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
-#define TEAM_PITCHING_STATS_SENTINEL { -1, -1, sp_None, -1, -1, -1, -1, -1.0, -1, -1, -1, -1, -1 }
+#define TEAM_PITCHING_STATS_SENTINEL { -1, -1, sp_None, -1, -1, -1, -1, { -1, -1 }, -1, -1, -1, -1, -1 }
 #define TEAM_BATTING_STATS_SENTINEL  { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define TEAM_ACCOLADE_SENTINEL       { -1, -1, tacc_None }
 
@@ -73,7 +73,7 @@ typedef struct
      int            losses;
      int            games;
      int            saves;
-     float          innings;
+     innings_s      innings;
      int            hits;
      int            earned_runs;
      int            home_runs;
