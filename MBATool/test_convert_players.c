@@ -46,8 +46,8 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
 
                if ( position == fpos_Pitcher )
                {
-                    struct pitching_s *pitching = &(players_data[idx].filestats.filepitching);
-                    acc_player_id_s   *id_info  = (acc_player_id_s *)&(pitching->action);
+                    filepitching_s  *pitching = &(players_data[idx].filestats.filepitching);
+                    acc_player_id_s *id_info  = (acc_player_id_s *)&(pitching->action);
 
                     assertEqualsInt( pt_Pitcher, player->player_type );
 
@@ -72,8 +72,8 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                }
                else
                {
-                    struct batting_s *batting = &(players_data[idx].filestats.filebatting);
-                    acc_player_id_s  *id_info = (acc_player_id_s *)&(batting->action);
+                    filebatting_s   *batting = &(players_data[idx].filestats.filebatting);
+                    acc_player_id_s *id_info = (acc_player_id_s *)&(batting->action);
 
                     assertEqualsInt( pt_Batter, player->player_type );
 
@@ -232,7 +232,7 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
 
      if ( nibble( players_data[0].position[0], n_High ) == fpos_Pitcher )
      {
-          struct pitching_s *pitching = &(players_data[0].filestats.filepitching);
+          filepitching_s *pitching = &(players_data[0].filestats.filepitching);
 
           acc_player_id_s *player_id_data = (acc_player_id_s *)&(pitching->action);
 
@@ -240,7 +240,7 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
      }
      else
      {
-          struct batting_s *batting = &(players_data[0].filestats.filebatting);
+          filebatting_s *batting = &(players_data[0].filestats.filebatting);
 
           acc_player_id_s *player_id_data = (acc_player_id_s *)&(batting->action);
 

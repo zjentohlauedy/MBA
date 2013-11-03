@@ -29,16 +29,16 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
 
           if ( pos == fpos_Pitcher )
           {
-               struct pitching_s *pitching1 = &(players_file1[idx].filestats.filepitching);
-               struct pitching_s *pitching2 = &(matchingPlayer->filestats.filepitching);
+               filepitching_s *pitching1 = &(players_file1[idx].filestats.filepitching);
+               filepitching_s *pitching2 = &(matchingPlayer->filestats.filepitching);
 
                id_info1 = (acc_player_id_s *)&(pitching1->action);
                id_info2 = (acc_player_id_s *)&(pitching2->action);
           }
           else
           {
-               struct batting_s *batting1 = &(players_file1[idx].filestats.filebatting);
-               struct batting_s *batting2 = &(matchingPlayer->filestats.filebatting);
+               filebatting_s *batting1 = &(players_file1[idx].filestats.filebatting);
+               filebatting_s *batting2 = &(matchingPlayer->filestats.filebatting);
 
                id_info1 = (acc_player_id_s *)&(batting1->action);
                id_info2 = (acc_player_id_s *)&(batting2->action);

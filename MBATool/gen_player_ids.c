@@ -14,13 +14,13 @@ boolean_e genPlayerIds( fileplayer_s *players_file )
 
           if ( pos == fpos_Pitcher )
           {
-               struct pitching_s *pitching = &(players_file[idx].filestats.filepitching);
+               filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
 
                id_info = (acc_player_id_s *)&(pitching->action);
           }
           else
           {
-               struct batting_s *batting = &(players_file[idx].filestats.filebatting);
+               filebatting_s *batting = &(players_file[idx].filestats.filebatting);
 
                id_info = (acc_player_id_s *)&(batting->action);
           }

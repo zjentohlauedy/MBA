@@ -116,7 +116,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
 
           if ( pos == fpos_Pitcher )
           {
-               struct pitching_s *pitching = &(players_data[i].filestats.filepitching);
+               filepitching_s *pitching = &(players_data[i].filestats.filepitching);
 
                unsigned char speed     = (rand() % 10) + 1;
                unsigned char control   = (rand() % 10) + 1;
@@ -132,7 +132,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           }
           else
           {
-               struct batting_s *batting = &(players_data[i].filestats.filebatting);
+               filebatting_s *batting = &(players_data[i].filestats.filebatting);
 
                unsigned char pos2      = pickPosition();
                unsigned char power     = (rand() % 10) + 1;

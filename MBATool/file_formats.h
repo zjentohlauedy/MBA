@@ -206,6 +206,89 @@ typedef struct
 
 typedef struct
 {
+     unsigned char ratings     [ 4]; // by nibble: bats R = 0/L = 1/S = 2,arm,runs,range,power,longevity,bunt,h&r
+     unsigned char real_games  [ 1];
+     unsigned char real_runs   [ 1];
+     unsigned char real_rbi    [ 1];
+     unsigned char real_sb     [ 1];
+     unsigned char real_cs     [ 1];
+     unsigned char real_sh     [ 1];
+
+     unsigned char vl_ab       [ 2];
+     unsigned char vl_hits     [ 2];
+     unsigned char vl_2b       [ 1];
+     unsigned char vl_3b       [ 1];
+     unsigned char vl_hr       [ 1];
+     unsigned char vl_bb       [ 1];
+     unsigned char vl_so       [ 1];
+
+     unsigned char real_fa2    [ 1]; // FA2?
+
+     unsigned char vr_ab       [ 2];
+     unsigned char vr_hits     [ 2];
+     unsigned char vr_2b       [ 1];
+     unsigned char vr_3b       [ 1];
+     unsigned char vr_hr       [ 1];
+     unsigned char vr_bb       [ 1];
+     unsigned char vr_so       [ 1];
+
+     unsigned char real_err    [ 1];
+     unsigned char real_po     [ 2];
+     unsigned char real_as     [ 2];
+
+     unsigned char injury_days [ 1];
+     unsigned char color       [ 1]; // 00 for white, 40 for black
+
+     acc_bat_stats_s action;
+     acc_bat_stats_s simulated;
+
+} filebatting_s;
+
+
+typedef struct
+{
+     unsigned char ratings     [ 2]; // by nibble: speed,control,fatigue,bunt/longevity
+     unsigned char real_wins   [ 1];
+     unsigned char real_losses [ 1];
+     unsigned char real_games  [ 1];
+     unsigned char real_starts [ 1];
+     unsigned char real_cg     [ 1];
+     unsigned char real_saves  [ 1];
+     unsigned char real_inn    [ 2];
+
+     unsigned char vl_ab       [ 2];
+     unsigned char vl_hits     [ 2];
+     unsigned char vl_hr       [ 1];
+     unsigned char vl_bb       [ 1];
+     unsigned char vl_so       [ 2];
+
+     unsigned char real_er     [ 1];
+     unsigned char real_fa     [ 1]; // FA?
+
+     unsigned char vr_ab       [ 2];
+     unsigned char vr_hits     [ 2];
+     unsigned char vr_hr       [ 1];
+     unsigned char vr_bb       [ 1];
+     unsigned char vr_so       [ 2];
+
+     unsigned char real_hb     [ 1];
+     unsigned char real_balk   [ 1];
+     unsigned char real_ab     [ 1]; // batting
+     unsigned char real_hits   [ 1]; // batting
+     unsigned char real_hr     [ 1]; // batting
+     unsigned char real_sh     [ 1]; // batting
+     unsigned char injury_days [ 1];
+
+     unsigned char color       [ 1]; // 00 for white, 40 for black
+
+     acc_pch_stats_s action;
+     acc_pch_stats_s simulated;
+
+} filepitching_s;
+
+
+typedef struct
+{
      /**/     char last_name   [10];
      /**/     char first_name  [ 8];
      /**/     char last_phoen  [14];
@@ -216,86 +299,8 @@ typedef struct
 
      union
      {
-	  struct batting_s
-	  {
-	       unsigned char ratings     [ 4]; // by nibble: bats R = 0/L = 1/S = 2,arm,runs,range,power,longevity,bunt,h&r
-	       unsigned char real_games  [ 1];
-	       unsigned char real_runs   [ 1];
-	       unsigned char real_rbi    [ 1];
-	       unsigned char real_sb     [ 1];
-	       unsigned char real_cs     [ 1];
-	       unsigned char real_sh     [ 1];
-
-	       unsigned char vl_ab       [ 2];
-	       unsigned char vl_hits     [ 2];
-	       unsigned char vl_2b       [ 1];
-	       unsigned char vl_3b       [ 1];
-	       unsigned char vl_hr       [ 1];
-	       unsigned char vl_bb       [ 1];
-	       unsigned char vl_so       [ 1];
-
-	       unsigned char real_fa2    [ 1]; // FA2?
-
-	       unsigned char vr_ab       [ 2];
-	       unsigned char vr_hits     [ 2];
-	       unsigned char vr_2b       [ 1];
-	       unsigned char vr_3b       [ 1];
-	       unsigned char vr_hr       [ 1];
-	       unsigned char vr_bb       [ 1];
-	       unsigned char vr_so       [ 1];
-
-	       unsigned char real_err    [ 1];
-	       unsigned char real_po     [ 2];
-	       unsigned char real_as     [ 2];
-
-	       unsigned char injury_days [ 1];
-	       unsigned char color       [ 1]; // 00 for white, 40 for black
-
-	       acc_bat_stats_s action;
-	       acc_bat_stats_s simulated;
-
-	  } filebatting;
-
-	  struct pitching_s
-	  {
-	       unsigned char ratings     [ 2]; // by nibble: speed,control,fatigue,bunt/longevity
-	       unsigned char real_wins   [ 1];
-	       unsigned char real_losses [ 1];
-	       unsigned char real_games  [ 1];
-	       unsigned char real_starts [ 1];
-	       unsigned char real_cg     [ 1];
-	       unsigned char real_saves  [ 1];
-	       unsigned char real_inn    [ 2];
-
-	       unsigned char vl_ab       [ 2];
-	       unsigned char vl_hits     [ 2];
-	       unsigned char vl_hr       [ 1];
-	       unsigned char vl_bb       [ 1];
-	       unsigned char vl_so       [ 2];
-
-	       unsigned char real_er     [ 1];
-	       unsigned char real_fa     [ 1]; // FA?
-
-	       unsigned char vr_ab       [ 2];
-	       unsigned char vr_hits     [ 2];
-	       unsigned char vr_hr       [ 1];
-	       unsigned char vr_bb       [ 1];
-	       unsigned char vr_so       [ 2];
-
-	       unsigned char real_hb     [ 1];
-	       unsigned char real_balk   [ 1];
-	       unsigned char real_ab     [ 1]; // batting
-	       unsigned char real_hits   [ 1]; // batting
-	       unsigned char real_hr     [ 1]; // batting
-	       unsigned char real_sh     [ 1]; // batting
-	       unsigned char injury_days [ 1];
-
-	       unsigned char color       [ 1]; // 00 for white, 40 for black
-
-	       acc_pch_stats_s action;
-	       acc_pch_stats_s simulated;
-
-	  } filepitching;
+          filebatting_s  filebatting;
+          filepitching_s filepitching;
 
      } filestats;
 

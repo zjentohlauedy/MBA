@@ -86,7 +86,7 @@ static batter_stats_s *convertBatterStats( const int player_id, const int season
      return list.data;
 }
 
-static batter_s *createBatter( const int player_id, const int season, const season_phase_e season_phase, const struct batting_s *batter_data, const unsigned char positions )
+static batter_s *createBatter( const int player_id, const int season, const season_phase_e season_phase, const filebatting_s *batter_data, const unsigned char positions )
 {
      batter_s *batter = NULL;
 
@@ -141,7 +141,7 @@ static pitcher_stats_s *convertPitcherStats( const int player_id, const int seas
      return list.data;
 }
 
-static pitcher_s *createPitcher( const int player_id, const int season, const season_phase_e season_phase, const struct pitching_s *pitcher_data )
+static pitcher_s *createPitcher( const int player_id, const int season, const season_phase_e season_phase, const filepitching_s *pitcher_data )
 {
      pitcher_s *pitcher = NULL;
 
@@ -178,8 +178,8 @@ static player_s *createPlayer( const int season, const season_phase_e season_pha
 
      if ( pos == fpos_Pitcher )
      {
-          const struct pitching_s *pitcher_data = &(players_data->filestats.filepitching);
-          const acc_player_id_s   *id_info      = (acc_player_id_s *)&(pitcher_data->action);
+          const filepitching_s  *pitcher_data = &(players_data->filestats.filepitching);
+          const acc_player_id_s *id_info      = (acc_player_id_s *)&(pitcher_data->action);
 
           player_id = word2int( id_info->player_id );
 
@@ -204,8 +204,8 @@ static player_s *createPlayer( const int season, const season_phase_e season_pha
      }
      else
      {
-          const struct batting_s *batter_data = &(players_data->filestats.filebatting);
-          const acc_player_id_s  *id_info     = (acc_player_id_s *)&(batter_data->action);
+          const filebatting_s   *batter_data = &(players_data->filestats.filebatting);
+          const acc_player_id_s *id_info     = (acc_player_id_s *)&(batter_data->action);
 
           player_id = word2int( id_info->player_id );
 

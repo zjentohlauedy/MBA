@@ -16,7 +16,7 @@ void setLongevity( fileplayer_s *players_file )
 
           if ( pos != fpos_Pitcher )
           {
-               struct batting_s *batting = &(players_file[idx].filestats.filebatting);
+               filebatting_s *batting = &(players_file[idx].filestats.filebatting);
 
                unsigned char longevity = (rand() % 10) + 1;
 
