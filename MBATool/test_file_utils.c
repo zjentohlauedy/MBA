@@ -41,6 +41,29 @@ static char *int2word_ShouldSetTheAmigaWordValue_GivenAnAmigaWordAndAnIntToConve
      return NULL;
 }
 
+static char *byte2int_ShouldReturnTheIntValue_GivenAPointerToAnUnsignedChar()
+{
+     char byte[1] = { 0 };
+
+     byte[0] = 123;
+
+     assertEquals( 123, byte2int( byte ) );
+
+     return NULL;
+}
+
+static char *int2byte_ShouldSetTheByteValue_GivenABytePointerAndAnIntToConvert()
+{
+     char byte[1] = { 0 };
+     int  i       = 123;
+
+     int2byte( byte, i );
+
+     assertEquals( 123, byte[0] );
+
+     return NULL;
+}
+
 static char *nibble_ShouldReturnTheValueOfTheLowNibble_GivenAByteAndLowPosition()
 {
      assertEquals(  0, nibble( 0xF0, n_Low ) );
@@ -183,6 +206,8 @@ static void run_all_tests()
 {
      run_test( word2int_ShouldReturnTheConvertedIntValue_GivenATwoByteAmigaWord,       null );
      run_test( int2word_ShouldSetTheAmigaWordValue_GivenAnAmigaWordAndAnIntToConvert,  null );
+     run_test( byte2int_ShouldReturnTheIntValue_GivenAPointerToAnUnsignedChar,         null );
+     run_test( int2byte_ShouldSetTheByteValue_GivenABytePointerAndAnIntToConvert,      null );
      run_test( nibble_ShouldReturnTheValueOfTheLowNibble_GivenAByteAndLowPosition,     null );
      run_test( nibble_ShouldReturnTheValueOfTheHighNibble_GivenAByteAndHighPosition,   null );
      run_test( termName_ShouldConvertTheLastByteToATerminator_GivenAPlayerNameBuffer,  null );

@@ -39,36 +39,36 @@ static void buildFileBatterStats( acc_bat_stats_s *stats, acc_bat_stats_s *overf
      int rbi = rand() % 500;
      int so  = rand() % 500;
 
-     int2word( stats->acc_ab,        rand() % 50000 );
-     int2word( stats->acc_hits,      rand() % 50000 );
-     /**/      stats->acc_2b[0]    = rand() % 250;
-     /**/      stats->acc_3b[0]    = rand() % 250;
-     /**/      stats->acc_hr[0]    = rand() % 250;
-     /**/      stats->acc_bb[0]    = rand() % 250;
-     /**/      stats->acc_games[0] = rand() % 250;
-     /**/      stats->acc_runs[0]  = rand() % 250;
-     /**/      stats->acc_sb[0]    = rand() % 250;
-     /**/      stats->acc_err[0]   = rand() % 250;
+     int2word( stats->acc_ab,    rand() % 50000 );
+     int2word( stats->acc_hits,  rand() % 50000 );
+     int2byte( stats->acc_2b,    rand() %   250 );
+     int2byte( stats->acc_3b,    rand() %   250 );
+     int2byte( stats->acc_hr,    rand() %   250 );
+     int2byte( stats->acc_bb,    rand() %   250 );
+     int2byte( stats->acc_games, rand() %   250 );
+     int2byte( stats->acc_runs,  rand() %   250 );
+     int2byte( stats->acc_sb,    rand() %   250 );
+     int2byte( stats->acc_err,   rand() %   250 );
 
-     if   ( rbi <= 250 ) { stats->acc_rbi[0] = rbi;                                   }
-     else                { stats->acc_rbi[0] = 250; overflow->acc_rbi[0] = rbi - 250; }
+     if   ( rbi <= 250 ) { int2byte( stats->acc_rbi, rbi );                                           }
+     else                { int2byte( stats->acc_rbi, 250 ); int2byte( overflow->acc_rbi, rbi - 250 ); }
 
-     if   ( so  <= 250 ) { stats->acc_so[0]  = so;                                    }
-     else                { stats->acc_so[0]  = 250; overflow->acc_so[0]  = so  - 250; }
+     if   ( so  <= 250 ) { int2byte( stats->acc_so,   so );                                           }
+     else                { int2byte( stats->acc_so,  250 ); int2byte( overflow->acc_so,  so  - 250 ); }
 }
 
 static void buildFilePitcherStats( acc_pch_stats_s *stats )
 {
-     /**/      stats->acc_wins[0]   =  rand() % 250;
-     /**/      stats->acc_losses[0] =  rand() % 250;
-     /**/      stats->acc_starts[0] =  rand() % 250;
-     /**/      stats->acc_saves[0]  =  rand() % 250;
-     int2word( stats->acc_innings,    (rand() % 5000) + (rand() % 3) );
-     int2word( stats->acc_hits,        rand() % 50000                );
-     int2word( stats->acc_er,          rand() % 50000                );
-     /**/      stats->acc_hr[0]     =  rand() % 250;
-     /**/      stats->acc_bb[0]     =  rand() % 250;
-     int2word( stats->acc_so,          rand() % 50000                );
+     int2byte( stats->acc_wins,     rand() % 250                  );
+     int2byte( stats->acc_losses,   rand() % 250                  );
+     int2byte( stats->acc_starts,   rand() % 250                  );
+     int2byte( stats->acc_saves,    rand() % 250                  );
+     int2word( stats->acc_innings, (rand() % 5000) + (rand() % 3) );
+     int2word( stats->acc_hits,     rand() % 50000                );
+     int2word( stats->acc_er,       rand() % 50000                );
+     int2byte( stats->acc_hr,       rand() % 250                  );
+     int2byte( stats->acc_bb,       rand() % 250                  );
+     int2word( stats->acc_so,       rand() % 50000                );
 }
 
 fileplayer_s *buildFilePlayers( void )

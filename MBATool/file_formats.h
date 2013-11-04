@@ -309,6 +309,8 @@ typedef struct
 
 int             word2int(           const unsigned char *word                                           );
 void            int2word(                 unsigned char *word,         const int           value        );
+int             byte2int(           const unsigned char *byte                                           );
+void            int2byte(                 unsigned char *byte,         const int           value        );
 int             nibble(             const unsigned char  byte,         const nibble_e      position     );
 void            termName(                 unsigned char *buffer,       const int           len          );
 void            untermName(               unsigned char *buffer,       const int           len          );

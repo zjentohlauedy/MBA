@@ -130,6 +130,16 @@ void int2word( unsigned char *word, const int value )
 }
 
 
+int byte2int( const unsigned char *byte )
+{
+     return byte[0];
+}
+
+void int2byte( unsigned char *byte, const int value )
+{
+     byte[0] = value;
+}
+
 int nibble( const unsigned char byte, const nibble_e position )
 {
      if   ( position == n_Low ) return byte & 0x0F;

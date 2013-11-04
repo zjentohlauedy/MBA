@@ -61,24 +61,24 @@ static batter_stats_s *convertBatterStats( const int player_id, const int season
      batter_stats_s   sentinel     = BATTER_STATS_SENTINEL;
      batter_stats_s   batter_stats = { 0 };
 
-     int rbi = stats->acc_rbi[0] + addtl_stats->acc_rbi[0];
-     int so  = stats->acc_so[0]  + addtl_stats->acc_so[0];
+     int rbi = byte2int( stats->acc_rbi ) + byte2int( addtl_stats->acc_rbi );
+     int so  = byte2int( stats->acc_so  ) + byte2int( addtl_stats->acc_so  );
 
      batter_stats.player_id      =                  player_id;
      batter_stats.season         =                  season;
      batter_stats.season_phase   =                  season_phase;
-     batter_stats.games          =           stats->acc_games[0];
+     batter_stats.games          = byte2int( stats->acc_games     );
      batter_stats.at_bats        = word2int( stats->acc_ab        );
-     batter_stats.runs           =           stats->acc_runs[0];
+     batter_stats.runs           = byte2int( stats->acc_runs      );
      batter_stats.hits           = word2int( stats->acc_hits      );
-     batter_stats.doubles        =           stats->acc_2b[0];
-     batter_stats.triples        =           stats->acc_3b[0];
-     batter_stats.home_runs      =           stats->acc_hr[0];
+     batter_stats.doubles        = byte2int( stats->acc_2b        );
+     batter_stats.triples        = byte2int( stats->acc_3b        );
+     batter_stats.home_runs      = byte2int( stats->acc_hr        );
      batter_stats.runs_batted_in =                  rbi;
-     batter_stats.walks          =           stats->acc_bb[0];
+     batter_stats.walks          = byte2int( stats->acc_bb        );
      batter_stats.strike_outs    =                  so;
-     batter_stats.steals         =           stats->acc_sb[0];
-     batter_stats.errors         =           stats->acc_err[0];
+     batter_stats.steals         = byte2int( stats->acc_sb        );
+     batter_stats.errors         = byte2int( stats->acc_err       );
 
      if ( add_to_data_list( &list, &batter_stats, sizeof(batter_stats_s), 5 ) < 0 ) return NULL;
      /**/ add_to_data_list( &list, &sentinel,     sizeof(batter_stats_s), 5 );
@@ -123,16 +123,16 @@ static pitcher_stats_s *convertPitcherStats( const int player_id, const int seas
      pitcher_stats.player_id       =                  player_id;
      pitcher_stats.season          =                  season;
      pitcher_stats.season_phase    =                  season_phase;
-     pitcher_stats.wins            =           stats->acc_wins[0];
-     pitcher_stats.losses          =           stats->acc_losses[0];
-     pitcher_stats.games           =           stats->acc_starts[0];
-     pitcher_stats.saves           =           stats->acc_saves[0];
+     pitcher_stats.wins            = byte2int( stats->acc_wins      );
+     pitcher_stats.losses          = byte2int( stats->acc_losses    );
+     pitcher_stats.games           = byte2int( stats->acc_starts    );
+     pitcher_stats.saves           = byte2int( stats->acc_saves     );
      pitcher_stats.innings.innings = word2int( stats->acc_innings   ) / 10;
      pitcher_stats.innings.outs    = word2int( stats->acc_innings   ) % 10;
      pitcher_stats.hits            = word2int( stats->acc_hits      );
      pitcher_stats.earned_runs     = word2int( stats->acc_er        );
-     pitcher_stats.home_runs       =           stats->acc_hr[0];
-     pitcher_stats.walks           =           stats->acc_bb[0];
+     pitcher_stats.home_runs       = byte2int( stats->acc_hr        );
+     pitcher_stats.walks           = byte2int( stats->acc_bb        );
      pitcher_stats.strike_outs     = word2int( stats->acc_so        );
 
      if ( add_to_data_list( &list, &pitcher_stats, sizeof(pitcher_stats_s), 5 ) < 0 ) return NULL;

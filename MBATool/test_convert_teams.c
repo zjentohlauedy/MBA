@@ -31,21 +31,21 @@ static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int t
           acc_bat_stats_s *batting_stats = &(player->filestats.filebatting.simulated);
           acc_bat_stats_s *overflow      = &(player->filestats.filebatting.action);
 
-          int rbi = batting_stats->acc_rbi[0] + overflow->acc_rbi[0];
-          int so  = batting_stats->acc_so[0]  + overflow->acc_so[0];
+          int rbi = byte2int( batting_stats->acc_rbi ) + byte2int( overflow->acc_rbi );
+          int so  = byte2int( batting_stats->acc_so  ) + byte2int( overflow->acc_so  );
 
-          team_batting_stats.games          +=           batting_stats->acc_games[0];
-          team_batting_stats.at_bats        += word2int( batting_stats->acc_ab        );
-          team_batting_stats.runs           +=           batting_stats->acc_runs[0];
-          team_batting_stats.hits           += word2int( batting_stats->acc_hits      );
-          team_batting_stats.doubles        +=           batting_stats->acc_2b[0];
-          team_batting_stats.triples        +=           batting_stats->acc_3b[0];
-          team_batting_stats.home_runs      +=           batting_stats->acc_hr[0];
+          team_batting_stats.games          += byte2int( batting_stats->acc_games );
+          team_batting_stats.at_bats        += word2int( batting_stats->acc_ab    );
+          team_batting_stats.runs           += byte2int( batting_stats->acc_runs  );
+          team_batting_stats.hits           += word2int( batting_stats->acc_hits  );
+          team_batting_stats.doubles        += byte2int( batting_stats->acc_2b    );
+          team_batting_stats.triples        += byte2int( batting_stats->acc_3b    );
+          team_batting_stats.home_runs      += byte2int( batting_stats->acc_hr    );
           team_batting_stats.runs_batted_in +=                          rbi;
-          team_batting_stats.walks          +=           batting_stats->acc_bb[0];
+          team_batting_stats.walks          += byte2int( batting_stats->acc_bb    );
           team_batting_stats.strike_outs    +=                          so;
-          team_batting_stats.steals         +=           batting_stats->acc_sb[0];
-          team_batting_stats.errors         +=           batting_stats->acc_err[0];
+          team_batting_stats.steals         += byte2int( batting_stats->acc_sb    );
+          team_batting_stats.errors         += byte2int( batting_stats->acc_err   );
      }
 
      return &team_batting_stats;
@@ -70,17 +70,17 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
 
           acc_pch_stats_s *pitching_stats = &(player->filestats.filepitching.simulated);
 
-          team_pitching_stats.wins            +=           pitching_stats->acc_wins[0];
-          team_pitching_stats.losses          +=           pitching_stats->acc_losses[0];
-          team_pitching_stats.games           +=           pitching_stats->acc_starts[0];
-          team_pitching_stats.saves           +=           pitching_stats->acc_saves[0];
-          team_pitching_stats.innings.innings += word2int( pitching_stats->acc_innings    ) / 10;
-          team_pitching_stats.innings.outs    += word2int( pitching_stats->acc_innings    ) % 10;
-          team_pitching_stats.hits            += word2int( pitching_stats->acc_hits       );
-          team_pitching_stats.earned_runs     += word2int( pitching_stats->acc_er         );
-          team_pitching_stats.home_runs       +=           pitching_stats->acc_hr[0];
-          team_pitching_stats.walks           +=           pitching_stats->acc_bb[0];
-          team_pitching_stats.strike_outs     += word2int( pitching_stats->acc_so         );
+          team_pitching_stats.wins            += byte2int( pitching_stats->acc_wins    );
+          team_pitching_stats.losses          += byte2int( pitching_stats->acc_losses  );
+          team_pitching_stats.games           += byte2int( pitching_stats->acc_starts  );
+          team_pitching_stats.saves           += byte2int( pitching_stats->acc_saves   );
+          team_pitching_stats.innings.innings += word2int( pitching_stats->acc_innings ) / 10;
+          team_pitching_stats.innings.outs    += word2int( pitching_stats->acc_innings ) % 10;
+          team_pitching_stats.hits            += word2int( pitching_stats->acc_hits    );
+          team_pitching_stats.earned_runs     += word2int( pitching_stats->acc_er      );
+          team_pitching_stats.home_runs       += byte2int( pitching_stats->acc_hr      );
+          team_pitching_stats.walks           += byte2int( pitching_stats->acc_bb      );
+          team_pitching_stats.strike_outs     += word2int( pitching_stats->acc_so      );
      }
 
      team_pitching_stats.innings.innings += (team_pitching_stats.innings.outs / 3);
