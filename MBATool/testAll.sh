@@ -87,6 +87,8 @@ runTestProg test_gen_player_ids
 runTestProg test_copy_player_ids
 runTestProg test_set_longevity
 runTestProg test_copy_longevity
+runTestProg test_format_amiga_to_dos
+runTestProg test_format_dos_to_amiga
 
 if [ $FAIL -ne 0 ]; then
 

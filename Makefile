@@ -6,9 +6,7 @@ progs = \
 calc_avg_park_size \
 check_games draft \
 clear_stats \
-ewbamiga2dos \
 ewbcopyleague \
-ewbdos2amiga \
 ewbfielding \
 fixstats \
 games_played \
@@ -48,13 +46,7 @@ clear_stats: clear_stats.o ewbfiles.o
 draft: draft.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-ewbamiga2dos: ewbamiga2dos.o ewbfiles.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
 ewbcopyleague: ewbcopyleague.o ewbfiles.o
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
-
-ewbdos2amiga: ewbdos2amiga.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 ewbfielding: ewbfielding.o ewbfiles.o

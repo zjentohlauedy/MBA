@@ -8,13 +8,17 @@ progs = \
    gen_player_ids \
    copy_player_ids \
    set_longevity \
-   copy_longevity
+   copy_longevity \
+   format_amiga_to_dos \
+   format_dos_to_amiga
 
 tests = \
    test_gen_player_ids \
    test_copy_player_ids \
    test_set_longevity \
    test_copy_longevity \
+   test_format_amiga_to_dos \
+   test_format_dos_to_amiga \
    test_players_t \
    test_player_accolades_t \
    test_pitchers_t \
@@ -64,6 +68,12 @@ set_longevity: set_longevity.o set_longevity_main.o file_utils.o
 copy_longevity: copy_longevity.o copy_longevity_main.o file_utils.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+format_amiga_to_dos: format_amiga_to_dos.o format_amiga_to_dos_main.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+format_dos_to_amiga: format_dos_to_amiga.o format_dos_to_amiga_main.o file_utils.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 TESTS: $(tests) mba_test.db TAGS
 
 test_gen_player_ids: test_gen_player_ids.o gen_player_ids.o file_utils.o libmbabuilders.a
@@ -76,6 +86,12 @@ test_set_longevity: test_set_longevity.o set_longevity.o file_utils.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_copy_longevity: test_copy_longevity.o copy_longevity.o file_utils.o libmbabuilders.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_format_amiga_to_dos: test_format_amiga_to_dos.o format_amiga_to_dos.o file_utils.o libmbabuilders.a libmbacompares.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_format_dos_to_amiga: test_format_dos_to_amiga.o format_dos_to_amiga.o file_utils.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_players_t: test_players_t.o players_t.o sql_query.o
@@ -225,7 +241,8 @@ libmbabuilders.a: $(MBABUILDERS_OBJECTS)
 
 MBACOMPARES_OBJECTS = \
  compare_pitcher_stats.o \
- compare_team_pitching_stats.o
+ compare_team_pitching_stats.o \
+ compare_filebatting_stats.o
 
 libmbacompares.a: $(MBACOMPARES_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^

@@ -62,6 +62,8 @@ MBATool/gen_player_ids
 MBATool/copy_player_ids
 MBATool/copy_longevity
 MBATool/set_longevity
+MBATool/format_amiga_to_dos
+MBATool/format_dos_to_amiga
 
 MBATool/test_players_t
 MBATool/test_player_accolades_t
@@ -100,3 +102,5 @@ MBATool/test_gen_player_ids
 MBATool/test_copy_player_ids
 MBATool/test_copy_longevity
 MBATool/test_set_longevity
+MBATool/test_format_amiga_to_dos
+MBATool/test_format_dos_to_amiga

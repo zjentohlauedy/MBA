@@ -16,6 +16,8 @@
 
 #define YEAR_SEASON_OFFSET      (2000 - 1845)
 
+#define STAT_CAP_AMOUNT       225
+
 
 typedef enum
 {
@@ -326,9 +328,13 @@ fileparks_s    *readParksFile(      const char          *filename               
 boolean_e       writeParksFile(     const char          *filename,     const fileparks_s  *parksFile    );
 
 // Utility program methods:
-boolean_e genPlayerIds(  fileplayer_s *players_file                               );
-boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file2 );
-void      setLongevity(  fileplayer_s *players_file                               );
-boolean_e copyLongevity( fileplayer_s *players_file1, fileplayer_s *players_file2 );
+boolean_e genPlayerIds(     fileplayer_s *players_file                               );
+boolean_e copyPlayerIds(    fileplayer_s *players_file1, fileplayer_s *players_file2 );
+void      setLongevity(     fileplayer_s *players_file                               );
+boolean_e copyLongevity(    fileplayer_s *players_file1, fileplayer_s *players_file2 );
+void      formatAmigaToDos( fileplayer_s *players_file                               );
+boolean_e formatDosToAmiga( fileplayer_s *players_file                               );
+
+char *getFormatDosToAmigaError( void );
 
 #endif
