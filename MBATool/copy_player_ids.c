@@ -3,33 +3,49 @@
 #include "file_formats.h"
 
 
+static char error_message[999 + 1] = { 0 };
+
+
+char *getCopyPlayerIdsError( void )
+{
+     return error_message;
+}
+
+
+static void clearErrorMessage( void )
+{
+     error_message[0] = '\0';
+}
+
+
 boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file2 )
 {
      fileplayer_s   *matchingPlayer;
-     int             idx;
 
 
-     for ( idx = 0; idx < TOTAL_PLAYERS; ++idx )
+     clearErrorMessage();
+
+     for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-          if ( players_file1[idx].last_name[0] == '\0' ) continue;
+          if ( players_file1[i].last_name[0] == '\0' ) continue;
 
-          if ( (matchingPlayer = findMatchingPlayer( &players_file1[idx], players_file2 )) == NULL )
+          if ( (matchingPlayer = findMatchingPlayer( &players_file1[i], players_file2 )) == NULL )
           {
-               printf( "Player <%.*s, %.*s> not found!\n",
-                       sizeof(players_file1[idx].last_name),  players_file1[idx].last_name,
-                       sizeof(players_file1[idx].first_name), players_file1[idx].first_name );
+               sprintf( error_message, "Player <%.*s, %.*s> not found!",
+                       sizeof(players_file1[i].last_name),  players_file1[i].last_name,
+                       sizeof(players_file1[i].first_name), players_file1[i].first_name );
 
                return bl_False;
           }
 
-          int pos = nibble( players_file1[idx].position[0], n_High );
+          int pos = nibble( players_file1[i].position[0], n_High );
 
           acc_player_id_s *id_info1 = NULL;
           acc_player_id_s *id_info2 = NULL;
 
           if ( pos == fpos_Pitcher )
           {
-               filepitching_s *pitching1 = &(players_file1[idx].filestats.filepitching);
+               filepitching_s *pitching1 = &(players_file1[i].filestats.filepitching);
                filepitching_s *pitching2 = &(matchingPlayer->filestats.filepitching);
 
                id_info1 = (acc_player_id_s *)&(pitching1->action);
@@ -37,7 +53,7 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
           }
           else
           {
-               filebatting_s *batting1 = &(players_file1[idx].filestats.filebatting);
+               filebatting_s *batting1 = &(players_file1[i].filestats.filebatting);
                filebatting_s *batting2 = &(matchingPlayer->filestats.filebatting);
 
                id_info1 = (acc_player_id_s *)&(batting1->action);
@@ -46,18 +62,18 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
 
           if ( word2int( id_info1->player_id ) != 0 )
           {
-               printf( "Player ID field for <%.*s, %.*s> already contains a number!\n",
-                       sizeof(players_file1[idx].last_name),  players_file1[idx].last_name,
-                       sizeof(players_file1[idx].first_name), players_file1[idx].first_name );
+               sprintf( error_message, "Player ID field for <%.*s, %.*s> already contains a number!",
+                       sizeof(players_file1[i].last_name),  players_file1[i].last_name,
+                       sizeof(players_file1[i].first_name), players_file1[i].first_name );
 
                return bl_False;
           }
 
           if ( id_info1->checksum[0] != 0 )
           {
-               printf( "Checksum field for <%.*s, %.*s> already contains a number!\n",
-                       sizeof(players_file1[idx].last_name),  players_file1[idx].last_name,
-                       sizeof(players_file1[idx].first_name), players_file1[idx].first_name );
+               sprintf( error_message, "Checksum field for <%.*s, %.*s> already contains a number!",
+                       sizeof(players_file1[i].last_name),  players_file1[i].last_name,
+                       sizeof(players_file1[i].first_name), players_file1[i].first_name );
 
                return bl_False;
           }

@@ -2,7 +2,7 @@
 #include "file_formats.h"
 
 
-static char error_message[999 + 1];
+static char error_message[999 + 1] = { 0 };
 
 
 char *getFormatDosToAmigaError( void )

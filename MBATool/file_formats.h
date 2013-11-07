@@ -336,5 +336,8 @@ void      formatAmigaToDos( fileplayer_s *players_file                          
 boolean_e formatDosToAmiga( fileplayer_s *players_file                               );
 
 char *getFormatDosToAmigaError( void );
+char *getGenPlayerIdsError(     void );
+char *getCopyPlayerIdsError(    void );
+char *getCopyLongevityError(    void );
 
 #endif

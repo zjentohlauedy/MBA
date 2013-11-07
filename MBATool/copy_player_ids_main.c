@@ -33,6 +33,7 @@ int main( const int argc, const char *argv[] )
 
      if ( copyPlayerIds( players_file1, players_file2 ) == bl_False )
      {
+          printf( "%s\n", getCopyPlayerIdsError() );
           printf( "Error copying player ids.\n" );
 
           free( players_file1 );

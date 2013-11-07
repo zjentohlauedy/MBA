@@ -23,6 +23,7 @@ int main( const int argc, const char *argv[] )
 
      if ( genPlayerIds( players_file ) == bl_False )
      {
+          printf( "%s\n", getGenPlayerIdsError() );
           printf( "Cannot generate player ids.\n" );
 
           free( players_file );

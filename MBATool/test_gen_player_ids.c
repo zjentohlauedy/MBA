@@ -45,11 +45,16 @@ static char *genPlayerIds_ShouldSetThePlayerIdsOnPlayers_GivenAPlayersFile()
      return NULL;
 }
 
+static void get_error_message()
+{
+     printf( "genPlayerIds error message: %s\n", getGenPlayerIdsError() );
+}
+
 static void run_all_tests()
 {
-     run_test( genPlayerIds_ShouldReturnTrueIfSuccessful_GivenAPlayersFile,                        null );
-     run_test( genPlayerIds_ShouldReturnFalseIfDataAlreadyExistsInPlayerIdField_GivenAPlayersFile, null );
-     run_test( genPlayerIds_ShouldSetThePlayerIdsOnPlayers_GivenAPlayersFile,                      null );
+     run_test( genPlayerIds_ShouldReturnTrueIfSuccessful_GivenAPlayersFile,                        get_error_message );
+     run_test( genPlayerIds_ShouldReturnFalseIfDataAlreadyExistsInPlayerIdField_GivenAPlayersFile, get_error_message );
+     run_test( genPlayerIds_ShouldSetThePlayerIdsOnPlayers_GivenAPlayersFile,                      get_error_message );
 }
 
 int main( int argc, char *argv[] )

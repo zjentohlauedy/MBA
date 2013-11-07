@@ -73,11 +73,16 @@ static char *copyLongevity_ShouldCopyLongevityBetweenBatters_GivenTwoPlayersFile
      return NULL;
 }
 
+static void get_error_message()
+{
+     printf( "copyLongevity error message: %s\n", getCopyLongevityError() );
+}
+
 static void run_all_tests()
 {
-     run_test( copyLongevity_ShouldReturnTrueOnSuccess_GivenTwoPlayersFiles,         null );
-     run_test( copyLongevity_ShouldReturnFalseIfPlayerNotFound_GivenTwoPlayersFiles, null );
-     run_test( copyLongevity_ShouldCopyLongevityBetweenBatters_GivenTwoPlayersFiles, null );
+     run_test( copyLongevity_ShouldReturnTrueOnSuccess_GivenTwoPlayersFiles,         get_error_message );
+     run_test( copyLongevity_ShouldReturnFalseIfPlayerNotFound_GivenTwoPlayersFiles, get_error_message );
+     run_test( copyLongevity_ShouldCopyLongevityBetweenBatters_GivenTwoPlayersFiles, get_error_message );
 }
 
 int main( int argc, char *argv[] )

@@ -23,6 +23,7 @@ int main( const int argc, const char *argv[] )
 
      if ( ! formatDosToAmiga( players_file ) )
      {
+          printf( "%s\n", getFormatDosToAmigaError() );
           printf( "Cannot complete player changes.\n" );
 
           free( players_file );

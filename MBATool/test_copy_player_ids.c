@@ -49,11 +49,16 @@ static char *copyPlayerIds_ShouldCopyThePlayerIdFromOneFileToAnotherBasedOnName_
      return NULL;
 }
 
+static void get_error_message()
+{
+     printf( "copyPlayerIds error message: %s\n", getCopyPlayerIdsError() );
+}
+
 static void run_all_tests()
 {
-     run_test( copyPlayerIds_ShouldReturnTrueOnSuccess_GivenTwoPlayerFiles,                            null );
-     run_test( copyPlayerIds_ShouldReturnFalseOnError_GivenTwoPlayerFiles,                             null );
-     run_test( copyPlayerIds_ShouldCopyThePlayerIdFromOneFileToAnotherBasedOnName_GivenTwoPlayerFiles, null );
+     run_test( copyPlayerIds_ShouldReturnTrueOnSuccess_GivenTwoPlayerFiles,                            get_error_message );
+     run_test( copyPlayerIds_ShouldReturnFalseOnError_GivenTwoPlayerFiles,                             get_error_message );
+     run_test( copyPlayerIds_ShouldCopyThePlayerIdFromOneFileToAnotherBasedOnName_GivenTwoPlayerFiles, get_error_message );
 }
 
 int main( int argc, char *argv[] )
