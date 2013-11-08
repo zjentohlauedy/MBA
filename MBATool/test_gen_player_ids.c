@@ -24,7 +24,7 @@ static char *genPlayerIds_ShouldReturnFalseIfDataAlreadyExistsInPlayerIdField_Gi
 
      strcpy( players_file[0].last_name, "Test" );
 
-     players_file[0].filestats.filepitching.action.acc_wins[0] = 1;
+     players_file[0].acc_stats.amiga.action.pitching.acc_wins[0] = 1;
 
      assertEquals( bl_False, genPlayerIds( players_file ) );
 

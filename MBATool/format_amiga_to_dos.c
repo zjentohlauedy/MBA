@@ -20,29 +20,24 @@ void formatAmigaToDos( fileplayer_s *players_file )
 
           int pos = nibble( players_file[idx].position[0], n_High );
 
+          acc_amiga_s *acc_stats = &(players_file[idx].acc_stats.amiga);
+
           if   ( pos != fpos_Pitcher )
           {
-               filebatting_s *batting = &(players_file[idx].filestats.filebatting);
+               capStat( acc_stats->simulated.batting.acc_rbi, acc_stats->action.batting.acc_rbi );
+               capStat( acc_stats->simulated.batting.acc_so,  acc_stats->action.batting.acc_so  );
 
-               capStat( batting->simulated.acc_rbi, batting->action.acc_rbi );
-               capStat( batting->simulated.acc_so,  batting->action.acc_so  );
+               acc_stats_u act = acc_stats->action;
 
-               acc_bat_stats_s act = batting->action;
-
-               batting->action    = batting->simulated;
-               batting->simulated = act;
+               acc_stats->action    = acc_stats->simulated;
+               acc_stats->simulated = act;
           }
           else
           {
-               filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
+               unsigned char games = byte2int( acc_stats->simulated.pitching.acc_starts );
 
-               unsigned char games = pitching->simulated.acc_starts[0];
-
-               pitching->simulated.acc_starts[0] = 0;
-
-               acc_bat_stats_s *action = (acc_bat_stats_s *)&(pitching->action);
-
-               action->acc_games[0] = games;
+               int2byte( acc_stats->simulated.pitching.acc_starts, 0     );
+               int2byte( acc_stats->action.   batting. acc_games,  games );
           }
      }
 }

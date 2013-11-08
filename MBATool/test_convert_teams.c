@@ -28,8 +28,8 @@ static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int t
           if (         player->last_name[0]          == '\0'         ) continue;
           if ( nibble( player->position[0], n_High ) == fpos_Pitcher ) continue;
 
-          acc_bat_stats_s *batting_stats = &(player->filestats.filebatting.simulated);
-          acc_bat_stats_s *overflow      = &(player->filestats.filebatting.action);
+          acc_bat_stats_s *batting_stats = &(player->acc_stats.amiga.simulated.batting);
+          acc_bat_stats_s *overflow      = &(player->acc_stats.amiga.action.batting);
 
           int rbi = byte2int( batting_stats->acc_rbi ) + byte2int( overflow->acc_rbi );
           int so  = byte2int( batting_stats->acc_so  ) + byte2int( overflow->acc_so  );
@@ -68,7 +68,7 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
           if (         player->last_name[0]          == '\0'         ) continue;
           if ( nibble( player->position[0], n_High ) != fpos_Pitcher ) continue;
 
-          acc_pch_stats_s *pitching_stats = &(player->filestats.filepitching.simulated);
+          acc_pch_stats_s *pitching_stats = &(player->acc_stats.amiga.simulated.pitching);
 
           team_pitching_stats.wins            += byte2int( pitching_stats->acc_wins    );
           team_pitching_stats.losses          += byte2int( pitching_stats->acc_losses  );

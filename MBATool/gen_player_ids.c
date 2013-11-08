@@ -25,22 +25,7 @@ boolean_e genPlayerIds( fileplayer_s *players_file )
      {
           if ( players_file[idx].last_name[0] == '\0' ) continue;
 
-          int pos = nibble( players_file[idx].position[0], n_High );
-
-          acc_player_id_s *id_info = NULL;
-
-          if ( pos == fpos_Pitcher )
-          {
-               filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
-
-               id_info = (acc_player_id_s *)&(pitching->action);
-          }
-          else
-          {
-               filebatting_s *batting = &(players_file[idx].filestats.filebatting);
-
-               id_info = (acc_player_id_s *)&(batting->action);
-          }
+          acc_player_id_s *id_info = &(players_file[idx].acc_stats.amiga.action.id_info);
 
           if ( word2int( id_info->player_id ) != 0 )
           {

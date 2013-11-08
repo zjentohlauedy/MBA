@@ -86,7 +86,7 @@ static batter_stats_s *convertBatterStats( const int player_id, const int season
      return list.data;
 }
 
-static batter_s *createBatter( const int player_id, const int season, const season_phase_e season_phase, const filebatting_s *batter_data, const unsigned char positions )
+static batter_s *createBatter( const int player_id, const int season, const season_phase_e season_phase, const fileplayer_s *players_data )
 {
      batter_s *batter = NULL;
 
@@ -94,17 +94,21 @@ static batter_s *createBatter( const int player_id, const int season, const seas
 
      memset( batter, '\0', sizeof(batter_s) );
 
-     batter->player_id          = player_id;
-     batter->primary_position   = mapPosition( nibble( positions,               n_High ) );
-     batter->secondary_position = mapPosition( nibble( positions,               n_Low  ) );
-     batter->power              =              nibble( batter_data->ratings[2], n_High );
-     batter->hit_n_run          =              nibble( batter_data->ratings[3], n_Low  );
-     batter->bunt               =              nibble( batter_data->ratings[3], n_High );
-     batter->running            =              nibble( batter_data->ratings[1], n_High );
-     batter->range              =              nibble( batter_data->ratings[1], n_Low  );
-     batter->arm                =              nibble( batter_data->ratings[0], n_Low  );
+     const filebatting_s *batter_data = &(players_data->filestats.filebatting);
 
-     if ( (batter->stats = convertBatterStats( player_id, season, season_phase, &(batter_data->simulated), &(batter_data->action) )) == NULL )
+     batter->player_id          = player_id;
+     batter->primary_position   = mapPosition( nibble( players_data->position[0], n_High ) );
+     batter->secondary_position = mapPosition( nibble( players_data->position[0], n_Low  ) );
+     batter->power              =              nibble( batter_data->ratings[2],   n_High   );
+     batter->hit_n_run          =              nibble( batter_data->ratings[3],   n_Low    );
+     batter->bunt               =              nibble( batter_data->ratings[3],   n_High   );
+     batter->running            =              nibble( batter_data->ratings[1],   n_High   );
+     batter->range              =              nibble( batter_data->ratings[1],   n_Low    );
+     batter->arm                =              nibble( batter_data->ratings[0],   n_Low    );
+
+     const acc_amiga_s *acc_stats = &(players_data->acc_stats.amiga);
+
+     if ( (batter->stats = convertBatterStats( player_id, season, season_phase, &(acc_stats->simulated.batting), &(acc_stats->action.batting) )) == NULL )
      {
           free( batter );
 
@@ -141,7 +145,7 @@ static pitcher_stats_s *convertPitcherStats( const int player_id, const int seas
      return list.data;
 }
 
-static pitcher_s *createPitcher( const int player_id, const int season, const season_phase_e season_phase, const filepitching_s *pitcher_data )
+static pitcher_s *createPitcher( const int player_id, const int season, const season_phase_e season_phase, const fileplayer_s *players_data )
 {
      pitcher_s *pitcher = NULL;
 
@@ -149,13 +153,15 @@ static pitcher_s *createPitcher( const int player_id, const int season, const se
 
      memset( pitcher, '\0', sizeof(pitcher_s) );
 
+     const filepitching_s *pitcher_data = &(players_data->filestats.filepitching);
+
      pitcher->player_id = player_id;
      pitcher->speed     = nibble( pitcher_data->ratings[0], n_High );
      pitcher->control   = nibble( pitcher_data->ratings[0], n_Low  );
      pitcher->bunt      = nibble( pitcher_data->ratings[1], n_Low  );
      pitcher->fatigue   = nibble( pitcher_data->ratings[1], n_High );
 
-     if ( (pitcher->stats = convertPitcherStats( player_id, season, season_phase, &(pitcher_data->simulated) )) == NULL )
+     if ( (pitcher->stats = convertPitcherStats( player_id, season, season_phase, &(players_data->acc_stats.amiga.simulated.pitching) )) == NULL )
      {
           free( pitcher );
 
@@ -168,65 +174,56 @@ static pitcher_s *createPitcher( const int player_id, const int season, const se
 static player_s *createPlayer( const int season, const season_phase_e season_phase, const fileplayer_s *players_data )
 {
      player_s *player    = NULL;
-     int       player_id = 0;
+
 
      if ( (player = malloc( sizeof(player_s) )) == NULL ) return NULL;
 
      memset( player, '\0', sizeof(player_s) );
 
+     const acc_player_id_s *id_info = &(players_data->acc_stats.amiga.action.id_info);
+
+     int player_id = word2int( id_info->player_id );
+
+     if ( calcChecksum( player_id ) != byte2int( id_info->checksum ) )
+     {
+          free( player );
+
+          return NULL;
+     }
+
      int pos = nibble( players_data->position[0], n_High );
 
      if ( pos == fpos_Pitcher )
      {
-          const filepitching_s  *pitcher_data = &(players_data->filestats.filepitching);
-          const acc_player_id_s *id_info      = (acc_player_id_s *)&(pitcher_data->action);
-
-          player_id = word2int( id_info->player_id );
-
-          if ( calcChecksum( player_id ) != id_info->checksum[0] )
+          if ( (player->details.pitching = createPitcher( player_id, season, season_phase, players_data )) == NULL )
           {
                free( player );
 
                return NULL;
           }
 
-          if ( (player->details.pitching = createPitcher( player_id, season, season_phase, pitcher_data )) == NULL )
-          {
-               free( player );
-
-               return NULL;
-          }
+          const filepitching_s *pitcher_data = &(players_data->filestats.filepitching);
 
           player->player_type = pt_Pitcher;
-          player->handedness  = mapHandedness( nibble( players_data->position[0], n_Low ) );
-          player->skin_tone   = mapSkinTone(           pitcher_data->color[0]             );
-          player->longevity   =                nibble( pitcher_data->ratings[1],  n_Low   );
+          player->handedness  = mapHandedness( nibble(   players_data->position[0], n_Low ) );
+          player->skin_tone   = mapSkinTone(   byte2int( pitcher_data->color              ) );
+          player->longevity   =                nibble(   pitcher_data->ratings[1],  n_Low   );
      }
      else
      {
-          const filebatting_s   *batter_data = &(players_data->filestats.filebatting);
-          const acc_player_id_s *id_info     = (acc_player_id_s *)&(batter_data->action);
-
-          player_id = word2int( id_info->player_id );
-
-          if ( calcChecksum( player_id ) != id_info->checksum[0] )
+          if ( (player->details.batting = createBatter( player_id, season, season_phase, players_data )) == NULL )
           {
                free( player );
 
                return NULL;
           }
 
-          if ( (player->details.batting = createBatter( player_id, season, season_phase, batter_data, players_data->position[0] )) == NULL )
-          {
-               free( player );
-
-               return NULL;
-          }
+          const filebatting_s *batter_data = &(players_data->filestats.filebatting);
 
           player->player_type = pt_Batter;
-          player->handedness  = mapHandedness( nibble( batter_data->ratings[0], n_High ) );
-          player->skin_tone   = mapSkinTone(           batter_data->color[0]             );
-          player->longevity   =                nibble( batter_data->ratings[2],  n_Low   );
+          player->handedness  = mapHandedness( nibble(   batter_data->ratings[0], n_High ) );
+          player->skin_tone   = mapSkinTone(   byte2int( batter_data->color              ) );
+          player->longevity   =                nibble(   batter_data->ratings[2],  n_Low   );
      }
 
      strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
@@ -234,7 +231,7 @@ static player_s *createPlayer( const int season, const season_phase_e season_pha
      strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
      strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
      /**/    player->player_id         =                        player_id;
-     /**/    player->rookie_season     =                        players_data->year[0] - YEAR_SEASON_OFFSET;
+     /**/    player->rookie_season     =              byte2int( players_data->year ) - YEAR_SEASON_OFFSET;
 
      return player;
 }

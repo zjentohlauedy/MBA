@@ -38,27 +38,8 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
                return bl_False;
           }
 
-          int pos = nibble( players_file1[i].position[0], n_High );
-
-          acc_player_id_s *id_info1 = NULL;
-          acc_player_id_s *id_info2 = NULL;
-
-          if ( pos == fpos_Pitcher )
-          {
-               filepitching_s *pitching1 = &(players_file1[i].filestats.filepitching);
-               filepitching_s *pitching2 = &(matchingPlayer->filestats.filepitching);
-
-               id_info1 = (acc_player_id_s *)&(pitching1->action);
-               id_info2 = (acc_player_id_s *)&(pitching2->action);
-          }
-          else
-          {
-               filebatting_s *batting1 = &(players_file1[i].filestats.filebatting);
-               filebatting_s *batting2 = &(matchingPlayer->filestats.filebatting);
-
-               id_info1 = (acc_player_id_s *)&(batting1->action);
-               id_info2 = (acc_player_id_s *)&(batting2->action);
-          }
+          acc_player_id_s *id_info1 = &(players_file1[i].acc_stats.amiga.action.id_info);
+          acc_player_id_s *id_info2 = &(matchingPlayer->acc_stats.amiga.action.id_info);
 
           if ( word2int( id_info1->player_id ) != 0 )
           {

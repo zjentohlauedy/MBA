@@ -206,6 +206,31 @@ typedef struct
 } acc_player_id_s;
 
 
+typedef union
+{
+     acc_pch_stats_s pitching;
+     acc_bat_stats_s batting;
+     acc_player_id_s id_info;
+
+} acc_stats_u;
+
+
+typedef struct
+{
+     acc_stats_u action;
+     acc_stats_u simulated;
+
+} acc_amiga_s;
+
+
+typedef struct
+{
+     acc_bat_stats_s batting;
+     acc_pch_stats_s pitching;
+
+} acc_dos_s;
+
+
 typedef struct
 {
      unsigned char ratings     [ 4]; // by nibble: bats R = 0/L = 1/S = 2,arm,runs,range,power,longevity,bunt,h&r
@@ -240,9 +265,6 @@ typedef struct
 
      unsigned char injury_days [ 1];
      unsigned char color       [ 1]; // 00 for white, 40 for black
-
-     acc_bat_stats_s action;
-     acc_bat_stats_s simulated;
 
 } filebatting_s;
 
@@ -283,9 +305,6 @@ typedef struct
 
      unsigned char color       [ 1]; // 00 for white, 40 for black
 
-     acc_pch_stats_s action;
-     acc_pch_stats_s simulated;
-
 } filepitching_s;
 
 
@@ -306,6 +325,13 @@ typedef struct
 
      } filestats;
 
+     union
+     {
+          acc_amiga_s amiga;
+          acc_dos_s   dos;
+
+     } acc_stats;
+
 } fileplayer_s;
 
 
@@ -316,7 +342,7 @@ void            int2byte(                 unsigned char *byte,         const int
 int             nibble(             const unsigned char  byte,         const nibble_e      position     );
 void            termName(                 unsigned char *buffer,       const int           len          );
 void            untermName(               unsigned char *buffer,       const int           len          );
-int             getPlayerId(        const fileplayer_s  *players_file                                   );
+int             getPlayerId(        const fileplayer_s  *player                                         );
 fileplayer_s   *findMatchingPlayer( const fileplayer_s  *player,             fileplayer_s *players      );
 unsigned char   calcChecksum(             int            value                                          );
 char           *getFileUtilsError(        void                                                          );

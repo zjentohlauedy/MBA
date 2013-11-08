@@ -38,16 +38,16 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
 
                assertNotNull( player );
 
-               int            rookie_season = players_data[idx].year[0] - YEAR_SEASON_OFFSET;
-               fileposition_e position      = nibble( players_data[idx].position[0], n_High );
-               filehand_e     hand;
-               filecolor_e    color;
-               int            player_id;
+               int              rookie_season = players_data[idx].year[0] - YEAR_SEASON_OFFSET;
+               fileposition_e   position      = nibble( players_data[idx].position[0], n_High );
+               filehand_e       hand;
+               filecolor_e      color;
+               acc_player_id_s *id_info       = &(players_data[idx].acc_stats.amiga.action.id_info);
+               int              player_id     = word2int( id_info->player_id );
 
                if ( position == fpos_Pitcher )
                {
                     filepitching_s  *pitching = &(players_data[idx].filestats.filepitching);
-                    acc_player_id_s *id_info  = (acc_player_id_s *)&(pitching->action);
 
                     assertEqualsInt( pt_Pitcher, player->player_type );
 
@@ -61,7 +61,6 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                     int longevity = nibble(   pitching->ratings[1],          n_Low  );
                     /**/color     = byte2int( pitching->color                      );
                     /**/hand      = nibble(   players_data[idx].position[0], n_Low );
-                    /**/player_id = word2int( id_info->player_id                   );
 
                     assertEqualsInt( player_id, pitcher->player_id );
                     assertEqualsInt( speed,     pitcher->speed     );
@@ -73,7 +72,6 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                else
                {
                     filebatting_s   *batting = &(players_data[idx].filestats.filebatting);
-                    acc_player_id_s *id_info = (acc_player_id_s *)&(batting->action);
 
                     assertEqualsInt( pt_Batter, player->player_type );
 
@@ -93,7 +91,6 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                     int longevity = nibble(   batting->ratings[2], n_Low  );
                     /**/hand      = nibble(   batting->ratings[0], n_High );
                     /**/color     = byte2int( batting->color              );
-                    /**/player_id = word2int( id_info->player_id          );
 
                     switch ( pos1 )
                     {
@@ -230,22 +227,9 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
 
      fileplayer_s *players_data = org_data.players_data;
 
-     if ( nibble( players_data[0].position[0], n_High ) == fpos_Pitcher )
-     {
-          filepitching_s *pitching = &(players_data[0].filestats.filepitching);
+     acc_player_id_s *id_info = &(players_data[0].acc_stats.amiga.action.id_info);
 
-          acc_player_id_s *player_id_data = (acc_player_id_s *)&(pitching->action);
-
-          player_id_data->checksum[0]++;
-     }
-     else
-     {
-          filebatting_s *batting = &(players_data[0].filestats.filebatting);
-
-          acc_player_id_s *player_id_data = (acc_player_id_s *)&(batting->action);
-
-          player_id_data->checksum[0]++;
-     }
+     id_info->checksum[0]++;
 
      assertNull( convertPlayers( &org_data, 1 ) );
 
@@ -280,7 +264,7 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
 
                assertNotNull( pitcher );
 
-               acc_pch_stats_s *expected_stats = &(players_data[i].filestats.filepitching.simulated);
+               acc_pch_stats_s *expected_stats = &(players_data[i].acc_stats.amiga.simulated.pitching);
                pitcher_stats_s *actual_stats   = pitcher->stats;
 
                int expected_innings = word2int( expected_stats->acc_innings ) / 10;
@@ -315,8 +299,8 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
 
                assertNotNull( batter );
 
-               acc_bat_stats_s *expected_stats = &(players_data[i].filestats.filebatting.simulated);
-               acc_bat_stats_s *extended_stats = &(players_data[i].filestats.filebatting.action);
+               acc_bat_stats_s *expected_stats = &(players_data[i].acc_stats.amiga.simulated.batting);
+               acc_bat_stats_s *extended_stats = &(players_data[i].acc_stats.amiga.action.batting);
                batter_stats_s  *actual_stats   = batter->stats;
 
                int expected_rbi = byte2int( expected_stats->acc_rbi ) + byte2int( extended_stats->acc_rbi );

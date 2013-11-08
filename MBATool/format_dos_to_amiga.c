@@ -17,6 +17,16 @@ static void clearErrorMessage( void )
 }
 
 
+static void capStat( unsigned char *stat, unsigned char *overflow )
+{
+     if ( *stat < STAT_CAP_AMOUNT ) return;
+
+     unsigned char x = *stat - STAT_CAP_AMOUNT;
+
+     *overflow += x;
+     *stat     -= x;
+}
+
 boolean_e formatDosToAmiga( fileplayer_s *players_file )
 {
      clearErrorMessage();
@@ -27,16 +37,14 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
 
           unsigned int pos = nibble( players_file[i].position[0], n_High );
 
-          acc_player_id_s *id_info = NULL;
-
           if   ( pos != fpos_Pitcher )
           {
-               filebatting_s *batting = &(players_file[i].filestats.filebatting);
+               acc_bat_stats_s *action = &(players_file[i].acc_stats.amiga.action.batting);
 
-               if ( byte2int( batting->action.acc_rbi ) >= STAT_CAP_AMOUNT ||
-                    byte2int( batting->action.acc_so  ) >= STAT_CAP_AMOUNT    )
+               if ( byte2int( action->acc_rbi ) >= STAT_CAP_AMOUNT ||
+                    byte2int( action->acc_so  ) >= STAT_CAP_AMOUNT    )
                {
-                    acc_pch_stats_s *pch = (acc_pch_stats_s *)&(batting->simulated);
+                    acc_pch_stats_s *pch = &(players_file[i].acc_stats.amiga.simulated.pitching);
 
                     unsigned int act_inn  = word2int( pch->acc_innings );
                     unsigned int act_hits = word2int( pch->acc_hits    );
@@ -51,52 +59,33 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
                     }
                }
 
-               acc_bat_stats_s sim = batting->simulated;
+               acc_amiga_s *acc_stats = &(players_file[i].acc_stats.amiga);
 
-               batting->simulated = batting->action;
-               batting->action    = sim;
+               acc_stats_u sim = acc_stats->simulated;
 
-               // If RBI are over STAT_CAP_AMOUNT, move extra from sim to act
-               if ( batting->simulated.acc_rbi[0] >= STAT_CAP_AMOUNT )
-               {
-                    unsigned char x = batting->simulated.acc_rbi[0] - STAT_CAP_AMOUNT;
+               acc_stats->simulated = acc_stats->action;
+               acc_stats->action    = sim;
 
-                    batting->action.acc_rbi[0]     = sim.acc_rbi[0];
-
-                    batting->simulated.acc_rbi[0] -= x;
-                    batting->action.acc_rbi[0]    += x;
-               }
-
-               // Same thing with strike outs
-               if ( batting->simulated.acc_so[0] >= STAT_CAP_AMOUNT )
-               {
-                    unsigned char x = batting->simulated.acc_so[0] - STAT_CAP_AMOUNT;
-
-                    batting->action.acc_so[0]     = sim.acc_so[0];
-
-                    batting->simulated.acc_so[0] -= x;
-                    batting->action.acc_so[0]  += x;
-               }
-
-               id_info = (acc_player_id_s *)&(batting->action);
+               capStat( acc_stats->simulated.batting.acc_rbi, acc_stats->action.batting.acc_rbi );
+               capStat( acc_stats->simulated.batting.acc_so,  acc_stats->action.batting.acc_so  );
           }
           else
           {
-               acc_bat_stats_s *act = (acc_bat_stats_s *)&(players_file[i].filestats.filebatting.action);
-               acc_pch_stats_s *sim =                    &(players_file[i].filestats.filepitching.simulated);
+               acc_bat_stats_s *act = &(players_file[i].acc_stats.amiga.action.batting);
+               acc_pch_stats_s *sim = &(players_file[i].acc_stats.amiga.simulated.pitching);
 
                unsigned char games = act->acc_games[0];
 
                act->acc_games[0] = 0;
 
                sim->acc_starts[0] = games;
-
-               id_info = (acc_player_id_s *)&(players_file[i].filestats.filepitching.action);
           }
+
+          acc_player_id_s *id_info = &(players_file[i].acc_stats.amiga.action.id_info);
 
           int player_id = word2int( id_info->player_id );
 
-          if ( player_id == 0  ||  calcChecksum( player_id ) != id_info->checksum[0] )
+          if ( player_id == 0  ||  calcChecksum( player_id ) != byte2int( id_info->checksum ) )
           {
                sprintf( error_message, "ERROR: Player %.*s, %.*s has a player id checksum mismatch.",
                         sizeof(players_file[i].last_name),  players_file[i].last_name,
@@ -104,7 +93,6 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
 
                return bl_False;
           }
-
      }
 
      return bl_True;

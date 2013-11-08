@@ -77,23 +77,12 @@ fileplayer_s *buildFilePlayers( void )
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-          unsigned char pos       = nibble( players_data[i].position[0], n_High );
           int           player_id = (rand() % 50000) + 1;
 
-          if ( pos == fpos_Pitcher )
-          {
-               acc_player_id_s *player_id_data = (acc_player_id_s *)&(players_data[i].filestats.filepitching.action);
+          acc_player_id_s *player_id_data = &(players_data[i].acc_stats.amiga.action.id_info);
 
-               int2word( player_id_data->player_id,                  player_id );
-               /**/      player_id_data->checksum[0] = calcChecksum( player_id );
-          }
-          else
-          {
-               acc_player_id_s *player_id_data = (acc_player_id_s *)&(players_data[i].filestats.filebatting.action);
-
-               int2word( player_id_data->player_id,                  player_id );
-               /**/      player_id_data->checksum[0] = calcChecksum( player_id );
-          }
+          int2word( player_id_data->player_id,                  player_id );
+          /**/      player_id_data->checksum[0] = calcChecksum( player_id );
      }
 
      return players_data;
@@ -114,6 +103,8 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           unsigned char position;
           int           year      = YEAR_SEASON_OFFSET + (i / 100);
 
+          acc_amiga_s *acc_stats = &(players_data[i].acc_stats.amiga);
+
           if ( pos == fpos_Pitcher )
           {
                filepitching_s *pitching = &(players_data[i].filestats.filepitching);
@@ -128,7 +119,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                pitching->ratings[0] = (speed   << 4) + control;
                pitching->ratings[1] = (fatigue << 4) + longevity;
 
-               buildFilePitcherStats( &(pitching->simulated) );
+               buildFilePitcherStats( &(acc_stats->simulated.pitching) );
           }
           else
           {
@@ -150,7 +141,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
                batting->ratings[2] = (power   << 4) + longevity;
                batting->ratings[3] = (bunt    << 4) + hit_n_run;
 
-               buildFileBatterStats( &(batting->simulated), &(batting->action) );
+               buildFileBatterStats( &(acc_stats->simulated.batting), &(acc_stats->action.batting) );
           }
 
           sprintf( players_data[i].first_name,   "Fst%d",    i + 1 );
