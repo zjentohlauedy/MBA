@@ -79,7 +79,7 @@ fileplayer_s *buildFilePlayers( void )
      {
           int           player_id = (rand() % 50000) + 1;
 
-          acc_player_id_s *player_id_data = &(players_data[i].acc_stats.amiga.action.id_info);
+          acc_player_id_s *player_id_data = &(players_data[i].acc_stats.action.id_info);
 
           int2word( player_id_data->player_id,                  player_id );
           /**/      player_id_data->checksum[0] = calcChecksum( player_id );
@@ -103,7 +103,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           unsigned char position;
           int           year      = YEAR_SEASON_OFFSET + (i / 100);
 
-          acc_amiga_s *acc_stats = &(players_data[i].acc_stats.amiga);
+          acc_stats_s *acc_stats = &(players_data[i].acc_stats);
 
           if ( pos == fpos_Pitcher )
           {

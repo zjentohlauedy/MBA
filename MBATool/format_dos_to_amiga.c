@@ -39,12 +39,12 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
 
           if   ( pos != fpos_Pitcher )
           {
-               acc_bat_stats_s *action = &(players_file[i].acc_stats.amiga.action.batting);
+               acc_bat_stats_s *action = &(players_file[i].acc_stats.action.batting);
 
                if ( byte2int( action->acc_rbi ) >= STAT_CAP_AMOUNT ||
                     byte2int( action->acc_so  ) >= STAT_CAP_AMOUNT    )
                {
-                    acc_pch_stats_s *pch = &(players_file[i].acc_stats.amiga.simulated.pitching);
+                    acc_pch_stats_s *pch = &(players_file[i].acc_stats.simulated.pitching);
 
                     unsigned int act_inn  = word2int( pch->acc_innings );
                     unsigned int act_hits = word2int( pch->acc_hits    );
@@ -59,7 +59,7 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
                     }
                }
 
-               acc_amiga_s *acc_stats = &(players_file[i].acc_stats.amiga);
+               acc_stats_s *acc_stats = &(players_file[i].acc_stats);
 
                acc_stats_u sim = acc_stats->simulated;
 
@@ -71,8 +71,8 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
           }
           else
           {
-               acc_bat_stats_s *act = &(players_file[i].acc_stats.amiga.action.batting);
-               acc_pch_stats_s *sim = &(players_file[i].acc_stats.amiga.simulated.pitching);
+               acc_bat_stats_s *act = &(players_file[i].acc_stats.action.batting);
+               acc_pch_stats_s *sim = &(players_file[i].acc_stats.simulated.pitching);
 
                unsigned char games = act->acc_games[0];
 
@@ -81,7 +81,7 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
                sim->acc_starts[0] = games;
           }
 
-          acc_player_id_s *id_info = &(players_file[i].acc_stats.amiga.action.id_info);
+          acc_player_id_s *id_info = &(players_file[i].acc_stats.action.id_info);
 
           int player_id = word2int( id_info->player_id );
 

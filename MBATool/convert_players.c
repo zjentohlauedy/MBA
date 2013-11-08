@@ -106,7 +106,7 @@ static batter_s *createBatter( const int player_id, const int season, const seas
      batter->range              =              nibble( batter_data->ratings[1],   n_Low    );
      batter->arm                =              nibble( batter_data->ratings[0],   n_Low    );
 
-     const acc_amiga_s *acc_stats = &(players_data->acc_stats.amiga);
+     const acc_stats_s *acc_stats = &(players_data->acc_stats);
 
      if ( (batter->stats = convertBatterStats( player_id, season, season_phase, &(acc_stats->simulated.batting), &(acc_stats->action.batting) )) == NULL )
      {
@@ -161,7 +161,7 @@ static pitcher_s *createPitcher( const int player_id, const int season, const se
      pitcher->bunt      = nibble( pitcher_data->ratings[1], n_Low  );
      pitcher->fatigue   = nibble( pitcher_data->ratings[1], n_High );
 
-     if ( (pitcher->stats = convertPitcherStats( player_id, season, season_phase, &(players_data->acc_stats.amiga.simulated.pitching) )) == NULL )
+     if ( (pitcher->stats = convertPitcherStats( player_id, season, season_phase, &(players_data->acc_stats.simulated.pitching) )) == NULL )
      {
           free( pitcher );
 
@@ -180,7 +180,7 @@ static player_s *createPlayer( const int season, const season_phase_e season_pha
 
      memset( player, '\0', sizeof(player_s) );
 
-     const acc_player_id_s *id_info = &(players_data->acc_stats.amiga.action.id_info);
+     const acc_player_id_s *id_info = &(players_data->acc_stats.action.id_info);
 
      int player_id = word2int( id_info->player_id );
 

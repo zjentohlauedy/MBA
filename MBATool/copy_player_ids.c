@@ -38,8 +38,8 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
                return bl_False;
           }
 
-          acc_player_id_s *id_info1 = &(players_file1[i].acc_stats.amiga.action.id_info);
-          acc_player_id_s *id_info2 = &(matchingPlayer->acc_stats.amiga.action.id_info);
+          acc_player_id_s *id_info1 = &(players_file1[i].acc_stats.action.id_info);
+          acc_player_id_s *id_info2 = &(matchingPlayer->acc_stats.action.id_info);
 
           if ( word2int( id_info1->player_id ) != 0 )
           {

@@ -220,15 +220,7 @@ typedef struct
      acc_stats_u action;
      acc_stats_u simulated;
 
-} acc_amiga_s;
-
-
-typedef struct
-{
-     acc_bat_stats_s batting;
-     acc_pch_stats_s pitching;
-
-} acc_dos_s;
+} acc_stats_s;
 
 
 typedef struct
@@ -325,12 +317,7 @@ typedef struct
 
      } filestats;
 
-     union
-     {
-          acc_amiga_s amiga;
-          acc_dos_s   dos;
-
-     } acc_stats;
+     acc_stats_s acc_stats;
 
 } fileplayer_s;
 

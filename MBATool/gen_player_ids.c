@@ -25,7 +25,7 @@ boolean_e genPlayerIds( fileplayer_s *players_file )
      {
           if ( players_file[idx].last_name[0] == '\0' ) continue;
 
-          acc_player_id_s *id_info = &(players_file[idx].acc_stats.amiga.action.id_info);
+          acc_player_id_s *id_info = &(players_file[idx].acc_stats.action.id_info);
 
           if ( word2int( id_info->player_id ) != 0 )
           {

@@ -42,7 +42,7 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                fileposition_e   position      = nibble( players_data[idx].position[0], n_High );
                filehand_e       hand;
                filecolor_e      color;
-               acc_player_id_s *id_info       = &(players_data[idx].acc_stats.amiga.action.id_info);
+               acc_player_id_s *id_info       = &(players_data[idx].acc_stats.action.id_info);
                int              player_id     = word2int( id_info->player_id );
 
                if ( position == fpos_Pitcher )
@@ -227,7 +227,7 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
 
      fileplayer_s *players_data = org_data.players_data;
 
-     acc_player_id_s *id_info = &(players_data[0].acc_stats.amiga.action.id_info);
+     acc_player_id_s *id_info = &(players_data[0].acc_stats.action.id_info);
 
      id_info->checksum[0]++;
 
@@ -264,7 +264,7 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
 
                assertNotNull( pitcher );
 
-               acc_pch_stats_s *expected_stats = &(players_data[i].acc_stats.amiga.simulated.pitching);
+               acc_pch_stats_s *expected_stats = &(players_data[i].acc_stats.simulated.pitching);
                pitcher_stats_s *actual_stats   = pitcher->stats;
 
                int expected_innings = word2int( expected_stats->acc_innings ) / 10;
@@ -299,8 +299,8 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
 
                assertNotNull( batter );
 
-               acc_bat_stats_s *expected_stats = &(players_data[i].acc_stats.amiga.simulated.batting);
-               acc_bat_stats_s *extended_stats = &(players_data[i].acc_stats.amiga.action.batting);
+               acc_bat_stats_s *expected_stats = &(players_data[i].acc_stats.simulated.batting);
+               acc_bat_stats_s *extended_stats = &(players_data[i].acc_stats.action.batting);
                batter_stats_s  *actual_stats   = batter->stats;
 
                int expected_rbi = byte2int( expected_stats->acc_rbi ) + byte2int( extended_stats->acc_rbi );

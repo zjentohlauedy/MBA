@@ -165,7 +165,7 @@ void untermName( unsigned char *buffer, const int len )
 
 int getPlayerId( const fileplayer_s *player )
 {
-     return word2int( player->acc_stats.amiga.action.id_info.player_id );
+     return word2int( player->acc_stats.action.id_info.player_id );
 }
 
 

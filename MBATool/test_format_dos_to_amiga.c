@@ -18,8 +18,8 @@ static void swapBatterStats( fileplayer_s *players_file )
 
           if ( pos != fpos_Pitcher )
           {
-               acc_stats_u *sim = &(players_file[i].acc_stats.amiga.simulated);
-               acc_stats_u *act = &(players_file[i].acc_stats.amiga.action);
+               acc_stats_u *sim = &(players_file[i].acc_stats.simulated);
+               acc_stats_u *act = &(players_file[i].acc_stats.action);
 
                acc_stats_u temp = *sim;
 
@@ -51,12 +51,12 @@ static char *formatDosToAmiga_ShouldReturnFalseIfBatterNeedingOverflowHasPitchin
 
           if ( pos != fpos_Pitcher )
           {
-               acc_bat_stats_s *batting = &(players_file[i].acc_stats.amiga.action.batting);
+               acc_bat_stats_s *batting = &(players_file[i].acc_stats.action.batting);
 
                int2byte( batting->acc_rbi, STAT_CAP_AMOUNT + 1 );
                int2byte( batting->acc_so,  STAT_CAP_AMOUNT + 1 );
 
-               acc_pch_stats_s *pitching = &(players_file[i].acc_stats.amiga.simulated.pitching);
+               acc_pch_stats_s *pitching = &(players_file[i].acc_stats.simulated.pitching);
 
                int2word( pitching->acc_innings, 1 );
                int2word( pitching->acc_hits,    1 );
@@ -74,7 +74,7 @@ static char *formatDosToAmiga_ShouldReturnFalseOnPlayerIdChecksumMismatch_GivenA
 {
      fileplayer_s *players_file = buildFilePlayers();
 
-     acc_player_id_s *id_info = &(players_file[0].acc_stats.amiga.action.id_info);
+     acc_player_id_s *id_info = &(players_file[0].acc_stats.action.id_info);
 
      id_info->checksum[0] += 1;
 
@@ -99,8 +99,8 @@ static char *formatDosToAmiga_ShouldMovePitcherActionGamesToSimulatedStarts_Give
 
           if ( pos == fpos_Pitcher )
           {
-               acc_pch_stats_s *sim = &(players_file[i].acc_stats.amiga.simulated.pitching);
-               acc_bat_stats_s *act = &(players_file[i].acc_stats.amiga.action.batting);
+               acc_pch_stats_s *sim = &(players_file[i].acc_stats.simulated.pitching);
+               acc_bat_stats_s *act = &(players_file[i].acc_stats.action.batting);
 
                expected_starts = byte2int( sim->acc_starts );
                player_idx      = i;
@@ -114,7 +114,7 @@ static char *formatDosToAmiga_ShouldMovePitcherActionGamesToSimulatedStarts_Give
 
      assertEquals( bl_True, formatDosToAmiga( players_file ) );
 
-     acc_pch_stats_s *sim = &(players_file[player_idx].acc_stats.amiga.simulated.pitching);
+     acc_pch_stats_s *sim = &(players_file[player_idx].acc_stats.simulated.pitching);
 
      assertEquals( expected_starts, byte2int( sim->acc_starts ) );
 
@@ -136,11 +136,11 @@ static char *formatDosToAmiga_ShouldSwapBatterSimulatedWithAction_GivenAPlayersF
 
           if ( pos != fpos_Pitcher )
           {
-               if ( byte2int( players_file[i].acc_stats.amiga.action.batting.acc_rbi ) < STAT_CAP_AMOUNT &&
-                    byte2int( players_file[i].acc_stats.amiga.action.batting.acc_so  ) < STAT_CAP_AMOUNT    )
+               if ( byte2int( players_file[i].acc_stats.action.batting.acc_rbi ) < STAT_CAP_AMOUNT &&
+                    byte2int( players_file[i].acc_stats.action.batting.acc_so  ) < STAT_CAP_AMOUNT    )
                {
-                    expected_act = players_file[i].acc_stats.amiga.simulated.batting;
-                    expected_sim = players_file[i].acc_stats.amiga.action.batting;
+                    expected_act = players_file[i].acc_stats.simulated.batting;
+                    expected_sim = players_file[i].acc_stats.action.batting;
                     player_idx   = i;
 
                     break;
@@ -150,8 +150,8 @@ static char *formatDosToAmiga_ShouldSwapBatterSimulatedWithAction_GivenAPlayersF
 
      assertEquals( bl_True, formatDosToAmiga( players_file ) );
 
-     compareBattingStats( &expected_act, &(players_file[player_idx].acc_stats.amiga.action.batting)    );
-     compareBattingStats( &expected_sim, &(players_file[player_idx].acc_stats.amiga.simulated.batting) );
+     compareBattingStats( &expected_act, &(players_file[player_idx].acc_stats.action.batting)    );
+     compareBattingStats( &expected_sim, &(players_file[player_idx].acc_stats.simulated.batting) );
 
      return NULL;
 }
@@ -169,8 +169,8 @@ static char *formatDosToAmiga_ShouldCapRBIAndMoveExcessFromActionToSimulated_Giv
 
           if ( pos != fpos_Pitcher )
           {
-               int2byte( players_file[i].acc_stats.amiga.action.batting.acc_rbi,    247 );
-               int2byte( players_file[i].acc_stats.amiga.simulated.batting.acc_rbi,   0 );
+               int2byte( players_file[i].acc_stats.action.batting.acc_rbi,    247 );
+               int2byte( players_file[i].acc_stats.simulated.batting.acc_rbi,   0 );
 
                player_idx = i;
 
@@ -180,8 +180,8 @@ static char *formatDosToAmiga_ShouldCapRBIAndMoveExcessFromActionToSimulated_Giv
 
      formatDosToAmiga( players_file );
 
-     assertEquals( 225, byte2int( players_file[player_idx].acc_stats.amiga.simulated.batting.acc_rbi ) );
-     assertEquals(  22, byte2int( players_file[player_idx].acc_stats.amiga.action.batting.acc_rbi    ) );
+     assertEquals( 225, byte2int( players_file[player_idx].acc_stats.simulated.batting.acc_rbi ) );
+     assertEquals(  22, byte2int( players_file[player_idx].acc_stats.action.batting.acc_rbi    ) );
 
      return NULL;
 }
@@ -199,8 +199,8 @@ static char *formatDosToAmiga_ShouldCapStrikeOutsAndMoveExcessFromActionToSimula
 
           if ( pos != fpos_Pitcher )
           {
-               int2byte( players_file[i].acc_stats.amiga.action.batting.acc_so,    229 );
-               int2byte( players_file[i].acc_stats.amiga.simulated.batting.acc_so,   0 );
+               int2byte( players_file[i].acc_stats.action.batting.acc_so,    229 );
+               int2byte( players_file[i].acc_stats.simulated.batting.acc_so,   0 );
 
                player_idx = i;
 
@@ -210,8 +210,8 @@ static char *formatDosToAmiga_ShouldCapStrikeOutsAndMoveExcessFromActionToSimula
 
      formatDosToAmiga( players_file );
 
-     assertEquals( 225, byte2int( players_file[player_idx].acc_stats.amiga.simulated.batting.acc_so ) );
-     assertEquals(   4, byte2int( players_file[player_idx].acc_stats.amiga.action.batting.acc_so    ) );
+     assertEquals( 225, byte2int( players_file[player_idx].acc_stats.simulated.batting.acc_so ) );
+     assertEquals(   4, byte2int( players_file[player_idx].acc_stats.action.batting.acc_so    ) );
 
      return NULL;
 }

@@ -20,7 +20,7 @@ void formatAmigaToDos( fileplayer_s *players_file )
 
           int pos = nibble( players_file[idx].position[0], n_High );
 
-          acc_amiga_s *acc_stats = &(players_file[idx].acc_stats.amiga);
+          acc_stats_s *acc_stats = &(players_file[idx].acc_stats);
 
           if   ( pos != fpos_Pitcher )
           {
