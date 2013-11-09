@@ -16,7 +16,8 @@ static int  __unit_tests_failed__ = 0;
      {                                                                  \
           float __expected__ = (E);                                     \
           float __actual__   = (A);                                     \
-          if ( __expected__ != __actual__ )                             \
+          if ( (__expected__ > __actual__  && __expected__ - __actual__ > 0.0001) ||   \
+               (__expected__ < __actual__  && __actual__ - __expected__ > 0.0001)    ) \
           {                                                             \
                sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %f, actual: %f\033[0m", #A, __expected__, __actual__ ); \
                return __unit_test_msgbuf__;                             \
