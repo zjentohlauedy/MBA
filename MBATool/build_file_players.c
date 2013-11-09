@@ -81,8 +81,8 @@ fileplayer_s *buildFilePlayers( void )
 
           acc_player_id_s *player_id_data = &(players_data[i].acc_stats.action.id_info);
 
-          int2word( player_id_data->player_id,                  player_id );
-          /**/      player_id_data->checksum[0] = calcChecksum( player_id );
+          int2word( player_id_data->player_id,               player_id   );
+          int2byte( player_id_data->checksum,  calcChecksum( player_id ) );
      }
 
      return players_data;

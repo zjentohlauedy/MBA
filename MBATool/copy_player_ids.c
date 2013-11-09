@@ -50,7 +50,7 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
                return bl_False;
           }
 
-          if ( id_info1->checksum[0] != 0 )
+          if ( byte2int( id_info1->checksum ) != 0 )
           {
                sprintf( error_message, "Checksum field for <%.*s, %.*s> already contains a number!",
                        sizeof(players_file1[i].last_name),  players_file1[i].last_name,
@@ -60,8 +60,7 @@ boolean_e copyPlayerIds( fileplayer_s *players_file1, fileplayer_s *players_file
           }
 
           int2word( id_info1->player_id, word2int( id_info2->player_id ) );
-
-          id_info1->checksum[0] = id_info2->checksum[0];
+          int2byte( id_info1->checksum,  byte2int( id_info2->checksum  ) );
      }
 
      return bl_True;

@@ -163,6 +163,17 @@ void untermName( unsigned char *buffer, const int len )
 }
 
 
+void capStat( unsigned char *stat, unsigned char *overflow )
+{
+     if ( *stat < STAT_CAP_AMOUNT ) return;
+
+     unsigned char x = *stat - STAT_CAP_AMOUNT;
+
+     *overflow += x;
+     *stat     -= x;
+}
+
+
 int getPlayerId( const fileplayer_s *player )
 {
      return word2int( player->acc_stats.action.id_info.player_id );

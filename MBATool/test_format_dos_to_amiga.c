@@ -76,7 +76,7 @@ static char *formatDosToAmiga_ShouldReturnFalseOnPlayerIdChecksumMismatch_GivenA
 
      acc_player_id_s *id_info = &(players_file[0].acc_stats.action.id_info);
 
-     id_info->checksum[0] += 1;
+     id_info->checksum[0]++;
 
      swapBatterStats( players_file );
 

@@ -34,16 +34,15 @@ boolean_e genPlayerIds( fileplayer_s *players_file )
                return bl_False;
           }
 
-          if ( id_info->checksum[0] != 0 )
+          if ( byte2int( id_info->checksum ) != 0 )
           {
                sprintf( error_message, "Checksum field already contains a number!" );
 
                return bl_False;
           }
 
-          int2word( id_info->player_id, player_id );
-
-          id_info->checksum[0] = calcChecksum( player_id );
+          int2word( id_info->player_id,               player_id   );
+          int2byte( id_info->checksum,  calcChecksum( player_id ) );
 
           player_id++;
      }

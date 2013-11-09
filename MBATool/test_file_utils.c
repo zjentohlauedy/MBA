@@ -114,6 +114,19 @@ static char *untermName_ShouldRemoveTerminatorFromLastByte_GivenAPlayerNameBuffe
      return NULL;
 }
 
+static char *capStat_ShouldMoveExcessAmountFromStatToOverflow_GivenAStatAndOverflow()
+{
+     unsigned char stat     = STAT_CAP_AMOUNT + 7;
+     unsigned char overflow = 18;
+
+     capStat( &stat, &overflow );
+
+     assertEquals( STAT_CAP_AMOUNT, stat     );
+     assertEquals( 25,              overflow );
+
+     return NULL;
+}
+
 static char *calcChecksum_ShouldCalculateProperChecksum_GivenAPlayerId()
 {
      assertEquals(   0, calcChecksum(     0 ) );
@@ -212,6 +225,7 @@ static void run_all_tests()
      run_test( nibble_ShouldReturnTheValueOfTheHighNibble_GivenAByteAndHighPosition,   null );
      run_test( termName_ShouldConvertTheLastByteToATerminator_GivenAPlayerNameBuffer,  null );
      run_test( untermName_ShouldRemoveTerminatorFromLastByte_GivenAPlayerNameBuffer,   null );
+     run_test( capStat_ShouldMoveExcessAmountFromStatToOverflow_GivenAStatAndOverflow, null );
      run_test( calcChecksum_ShouldCalculateProperChecksum_GivenAPlayerId,              null );
 
      run_test( readPlayersFile_ShouldReturnAPointerToAFilePlayerObject_GivenAFilename,   check_file_utils_error );

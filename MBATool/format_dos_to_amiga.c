@@ -17,16 +17,6 @@ static void clearErrorMessage( void )
 }
 
 
-static void capStat( unsigned char *stat, unsigned char *overflow )
-{
-     if ( *stat < STAT_CAP_AMOUNT ) return;
-
-     unsigned char x = *stat - STAT_CAP_AMOUNT;
-
-     *overflow += x;
-     *stat     -= x;
-}
-
 boolean_e formatDosToAmiga( fileplayer_s *players_file )
 {
      clearErrorMessage();

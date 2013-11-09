@@ -2,16 +2,6 @@
 #include "file_formats.h"
 
 
-static void capStat( unsigned char *stat, unsigned char *overflow )
-{
-     if ( *stat < STAT_CAP_AMOUNT ) return;
-
-     unsigned char x = *stat - STAT_CAP_AMOUNT;
-
-     *overflow += x;
-     *stat     -= x;
-}
-
 void formatAmigaToDos( fileplayer_s *players_file )
 {
      for ( int idx = 0; idx < TOTAL_PLAYERS; ++idx )

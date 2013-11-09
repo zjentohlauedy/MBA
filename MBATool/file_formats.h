@@ -322,23 +322,24 @@ typedef struct
 } fileplayer_s;
 
 
-int             word2int(           const unsigned char *word                                           );
-void            int2word(                 unsigned char *word,         const int           value        );
-int             byte2int(           const unsigned char *byte                                           );
-void            int2byte(                 unsigned char *byte,         const int           value        );
-int             nibble(             const unsigned char  byte,         const nibble_e      position     );
-void            termName(                 unsigned char *buffer,       const int           len          );
-void            untermName(               unsigned char *buffer,       const int           len          );
-int             getPlayerId(        const fileplayer_s  *player                                         );
-fileplayer_s   *findMatchingPlayer( const fileplayer_s  *player,             fileplayer_s *players      );
-unsigned char   calcChecksum(             int            value                                          );
-char           *getFileUtilsError(        void                                                          );
-fileplayer_s   *readPlayersFile(    const char          *filename                                       );
-boolean_e       writePlayersFile(   const char          *filename,     const fileplayer_s *playersFile  );
-fileleagname_s *readLeagueFile(     const char          *filename                                       );
-boolean_e       writeLeagueFile(    const char          *filename,     const fileleagname_s *leagueFile );
-fileparks_s    *readParksFile(      const char          *filename                                       );
-boolean_e       writeParksFile(     const char          *filename,     const fileparks_s  *parksFile    );
+int             word2int(           const unsigned char *word                                             );
+void            int2word(                 unsigned char *word,         const int             value        );
+int             byte2int(           const unsigned char *byte                                             );
+void            int2byte(                 unsigned char *byte,         const int             value        );
+int             nibble(             const unsigned char  byte,         const nibble_e        position     );
+void            termName(                 unsigned char *buffer,       const int             len          );
+void            untermName(               unsigned char *buffer,       const int             len          );
+void            capStat(                  unsigned char *stat,               unsigned char  *overflow     );
+int             getPlayerId(        const fileplayer_s  *player                                           );
+fileplayer_s   *findMatchingPlayer( const fileplayer_s  *player,             fileplayer_s   *players      );
+unsigned char   calcChecksum(             int            value                                            );
+char           *getFileUtilsError(        void                                                            );
+fileplayer_s   *readPlayersFile(    const char          *filename                                         );
+boolean_e       writePlayersFile(   const char          *filename,     const fileplayer_s   *playersFile  );
+fileleagname_s *readLeagueFile(     const char          *filename                                         );
+boolean_e       writeLeagueFile(    const char          *filename,     const fileleagname_s *leagueFile   );
+fileparks_s    *readParksFile(      const char          *filename                                         );
+boolean_e       writeParksFile(     const char          *filename,     const fileparks_s    *parksFile    );
 
 // Utility program methods:
 boolean_e genPlayerIds(     fileplayer_s *players_file                               );
