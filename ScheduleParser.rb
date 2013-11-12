@@ -122,7 +122,7 @@ class ScheduleParser
         index += 2
       end
 
-      schedule.add_day gameday
+      @schedule.add_day gameday
 
       @road_fields = []
       @home_fields = []

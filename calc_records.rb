@@ -12,6 +12,17 @@ require 'ScheduleParser'
 
 class TeamRecords
 
+  @@team_divisions = {
+    'Sabres'    => 1, 'Scorpions' => 2, 'Aces'      => 3, 'Eclipse'   => 4, 'Global' => 0,
+    'Portsmen'  => 1, 'Lightning' => 2, 'Cyclone'   => 3, 'Legends'   => 4, 'World'  => 0,
+    'Settlers'  => 1, 'Goblins'   => 2, 'Stormers'  => 3, 'Waves'     => 4,
+    'Kings'     => 1, 'Photons'   => 2, 'Express'   => 3, 'Horizon'   => 4,
+    'Voyagers'  => 1, 'Dragons'   => 2, 'Warriors'  => 3, 'Sharks'    => 4,
+    'Rockets'   => 1, 'Hammers'   => 2, 'Wanderers' => 3, 'Flames'    => 4,
+    'Knights'   => 1, 'Expos'     => 2, 'Thunder'   => 3, 'Techs'     => 4,
+    'Drizzle'   => 1, 'Dynamo'    => 2, 'Glory'     => 3, 'Quasars'   => 4 }
+
+
   class Record
     attr_accessor :wins, :losses
 
@@ -35,16 +46,6 @@ class TeamRecords
 
 
   def initialize
-    @team_divisions = {
-      'Sabres'    => 1, 'Scorpions' => 2, 'Aces'      => 3, 'Eclipse'   => 4,
-      'Portsmen'  => 1, 'Lightning' => 2, 'Cyclone'   => 3, 'Legends'   => 4,
-      'Settlers'  => 1, 'Goblins'   => 2, 'Stormers'  => 3, 'Waves'     => 4,
-      'Kings'     => 1, 'Photons'   => 2, 'Express'   => 3, 'Horizon'   => 4,
-      'Voyagers'  => 1, 'Dragons'   => 2, 'Warriors'  => 3, 'Sharks'    => 4,
-      'Rockets'   => 1, 'Hammers'   => 2, 'Wanderers' => 3, 'Flames'    => 4,
-      'Knights'   => 1, 'Expos'     => 2, 'Thunder'   => 3, 'Techs'     => 4,
-      'Drizzle'   => 1, 'Dynamo'    => 2, 'Glory'     => 3, 'Quasars'   => 4 }
-
     @overall  = Record.new
     @division = Record.new
     @home     = Record.new
@@ -83,7 +84,7 @@ class TeamRecords
     @points_allowed += opp_score
     @overall.update score, opp_score
 
-    if in_division? game.home_team, game.road_team
+    if TeamRecords.in_division? game.home_team, game.road_team
       @division.update score, opp_score
     end
 
@@ -103,9 +104,38 @@ class TeamRecords
     @opponents.store opponent, record
   end
 
-  def in_division?( home_team, road_team )
-    return (@team_divisions.fetch( home_team ) == @team_divisions.fetch( road_team ))
+  def self.in_division?( home_team, road_team )
+    return (@@team_divisions.fetch( home_team ) == @@team_divisions.fetch( road_team ))
   end
+
+  def self.is_allstar?( team )
+    return (@@team_divisions.fetch( team ) == 0)
+  end
+end
+
+
+def add_game( team_records, game )
+  return if !game.played
+
+  # road team
+  if team_records.has_key? game.road_team
+    team_record = team_records.fetch game.road_team
+  else
+    team_record = TeamRecords.new
+  end
+
+  team_record.update game, false
+  team_records.store game.road_team, team_record
+
+  # home team
+  if team_records.has_key? game.home_team
+    team_record = team_records.fetch game.home_team
+  else
+    team_record = TeamRecords.new
+  end
+
+  team_record.update game, true
+  team_records.store game.home_team, team_record
 end
 
 
@@ -126,35 +156,39 @@ fp.process_file filename
 
 schedule = sp.schedule
 
-team_records = Hash.new
+reg_season   = Hash.new
+playoffs     = Hash.new
+allstar      = Hash.new
 
 schedule.days.each do |day|
   day.games.each do |game|
-    next if ! game.played
-
-    # road team
-    if team_records.has_key? game.road_team
-      team_record = team_records.fetch game.road_team
+    if day.day <= 152
+      add_game reg_season, game
+    elsif TeamRecords.is_allstar? game.home_team
+      add_game allstar, game
     else
-      team_record = TeamRecords.new
+      add_game playoffs, game
     end
-
-    team_record.update game, false
-    team_records.store game.road_team, team_record
-
-    # home team
-    if team_records.has_key? game.home_team
-      team_record = team_records.fetch game.home_team
-    else
-      team_record = TeamRecords.new
-    end
-
-    team_record.update game, true
-    team_records.store game.home_team, team_record
   end
 end
 
-team_records.sort.each do |team, team_record|
+puts "Regular Season:\n\n"
+
+reg_season.sort.each do |team, team_record|
+  printf "%-9s ", team
+  team_record.print_records
+end
+
+puts "Playoffs:\n\n"
+
+playoffs.sort.each do |team, team_record|
+  printf "%-9s ", team
+  team_record.print_records
+end
+
+puts "All Star Games:\n\n"
+
+allstar.sort.each do |team, team_record|
   printf "%-9s ", team
   team_record.print_records
 end
