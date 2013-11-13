@@ -1,6 +1,8 @@
 #ifndef _EWBFILES_H_
 #define _EWBFILES_H_
 
+#include "data_list.h"
+
 
 #define TOTAL_PARKS            32
 #define PLAYERS_PER_TEAM       25
@@ -353,5 +355,8 @@ char *getFormatDosToAmigaError( void );
 char *getGenPlayerIdsError(     void );
 char *getCopyPlayerIdsError(    void );
 char *getCopyLongevityError(    void );
+
+// Schedule utils
+boolean_e parseCSV( data_list_s *list, const char *csv );
 
 #endif

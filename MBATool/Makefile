@@ -50,7 +50,8 @@ tests = \
    test_convert_leagues \
    test_convert_divisions \
    test_convert_teams \
-   test_convert_players
+   test_convert_players \
+   test_parse_csv
 
 ALL: PROGS TESTS
 
@@ -189,6 +190,9 @@ test_convert_teams: test_convert_teams.o data_list.o file_utils.o libmbadata.a l
 
 test_convert_players: test_convert_players.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
+
+test_parse_csv: test_parse_csv.o parse_csv.o data_list.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 MBADATA_OBJECTS = \
  sql_query.o \

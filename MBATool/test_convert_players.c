@@ -343,8 +343,6 @@ static void run_all_tests()
      run_test( convertPlayers_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_GivenPlayersFileData, null );
      run_test( convertPlayers_ShouldSkipEmptyPlayers_GivenPlayersFileData,                            null );
      run_test( convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlayersFileData,         null );
-
-     // stats...
      run_test( convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAndTeamId,             null );
 }
 
