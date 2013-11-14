@@ -57,42 +57,42 @@ ALL: PROGS TESTS
 
 PROGS: $(progs) TAGS
 
-gen_player_ids: gen_player_ids_main.o gen_player_ids.o file_utils.o
+gen_player_ids: gen_player_ids_main.o gen_player_ids.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-copy_player_ids: copy_player_ids.o copy_player_ids_main.o file_utils.o
+copy_player_ids: copy_player_ids.o copy_player_ids_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-set_longevity: set_longevity.o set_longevity_main.o file_utils.o
+set_longevity: set_longevity.o set_longevity_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-copy_longevity: copy_longevity.o copy_longevity_main.o file_utils.o
+copy_longevity: copy_longevity.o copy_longevity_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-format_amiga_to_dos: format_amiga_to_dos.o format_amiga_to_dos_main.o file_utils.o
+format_amiga_to_dos: format_amiga_to_dos.o format_amiga_to_dos_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-format_dos_to_amiga: format_dos_to_amiga.o format_dos_to_amiga_main.o file_utils.o
+format_dos_to_amiga: format_dos_to_amiga.o format_dos_to_amiga_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 TESTS: $(tests) mba_test.db TAGS
 
-test_gen_player_ids: test_gen_player_ids.o gen_player_ids.o file_utils.o libmbabuilders.a
+test_gen_player_ids: test_gen_player_ids.o gen_player_ids.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_copy_player_ids: test_copy_player_ids.o copy_player_ids.o file_utils.o libmbabuilders.a
+test_copy_player_ids: test_copy_player_ids.o copy_player_ids.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_set_longevity: test_set_longevity.o set_longevity.o file_utils.o
+test_set_longevity: test_set_longevity.o set_longevity.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_copy_longevity: test_copy_longevity.o copy_longevity.o file_utils.o libmbabuilders.a
+test_copy_longevity: test_copy_longevity.o copy_longevity.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_format_amiga_to_dos: test_format_amiga_to_dos.o format_amiga_to_dos.o file_utils.o libmbabuilders.a libmbacompares.a
+test_format_amiga_to_dos: test_format_amiga_to_dos.o format_amiga_to_dos.o file_utils.o data_list.o parse_csv.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_format_dos_to_amiga: test_format_dos_to_amiga.o format_dos_to_amiga.o file_utils.o libmbabuilders.a libmbacompares.a
+test_format_dos_to_amiga: test_format_dos_to_amiga.o format_dos_to_amiga.o file_utils.o data_list.o parse_csv.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_players_t: test_players_t.o players_t.o sql_query.o
@@ -173,22 +173,22 @@ test_division_service: test_division_service.o libmbadata.a
 test_league_service: test_league_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_file_utils: test_file_utils.o file_utils.o
+test_file_utils: test_file_utils.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_convert_org: test_convert_org.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+test_convert_org: test_convert_org.o data_list.o file_utils.o parse_csv.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
-test_convert_leagues: test_convert_leagues.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+test_convert_leagues: test_convert_leagues.o data_list.o file_utils.o parse_csv.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
-test_convert_divisions: test_convert_divisions.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+test_convert_divisions: test_convert_divisions.o data_list.o file_utils.o parse_csv.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
-test_convert_teams: test_convert_teams.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbacompares.a libmbaconversion.a
+test_convert_teams: test_convert_teams.o data_list.o file_utils.o parse_csv.o libmbadata.a libmbabuilders.a libmbacompares.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbacompares -lmbaconversion
 
-test_convert_players: test_convert_players.o data_list.o file_utils.o libmbadata.a libmbabuilders.a libmbaconversion.a
+test_convert_players: test_convert_players.o data_list.o file_utils.o parse_csv.o libmbadata.a libmbabuilders.a libmbaconversion.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbadata -lmbabuilders -lmbaconversion
 
 test_parse_csv: test_parse_csv.o parse_csv.o data_list.o

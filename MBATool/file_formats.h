@@ -70,6 +70,35 @@ typedef enum
 } filecolor_e;
 
 
+// ----  SCHEDULE.CSV  ----
+typedef struct
+{
+     char name  [20];
+     int  score;
+
+} schedule_team_s;
+
+typedef struct
+{
+     schedule_team_s road;
+     schedule_team_s home;
+     boolean_e       played;
+
+} schedule_game_s;
+
+typedef struct
+{
+     schedule_game_s *games;
+
+} schedule_day_s;
+
+typedef struct
+{
+     schedule_day_s *days;
+
+} schedule_s;
+
+
 // ----  LEAGNAME.DAT  ----
 typedef struct
 {
@@ -358,5 +387,7 @@ char *getCopyLongevityError(    void );
 
 // Schedule utils
 boolean_e parseCSV( data_list_s *list, const char *csv );
+schedule_s *readScheduleCSV( const char *filename );
+void freeSchedule( schedule_s *schedule );
 
 #endif

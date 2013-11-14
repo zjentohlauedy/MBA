@@ -7,9 +7,10 @@
 
 
 static char *result;
-static char  players_file_name [50];
-static char  league_file_name  [50];
-static char  parks_file_name   [50];
+static char  players_file_name  [50];
+static char  league_file_name   [50];
+static char  parks_file_name    [50];
+static char  schedule_file_name [50];
 
 
 static char *word2int_ShouldReturnTheConvertedIntValue_GivenATwoByteAmigaWord()
@@ -210,6 +211,97 @@ static char *writeParksFile_ShouldCreateAParksFile_GivenAParksObjectAndFilename(
      return NULL;
 }
 
+static char *readScheduleCSV_ShouldReturnAPointerToAScheduleObject_GivenAFilename()
+{
+     assertNotNull( readScheduleCSV( schedule_file_name ) );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldConvertCSVLinesIntoASchedule_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,\n,TeamA,3\n001,TeamB,7\n,,\n" );
+
+     fclose( fp );
+
+     schedule_s *schedule = readScheduleCSV( filename );
+
+     assertNotNull( schedule );
+     assertNotNull( schedule->days );
+     assertNotNull( schedule->days[0].games );
+
+     assertEqualsStr( "TeamA", schedule->days[0].games[0].road.name  );
+     assertEqualsInt( 3,       schedule->days[0].games[0].road.score );
+     assertEqualsStr( "TeamB", schedule->days[0].games[0].home.name  );
+     assertEqualsInt( 7,       schedule->days[0].games[0].home.score );
+
+     assertEqualsStr( "", schedule->days[0].games[1].road.name );
+
+     assertNull( schedule->days[1].games );
+
+     freeSchedule( schedule );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_GivenAFilename()
+{
+     schedule_game_s expected[2][2] = { 0 };
+
+     strcpy( expected[0][0].road.name, "TeamA" ); strcpy( expected[0][0].home.name, "TeamB" ); expected[0][0].road.score =  3; expected[0][0].home.score = 7;
+     strcpy( expected[0][1].road.name, "TeamC" ); strcpy( expected[0][1].home.name, "TeamD" ); expected[0][1].road.score =  1; expected[0][1].home.score = 0;
+     strcpy( expected[1][0].road.name, "TeamA" ); strcpy( expected[1][0].home.name, "TeamC" ); expected[1][0].road.score = 12; expected[1][0].home.score = 7;
+     strcpy( expected[1][1].road.name, "TeamD" ); strcpy( expected[1][1].home.name, "TeamB" ); expected[1][1].road.score =  5; expected[1][1].home.score = 3;
+
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,,02,\n"
+              /**/",%s,%d,%s,%d\n"
+              /**/"001,%s,%d,%s,%d\n",
+              expected[0][0].road.name, expected[0][0].road.score, expected[0][1].road.name, expected[0][1].road.score,
+              expected[0][0].home.name, expected[0][0].home.score, expected[0][1].home.name, expected[0][1].home.score );
+
+     fprintf( fp, ",,,,\n"
+              /**/",%s,%d,%s,%d\n"
+              /**/"002,%s,%d,%s,%d\n",
+              expected[1][0].road.name, expected[1][0].road.score, expected[1][1].road.name, expected[1][1].road.score,
+              expected[1][0].home.name, expected[1][0].home.score, expected[1][1].home.name, expected[1][1].home.score );
+
+     fclose( fp );
+
+     schedule_s *actual = readScheduleCSV( filename );
+
+     assertNotNull( actual );
+     assertNotNull( actual->days );
+
+     for ( int i = 0; actual->days[i].games != NULL; ++i )
+     {
+          schedule_game_s *actual_games = actual->days[i].games;
+
+          for ( int j = 0; actual_games[j].road.name[0] != '\0'; ++j )
+          {
+               assertEqualsStr( expected[i][j].road.name,  actual_games[j].road.name  );
+               assertEqualsStr( expected[i][j].home.name,  actual_games[j].home.name  );
+               assertEqualsInt( expected[i][j].road.score, actual_games[j].road.score );
+               assertEqualsInt( expected[i][j].home.score, actual_games[j].home.score );
+          }
+     }
+
+     freeSchedule( actual );
+
+     unlink( filename );
+
+     return NULL;
+}
+
 static void check_file_utils_error()
 {
      printf( "file utils error: %s\n", getFileUtilsError() );
@@ -234,6 +326,15 @@ static void run_all_tests()
      run_test( writeLeagueFile_ShouldCreateALeagueFile_GivenALeagueObjectAndFilename,    check_file_utils_error );
      run_test( readParksFile_ShouldReturnAPointerToAFileParksObject_GivenAFilename,      check_file_utils_error );
      run_test( writeParksFile_ShouldCreateAParksFile_GivenAParksObjectAndFilename,       check_file_utils_error );
+
+     run_test( readScheduleCSV_ShouldReturnAPointerToAScheduleObject_GivenAFilename,             null );
+     run_test( readScheduleCSV_ShouldConvertCSVLinesIntoASchedule_GivenAFilename,                null );
+     run_test( readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_GivenAFilename, null );
+
+     // unhappy path tests
+     // unequal field count home/road
+     // even number of fields
+     // missing team name
 }
 
 
@@ -246,9 +347,10 @@ int main( int argc, char *argv[] )
           return EXIT_FAILURE;
      }
 
-     sprintf( players_file_name, "%s/%s", argv[1], "Players_test.S"    );
-     sprintf( league_file_name,  "%s/%s", argv[1], "LeagName_test.Dat" );
-     sprintf( parks_file_name,   "%s/%s", argv[1], "parks_test.dat"    );
+     sprintf( players_file_name,  "%s/%s", argv[1], "Players_test.S"    );
+     sprintf( league_file_name,   "%s/%s", argv[1], "LeagName_test.Dat" );
+     sprintf( parks_file_name,    "%s/%s", argv[1], "parks_test.dat"    );
+     sprintf( schedule_file_name, "%s/%s", argv[1], "schedule_test.csv" );
 
      run_all_tests();
 

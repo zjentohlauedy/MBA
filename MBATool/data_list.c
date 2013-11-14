@@ -34,3 +34,12 @@ int add_to_data_list( data_list_s *data_list, void *data_item, int data_size, in
 
      return 0;
 }
+
+void clear_data_list( data_list_s *data_list )
+{
+     if ( data_list->data != NULL ) free( data_list->data );
+
+     data_list->data  = NULL;
+     data_list->__max = 0;
+     data_list->count = 0;
+}
