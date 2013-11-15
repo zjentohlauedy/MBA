@@ -245,6 +245,79 @@ boolean_e writeParksFile( const char *filename, const fileparks_s *parks_file )
      return writeFile( filename, parks_file, sizeof(fileleagname_s) );
 }
 
+
+static void cleanupLists( data_list_s *days, data_list_s *road, data_list_s *home )
+{
+     clear_data_list( days );
+     clear_data_list( road );
+     clear_data_list( home );
+}
+
+static boolean_e emptyGame( const schedule_game_s *game )
+{
+     if ( game->road.name[0] == '\0'  &&  game->home.name[0] == '\0' ) return bl_True;
+
+     return bl_False;
+}
+
+static boolean_e validGame( const schedule_game_s *game )
+{
+     if ( game->road.name[0] == '\0'  ||  game->home.name[0] == '\0' ) return bl_False;
+
+     return bl_True;
+}
+
+static boolean_e loadGames( data_list_s *games, const data_list_s *road, const data_list_s *home, const int day )
+{
+     if ( road->count != home->count )
+     {
+          sprintf( error_message, "Field Count Mismatch between road/home lines on day %d", day );
+
+          return bl_False;
+     }
+
+     if ( home->count % 2 != 1 )
+     {
+          sprintf( error_message, "Incorrect Number of Fields for home/road on day %d", day );
+
+          return bl_False;
+     }
+
+     const data_field_s *road_fields = road->data;
+     const data_field_s *home_fields = home->data;
+
+     for ( int i = 1; i < road->count; i += 2 )
+     {
+          schedule_game_s game = { 0 };
+
+          strcpy( game.road.name, road_fields[i].value );
+          strcpy( game.home.name, home_fields[i].value );
+
+          game.road.score = atoi( road_fields[i + 1].value );
+          game.home.score = atoi( home_fields[i + 1].value );
+
+          game.played = (game.road.score + game.home.score > 0);
+
+          if ( emptyGame( &game ) ) continue;
+
+          if ( ! validGame( &game ) )
+          {
+               clear_data_list( games );
+
+               return bl_False;
+          }
+
+          if ( add_to_data_list( games, &game, sizeof(schedule_game_s), 20 ) < 0 ) return bl_False;
+     }
+
+     schedule_game_s game_sentinel        = { 0 };
+     /**/            game_sentinel.played =  -1;
+
+     if ( add_to_data_list( games, &game_sentinel, sizeof(schedule_game_s), 20 ) < 0 ) return bl_False;
+
+     return bl_True;
+}
+
 schedule_s *readScheduleCSV( const char *filename )
 {
      char buffer[999 + 1];
@@ -257,7 +330,9 @@ schedule_s *readScheduleCSV( const char *filename )
 
      boolean_e skip_next = bl_True;
 
-     while ( fgets( buffer, sizeof(buffer), fp ) )
+     clearErrorMessage();
+
+     for ( int lineno = 1; fgets( buffer, sizeof(buffer), fp ) != NULL; ++lineno )
      {
           if ( skip_next )
           {
@@ -266,14 +341,13 @@ schedule_s *readScheduleCSV( const char *filename )
                continue;
           }
 
-          // do something
           if ( road_list.count == 0 )
           {
                if ( ! parseCSV( &road_list, buffer ) )
                {
                     fclose( fp );
 
-                    free( day_list.data );
+                    cleanupLists( &day_list, &road_list, &home_list );
 
                     return NULL;
                }
@@ -284,63 +358,21 @@ schedule_s *readScheduleCSV( const char *filename )
                {
                     fclose( fp );
 
-                    free(  day_list.data );
-                    free( road_list.data );
+                    cleanupLists( &day_list, &road_list, &home_list );
 
                     return NULL;
                }
           }
-          else
+
+          if ( road_list.count > 0  &&  home_list.count > 0 )
           {
-               if ( road_list.count != home_list.count )
+               data_list_s game_list = { 0 };
+
+               if ( ! loadGames( &game_list, &road_list, &home_list, day_list.count + 1 ) )
                {
-                    free(  day_list.data );
-                    free( road_list.data );
-                    free( home_list.data );
+                    fclose( fp );
 
-                    return NULL;
-               }
-
-               if ( road_list.count % 2 != 1 )
-               {
-                    free(  day_list.data );
-                    free( road_list.data );
-                    free( home_list.data );
-
-                    return NULL;
-               }
-
-               data_list_s   game_list   = { 0 };
-               data_field_s *road_fields = road_list.data;
-               data_field_s *home_fields = home_list.data;
-
-               for ( int i = 1; i < road_list.count; i += 2 )
-               {
-                    schedule_game_s game = { 0 };
-
-                    strcpy( game.road.name, road_fields[i].value );
-                    strcpy( game.home.name, home_fields[i].value );
-
-                    game.road.score = atoi( road_fields[i + 1].value );
-                    game.home.score = atoi( home_fields[i + 1].value );
-
-                    if ( add_to_data_list( &game_list, &game, sizeof(schedule_game_s), 20 ) < 0 )
-                    {
-                         free(  day_list.data );
-                         free( road_list.data );
-                         free( home_list.data );
-
-                         return NULL;
-                    }
-               }
-
-               schedule_game_s game_sentinel = { 0 };
-
-               if ( add_to_data_list( &game_list, &game_sentinel, sizeof(schedule_game_s), 20 ) < 0 )
-               {
-                    free(  day_list.data );
-                    free( road_list.data );
-                    free( home_list.data );
+                    cleanupLists( &day_list, &road_list, &home_list );
 
                     return NULL;
                }
@@ -351,9 +383,9 @@ schedule_s *readScheduleCSV( const char *filename )
 
                if ( add_to_data_list( &day_list, &day, sizeof(schedule_day_s), 50 ) < 0 )
                {
-                    free(  day_list.data );
-                    free( road_list.data );
-                    free( home_list.data );
+                    fclose( fp );
+
+                    cleanupLists( &day_list, &road_list, &home_list );
 
                     return NULL;
                }
@@ -369,14 +401,17 @@ schedule_s *readScheduleCSV( const char *filename )
 
      if ( add_to_data_list( &day_list, &day_sentinel, sizeof(schedule_day_s), 50 ) < 0 )
      {
-          free(  day_list.data );
-          free( road_list.data );
-          free( home_list.data );
+          fclose( fp );
+
+          cleanupLists( &day_list, &road_list, &home_list );
 
           return NULL;
      }
 
      fclose( fp );
+
+     clear_data_list( &road_list );
+     clear_data_list( &home_list );
 
      schedule_s *schedule = NULL;
 

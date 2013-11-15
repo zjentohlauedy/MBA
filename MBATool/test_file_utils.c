@@ -239,7 +239,7 @@ static char *readScheduleCSV_ShouldConvertCSVLinesIntoASchedule_GivenAFilename()
      assertEqualsStr( "TeamB", schedule->days[0].games[0].home.name  );
      assertEqualsInt( 7,       schedule->days[0].games[0].home.score );
 
-     assertEqualsStr( "", schedule->days[0].games[1].road.name );
+     assertEqualsInt( -1, schedule->days[0].games[1].played );
 
      assertNull( schedule->days[1].games );
 
@@ -282,11 +282,11 @@ static char *readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_G
      assertNotNull( actual );
      assertNotNull( actual->days );
 
-     for ( int i = 0; actual->days[i].games != NULL; ++i )
+     for ( int i = 0; i < 2; ++i )
      {
           schedule_game_s *actual_games = actual->days[i].games;
 
-          for ( int j = 0; actual_games[j].road.name[0] != '\0'; ++j )
+          for ( int j = 0; j < 2; ++j )
           {
                assertEqualsStr( expected[i][j].road.name,  actual_games[j].road.name  );
                assertEqualsStr( expected[i][j].home.name,  actual_games[j].home.name  );
@@ -296,6 +296,156 @@ static char *readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_G
      }
 
      freeSchedule( actual );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldIgnoreGamesWhereBothTeamNamesAreEmpty_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,,,,,,,\n"
+              /**/",TeamA,3,,,,,TeamC,6\n"
+              /**/"001,TeamB,7,,,,,TeamD,8\n"
+              /**/",,,,,,,,\n" );
+
+     fclose( fp );
+
+     schedule_s *schedule = readScheduleCSV( filename );
+
+     assertNotNull( schedule );
+     assertNotNull( schedule->days );
+     assertNotNull( schedule->days[0].games );
+
+     assertEqualsStr( "TeamA", schedule->days[0].games[0].road.name  );
+     assertEqualsInt( 3,       schedule->days[0].games[0].road.score );
+     assertEqualsStr( "TeamB", schedule->days[0].games[0].home.name  );
+     assertEqualsInt( 7,       schedule->days[0].games[0].home.score );
+     assertEqualsStr( "TeamC", schedule->days[0].games[1].road.name  );
+     assertEqualsInt( 6,       schedule->days[0].games[1].road.score );
+     assertEqualsStr( "TeamD", schedule->days[0].games[1].home.name  );
+     assertEqualsInt( 8,       schedule->days[0].games[1].home.score );
+
+     assertEqualsInt( -1, schedule->days[0].games[2].played );
+
+     assertNull( schedule->days[1].games );
+
+     freeSchedule( schedule );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldMarkGamePlayedIfEitherTeamHasScoreGreaterThanZero_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,\n,TeamA,3\n001,TeamB,7\n,,\n" );
+
+     fclose( fp );
+
+     schedule_s *schedule = readScheduleCSV( filename );
+
+     assertNotNull( schedule );
+     assertNotNull( schedule->days );
+     assertNotNull( schedule->days[0].games );
+
+     assertEqualsStr( "TeamA", schedule->days[0].games[0].road.name  );
+     assertEqualsInt( 3,       schedule->days[0].games[0].road.score );
+     assertEqualsStr( "TeamB", schedule->days[0].games[0].home.name  );
+     assertEqualsInt( 7,       schedule->days[0].games[0].home.score );
+
+     assertEquals( bl_True, schedule->days[0].games[0].played );
+
+     freeSchedule( schedule );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldNotMarkGamePlayedIfBothTeamsHaveScoreOfZero_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,\n,TeamA,\n001,TeamB,\n,,\n" );
+
+     fclose( fp );
+
+     schedule_s *schedule = readScheduleCSV( filename );
+
+     assertNotNull( schedule );
+     assertNotNull( schedule->days );
+     assertNotNull( schedule->days[0].games );
+
+     assertEqualsStr( "TeamA", schedule->days[0].games[0].road.name  );
+     assertEqualsInt( 0,       schedule->days[0].games[0].road.score );
+     assertEqualsStr( "TeamB", schedule->days[0].games[0].home.name  );
+     assertEqualsInt( 0,       schedule->days[0].games[0].home.score );
+
+     assertEquals( bl_False, schedule->days[0].games[0].played );
+
+     freeSchedule( schedule );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldReturnNullIfLinesContainDifferentNumberOfFields_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,\n,TeamA,3\n001,TeamB\n,,\n" );
+
+     fclose( fp );
+
+     assertNull( readScheduleCSV( filename ) );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldReturnNullIfLinesHaveIncorrectNumberOfFields_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, "01,\nTeamA,3\nTeamB,7\n,\n" );
+
+     fclose( fp );
+
+     assertNull( readScheduleCSV( filename ) );
+
+     unlink( filename );
+
+     return NULL;
+}
+
+static char *readScheduleCSV_ShouldReturnNullIfGameHasBlankTeamNameForOnlyOneTeam_GivenAFilename()
+{
+     const char *filename = ".test.csv";
+
+     FILE *fp = fopen( filename, "w" );
+
+     fprintf( fp, ",01,\n,TeamA,3\n001,,7\n,,\n" );
+
+     fclose( fp );
+
+     assertNull( readScheduleCSV( filename ) );
 
      unlink( filename );
 
@@ -327,14 +477,15 @@ static void run_all_tests()
      run_test( readParksFile_ShouldReturnAPointerToAFileParksObject_GivenAFilename,      check_file_utils_error );
      run_test( writeParksFile_ShouldCreateAParksFile_GivenAParksObjectAndFilename,       check_file_utils_error );
 
-     run_test( readScheduleCSV_ShouldReturnAPointerToAScheduleObject_GivenAFilename,             null );
-     run_test( readScheduleCSV_ShouldConvertCSVLinesIntoASchedule_GivenAFilename,                null );
-     run_test( readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_GivenAFilename, null );
-
-     // unhappy path tests
-     // unequal field count home/road
-     // even number of fields
-     // missing team name
+     run_test( readScheduleCSV_ShouldReturnAPointerToAScheduleObject_GivenAFilename,             check_file_utils_error );
+     run_test( readScheduleCSV_ShouldConvertCSVLinesIntoASchedule_GivenAFilename,                check_file_utils_error );
+     run_test( readScheduleCSV_ShouldConvertMultipleGamesOnMultipleDaysCorrectly_GivenAFilename, check_file_utils_error );
+     run_test( readScheduleCSV_ShouldIgnoreGamesWhereBothTeamNamesAreEmpty_GivenAFilename,       check_file_utils_error );
+     run_test( readScheduleCSV_ShouldMarkGamePlayedIfEitherTeamHasScoreGreaterThanZero_GivenAFilename, check_file_utils_error );
+     run_test( readScheduleCSV_ShouldNotMarkGamePlayedIfBothTeamsHaveScoreOfZero_GivenAFilename,       check_file_utils_error );
+     run_test( readScheduleCSV_ShouldReturnNullIfLinesContainDifferentNumberOfFields_GivenAFilename, check_file_utils_error );
+     run_test( readScheduleCSV_ShouldReturnNullIfLinesHaveIncorrectNumberOfFields_GivenAFilename,    check_file_utils_error );
+     run_test( readScheduleCSV_ShouldReturnNullIfGameHasBlankTeamNameForOnlyOneTeam_GivenAFilename,  check_file_utils_error );
 }
 
 
