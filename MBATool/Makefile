@@ -51,7 +51,8 @@ tests = \
    test_convert_divisions \
    test_convert_teams \
    test_convert_players \
-   test_parse_csv
+   test_parse_csv \
+   test_calc_records
 
 ALL: PROGS TESTS
 
@@ -194,6 +195,9 @@ test_convert_players: test_convert_players.o data_list.o file_utils.o parse_csv.
 test_parse_csv: test_parse_csv.o parse_csv.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+test_calc_records: test_calc_records.o calc_records.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 MBADATA_OBJECTS = \
  sql_query.o \
  data_list.o \
@@ -238,7 +242,8 @@ MBABUILDERS_OBJECTS = \
  build_team_pitching_stats.o \
  build_file_leagname.o \
  build_file_parks.o \
- build_file_players.o
+ build_file_players.o \
+ build_schedule.o
 
 libmbabuilders.a: $(MBABUILDERS_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^

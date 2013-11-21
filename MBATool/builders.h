@@ -17,4 +17,6 @@ fileparks_s    *buildFileParks(             void );
 fileplayer_s   *buildFilePlayers(           void );
 fileplayer_s   *buildFilePlayersWithoutIds( void );
 
+schedule_s *buildSchedule( const fileleagname_s *league_data );
+
 #endif

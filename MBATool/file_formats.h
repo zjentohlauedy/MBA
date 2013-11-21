@@ -386,8 +386,8 @@ char *getCopyPlayerIdsError(    void );
 char *getCopyLongevityError(    void );
 
 // Schedule utils
-boolean_e parseCSV( data_list_s *list, const char *csv );
-schedule_s *readScheduleCSV( const char *filename );
-void freeSchedule( schedule_s *schedule );
+boolean_e   parseCSV(              data_list_s *list,    const char *csv );
+schedule_s *readScheduleCSV( const char        *filename                 );
+void        freeSchedule(          schedule_s  *schedule                 );
 
 #endif

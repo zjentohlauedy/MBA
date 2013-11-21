@@ -105,3 +105,4 @@ MBATool/test_set_longevity
 MBATool/test_format_amiga_to_dos
 MBATool/test_format_dos_to_amiga
 MBATool/test_parse_csv
+MBATool/test_calc_records

@@ -4,6 +4,15 @@
 #include "file_formats.h"
 #include "league.h"
 
+
+typedef struct
+{
+     league_stats_s   *leagues;
+     division_stats_s *divisions;
+     team_stats_s     *teams;
+
+} records_s;
+
 typedef struct
 {
      league_s *league;
@@ -26,13 +35,15 @@ typedef struct
 
 } org_data_s;
 
-org_s             *convertOrg(       const org_data_s *org_data                        );
-org_league_s      *convertLeagues(   const org_data_s *org_data                        );
-league_division_s *convertDivisions( const org_data_s *org_data, const int league_id   );
-division_team_s   *convertTeams(     const org_data_s *org_data, const int division_id );
-team_player_s     *convertPlayers(   const org_data_s *org_data, const int team_id     );
+org_s             *convertOrg(       const org_data_s *org_data                                    );
+org_league_s      *convertLeagues(   const org_data_s *org_data                                    );
+league_division_s *convertDivisions( const org_data_s *org_data, const int league_id               );
+division_team_s   *convertTeams(     const org_data_s *org_data, const int division_id             );
+team_player_s     *convertPlayers(   const org_data_s *org_data, const int team_id                 );
+records_s         *calculateRecords( const schedule_s *schedule, const fileleagname_s *league_file );
 
 void freeOrg(        org_s        *org         );
 void freeOrgLeagues( org_league_s *org_leagues );
+void freeRecords(    records_s    *records     );
 
 #endif
