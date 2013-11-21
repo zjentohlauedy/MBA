@@ -42,6 +42,8 @@ division_team_s   *convertTeams(     const org_data_s *org_data, const int divis
 team_player_s     *convertPlayers(   const org_data_s *org_data, const int team_id                 );
 records_s         *calculateRecords( const schedule_s *schedule, const fileleagname_s *league_file );
 
+char *getCalculateRecordsError( void );
+
 void freeOrg(        org_s        *org         );
 void freeOrgLeagues( org_league_s *org_leagues );
 void freeRecords(    records_s    *records     );

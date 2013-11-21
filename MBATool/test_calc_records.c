@@ -21,6 +21,46 @@ static char *calculateRecords_ShouldReturnARecordsObject_GivenAScheduleAndLeague
      return NULL;
 }
 
+static char *calculateRecords_ShouldReturnNullIfScheduleIsEmpty_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s      schedule    = { 0 };
+
+     records_s *records = calculateRecords( &schedule, league_file );
+
+     assertNull( records );
+
+     return NULL;
+}
+
+static char *calculateRecords_ShouldReturnNullIfRoadTeamNotFound_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     strcpy( schedule->days[0].games[0].road.name, "Invalid" );
+
+     records_s *records = calculateRecords( schedule, league_file );
+
+     assertNull( records );
+
+     return NULL;
+}
+
+static char *calculateRecords_ShouldReturnNullIfHomeTeamNotFound_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     strcpy( schedule->days[0].games[0].home.name, "Invalid" );
+
+     records_s *records = calculateRecords( schedule, league_file );
+
+     assertNull( records );
+
+     return NULL;
+}
+
 static char *calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile()
 {
      fileleagname_s *league_file = buildFileLeagName();
@@ -701,30 +741,38 @@ static char *calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenASchedule
      return NULL;
 }
 
+static void get_error_message()
+{
+     printf( "calculateRecords error message: %s\n", getCalculateRecordsError() );
+}
+
 static void run_all_tests()
 {
-     run_test( calculateRecords_ShouldReturnARecordsObject_GivenAScheduleAndLeagueFile,        null );
+     run_test( calculateRecords_ShouldReturnARecordsObject_GivenAScheduleAndLeagueFile,         get_error_message );
+     run_test( calculateRecords_ShouldReturnNullIfScheduleIsEmpty_GivenAScheduleAndLeagueFile,  get_error_message );
+     run_test( calculateRecords_ShouldReturnNullIfRoadTeamNotFound_GivenAScheduleAndLeagueFile, get_error_message );
+     run_test( calculateRecords_ShouldReturnNullIfHomeTeamNotFound_GivenAScheduleAndLeagueFile, get_error_message );
 
      // team records
-     run_test( calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile,              null );
-     run_test( calculateRecords_ShouldSetTeamHomeRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetTeamRoadRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetTeamDivisionRecords_GivenAScheduleAndLeagueFile,      null );
-     run_test( calculateRecords_ShouldSetTeamLeagueRecords_GivenAScheduleAndLeagueFile,        null );
-     run_test( calculateRecords_ShouldSetTeamRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, null );
+     run_test( calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile,              get_error_message );
+     run_test( calculateRecords_ShouldSetTeamHomeRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetTeamRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetTeamDivisionRecords_GivenAScheduleAndLeagueFile,      get_error_message );
+     run_test( calculateRecords_ShouldSetTeamLeagueRecords_GivenAScheduleAndLeagueFile,        get_error_message );
+     run_test( calculateRecords_ShouldSetTeamRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
 
      // division records
-     run_test( calculateRecords_ShouldSetDivisionRecords_GivenAScheduleAndLeagueFile,              null );
-     run_test( calculateRecords_ShouldSetDivisionHomeRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetDivisionRoadRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetDivisionLeagueRecords_GivenAScheduleAndLeagueFile,        null );
-     run_test( calculateRecords_ShouldSetDivisionRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, null );
+     run_test( calculateRecords_ShouldSetDivisionRecords_GivenAScheduleAndLeagueFile,              get_error_message );
+     run_test( calculateRecords_ShouldSetDivisionHomeRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetDivisionRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetDivisionLeagueRecords_GivenAScheduleAndLeagueFile,        get_error_message );
+     run_test( calculateRecords_ShouldSetDivisionRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
 
      // league records
-     run_test( calculateRecords_ShouldSetLeagueRecords_GivenAScheduleAndLeagueFile,              null );
-     run_test( calculateRecords_ShouldSetLeagueHomeRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetLeagueRoadRecords_GivenAScheduleAndLeagueFile,          null );
-     run_test( calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, null );
+     run_test( calculateRecords_ShouldSetLeagueRecords_GivenAScheduleAndLeagueFile,              get_error_message );
+     run_test( calculateRecords_ShouldSetLeagueHomeRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetLeagueRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
+     run_test( calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
 }
 
 int main( int argc, char *argv[] )

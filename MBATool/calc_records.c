@@ -8,6 +8,21 @@ struct division { char name[20]; int league;               };
 struct team     { char name[20]; int league; int division; };
 
 
+static char error_message[999 + 1] = { 0 };
+
+
+char *getCalculateRecordsError( void )
+{
+     return error_message;
+}
+
+
+static void clearErrorMessage( void )
+{
+     error_message[0] = '\0';
+}
+
+
 static int findTeam( struct team *teams, char *team )
 {
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
@@ -18,13 +33,22 @@ static int findTeam( struct team *teams, char *team )
      return -1;
 }
 
+
 records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *league_file )
 {
      struct league   leagues   [ TOTAL_LEAGUES   ];
      struct division divisions [ TOTAL_DIVISIONS ];
      struct team     teams     [ TOTAL_TEAMS     ];
 
-     if ( schedule->days == NULL ) return NULL;
+
+     clearErrorMessage();
+
+     if ( schedule->days == NULL )
+     {
+          sprintf( error_message, "Schedule does not contain any days." );
+
+          return NULL;
+     }
 
      records_s *records = NULL;
 
@@ -32,6 +56,8 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
      if ( (records->leagues = malloc( sizeof(league_stats_s) * TOTAL_LEAGUES )) == NULL )
      {
+          sprintf( error_message, "Unable to allocate memory for league records" );
+
           freeRecords( records );
 
           return NULL;
@@ -39,6 +65,8 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
      if ( (records->divisions = malloc( sizeof(division_stats_s) * TOTAL_DIVISIONS )) == NULL )
      {
+          sprintf( error_message, "Unable to allocate memory for division records" );
+
           freeRecords( records );
 
           return NULL;
@@ -46,6 +74,8 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
      if ( (records->teams = malloc( sizeof(team_stats_s) * TOTAL_TEAMS )) == NULL )
      {
+          sprintf( error_message, "Unable to allocate memory for team records" );
+
           freeRecords( records );
 
           return NULL;
@@ -88,7 +118,7 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
                if ( (road_idx = findTeam( teams, game->road.name )) < 0 )
                {
-                    printf( "Team <%s> not found!\n", game->road.name );
+                    sprintf( error_message, "Road team <%s> not found!", game->road.name );
 
                     freeRecords( records );
 
@@ -97,7 +127,7 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
                if ( (home_idx = findTeam( teams, game->home.name )) < 0 )
                {
-                    printf( "Team <%s> not found!\n", game->home.name );
+                    sprintf( error_message, "Home team <%s> not found!", game->road.name );
 
                     freeRecords( records );
 
