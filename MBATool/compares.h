@@ -15,4 +15,7 @@ char *_compareTeamPitchingStats( team_pitching_stats_s *expected, team_pitching_
 #define compareBattingStats( A, B ) do { char *ret; if ( (ret = _compareBattingStats( (A), (B) )) != NULL ) return ret; } while ( 0 )
 char *_compareBattingStats( acc_bat_stats_s *expected, acc_bat_stats_s *actual );
 
+#define compareTeamBattingStats( A, B ) do { char *ret; if ( (ret = _compareTeamBattingStats( (A), (B) )) != NULL ) return ret; } while ( 0 )
+char *_compareTeamBattingStats( team_batting_stats_s *expected, team_batting_stats_s *actual );
+
 #endif

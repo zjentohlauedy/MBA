@@ -2,7 +2,7 @@
 #include <string.h>
 #include "data_list.h"
 
-int add_to_data_list( data_list_s *data_list, void *data_item, int data_size, int increment )
+int add_to_data_list( data_list_s *data_list, const void *data_item, const int data_size, const int increment )
 {
      if ( data_list->count == data_list->__max )
      {

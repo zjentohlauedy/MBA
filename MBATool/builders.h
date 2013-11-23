@@ -2,8 +2,7 @@
 #define __INC_BUILDERS_H__
 
 #include "file_formats.h"
-#include "player.h"
-#include "team.h"
+#include "org.h"
 
 
 pitcher_stats_s *buildPitcherStats(                                     const int player_id, const int season, const season_phase_e season_phase );
@@ -18,5 +17,6 @@ fileplayer_s   *buildFilePlayers(           void );
 fileplayer_s   *buildFilePlayersWithoutIds( void );
 
 schedule_s *buildSchedule( const fileleagname_s *league_data );
+records_s  *buildRecords( void );
 
 #endif

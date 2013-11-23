@@ -30,6 +30,7 @@ typedef struct
      fileleagname_s *league_data;
      fileparks_s    *parks_data;
      fileplayer_s   *players_data;
+     records_s      *records;
      int             season;
      season_phase_e  season_phase;
 

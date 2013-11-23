@@ -243,7 +243,8 @@ MBABUILDERS_OBJECTS = \
  build_file_leagname.o \
  build_file_parks.o \
  build_file_players.o \
- build_schedule.o
+ build_schedule.o \
+ build_records.o
 
 libmbabuilders.a: $(MBABUILDERS_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
@@ -251,6 +252,7 @@ libmbabuilders.a: $(MBABUILDERS_OBJECTS)
 MBACOMPARES_OBJECTS = \
  compare_pitcher_stats.o \
  compare_team_pitching_stats.o \
+ compare_team_batting_stats.o \
  compare_filebatting_stats.o
 
 libmbacompares.a: $(MBACOMPARES_OBJECTS)

@@ -17,6 +17,7 @@ static char *convertDivisions_ShouldReturnAListOfLeagueDivisions_GivenALeagueFil
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords();
 
      fileleagname_s    *league_data      = org_data.league_data;
      league_division_s *league_divisions = convertDivisions( &org_data, 1 );
@@ -69,6 +70,7 @@ static char *convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDat
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords();
 
      fileleagname_s    *league_data      = org_data.league_data;
      fileparks_s       *parks_data       = org_data.parks_data;

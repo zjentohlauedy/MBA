@@ -113,6 +113,17 @@ static team_pitching_stats_s *convertPitchingStats( const team_player_s *players
      return list.data;
 }
 
+static team_stats_s *convertTeamStats( const team_stats_s *team_stats )
+{
+     data_list_s  list       = { 0 };
+     team_stats_s sentinel   = TEAM_STATS_SENTINEL;
+
+     if ( add_to_data_list( &list,  team_stats, sizeof(team_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,   sizeof(team_stats_s), 5 );
+
+     return list.data;
+}
+
 division_team_s *convertTeams( const org_data_s *org_data, const int division_id )
 {
      data_list_s      list                      = { 0 };
@@ -150,6 +161,13 @@ division_team_s *convertTeams( const org_data_s *org_data, const int division_id
           }
 
           if ( (teams[i]->batting_stats = convertBattingStats( teams[i]->players, team_id )) == NULL )
+          {
+               freeTeams( teams, TEAMS_PER_DIVISION );
+
+               return NULL;
+          }
+
+          if ( (teams[i]->stats = convertTeamStats( &(org_data->records->teams[i]) )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 

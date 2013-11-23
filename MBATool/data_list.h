@@ -16,7 +16,7 @@ typedef struct
 } data_field_s;
 
 
-int add_to_data_list( data_list_s *data_list, void *data_item, int data_size, int increment );
+int add_to_data_list( data_list_s *data_list, const void *data_item, const int data_size, const int increment );
 void clear_data_list( data_list_s *data_list );
 
 #endif
