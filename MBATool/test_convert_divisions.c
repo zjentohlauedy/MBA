@@ -105,10 +105,69 @@ static char *convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDat
      return NULL;
 }
 
+static char *convertDivisions_ShouldReturnDivisionsWithStats_GivenOrgData()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords( 7, sp_Regular );
+     org_data.season       = 7;
+     org_data.season_phase = sp_Regular;
+
+     records_s *records = org_data.records;
+
+     league_division_s *league_divisions = convertDivisions( &org_data, 1 );
+
+     for ( int i = 0; i < DIVISIONS_PER_LEAGUE; ++i )
+     {
+          assertNotNull( league_divisions[i].division );
+
+          division_stats_s  sentinel       = DIVISION_STATS_SENTINEL;
+          division_stats_s *division_stats = league_divisions[i].division->stats;
+
+          assertNotNull( division_stats );
+
+          assertEquals( league_divisions[i].division->division_id, division_stats[0].division_id   );
+          assertEquals( org_data.season,                           division_stats[0].season        );
+          assertEquals( org_data.season_phase,                     division_stats[0].season_phase  );
+          assertEquals( records->divisions[i].wins,                division_stats[0].wins          );
+          assertEquals( records->divisions[i].losses,              division_stats[0].losses        );
+          assertEquals( records->divisions[i].home_wins,           division_stats[0].home_wins     );
+          assertEquals( records->divisions[i].home_losses,         division_stats[0].home_losses   );
+          assertEquals( records->divisions[i].road_wins,           division_stats[0].road_wins     );
+          assertEquals( records->divisions[i].road_losses,         division_stats[0].road_losses   );
+          assertEquals( records->divisions[i].league_wins,         division_stats[0].league_wins   );
+          assertEquals( records->divisions[i].league_losses,       division_stats[0].league_losses );
+          assertEquals( records->divisions[i].runs_scored,         division_stats[0].runs_scored   );
+          assertEquals( records->divisions[i].runs_allowed,        division_stats[0].runs_allowed  );
+
+          assertEquals( sentinel.division_id,   division_stats[1].division_id   );
+          assertEquals( sentinel.season,        division_stats[1].season        );
+          assertEquals( sentinel.season_phase,  division_stats[1].season_phase  );
+          assertEquals( sentinel.wins,          division_stats[1].wins          );
+          assertEquals( sentinel.losses,        division_stats[1].losses        );
+          assertEquals( sentinel.home_wins,     division_stats[1].home_wins     );
+          assertEquals( sentinel.home_losses,   division_stats[1].home_losses   );
+          assertEquals( sentinel.road_wins,     division_stats[1].road_wins     );
+          assertEquals( sentinel.road_losses,   division_stats[1].road_losses   );
+          assertEquals( sentinel.league_wins,   division_stats[1].league_wins   );
+          assertEquals( sentinel.league_losses, division_stats[1].league_losses );
+          assertEquals( sentinel.runs_scored,   division_stats[1].runs_scored   );
+          assertEquals( sentinel.runs_allowed,  division_stats[1].runs_allowed  );
+     }
+
+     free_league_divisions( league_divisions );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertDivisions_ShouldReturnAListOfLeagueDivisions_GivenALeagueFileDataAndLeagueId,      null );
      run_test( convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDataParksDataAndLeagueId, null );
+     run_test( convertDivisions_ShouldReturnDivisionsWithStats_GivenOrgData,                             null );
 }
 
 int main( int argc, char *argv[] )

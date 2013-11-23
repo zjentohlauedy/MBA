@@ -38,6 +38,17 @@ static boolean_e addDivisionToList( data_list_s *list, const int league_id, divi
      return bl_True;
 }
 
+static division_stats_s *convertDivisionStats( division_stats_s *division_stats )
+{
+     data_list_s      list     = { 0 };
+     division_stats_s sentinel = DIVISION_STATS_SENTINEL;
+
+     if ( add_to_data_list( &list,  division_stats, sizeof(division_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,       sizeof(division_stats_s), 5 );
+
+     return list.data;
+}
+
 league_division_s *convertDivisions( const org_data_s *org_data, const int league_id )
 {
      data_list_s        list                            = { 0 };
@@ -59,6 +70,13 @@ league_division_s *convertDivisions( const org_data_s *org_data, const int leagu
           }
 
           if ( (divisions[i]->teams = convertTeams( org_data, division_id )) == NULL )
+          {
+               freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
+
+               return NULL;
+          }
+
+          if ( (divisions[i]->stats = convertDivisionStats( &(org_data->records->divisions[i]) )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
