@@ -36,6 +36,17 @@ static boolean_e addLeagueToList( data_list_s *list, league_s *league )
      return bl_True;
 }
 
+static league_stats_s *convertLeagueStats( league_stats_s *league_stats )
+{
+     data_list_s    list     = { 0 };
+     league_stats_s sentinel = LEAGUE_STATS_SENTINEL;
+
+     if ( add_to_data_list( &list,  league_stats, sizeof(league_stats_s), 5 ) < 0 ) return NULL;
+     /**/ add_to_data_list( &list, &sentinel,     sizeof(league_stats_s), 5 );
+
+     return list.data;
+}
+
 org_league_s *convertLeagues( const org_data_s *org_data )
 {
      data_list_s   list                   = { 0 };
@@ -55,6 +66,13 @@ org_league_s *convertLeagues( const org_data_s *org_data )
           }
 
           if ( (leagues[i]->divisions = convertDivisions( org_data, league_id )) == NULL )
+          {
+               freeLeagues( leagues, TOTAL_LEAGUES );
+
+               return NULL;
+          }
+
+          if ( (leagues[i]->stats = convertLeagueStats( &(org_data->records->leagues[i]) )) == NULL )
           {
                freeLeagues( leagues, TOTAL_LEAGUES );
 
