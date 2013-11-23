@@ -14,7 +14,7 @@ static char *calculateRecords_ShouldReturnARecordsObject_GivenAScheduleAndLeague
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -26,7 +26,7 @@ static char *calculateRecords_ShouldReturnNullIfScheduleIsEmpty_GivenAScheduleAn
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s      schedule    = { 0 };
 
-     records_s *records = calculateRecords( &schedule, league_file );
+     records_s *records = calculateRecords( &schedule, league_file, 4, sp_Regular );
 
      assertNull( records );
 
@@ -40,7 +40,7 @@ static char *calculateRecords_ShouldReturnNullIfRoadTeamNotFound_GivenAScheduleA
 
      strcpy( schedule->days[0].games[0].road.name, "Invalid" );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNull( records );
 
@@ -54,7 +54,7 @@ static char *calculateRecords_ShouldReturnNullIfHomeTeamNotFound_GivenAScheduleA
 
      strcpy( schedule->days[0].games[0].home.name, "Invalid" );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNull( records );
 
@@ -66,7 +66,7 @@ static char *calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile()
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -146,7 +146,7 @@ static char *calculateRecords_ShouldSetTeamHomeRecords_GivenAScheduleAndLeagueFi
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -226,7 +226,7 @@ static char *calculateRecords_ShouldSetTeamRoadRecords_GivenAScheduleAndLeagueFi
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -306,7 +306,7 @@ static char *calculateRecords_ShouldSetTeamDivisionRecords_GivenAScheduleAndLeag
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -386,7 +386,7 @@ static char *calculateRecords_ShouldSetTeamLeagueRecords_GivenAScheduleAndLeague
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -466,7 +466,7 @@ static char *calculateRecords_ShouldSetTeamRunsScoredAndAllowed_GivenAScheduleAn
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -541,12 +541,34 @@ static char *calculateRecords_ShouldSetTeamRunsScoredAndAllowed_GivenAScheduleAn
      return NULL;
 }
 
+static char *calculateRecords_ShouldSetTheTeamIdSeasonAndPhase_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
+
+     assertNotNull( records );
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          assertEquals( i + 1,      records->teams[i].team_id      );
+          assertEquals( 4,          records->teams[i].season       );
+          assertEquals( sp_Regular, records->teams[i].season_phase );
+     }
+
+     freeRecords(  records  );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
 static char *calculateRecords_ShouldSetDivisionRecords_GivenAScheduleAndLeagueFile()
 {
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -570,7 +592,7 @@ static char *calculateRecords_ShouldSetDivisionHomeRecords_GivenAScheduleAndLeag
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -594,7 +616,7 @@ static char *calculateRecords_ShouldSetDivisionRoadRecords_GivenAScheduleAndLeag
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -618,7 +640,7 @@ static char *calculateRecords_ShouldSetDivisionLeagueRecords_GivenAScheduleAndLe
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -642,7 +664,7 @@ static char *calculateRecords_ShouldSetDivisionRunsScoredAndAllowed_GivenASchedu
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -661,12 +683,34 @@ static char *calculateRecords_ShouldSetDivisionRunsScoredAndAllowed_GivenASchedu
      return NULL;
 }
 
+static char *calculateRecords_ShouldSetTheDivisionIdSeasonAndPhase_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
+
+     assertNotNull( records );
+
+     for ( int i = 0; i < TOTAL_DIVISIONS; ++i )
+     {
+          assertEquals( i + 1,      records->divisions[i].division_id  );
+          assertEquals( 4,          records->divisions[i].season       );
+          assertEquals( sp_Regular, records->divisions[i].season_phase );
+     }
+
+     freeRecords(  records  );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
 static char *calculateRecords_ShouldSetLeagueRecords_GivenAScheduleAndLeagueFile()
 {
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -686,7 +730,7 @@ static char *calculateRecords_ShouldSetLeagueHomeRecords_GivenAScheduleAndLeague
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -706,7 +750,7 @@ static char *calculateRecords_ShouldSetLeagueRoadRecords_GivenAScheduleAndLeague
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -726,7 +770,7 @@ static char *calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenASchedule
      fileleagname_s *league_file = buildFileLeagName();
      schedule_s     *schedule    = buildSchedule( league_file );
 
-     records_s *records = calculateRecords( schedule, league_file );
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
 
@@ -734,6 +778,28 @@ static char *calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenASchedule
      assertEquals( 6016, records->leagues[0].runs_allowed );
      assertEquals( 6016, records->leagues[1].runs_scored  );
      assertEquals( 1920, records->leagues[1].runs_allowed );
+
+     freeRecords(  records  );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
+static char *calculateRecords_ShouldSetTheLeagueIdSeasonAndPhase_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
+
+     assertNotNull( records );
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          assertEquals( i + 1,      records->leagues[i].league_id    );
+          assertEquals( 4,          records->leagues[i].season       );
+          assertEquals( sp_Regular, records->leagues[i].season_phase );
+     }
 
      freeRecords(  records  );
      freeSchedule( schedule );
@@ -760,6 +826,7 @@ static void run_all_tests()
      run_test( calculateRecords_ShouldSetTeamDivisionRecords_GivenAScheduleAndLeagueFile,      get_error_message );
      run_test( calculateRecords_ShouldSetTeamLeagueRecords_GivenAScheduleAndLeagueFile,        get_error_message );
      run_test( calculateRecords_ShouldSetTeamRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
+     run_test( calculateRecords_ShouldSetTheTeamIdSeasonAndPhase_GivenAScheduleAndLeagueFile,  get_error_message );
 
      // division records
      run_test( calculateRecords_ShouldSetDivisionRecords_GivenAScheduleAndLeagueFile,              get_error_message );
@@ -767,12 +834,14 @@ static void run_all_tests()
      run_test( calculateRecords_ShouldSetDivisionRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
      run_test( calculateRecords_ShouldSetDivisionLeagueRecords_GivenAScheduleAndLeagueFile,        get_error_message );
      run_test( calculateRecords_ShouldSetDivisionRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
+     run_test( calculateRecords_ShouldSetTheDivisionIdSeasonAndPhase_GivenAScheduleAndLeagueFile,  get_error_message );
 
      // league records
      run_test( calculateRecords_ShouldSetLeagueRecords_GivenAScheduleAndLeagueFile,              get_error_message );
      run_test( calculateRecords_ShouldSetLeagueHomeRecords_GivenAScheduleAndLeagueFile,          get_error_message );
      run_test( calculateRecords_ShouldSetLeagueRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
      run_test( calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
+     run_test( calculateRecords_ShouldSetTheLeagueIdSeasonAndPhase_GivenAScheduleAndLeagueFile,  get_error_message );
 }
 
 int main( int argc, char *argv[] )

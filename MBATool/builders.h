@@ -17,6 +17,6 @@ fileplayer_s   *buildFilePlayers(           void );
 fileplayer_s   *buildFilePlayersWithoutIds( void );
 
 schedule_s *buildSchedule( const fileleagname_s *league_data );
-records_s  *buildRecords( void );
+records_s  *buildRecords(  const int season, const season_phase_e season_phase );
 
 #endif

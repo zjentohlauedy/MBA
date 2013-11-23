@@ -3,7 +3,7 @@
 #include <string.h>
 #include "builders.h"
 
-records_s *buildRecords( void )
+records_s *buildRecords( const int season, const season_phase_e season_phase )
 {
      static records_s        records;
      static league_stats_s   leagues   [TOTAL_LEAGUES];
@@ -18,6 +18,8 @@ records_s *buildRecords( void )
      for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
           leagues[i].league_id    = i + 1;
+          leagues[i].season       = season;
+          leagues[i].season_phase = season_phase;
           leagues[i].wins         = rand() % 5000;
           leagues[i].losses       = rand() % 5000;
           leagues[i].home_wins    = rand() % 5000;
@@ -31,6 +33,8 @@ records_s *buildRecords( void )
      for ( int i = 0; i < TOTAL_DIVISIONS; ++i )
      {
           divisions[i].division_id   = i + 1;
+          divisions[i].season        = season;
+          divisions[i].season_phase  = season_phase;
           divisions[i].wins          = rand() % 5000;
           divisions[i].losses        = rand() % 5000;
           divisions[i].home_wins     = rand() % 5000;
@@ -46,6 +50,8 @@ records_s *buildRecords( void )
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
      {
           teams[i].team_id         = i + 1;
+          teams[i].season          = season;
+          teams[i].season_phase    = season_phase;
           teams[i].wins            = rand() % 5000;
           teams[i].losses          = rand() % 5000;
           teams[i].home_wins       = rand() % 5000;

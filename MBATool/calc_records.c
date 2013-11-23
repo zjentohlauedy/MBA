@@ -34,7 +34,7 @@ static int findTeam( struct team *teams, char *team )
 }
 
 
-records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *league_file )
+records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *league_file, const int season, const season_phase_e season_phase )
 {
      struct league   leagues   [ TOTAL_LEAGUES   ];
      struct division divisions [ TOTAL_DIVISIONS ];
@@ -88,6 +88,10 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
      for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
           strcpy( leagues[i].name, league_file->leagues[i].name );
+
+          records->leagues[i].league_id    = i + 1;
+          records->leagues[i].season       = season;
+          records->leagues[i].season_phase = season_phase;
      }
 
      for ( int i = 0; i < TOTAL_DIVISIONS; ++i )
@@ -95,6 +99,10 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           strcpy( divisions[i].name, league_file->divisions[i].name );
 
           divisions[i].league = i / DIVISIONS_PER_LEAGUE;
+
+          records->divisions[i].division_id  = i + 1;
+          records->divisions[i].season       = season;
+          records->divisions[i].season_phase = season_phase;
      }
 
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
@@ -103,6 +111,10 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
           teams[i].league   = i / TEAMS_PER_LEAGUE;
           teams[i].division = i / TEAMS_PER_DIVISION;
+
+          records->teams[i].team_id      = i + 1;
+          records->teams[i].season       = season;
+          records->teams[i].season_phase = season_phase;
      }
 
      for ( int i = 0; schedule->days[i].games != NULL; ++i )
