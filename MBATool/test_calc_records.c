@@ -807,6 +807,78 @@ static char *calculateRecords_ShouldSetTheLeagueIdSeasonAndPhase_GivenAScheduleA
      return NULL;
 }
 
+static char *calculateRecords_ShouldOnlyCalculateRegularSeasonRecords_GivenRegularSeasonPhase()
+{
+     fileleagname_s *league_file = readLeagueFile( "LeagName_test.Dat" );
+     schedule_s     *schedule    = readScheduleCSV( "schedule_test.csv" );
+
+     assertNotNull( league_file );
+     assertNotNull( schedule    );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
+
+     assertNotNull( records );
+
+     // Portsmen 83 - 69
+     assertEquals( 83, records->teams[ 1].wins   );
+     assertEquals( 69, records->teams[ 1].losses );
+
+     // Dragons 92 - 60
+     assertEquals( 92, records->teams[12].wins   );
+     assertEquals( 60, records->teams[12].losses );
+
+     // Thunder 83 - 69
+     assertEquals( 83, records->teams[22].wins   );
+     assertEquals( 69, records->teams[22].losses );
+
+     // Waves 97 - 55
+     assertEquals( 97, records->teams[26].wins   );
+     assertEquals( 55, records->teams[26].losses );
+
+     free( league_file );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
+static char *calculateRecords_ShouldOnlyCalculatePlayoffRecords_GivenPlayoffPhase()
+{
+     fileleagname_s *league_file = readLeagueFile( "LeagName_test.Dat" );
+     schedule_s     *schedule    = readScheduleCSV( "schedule_test.csv" );
+
+     assertNotNull( league_file );
+     assertNotNull( schedule    );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Playoff );
+
+     assertNotNull( records );
+
+     // Portsmen 3 - 4
+     assertEquals( 3, records->teams[ 1].wins   );
+     assertEquals( 4, records->teams[ 1].losses );
+
+     // Dragons 9 - 7
+     assertEquals( 9, records->teams[12].wins   );
+     assertEquals( 7, records->teams[12].losses );
+
+     // Thunder 9 - 7
+     assertEquals( 9, records->teams[22].wins   );
+     assertEquals( 7, records->teams[22].losses );
+
+     // Waves 2 - 4
+     assertEquals( 2, records->teams[26].wins   );
+     assertEquals( 4, records->teams[26].losses );
+
+     // Quasars 0 - 0
+     assertEquals( 0, records->teams[31].wins   );
+     assertEquals( 0, records->teams[31].losses );
+
+     free( league_file );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
 static void get_error_message()
 {
      printf( "calculateRecords error message: %s\n", getCalculateRecordsError() );
@@ -842,6 +914,10 @@ static void run_all_tests()
      run_test( calculateRecords_ShouldSetLeagueRoadRecords_GivenAScheduleAndLeagueFile,          get_error_message );
      run_test( calculateRecords_ShouldSetLeagueRunsScoredAndAllowed_GivenAScheduleAndLeagueFile, get_error_message );
      run_test( calculateRecords_ShouldSetTheLeagueIdSeasonAndPhase_GivenAScheduleAndLeagueFile,  get_error_message );
+
+     // phases
+     run_test( calculateRecords_ShouldOnlyCalculateRegularSeasonRecords_GivenRegularSeasonPhase, get_error_message );
+     run_test( calculateRecords_ShouldOnlyCalculatePlayoffRecords_GivenPlayoffPhase,             get_error_message );
 }
 
 int main( int argc, char *argv[] )

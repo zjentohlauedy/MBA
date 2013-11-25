@@ -1,6 +1,7 @@
 #ifndef __INC_SEASON_H__
 #define __INC_SEASON_H__
 
+#define REGULAR_SEASON_DAYS 152
 
 typedef enum
 {

@@ -23,6 +23,17 @@ static void clearErrorMessage( void )
 }
 
 
+static boolean_e isAllstarTeam( struct league *leagues, char *team )
+{
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          if ( strcmp( leagues[i].name, team ) == 0 ) return bl_True;
+     }
+
+     return bl_False;
+}
+
+
 static int findTeam( struct team *teams, char *team )
 {
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
@@ -121,9 +132,14 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
      {
           schedule_day_s *day = &schedule->days[i];
 
+          if ( season_phase == sp_Regular  &&  i >= REGULAR_SEASON_DAYS ) continue;
+          if ( season_phase == sp_Playoff  &&  i <  REGULAR_SEASON_DAYS ) continue;
+
           for ( int j = 0; day->games[j].played != -1; ++j )
           {
                schedule_game_s *game = &day->games[j];
+
+               if ( isAllstarTeam( leagues, game->road.name ) ) break;
 
                int road_idx;
                int home_idx;

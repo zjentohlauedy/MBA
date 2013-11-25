@@ -23,7 +23,7 @@ int add_to_data_list( data_list_s *data_list, const void *data_item, const int d
                return -1;
           }
 
-          memset( new_block + data_list->count, '\0', data_size * (data_list->__max - data_list->count) );
+          memset( new_block + (data_size * data_list->count), '\0', data_size * (data_list->__max - data_list->count) );
 
           data_list->data = new_block;
      }

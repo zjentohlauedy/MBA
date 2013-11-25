@@ -290,8 +290,8 @@ static boolean_e loadGames( data_list_s *games, const data_list_s *road, const d
      {
           schedule_game_s game = { 0 };
 
-          strcpy( game.road.name, road_fields[i].value );
-          strcpy( game.home.name, home_fields[i].value );
+          strncpy( game.road.name, road_fields[i].value, sizeof(game.road.name) );
+          strncpy( game.home.name, home_fields[i].value, sizeof(game.home.name) );
 
           game.road.score = atoi( road_fields[i + 1].value );
           game.home.score = atoi( home_fields[i + 1].value );
