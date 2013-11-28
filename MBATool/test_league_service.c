@@ -7,6 +7,7 @@
 
 
 static league_division_s league_division_sentinel = LEAGUE_DIVISION_SENTINEL;
+static league_team_s     league_team_sentinel     = LEAGUE_TEAM_SENTINEL;
 static league_stats_s    league_stats_sentinel    = LEAGUE_STATS_SENTINEL;
 static league_accolade_s league_accolade_sentinel = LEAGUE_ACCOLADE_SENTINEL;
 
@@ -219,6 +220,50 @@ static char *get_league__ShouldReturnTheMatchingLeagueWithAccolades_GivenALeague
      return NULL;
 }
 
+static char *get_league__ShouldReturnTheMatchingLeagueWithTeams_GivenALeagueId()
+{
+     league_s      expected               = { 0 };
+     league_team_s expected_league_teams1 = { 0 };
+     league_team_s expected_league_teams2 = { 0 };
+
+     /**/    expected.league_id = 1;
+     strcpy( expected.name,      "LeagueName1" );
+
+     assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
+
+     expected_league_teams1.league_id = 1;
+     expected_league_teams1.team_id   = 1;
+
+     expected_league_teams2.league_id = 1;
+     expected_league_teams2.team_id   = 2;
+
+     assertEquals( SQLITE_OK, league_teams_t_create( db, &expected_league_teams1 ) );
+     assertEquals( SQLITE_OK, league_teams_t_create( db, &expected_league_teams2 ) );
+
+     league_s *actual = get_league( db, expected.league_id );
+
+     league_team_s *actual_league_teams = actual->teams;
+
+     assertNotNull( actual_league_teams );
+
+     assertEquals( expected_league_teams1.league_id, actual_league_teams[0].league_id );
+     assertEquals( expected_league_teams1.team_id,   actual_league_teams[0].team_id   );
+
+     assertEquals( expected_league_teams2.league_id, actual_league_teams[1].league_id );
+     assertEquals( expected_league_teams2.team_id,   actual_league_teams[1].team_id   );
+
+     assertEquals( league_team_sentinel.league_id, actual_league_teams[2].league_id );
+     assertEquals( league_team_sentinel.team_id,   actual_league_teams[2].team_id   );
+
+     free_league( actual );
+
+     assertEquals( SQLITE_OK, leagues_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams1 ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams2 ) );
+
+     return NULL;
+}
+
 static char *save_league__ShouldPersistTheLeagueInTheDatabase_GivenALeagueObject()
 {
      league_s expected = { 0 };
@@ -417,10 +462,56 @@ static char *save_league__ShouldPersistTheAccoladesInTheDatabase_GivenALeagueWit
      return NULL;
 }
 
+static char *save_league__ShouldPersistTheLeagueTeamsInTheDatabase_GivenALeagueWithALeagueTeams()
+{
+     league_s      expected                 = { 0 };
+     league_team_s expected_league_teams[3] = { 0 };
+
+     /**/    expected.league_id = 1;
+     strcpy( expected.name,      "LeagueName1" );
+
+     expected_league_teams[0].league_id = 1;
+     expected_league_teams[0].team_id   = 1;
+
+     expected_league_teams[1].league_id = 1;
+     expected_league_teams[1].team_id   = 2;
+
+     expected_league_teams[2] = league_team_sentinel;
+
+     expected.teams = expected_league_teams;
+
+     assertEquals( SQLITE_OK, save_league( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, league_teams_t_read_by_league( db, expected.league_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     league_team_s *actual_league_teams = list.data;
+
+     assertNotNull( actual_league_teams );
+
+     assertEquals( expected_league_teams[0].league_id, actual_league_teams[0].league_id );
+     assertEquals( expected_league_teams[0].team_id,   actual_league_teams[0].team_id   );
+
+     assertEquals( expected_league_teams[1].league_id, actual_league_teams[1].league_id );
+     assertEquals( expected_league_teams[1].team_id,   actual_league_teams[1].team_id   );
+
+     free( actual_league_teams );
+
+     assertEquals( SQLITE_OK, leagues_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams[0] ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams[1] ) );
+
+     return NULL;
+}
+
 static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_GivenALeague()
 {
      league_s          expected                     = { 0 };
      league_division_s expected_league_divisions[3] = { 0 };
+     league_team_s     expected_league_teams[3]     = { 0 };
      league_stats_s    expected_stats[3]            = { 0 };
      league_accolade_s expected_accolades[3]        = { 0 };
 
@@ -434,6 +525,14 @@ static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      expected_league_divisions[1].division_id = 2;
 
      expected_league_divisions[2] = league_division_sentinel;
+
+     expected_league_teams[0].league_id = 1;
+     expected_league_teams[0].team_id   = 1;
+
+     expected_league_teams[1].league_id = 1;
+     expected_league_teams[1].team_id   = 2;
+
+     expected_league_teams[2] = league_team_sentinel;
 
      expected_stats[0].league_id    = 1;
      expected_stats[0].season       = 1;
@@ -473,6 +572,7 @@ static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
      assertEquals( SQLITE_OK, league_divisions_t_create( db, &expected_league_divisions[0] ) );
+     assertEquals( SQLITE_OK, league_teams_t_create( db, &expected_league_teams[0] ) );
      assertEquals( SQLITE_OK, league_stats_t_create( db, &expected_stats[0] ) );
      assertEquals( SQLITE_OK, league_accolades_t_create( db, &expected_accolades[0] ) );
 
@@ -482,6 +582,7 @@ static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      expected_stats[0].losses = 504;
 
      expected.divisions = expected_league_divisions;
+     expected.teams     = expected_league_teams;
      expected.stats     = expected_stats;
      expected.accolades = expected_accolades;
 
@@ -511,6 +612,22 @@ static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      assertEquals( expected_league_divisions[1].league_id,   actual_league_divisions[1].league_id   );
      assertEquals( expected_league_divisions[1].division_id, actual_league_divisions[1].division_id );
+
+     data_list_s league_teams_list = { 0 };
+
+     assertEquals( SQLITE_OK, league_teams_t_read_by_league( db, expected.league_id, &league_teams_list ) );
+
+     assertEquals( 2, league_teams_list.count );
+
+     league_team_s *actual_league_teams = league_teams_list.data;
+
+     assertNotNull( actual_league_teams );
+
+     assertEquals( expected_league_teams[0].league_id, actual_league_teams[0].league_id );
+     assertEquals( expected_league_teams[0].team_id,   actual_league_teams[0].team_id   );
+
+     assertEquals( expected_league_teams[1].league_id, actual_league_teams[1].league_id );
+     assertEquals( expected_league_teams[1].team_id,   actual_league_teams[1].team_id   );
 
      data_list_s league_stats_list = { 0 };
 
@@ -571,6 +688,8 @@ static char *save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      assertEquals( SQLITE_OK, leagues_t_delete( db, &expected ) );
      assertEquals( SQLITE_OK, league_divisions_t_delete( db, &expected_league_divisions[0] ) );
      assertEquals( SQLITE_OK, league_divisions_t_delete( db, &expected_league_divisions[1] ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams[0] ) );
+     assertEquals( SQLITE_OK, league_teams_t_delete( db, &expected_league_teams[1] ) );
      assertEquals( SQLITE_OK, league_stats_t_delete( db, &expected_stats[0] ) );
      assertEquals( SQLITE_OK, league_stats_t_delete( db, &expected_stats[1] ) );
      assertEquals( SQLITE_OK, league_accolades_t_delete( db, &expected_accolades[0] ) );
@@ -715,6 +834,38 @@ static char *remove_league__ShouldRemoveTheAccoladesFromTheDatabase_GivenALeague
      return NULL;
 }
 
+static char *remove_league__ShouldRemoveTheLeagueTeamsFromTheDatabase_GivenALeagueWithLeagueTeams()
+{
+     league_s      expected                 = { 0 };
+     league_team_s expected_league_teams[3] = { 0 };
+
+     /**/    expected.league_id = 1;
+     strcpy( expected.name,      "LeagueName1" );
+
+     assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
+
+     expected_league_teams[0].league_id = 1;
+     expected_league_teams[0].team_id   = 1;
+
+     expected_league_teams[1].league_id = 1;
+     expected_league_teams[1].team_id   = 2;
+
+     expected_league_teams[2] = league_team_sentinel;
+
+     assertEquals( SQLITE_OK, league_teams_t_create( db, &expected_league_teams[0] ) );
+     assertEquals( SQLITE_OK, league_teams_t_create( db, &expected_league_teams[1] ) );
+
+     expected.teams = expected_league_teams;
+
+     assertEquals( SQLITE_OK, remove_league( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_NOTFOUND, league_teams_t_read_by_league( db, expected.league_id, &list ) );
+
+     return NULL;
+}
+
 static void check_sqlite_error()
 {
      if ( sqlite3_errcode( db ) != 0 )
@@ -730,12 +881,14 @@ static void run_all_tests()
      run_test( get_league__ShouldReturnTheMatchingLeagueWithDivisions_GivenALeagueId, check_sqlite_error );
      run_test( get_league__ShouldReturnTheMatchingLeagueWithStats_GivenALeagueId,     check_sqlite_error );
      run_test( get_league__ShouldReturnTheMatchingLeagueWithAccolades_GivenALeagueId, check_sqlite_error );
+     run_test( get_league__ShouldReturnTheMatchingLeagueWithTeams_GivenALeagueId,     check_sqlite_error );
 
      // save_league()
      run_test( save_league__ShouldPersistTheLeagueInTheDatabase_GivenALeagueObject,                       check_sqlite_error );
      run_test( save_league__ShouldPersistTheLeagueDivisionsInTheDatabase_GivenALeagueWithLeagueDivisions, check_sqlite_error );
      run_test( save_league__ShouldPersistTheLeagueStatsInTheDatabase_GivenALeagueWithLeagueStats,         check_sqlite_error );
      run_test( save_league__ShouldPersistTheAccoladesInTheDatabase_GivenALeagueWithAccolades,             check_sqlite_error );
+     run_test( save_league__ShouldPersistTheLeagueTeamsInTheDatabase_GivenALeagueWithALeagueTeams,        check_sqlite_error );
      run_test( save_league__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_GivenALeague,               check_sqlite_error );
 
      // remove_league()
@@ -743,6 +896,7 @@ static void run_all_tests()
      run_test( remove_league__ShouldRemoveTheLeagueDivisionsFromTheDatabase_GivenALeagueWithLeagueDivisions, check_sqlite_error );
      run_test( remove_league__ShouldRemoveTheLeagueStatsFromTheDatabase_GivenALeagueWithLeagueStats,         check_sqlite_error );
      run_test( remove_league__ShouldRemoveTheAccoladesFromTheDatabase_GivenALeagueWithAccolades,             check_sqlite_error );
+     run_test( remove_league__ShouldRemoveTheLeagueTeamsFromTheDatabase_GivenALeagueWithLeagueTeams,         check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )

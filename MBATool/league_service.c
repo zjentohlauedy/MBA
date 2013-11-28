@@ -46,6 +46,26 @@ static league_stats_s *get_league_stats( sqlite3 *db, const int league_id )
      return list.data;
 }
 
+static league_team_s *get_league_teams( sqlite3 *db, const int league_id )
+{
+     static league_team_s sentinel = LEAGUE_TEAM_SENTINEL;
+
+     data_list_s list = { 0 };
+
+     if ( league_teams_t_read_by_league( db, league_id, &list ) != SQLITE_OK ) return NULL;
+
+     if ( list.data == NULL ) return NULL;
+
+     if ( add_to_data_list( &list, &sentinel, sizeof(league_team_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
+
+     return list.data;
+}
+
 static league_division_s *get_league_divisions( sqlite3 *db, const int league_id )
 {
      static league_division_s sentinel = LEAGUE_DIVISION_SENTINEL;
@@ -93,6 +113,7 @@ league_s *get_league( sqlite3 *db, const int league_id )
      if ( (league = get_league_details( db, league_id )) == NULL ) return NULL;
 
      league->divisions = get_league_divisions( db, league_id );
+     league->teams     = get_league_teams(     db, league_id );
      league->stats     = get_league_stats(     db, league_id );
      league->accolades = get_league_accolades( db, league_id );
 
@@ -151,6 +172,20 @@ static int save_league_stats( sqlite3 *db, const league_stats_s *league_stats )
      return SQLITE_OK;
 }
 
+static int save_league_teams( sqlite3 *db, const league_team_s *league_teams )
+{
+     int rc;
+
+     if ( league_teams == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; league_teams[i].league_id >= 0; ++i )
+     {
+          INSERT_IF_UNIQUE( league_teams_t_create( db, &league_teams[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
 static int save_league_divisions( sqlite3 *db, const league_division_s *league_divisions )
 {
      int rc;
@@ -170,6 +205,7 @@ int save_league( sqlite3 *db, const league_s *league )
      int rc;
 
      TRY( save_league_divisions( db, league->divisions ) );
+     TRY( save_league_teams(     db, league->teams     ) );
      TRY( save_league_stats(     db, league->stats     ) );
      TRY( save_league_accolades( db, league->accolades ) );
 
@@ -204,6 +240,20 @@ static int remove_league_stats( sqlite3 *db, const league_stats_s *league_stats 
      return SQLITE_OK;
 }
 
+static int remove_league_teams( sqlite3 *db, const league_team_s *league_teams )
+{
+     int rc;
+
+     if ( league_teams == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; league_teams[i].league_id >= 0; ++i )
+     {
+          TRY( league_teams_t_delete( db, &league_teams[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
 static int remove_league_divisions( sqlite3 *db, const league_division_s *league_divisions )
 {
      int rc;
@@ -223,6 +273,7 @@ int remove_league( sqlite3 *db, const league_s *league )
      int rc;
 
      TRY( remove_league_divisions( db, league->divisions ) );
+     TRY( remove_league_teams(     db, league->teams     ) );
      TRY( remove_league_stats(     db, league->stats     ) );
      TRY( remove_league_accolades( db, league->accolades ) );
 
@@ -239,9 +290,20 @@ void free_league_divisions( league_division_s *league_divisions )
      free( league_divisions );
 }
 
+void free_league_teams( league_team_s *league_teams )
+{
+     for ( int i = 0; league_teams[i].league_id >= 0; ++i )
+     {
+          if ( league_teams[i].team != NULL ) free_team( league_teams[i].team );
+     }
+
+     free( league_teams );
+}
+
 void free_league( league_s *league )
 {
      if ( league->divisions != NULL ) free_league_divisions( league->divisions );
+     if ( league->teams     != NULL ) free_league_teams( league->teams );
      if ( league->stats     != NULL ) free( league->stats     );
      if ( league->accolades != NULL ) free( league->accolades );
 
