@@ -8,6 +8,7 @@
 
 #define LEAGUE_SENTINEL          { -1, { 0 }, NULL, NULL, NULL }
 #define LEAGUE_DIVISION_SENTINEL { -1, -1 }
+#define LEAGUE_TEAM_SENTINEL     { -1, -1 }
 #define LEAGUE_STATS_SENTINEL    { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define LEAGUE_ACCOLADE_SENTINEL { -1, -1, lacc_None }
 
@@ -18,6 +19,14 @@ typedef enum
      lacc_Best_Record    = 2
 
 } league_accolade_e;
+
+typedef struct
+{
+     int         league_id;
+     int         team_id;
+     team_s     *team;
+
+} league_team_s;
 
 typedef struct
 {
@@ -56,6 +65,7 @@ typedef struct
      int                league_id;
      char               name      [20 + 1];
      league_division_s *divisions;
+     league_team_s     *teams;
      league_stats_s    *stats;
      league_accolade_s *accolades;
 
@@ -80,10 +90,15 @@ int league_accolades_t_create(         sqlite3 *db,                      const l
 int league_accolades_t_read_by_league( sqlite3 *db, const int league_id,       data_list_s       *league_accolades );
 int league_accolades_t_delete(         sqlite3 *db,                      const league_accolade_s *league_accolade  );
 
+int league_teams_t_create(         sqlite3 *db,                      const league_team_s *league_team  );
+int league_teams_t_read_by_league( sqlite3 *db, const int league_id,       data_list_s   *league_teams );
+int league_teams_t_delete(         sqlite3 *db,                      const league_team_s *league_team  );
+
 league_s *get_league(    sqlite3 *db, const int       league_id );
 int       save_league(   sqlite3 *db, const league_s *league    );
 int       remove_league( sqlite3 *db, const league_s *league    );
 
 void      free_league(           league_s          *league           );
 void      free_league_divisions( league_division_s *league_divisions );
+
 #endif

@@ -66,6 +66,7 @@ runTestProg test_leagues_t
 runTestProg test_league_divisions_t
 runTestProg test_league_stats_t
 runTestProg test_league_accolades_t
+runTestProg test_league_teams_t
 
 runTestProg test_player_service
 runTestProg test_team_service

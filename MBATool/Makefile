@@ -41,6 +41,7 @@ tests = \
    test_league_divisions_t \
    test_league_stats_t \
    test_league_accolades_t \
+   test_league_teams_t \
    test_player_service \
    test_team_service \
    test_division_service \
@@ -162,6 +163,9 @@ test_league_stats_t: test_league_stats_t.o league_stats_t.o sql_query.o data_lis
 test_league_accolades_t: test_league_accolades_t.o league_accolades_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+test_league_teams_t: test_league_teams_t.o league_teams_t.o sql_query.o data_list.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 test_player_service: test_player_service.o libmbadata.a libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
@@ -211,6 +215,7 @@ MBADATA_OBJECTS = \
  league_accolades_t.o \
  league_divisions_t.o \
  league_stats_t.o \
+ league_teams_t.o \
  leagues_t.o \
  pitcher_accolades_t.o \
  pitcher_stats_t.o \

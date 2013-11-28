@@ -272,3 +272,11 @@ CREATE TABLE League_Accolades_T
 --
    UNIQUE ( League_Id, Season, Accolade )
 );
+
+CREATE TABLE League_Teams_T
+(
+   League_Id   INTEGER,
+   Team_Id     INTEGER,
+--
+   UNIQUE ( League_Id, Team_Id )
+);
