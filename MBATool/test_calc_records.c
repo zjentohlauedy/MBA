@@ -812,9 +812,6 @@ static char *calculateRecords_ShouldOnlyCalculateRegularSeasonRecords_GivenRegul
      fileleagname_s *league_file = readLeagueFile( "LeagName_test.Dat" );
      schedule_s     *schedule    = readScheduleCSV( "schedule_test.csv" );
 
-     assertNotNull( league_file );
-     assertNotNull( schedule    );
-
      records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
 
      assertNotNull( records );
@@ -846,9 +843,6 @@ static char *calculateRecords_ShouldOnlyCalculatePlayoffRecords_GivenPlayoffPhas
      fileleagname_s *league_file = readLeagueFile( "LeagName_test.Dat" );
      schedule_s     *schedule    = readScheduleCSV( "schedule_test.csv" );
 
-     assertNotNull( league_file );
-     assertNotNull( schedule    );
-
      records_s *records = calculateRecords( schedule, league_file, 4, sp_Playoff );
 
      assertNotNull( records );
@@ -872,6 +866,37 @@ static char *calculateRecords_ShouldOnlyCalculatePlayoffRecords_GivenPlayoffPhas
      // Quasars 0 - 0
      assertEquals( 0, records->teams[31].wins   );
      assertEquals( 0, records->teams[31].losses );
+
+     free( league_file );
+     freeSchedule( schedule );
+
+     return NULL;
+}
+
+static char *calculateRecords_ShouldOnlyCalculateAllstarRecords_GivenAllstarPhase()
+{
+     fileleagname_s *league_file = readLeagueFile( "LeagName_allstar_test.Dat" );
+     schedule_s     *schedule    = readScheduleCSV( "schedule_test.csv" );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Allstar );
+
+     assertNotNull( records );
+
+     // World 0 - 3
+     assertEquals( 0, records->teams[ 0].wins   );
+     assertEquals( 3, records->teams[ 0].losses );
+
+     // Should be empty
+     assertEquals( 0, records->teams[ 8].wins   );
+     assertEquals( 0, records->teams[ 8].losses );
+
+     // Global 3 - 0
+     assertEquals( 3, records->teams[16].wins   );
+     assertEquals( 0, records->teams[16].losses );
+
+     // Should be empty
+     assertEquals( 0, records->teams[24].wins   );
+     assertEquals( 0, records->teams[24].losses );
 
      free( league_file );
      freeSchedule( schedule );
@@ -918,6 +943,7 @@ static void run_all_tests()
      // phases
      run_test( calculateRecords_ShouldOnlyCalculateRegularSeasonRecords_GivenRegularSeasonPhase, get_error_message );
      run_test( calculateRecords_ShouldOnlyCalculatePlayoffRecords_GivenPlayoffPhase,             get_error_message );
+     run_test( calculateRecords_ShouldOnlyCalculateAllstarRecords_GivenAllstarPhase,             get_error_message );
 }
 
 int main( int argc, char *argv[] )

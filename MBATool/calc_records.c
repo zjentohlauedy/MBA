@@ -139,7 +139,8 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           {
                schedule_game_s *game = &day->games[j];
 
-               if ( isAllstarTeam( leagues, game->road.name ) ) break;
+               if   ( isAllstarTeam( leagues, game->road.name ) ) { if ( season_phase != sp_Allstar ) break; }
+               else                                               { if ( season_phase == sp_Allstar ) break; }
 
                int road_idx;
                int home_idx;
