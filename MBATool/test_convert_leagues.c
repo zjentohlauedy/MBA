@@ -135,11 +135,54 @@ static char *convertLeagues_ShouldReturnLeaguesWithStats_GivenLeagueFileDataAndR
      return NULL;
 }
 
+static char *convertLeagues_ShouldReturnLeaguesWithTeams_GivenLeagueFileAndAllstarPhase()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords( 1, sp_Allstar );
+     org_data.season       = 1;
+     org_data.season_phase = sp_Allstar;
+
+     fileleagname_s *league_data = org_data.league_data;
+     org_league_s   *org_leagues = convertLeagues( &org_data );
+
+     assertNotNull( org_leagues );
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          assertNotNull( org_leagues[i].league );
+
+          league_team_s *league_teams = org_leagues[i].league->teams;
+
+          assertNotNull( league_teams );
+
+          for ( int j = 0; j < TEAMS_PER_LEAGUE; ++j )
+          {
+               int idx = (i * TEAMS_PER_LEAGUE) + j;
+               int id  = (i * TEAMS_PER_LEAGUE) + j + 1;
+
+               assertNotNull(                                 league_teams[j].team          );
+               assertEqualsInt( i + 1,                        league_teams[j].league_id     );
+               assertEqualsInt( id,                           league_teams[j].team_id       );
+               assertEqualsInt( id,                           league_teams[j].team->team_id );
+               assertEqualsStr( league_data->teams[idx].name, league_teams[j].team->name    );
+          }
+     }
+
+     freeOrgLeagues( org_leagues );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
-     run_test( convertLeagues_ShouldReturnAListOfOrgLeagues_GivenLeagueFileData,          null );
-     run_test( convertLeagues_ShouldReturnLeaguesWithDivisions_GivenLeagueFileData,       null );
-     run_test( convertLeagues_ShouldReturnLeaguesWithStats_GivenLeagueFileDataAndRecords, null );
+     run_test( convertLeagues_ShouldReturnAListOfOrgLeagues_GivenLeagueFileData,           null );
+     run_test( convertLeagues_ShouldReturnLeaguesWithDivisions_GivenLeagueFileData,        null );
+     run_test( convertLeagues_ShouldReturnLeaguesWithStats_GivenLeagueFileDataAndRecords,  null );
+     run_test( convertLeagues_ShouldReturnLeaguesWithTeams_GivenLeagueFileAndAllstarPhase, null );
 }
 
 int main( int argc, char *argv[] )

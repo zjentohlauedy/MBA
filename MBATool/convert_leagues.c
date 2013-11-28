@@ -65,11 +65,23 @@ org_league_s *convertLeagues( const org_data_s *org_data )
                return NULL;
           }
 
-          if ( (leagues[i]->divisions = convertDivisions( org_data, league_id )) == NULL )
+          if ( org_data->season_phase == sp_Allstar )
           {
-               freeLeagues( leagues, TOTAL_LEAGUES );
+               if ( (leagues[i]->teams = convertLeagueTeams( org_data, league_id )) == NULL )
+               {
+                    freeLeagues( leagues, TOTAL_LEAGUES );
 
-               return NULL;
+                    return NULL;
+               }
+          }
+          else
+          {
+               if ( (leagues[i]->divisions = convertDivisions( org_data, league_id )) == NULL )
+               {
+                    freeLeagues( leagues, TOTAL_LEAGUES );
+
+                    return NULL;
+               }
           }
 
           if ( (leagues[i]->stats = convertLeagueStats( &(org_data->records->leagues[i]) )) == NULL )

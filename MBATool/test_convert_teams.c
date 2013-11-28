@@ -90,7 +90,7 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
 }
 
 
-static char *convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId()
+static char *convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -106,7 +106,7 @@ static char *convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAnd
      {
           int division_id = i + 1;
 
-          division_team_s *division_teams = convertTeams( &org_data, division_id );
+          division_team_s *division_teams = convertDivisionTeams( &org_data, division_id );
 
           assertNotNull( division_teams );
 
@@ -133,7 +133,7 @@ static char *convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAnd
      return NULL;
 }
 
-static char *convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId()
+static char *convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -147,7 +147,7 @@ static char *convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
 
      assertNotNull( division_teams );
 
@@ -179,7 +179,7 @@ static char *convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId
      return NULL;
 }
 
-static char *convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId()
+static char *convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -194,7 +194,7 @@ static char *convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivi
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
 
      assertNotNull( division_teams );
 
@@ -221,7 +221,7 @@ static char *convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivi
      return NULL;
 }
 
-static char *convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId()
+static char *convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -236,7 +236,7 @@ static char *convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivis
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
 
      assertNotNull( division_teams );
 
@@ -263,7 +263,7 @@ static char *convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivis
      return NULL;
 }
 
-static char *convertTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId()
+static char *convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
 
@@ -274,7 +274,7 @@ static char *convertTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId()
      org_data.season       = 3;
      org_data.season_phase = sp_Playoff;
 
-     division_team_s *division_teams = convertTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
 
      assertNotNull( division_teams );
 
@@ -330,11 +330,11 @@ static char *convertTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId()
 
 static void run_all_tests()
 {
-     run_test( convertTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId, null );
-     run_test( convertTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId,           null );
-     run_test( convertTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId,     null );
-     run_test( convertTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
-     run_test( convertTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId,             null );
+     run_test( convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId, null );
+     run_test( convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId,           null );
+     run_test( convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId,     null );
+     run_test( convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
+     run_test( convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId,             null );
 }
 
 int main( int argc, char *argv[] )
