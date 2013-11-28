@@ -114,7 +114,8 @@ typedef struct
 
 typedef struct
 {
-     unsigned char name   [12];
+     unsigned char name   [11];
+     unsigned char stadium[ 1];
      unsigned char color  [ 1];
      unsigned char wins   [ 1];
      unsigned char losses [ 1];
