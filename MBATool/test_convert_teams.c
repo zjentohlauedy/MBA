@@ -371,6 +371,70 @@ static char *convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDat
      return NULL;
 }
 
+static char *convertLeagueTeams_ShouldOnlyConvertTeamsThatAreNotEmpty_GivenOrgDataAndLeagueId()
+{
+     org_data_s     org_data    = { 0 };
+     fileleagname_s league_data = { 0 };
+
+     strcpy( league_data.leagues[0].name, "League1" );
+     strcpy( league_data.leagues[1].name, "League2" );
+
+     strcpy( league_data.divisions[0].name, "Division1" );
+     strcpy( league_data.divisions[1].name, "Division2" );
+     strcpy( league_data.divisions[2].name, "Division3" );
+     strcpy( league_data.divisions[3].name, "Division4" );
+
+     strcpy( league_data.teams[ 0].name, "Team1"  );
+     strcpy( league_data.teams[ 8].name, "Team9"  );
+     strcpy( league_data.teams[13].name, "Team14" );
+     strcpy( league_data.teams[16].name, "Team17" );
+     strcpy( league_data.teams[24].name, "Team25" );
+
+     org_data.league_data  = &league_data;
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Allstar );
+
+     fileparks_s *parks_data = org_data.parks_data;
+
+     league_team_s *league_teams = NULL;
+
+
+     league_teams = convertLeagueTeams( &org_data, 1, 0 );
+
+     assertNotNull( league_teams );
+
+     assertNotNull( league_teams[0].team );
+     assertEqualsStr( league_data.teams[0].name, league_teams[0].team->name );
+
+     assertNotNull( league_teams[1].team );
+     assertEqualsStr( league_data.teams[8].name, league_teams[1].team->name );
+
+     assertNotNull( league_teams[2].team );
+     assertEqualsStr( league_data.teams[13].name, league_teams[2].team->name );
+
+     assertNull( league_teams[3].team );
+
+     free_league_teams( league_teams );
+
+
+     league_teams = convertLeagueTeams( &org_data, 2, 1 );
+
+     assertNotNull( league_teams );
+
+     assertNotNull( league_teams[0].team );
+     assertEqualsStr( league_data.teams[16].name, league_teams[0].team->name );
+
+     assertNotNull( league_teams[1].team );
+     assertEqualsStr( league_data.teams[24].name, league_teams[1].team->name );
+
+     assertNull( league_teams[2].team );
+
+     free_league_teams( league_teams );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId, null );
@@ -379,7 +443,8 @@ static void run_all_tests()
      run_test( convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId,             null );
 
-     run_test( convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDataAndLeagueId,       null );
+     run_test( convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDataAndLeagueId,  null );
+     run_test( convertLeagueTeams_ShouldOnlyConvertTeamsThatAreNotEmpty_GivenOrgDataAndLeagueId, null );
 }
 
 int main( int argc, char *argv[] )
