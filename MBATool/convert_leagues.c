@@ -67,7 +67,7 @@ org_league_s *convertLeagues( const org_data_s *org_data )
 
           if ( org_data->season_phase == sp_Allstar )
           {
-               if ( (leagues[i]->teams = convertLeagueTeams( org_data, league_id )) == NULL )
+               if ( (leagues[i]->teams = convertLeagueTeams( org_data, league_id, i )) == NULL )
                {
                     freeLeagues( leagues, TOTAL_LEAGUES );
 

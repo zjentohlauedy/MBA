@@ -106,7 +106,7 @@ static char *convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOr
      {
           int division_id = i + 1;
 
-          division_team_s *division_teams = convertDivisionTeams( &org_data, division_id );
+          division_team_s *division_teams = convertDivisionTeams( &org_data, division_id, i );
 
           assertNotNull( division_teams );
 
@@ -147,7 +147,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDi
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1, 0 );
 
      assertNotNull( division_teams );
 
@@ -194,7 +194,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDat
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1, 0 );
 
      assertNotNull( division_teams );
 
@@ -236,7 +236,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgData
      fileparks_s     *parks_data     = org_data.parks_data;
      fileplayer_s    *players_data   = org_data.players_data;
 
-     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1, 0 );
 
      assertNotNull( division_teams );
 
@@ -274,7 +274,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivi
      org_data.season       = 3;
      org_data.season_phase = sp_Playoff;
 
-     division_team_s *division_teams = convertDivisionTeams( &org_data, 1 );
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1, 0 );
 
      assertNotNull( division_teams );
 

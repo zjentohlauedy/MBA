@@ -162,13 +162,12 @@ static char *convertLeagues_ShouldReturnLeaguesWithTeams_GivenLeagueFileAndAllst
           for ( int j = 0; j < TEAMS_PER_LEAGUE; ++j )
           {
                int idx = (i * TEAMS_PER_LEAGUE) + j;
-               int id  = (i * TEAMS_PER_LEAGUE) + j + 1;
 
-               assertNotNull(                                 league_teams[j].team          );
-               assertEqualsInt( i + 1,                        league_teams[j].league_id     );
-               assertEqualsInt( id,                           league_teams[j].team_id       );
-               assertEqualsInt( id,                           league_teams[j].team->team_id );
-               assertEqualsStr( league_data->teams[idx].name, league_teams[j].team->name    );
+               assertNotNull(                                                league_teams[j].team          );
+               assertEqualsInt( i + 1,                                       league_teams[j].league_id     );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ), league_teams[j].team_id       );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ), league_teams[j].team->team_id );
+               assertEqualsStr(           league_data->teams[idx].name,      league_teams[j].team->name    );
           }
      }
 

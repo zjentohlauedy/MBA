@@ -137,130 +137,96 @@ static team_stats_s *convertTeamStats( const team_stats_s *team_stats )
      return list.data;
 }
 
-division_team_s *convertDivisionTeams( const org_data_s *org_data, const int division_id )
+
+static data_list_s *convertTeams( const org_data_s *org_data,
+                           const int team_count,
+                           const int parent_id,
+                           const int parent_idx,
+                           boolean_e (addTeamToList)(data_list_s *, const int, team_s *) )
 {
-     data_list_s      list                      = { 0 };
-     division_team_s  sentinel                  = DIVISION_TEAM_SENTINEL;
-     team_s          *teams[TEAMS_PER_DIVISION] = { 0 };
+     static data_list_s  list               = { 0 };
+     /**/   team_s      *teams[TOTAL_TEAMS] = { 0 };
+
+     list.data  = NULL;
+     list.__max = 0;
+     list.count = 0;
 
      fileleagname_s *league_data = org_data->league_data;
      fileparks_s    *parks_data  = org_data->parks_data;
 
-     int idx = (division_id - 1) * TEAMS_PER_DIVISION;
-
-     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     for ( int i = 0; i < team_count; ++i )
      {
-          int team_id  = byte2int( league_data->teams[idx + i].team_id );
-          int park_idx = byte2int( league_data->teams[idx + i].stadium );
+          int team_idx = (parent_idx * team_count) + i;
+          int team_id  = byte2int( league_data->teams[team_idx].team_id );
+          int park_idx = byte2int( league_data->teams[team_idx].stadium );
 
-          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, parks_data->park_names[park_idx].text, league_data->teams[idx + i].color[0] )) == NULL )
+          if ( (teams[i] = createTeam( team_id, league_data->teams[team_idx].name, parks_data->park_names[park_idx].text, league_data->teams[team_idx].color[0] )) == NULL )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
 
-          if ( (teams[i]->players = convertPlayers( org_data, team_id, idx + i )) == NULL )
+          if ( (teams[i]->players = convertPlayers( org_data, team_id, team_idx )) == NULL )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
 
           if ( (teams[i]->pitching_stats = convertPitchingStats( teams[i]->players, team_id )) == NULL )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
 
           if ( (teams[i]->batting_stats = convertBattingStats( teams[i]->players, team_id )) == NULL )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
 
           if ( (teams[i]->stats = convertTeamStats( &(org_data->records->teams[i]) )) == NULL )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
 
-          if ( addDivisionTeamToList( &list, division_id, teams[i] ) != bl_True )
+          if ( addTeamToList( &list, parent_id, teams[i] ) != bl_True )
           {
-               freeTeams( teams, TEAMS_PER_DIVISION );
+               freeTeams( teams, TOTAL_TEAMS );
 
                return NULL;
           }
      }
 
-     add_to_data_list( &list, &sentinel, sizeof(division_team_s), 10 );
-
-     return list.data;
+     return &list;
 }
 
-league_team_s *convertLeagueTeams( const org_data_s *org_data, const int league_id )
+
+division_team_s *convertDivisionTeams( const org_data_s *org_data, const int division_id, const int division_idx )
 {
-     data_list_s    list                    = { 0 };
-     league_team_s  sentinel                = LEAGUE_TEAM_SENTINEL;
-     team_s        *teams[TEAMS_PER_LEAGUE] = { 0 };
+     division_team_s  sentinel = DIVISION_TEAM_SENTINEL;
+     data_list_s     *list     = NULL;
 
-     fileleagname_s *league_data = org_data->league_data;
-     fileparks_s    *parks_data  = org_data->parks_data;
+     list = convertTeams( org_data, TEAMS_PER_DIVISION, division_id, division_idx, addDivisionTeamToList );
 
-     int idx = (league_id - 1) * TEAMS_PER_LEAGUE;
+     add_to_data_list( list, &sentinel, sizeof(division_team_s), 10 );
 
-     for ( int i = 0; i < TEAMS_PER_LEAGUE; ++i )
-     {
-          int team_id = idx + i + 1;
-//          int team_id = byte2int( league_data->teams[idx + i].team_id );
+     return list->data;
+}
 
-          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, parks_data->park_names[idx + i].text, league_data->teams[idx + i].color[0] )) == NULL )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
+league_team_s *convertLeagueTeams( const org_data_s *org_data, const int league_id, const int league_idx )
+{
+     league_team_s  sentinel = LEAGUE_TEAM_SENTINEL;
+     data_list_s   *list     = NULL;
 
-               return NULL;
-          }
+     list = convertTeams( org_data, TEAMS_PER_LEAGUE, league_id, league_idx, addLeagueTeamToList );
 
-          if ( (teams[i]->players = convertPlayers( org_data, team_id, idx + i )) == NULL )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
+     add_to_data_list( list, &sentinel, sizeof(league_team_s), 10 );
 
-               return NULL;
-          }
-
-          if ( (teams[i]->pitching_stats = convertPitchingStats( teams[i]->players, team_id )) == NULL )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
-
-               return NULL;
-          }
-
-          if ( (teams[i]->batting_stats = convertBattingStats( teams[i]->players, team_id )) == NULL )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
-
-               return NULL;
-          }
-
-          if ( (teams[i]->stats = convertTeamStats( &(org_data->records->teams[i]) )) == NULL )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
-
-               return NULL;
-          }
-
-          if ( addLeagueTeamToList( &list, league_id, teams[i] ) != bl_True )
-          {
-               freeTeams( teams, TEAMS_PER_LEAGUE );
-
-               return NULL;
-          }
-     }
-
-     add_to_data_list( &list, &sentinel, sizeof(league_team_s), 10 );
-
-     return list.data;
+     return list->data;
 }
