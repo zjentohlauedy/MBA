@@ -114,12 +114,12 @@ typedef struct
 
 typedef struct
 {
-     unsigned char name   [11];
-     unsigned char stadium[ 1];
-     unsigned char color  [ 1];
-     unsigned char wins   [ 1];
-     unsigned char losses [ 1];
-     unsigned char term   [ 1]; // possible team id
+     unsigned char name    [11];
+     unsigned char stadium [ 1];
+     unsigned char color   [ 1];
+     unsigned char wins    [ 1];
+     unsigned char losses  [ 1];
+     unsigned char team_id [ 1];
 
 } fileteam_s;
 

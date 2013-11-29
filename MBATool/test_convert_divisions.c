@@ -17,7 +17,7 @@ static char *convertDivisions_ShouldReturnAListOfLeagueDivisions_GivenALeagueFil
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 1, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Regular );
 
      fileleagname_s    *league_data      = org_data.league_data;
      league_division_s *league_divisions = convertDivisions( &org_data, 1 );
@@ -70,7 +70,7 @@ static char *convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDat
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 1, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Regular );
 
      fileleagname_s    *league_data      = org_data.league_data;
      fileparks_s       *parks_data       = org_data.parks_data;
@@ -86,17 +86,17 @@ static char *convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDat
 
           for ( int j = 0; j < TEAMS_PER_DIVISION; ++j )
           {
-               int idx = (i * TEAMS_PER_DIVISION) + j;
-               int id  = (i * TEAMS_PER_DIVISION) + j + 1;
+               int idx      = (i * TEAMS_PER_DIVISION) + j;
+               int park_idx = byte2int( league_data->teams[idx].stadium );
 
-               assertNotNull(                                     division_teams[j].team                  );
-               assertEqualsInt( i + 1,                            division_teams[j].division_id           );
-               assertEqualsInt( id,                               division_teams[j].team_id               );
-               assertEqualsInt( id,                               division_teams[j].team->team_id         );
-               assertEqualsStr( league_data->teams[idx].name,     division_teams[j].team->name            );
-               assertEqualsStr( parks_data->park_names[idx].text, division_teams[j].team->location        );
-               assertEqualsInt( league_data->teams[idx].color[0], division_teams[j].team->primary_color   );
-               assertEqualsInt( league_data->teams[idx].color[0], division_teams[j].team->secondary_color );
+               assertNotNull(                                                     division_teams[j].team                  );
+               assertEqualsInt(           i + 1,                                  division_teams[j].division_id           );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),      division_teams[j].team_id               );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),      division_teams[j].team->team_id         );
+               assertEqualsStr(           league_data->teams[idx].name,           division_teams[j].team->name            );
+               assertEqualsStr(           parks_data->park_names[park_idx].text,  division_teams[j].team->location        );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),        division_teams[j].team->primary_color   );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),        division_teams[j].team->secondary_color );
           }
      }
 
@@ -112,7 +112,7 @@ static char *convertDivisions_ShouldReturnDivisionsWithStats_GivenOrgData()
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 7, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 7, sp_Regular );
      org_data.season       = 7;
      org_data.season_phase = sp_Regular;
 

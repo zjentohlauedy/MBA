@@ -18,8 +18,12 @@ fileleagname_s *buildFileLeagName( void )
 
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
      {
-          sprintf( league_data.teams[i].name,       "Team%d", i + 1 );
-          /**/     league_data.teams[i].color [0] = i + 1;
+          sprintf(  league_data.teams[i].name,    "Team%d", i + 1 );
+          int2byte( league_data.teams[i].stadium,           i     );
+          int2byte( league_data.teams[i].color,             i + 1 );
+          int2byte( league_data.teams[i].wins,              i     );
+          int2byte( league_data.teams[i].losses,            i     );
+          int2byte( league_data.teams[i].team_id,           i + 1 );
      }
 
      return &league_data;

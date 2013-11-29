@@ -17,7 +17,7 @@ static char *convertOrg_ShouldReturnOrgWithLeagues_GivenLeagueFileData()
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 1, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Regular );
 
      org_s *org = convertOrg( &org_data );
 

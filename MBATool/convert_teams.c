@@ -150,16 +150,17 @@ division_team_s *convertDivisionTeams( const org_data_s *org_data, const int div
 
      for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
      {
-          int team_id = idx + i + 1;
+          int team_id  = byte2int( league_data->teams[idx + i].team_id );
+          int park_idx = byte2int( league_data->teams[idx + i].stadium );
 
-          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, parks_data->park_names[idx + i].text, league_data->teams[idx + i].color[0] )) == NULL )
+          if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, parks_data->park_names[park_idx].text, league_data->teams[idx + i].color[0] )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 
                return NULL;
           }
 
-          if ( (teams[i]->players = convertPlayers( org_data, team_id )) == NULL )
+          if ( (teams[i]->players = convertPlayers( org_data, team_id, idx + i )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_DIVISION );
 
@@ -214,6 +215,7 @@ league_team_s *convertLeagueTeams( const org_data_s *org_data, const int league_
      for ( int i = 0; i < TEAMS_PER_LEAGUE; ++i )
      {
           int team_id = idx + i + 1;
+//          int team_id = byte2int( league_data->teams[idx + i].team_id );
 
           if ( (teams[i] = createTeam( team_id, league_data->teams[idx + i].name, parks_data->park_names[idx + i].text, league_data->teams[idx + i].color[0] )) == NULL )
           {
@@ -222,7 +224,7 @@ league_team_s *convertLeagueTeams( const org_data_s *org_data, const int league_
                return NULL;
           }
 
-          if ( (teams[i]->players = convertPlayers( org_data, team_id )) == NULL )
+          if ( (teams[i]->players = convertPlayers( org_data, team_id, idx + i )) == NULL )
           {
                freeTeams( teams, TEAMS_PER_LEAGUE );
 

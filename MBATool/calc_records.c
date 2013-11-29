@@ -123,7 +123,7 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           teams[i].league   = i / TEAMS_PER_LEAGUE;
           teams[i].division = i / TEAMS_PER_DIVISION;
 
-          records->teams[i].team_id      = i + 1;
+          records->teams[i].team_id      = byte2int( league_file->teams[i].team_id );
           records->teams[i].season       = season;
           records->teams[i].season_phase = season_phase;
      }

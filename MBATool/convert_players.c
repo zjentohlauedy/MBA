@@ -258,14 +258,14 @@ static boolean_e addPlayerToList( data_list_s *list, const int team_id, const in
      return bl_True;
 }
 
-team_player_s *convertPlayers( const org_data_s *org_data, const int team_id )
+team_player_s *convertPlayers( const org_data_s *org_data, const int team_id, const int team_idx )
 {
      data_list_s    list                      = { 0 };
      team_player_s  sentinel                  = TEAM_PLAYER_SENTINEL;
      player_s      *players[PLAYERS_PER_TEAM] = { 0 };
 
 
-     int idx = (team_id - 1) * PLAYERS_PER_TEAM;
+     int idx = team_idx * PLAYERS_PER_TEAM;
 
      for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
      {

@@ -552,9 +552,9 @@ static char *calculateRecords_ShouldSetTheTeamIdSeasonAndPhase_GivenAScheduleAnd
 
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
      {
-          assertEquals( i + 1,      records->teams[i].team_id      );
-          assertEquals( 4,          records->teams[i].season       );
-          assertEquals( sp_Regular, records->teams[i].season_phase );
+          assertEquals( byte2int( league_file->teams[i].team_id ), records->teams[i].team_id      );
+          assertEquals(           4,                               records->teams[i].season       );
+          assertEquals(           sp_Regular,                      records->teams[i].season_phase );
      }
 
      freeRecords(  records  );

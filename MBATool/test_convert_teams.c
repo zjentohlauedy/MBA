@@ -11,7 +11,7 @@
 static char *result;
 
 
-static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int team_id )
+static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int team_id, int team_idx )
 {
      static team_batting_stats_s team_batting_stats = { 0 };
 
@@ -19,7 +19,7 @@ static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int t
 
      team_batting_stats.team_id = team_id;
 
-     int start = (team_id - 1) * PLAYERS_PER_TEAM;
+     int start = team_idx * PLAYERS_PER_TEAM;
 
      for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
      {
@@ -51,7 +51,7 @@ static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int t
      return &team_batting_stats;
 }
 
-static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int team_id )
+static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int team_id, int team_idx )
 {
      static team_pitching_stats_s team_pitching_stats = { 0 };
 
@@ -59,7 +59,7 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
 
      team_pitching_stats.team_id = team_id;
 
-     int start = (team_id - 1) * PLAYERS_PER_TEAM;
+     int start = team_idx * PLAYERS_PER_TEAM;
 
      for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
      {
@@ -97,7 +97,7 @@ static char *convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOr
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 1, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Regular );
 
      fileleagname_s  *league_data    = org_data.league_data;
      fileparks_s     *parks_data     = org_data.parks_data;
@@ -112,17 +112,17 @@ static char *convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOr
 
           for ( int j = 0; j < TEAMS_PER_DIVISION; ++j )
           {
-               int idx = (i * TEAMS_PER_DIVISION) + j;
-               int id  = (i * TEAMS_PER_DIVISION) + j + 1;
+               int idx      = (i * TEAMS_PER_DIVISION) + j;
+               int park_idx = byte2int( league_data->teams[idx].stadium );
 
-               assertNotNull(                                     division_teams[j].team                  );
-               assertEqualsInt( division_id,                      division_teams[j].division_id           );
-               assertEqualsInt( id,                               division_teams[j].team_id               );
-               assertEqualsInt( id,                               division_teams[j].team->team_id         );
-               assertEqualsStr( league_data->teams[idx].name,     division_teams[j].team->name            );
-               assertEqualsStr( parks_data->park_names[idx].text, division_teams[j].team->location        );
-               assertEqualsInt( league_data->teams[idx].color[0], division_teams[j].team->primary_color   );
-               assertEqualsInt( league_data->teams[idx].color[0], division_teams[j].team->secondary_color );
+               assertNotNull(                                                    division_teams[j].team                  );
+               assertEqualsInt(           division_id,                           division_teams[j].division_id           );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),     division_teams[j].team_id               );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),     division_teams[j].team->team_id         );
+               assertEqualsStr(           league_data->teams[idx].name,          division_teams[j].team->name            );
+               assertEqualsStr(           parks_data->park_names[park_idx].text, division_teams[j].team->location        );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),       division_teams[j].team->primary_color   );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),       division_teams[j].team->secondary_color );
           }
 
           assertNull( division_teams[TEAMS_PER_DIVISION].team );
@@ -140,7 +140,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDi
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 3, sp_Regular );
+     org_data.records      = buildRecords( org_data.league_data, 3, sp_Regular );
      org_data.season       = 3;
 
      fileleagname_s  *league_data    = org_data.league_data;
@@ -165,7 +165,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDi
                int id  = (i * PLAYERS_PER_TEAM) + j + 1;
 
                assertNotNull(                                    team_players[j].player                 );
-               assertEqualsInt( i + 1,                           team_players[j].team_id                );
+               assertEqualsInt( division_teams[i].team_id,       team_players[j].team_id                );
                assertEqualsInt( org_data.season,                 team_players[j].season                 );
                assertEqualsStr( players_data[idx].first_name,    team_players[j].player->first_name     );
                assertEqualsStr( players_data[idx].last_name,     team_players[j].player->last_name      );
@@ -186,7 +186,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDat
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 3, sp_Playoff );
+     org_data.records      = buildRecords( org_data.league_data, 3, sp_Playoff );
      org_data.season       = 3;
      org_data.season_phase = sp_Playoff;
 
@@ -207,7 +207,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDat
           assertNotNull( team_pitching_stats );
 
           team_pitching_stats_s  sentinel = TEAM_PITCHING_STATS_SENTINEL;
-          team_pitching_stats_s *expected = calcPitchingStats( players_data, division_teams[i].team_id );
+          team_pitching_stats_s *expected = calcPitchingStats( players_data, division_teams[i].team_id, i );
 
           expected->season       = org_data.season;
           expected->season_phase = org_data.season_phase;
@@ -228,7 +228,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgData
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 3, sp_Playoff );
+     org_data.records      = buildRecords( org_data.league_data, 3, sp_Playoff );
      org_data.season       = 3;
      org_data.season_phase = sp_Playoff;
 
@@ -249,7 +249,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgData
           assertNotNull( team_batting_stats );
 
           team_batting_stats_s  sentinel = TEAM_BATTING_STATS_SENTINEL;
-          team_batting_stats_s *expected = calcBattingStats( players_data, division_teams[i].team_id );
+          team_batting_stats_s *expected = calcBattingStats( players_data, division_teams[i].team_id, i );
 
           expected->season       = org_data.season;
           expected->season_phase = org_data.season_phase;
@@ -270,7 +270,7 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivi
      org_data.league_data  = buildFileLeagName();
      org_data.parks_data   = buildFileParks();
      org_data.players_data = buildFilePlayers();
-     org_data.records      = buildRecords( 3, sp_Playoff );
+     org_data.records      = buildRecords( org_data.league_data, 3, sp_Playoff );
      org_data.season       = 3;
      org_data.season_phase = sp_Playoff;
 

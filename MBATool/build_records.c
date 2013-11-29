@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "builders.h"
+#include "file_formats.h"
 
-records_s *buildRecords( const int season, const season_phase_e season_phase )
+records_s *buildRecords( const fileleagname_s *league_data, const int season, const season_phase_e season_phase )
 {
      static records_s        records;
      static league_stats_s   leagues   [TOTAL_LEAGUES];
@@ -49,7 +50,7 @@ records_s *buildRecords( const int season, const season_phase_e season_phase )
 
      for ( int i = 0; i < TOTAL_TEAMS; ++i )
      {
-          teams[i].team_id         = i + 1;
+          teams[i].team_id         = byte2int( league_data->teams[i].team_id );
           teams[i].season          = season;
           teams[i].season_phase    = season_phase;
           teams[i].wins            = rand() % 5000;

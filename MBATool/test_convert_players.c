@@ -25,7 +25,7 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
      {
           int team_id = i + 1;
 
-          team_player_s *team_players = convertPlayers( &org_data, team_id );
+          team_player_s *team_players = convertPlayers( &org_data, team_id, i );
 
           assertNotNull( team_players );
 
@@ -176,7 +176,7 @@ static char *convertPlayers_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_Gi
      termName( players_data[0].first_phoen, sizeof(players_data[0].first_phoen) );
      termName( players_data[0].last_phoen,  sizeof(players_data[0].last_phoen)  );
 
-     team_player_s *team_players = convertPlayers( &org_data, 1 );
+     team_player_s *team_players = convertPlayers( &org_data, 1, 0 );
 
      assertNotNull( team_players );
 
@@ -203,7 +203,7 @@ static char *convertPlayers_ShouldSkipEmptyPlayers_GivenPlayersFileData()
      org_data.parks_data   = buildFileParks();
      org_data.players_data = players_data;
 
-     team_player_s *team_players = convertPlayers( &org_data, 1 );
+     team_player_s *team_players = convertPlayers( &org_data, 1, 0 );
      team_player_s  sentinel     = TEAM_PLAYER_SENTINEL;
 
      assertNotNull( team_players );
@@ -231,7 +231,7 @@ static char *convertPlayers_ShouldFailIfAPlayerHasAIdChecksumMismatch_GivenPlaye
 
      id_info->checksum[0]++;
 
-     assertNull( convertPlayers( &org_data, 1 ) );
+     assertNull( convertPlayers( &org_data, 1, 0 ) );
 
      return NULL;
 }
@@ -248,7 +248,7 @@ static char *convertPlayers_ShouldReturnPlayersWithStats_GivenPlayersFileDataAnd
 
      fileplayer_s  *players_data = org_data.players_data;
 
-     team_player_s *team_players = convertPlayers( &org_data, 1 );
+     team_player_s *team_players = convertPlayers( &org_data, 1, 0 );
 
      assertNotNull( team_players );
 
