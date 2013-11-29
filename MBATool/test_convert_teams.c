@@ -328,6 +328,49 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivi
      return NULL;
 }
 
+static char *convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDataAndLeagueId()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords( org_data.league_data, 1, sp_Allstar );
+
+     fileleagname_s  *league_data    = org_data.league_data;
+     fileparks_s     *parks_data     = org_data.parks_data;
+
+     for ( int i = 0; i < TOTAL_LEAGUES; ++i )
+     {
+          int league_id = i + 1;
+
+          league_team_s *league_teams = convertLeagueTeams( &org_data, league_id, i );
+
+          assertNotNull( league_teams );
+
+          for ( int j = 0; j < TEAMS_PER_LEAGUE; ++j )
+          {
+               int idx      = (i * TEAMS_PER_LEAGUE) + j;
+               int park_idx = byte2int( league_data->teams[idx].stadium );
+
+               assertNotNull(                                                    league_teams[j].team                  );
+               assertEqualsInt(           league_id,                             league_teams[j].league_id             );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),     league_teams[j].team_id               );
+               assertEqualsInt( byte2int( league_data->teams[idx].team_id ),     league_teams[j].team->team_id         );
+               assertEqualsStr(           league_data->teams[idx].name,          league_teams[j].team->name            );
+               assertEqualsStr(           parks_data->park_names[park_idx].text, league_teams[j].team->location        );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),       league_teams[j].team->primary_color   );
+               assertEqualsInt( byte2int( league_data->teams[idx].color ),       league_teams[j].team->secondary_color );
+          }
+
+          assertNull( league_teams[TEAMS_PER_LEAGUE].team );
+
+          free_league_teams( league_teams );
+     }
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( convertDivisionTeams_ShouldReturnAListOfDivisionTeamRecords_GivenOrgDataAndDivisionId, null );
@@ -335,6 +378,8 @@ static void run_all_tests()
      run_test( convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId,     null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId,             null );
+
+     run_test( convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDataAndLeagueId,       null );
 }
 
 int main( int argc, char *argv[] )

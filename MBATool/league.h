@@ -100,5 +100,6 @@ int       remove_league( sqlite3 *db, const league_s *league    );
 
 void      free_league(           league_s          *league           );
 void      free_league_divisions( league_division_s *league_divisions );
+void      free_league_teams(     league_team_s     *league_teams     );
 
 #endif
