@@ -160,7 +160,7 @@ static data_list_s *convertTeams( const org_data_s *org_data,
           int team_id  = byte2int( league_data->teams[team_idx].team_id );
           int park_idx = byte2int( league_data->teams[team_idx].stadium );
 
-          if ( league_data->teams[team_idx].name[0] == '\0' ) continue;
+          if ( EMPTY( league_data->teams[team_idx].name ) ) continue;
 
           if ( (teams[i] = createTeam( team_id,
                                        league_data->teams[team_idx].name,

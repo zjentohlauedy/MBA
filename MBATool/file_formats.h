@@ -21,6 +21,9 @@
 #define STAT_CAP_AMOUNT       225
 
 
+#define EMPTY( Str ) (Str)[0] == '\0'
+
+
 typedef enum
 {
      bl_False = 0,

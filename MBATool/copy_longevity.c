@@ -25,7 +25,7 @@ boolean_e copyLongevity( fileplayer_s *players_file1, fileplayer_s *players_file
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-          if ( players_file1[i].last_name[0] == '\0' ) continue;
+          if ( EMPTY( players_file1[i].last_name ) ) continue;
 
           if ( (matchingPlayer = findMatchingPlayer( &players_file1[i], players_file2 )) == NULL )
           {

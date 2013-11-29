@@ -6,7 +6,7 @@ void formatAmigaToDos( fileplayer_s *players_file )
 {
      for ( int idx = 0; idx < TOTAL_PLAYERS; ++idx )
      {
-	  if ( players_file[idx].last_name[0] == '\0' ) continue;
+	  if ( EMPTY( players_file[idx].last_name ) ) continue;
 
           int pos = nibble( players_file[idx].position[0], n_High );
 

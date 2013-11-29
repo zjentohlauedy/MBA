@@ -25,7 +25,8 @@ static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int t
      {
           fileplayer_s *player = &players_data[start + i];
 
-          if (         player->last_name[0]          == '\0'         ) continue;
+          if ( EMPTY( player->last_name ) ) continue;
+
           if ( nibble( player->position[0], n_High ) == fpos_Pitcher ) continue;
 
           acc_bat_stats_s *batting_stats = &(player->acc_stats.simulated.batting);
@@ -65,7 +66,8 @@ static team_pitching_stats_s *calcPitchingStats( fileplayer_s *players_data, int
      {
           fileplayer_s *player = &players_data[start + i];
 
-          if (         player->last_name[0]          == '\0'         ) continue;
+          if ( EMPTY( player->last_name ) ) continue;
+
           if ( nibble( player->position[0], n_High ) != fpos_Pitcher ) continue;
 
           acc_pch_stats_s *pitching_stats = &(player->acc_stats.simulated.pitching);

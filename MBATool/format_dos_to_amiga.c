@@ -23,7 +23,7 @@ boolean_e formatDosToAmiga( fileplayer_s *players_file )
 
      for ( int i = 0; i < TOTAL_PLAYERS; ++i )
      {
-	  if ( players_file[i].last_name[0] == '\0' ) continue;
+	  if ( EMPTY( players_file[i].last_name ) ) continue;
 
           unsigned int pos = nibble( players_file[i].position[0], n_High );
 

@@ -269,7 +269,7 @@ team_player_s *convertPlayers( const org_data_s *org_data, const int team_id, co
 
      for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
      {
-          if ( org_data->players_data[idx + i].last_name[0] == '\0' ) continue;
+          if ( EMPTY( org_data->players_data[idx + i].last_name ) ) continue;
 
           if ( (players[i] = createPlayer( org_data->season, org_data->season_phase, &(org_data->players_data[idx + i]) )) == NULL )
           {

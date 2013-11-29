@@ -255,14 +255,14 @@ static void cleanupLists( data_list_s *days, data_list_s *road, data_list_s *hom
 
 static boolean_e emptyGame( const schedule_game_s *game )
 {
-     if ( game->road.name[0] == '\0'  &&  game->home.name[0] == '\0' ) return bl_True;
+     if ( EMPTY( game->road.name )  &&  EMPTY( game->home.name ) ) return bl_True;
 
      return bl_False;
 }
 
 static boolean_e validGame( const schedule_game_s *game )
 {
-     if ( game->road.name[0] == '\0'  ||  game->home.name[0] == '\0' ) return bl_False;
+     if ( EMPTY( game->road.name )  ||  EMPTY( game->home.name ) ) return bl_False;
 
      return bl_True;
 }
