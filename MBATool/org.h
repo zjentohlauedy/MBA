@@ -39,7 +39,8 @@ typedef struct
 
 } org_data_s;
 
-org_s *getOrg( sqlite3 *db, const int season );
+org_s *getOrg(  sqlite3 *db, const int    season );
+int    saveOrg( sqlite3 *db, const org_s *org    );
 
 org_s             *convertOrg(           const org_data_s *org_data                                                );
 org_league_s      *convertLeagues(       const org_data_s *org_data                                                );

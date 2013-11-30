@@ -123,6 +123,89 @@ org_s *getOrg( sqlite3 *db, const int season )
      return org;
 }
 
+
+static int saveTeamPlayers(sqlite3 *db, const team_player_s *team_players )
+{
+     int rc;
+
+     if ( team_players == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; team_players[i].team_id > 0; ++i )
+     {
+          if ( (rc = save_player( db, team_players[i].player )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+static int saveDivisionTeams( sqlite3 *db, const division_team_s *division_teams )
+{
+     int rc;
+
+     if ( division_teams == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; division_teams[i].division_id > 0; ++i )
+     {
+          if ( (rc = saveTeamPlayers( db, division_teams[i].team->players )) != SQLITE_OK ) return rc;
+
+          if ( (rc = save_team( db, division_teams[i].team )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+static int saveLeagueDivisions( sqlite3 *db, const league_division_s *league_divisions )
+{
+     int rc;
+
+     if ( league_divisions == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; league_divisions[i].league_id > 0; ++i )
+     {
+          if ( (rc = saveDivisionTeams( db, league_divisions[i].division->teams )) != SQLITE_OK ) return rc;
+
+          if ( (rc = save_division( db, league_divisions[i].division )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+static int saveLeagueTeams( sqlite3 *db, const league_team_s *league_teams )
+{
+     int rc;
+
+     if ( league_teams == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; league_teams[i].league_id > 0; ++i )
+     {
+          if ( (rc = saveTeamPlayers( db, league_teams[i].team->players )) != SQLITE_OK ) return rc;
+
+          if ( (rc = save_team( db, league_teams[i].team )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+int saveOrg( sqlite3 *db, const org_s *org )
+{
+     int rc;
+
+     if ( org          == NULL ) return SQLITE_OK;
+     if ( org->leagues == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; org->leagues[i].league != NULL; ++i )
+     {
+          if ( (rc = saveLeagueTeams( db, org->leagues[i].league->teams )) != SQLITE_OK ) return rc;
+
+          if ( (rc = saveLeagueDivisions( db, org->leagues[i].league->divisions )) != SQLITE_OK ) return rc;
+
+          if ( (rc = save_league( db, org->leagues[i].league )) != SQLITE_OK ) return rc;
+     }
+
+     return SQLITE_OK;
+}
+
+
 void freeOrgLeagues( org_league_s *org_leagues )
 {
      for ( int i = 0; org_leagues[i].league != NULL; ++i )
