@@ -46,6 +46,7 @@ tests = \
    test_team_service \
    test_division_service \
    test_league_service \
+   test_org_service \
    test_file_utils \
    test_convert_org \
    test_convert_leagues \
@@ -151,7 +152,7 @@ test_division_stats_t: test_division_stats_t.o division_stats_t.o sql_query.o da
 test_division_accolades_t: test_division_accolades_t.o division_accolades_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
-test_leagues_t: test_leagues_t.o leagues_t.o sql_query.o
+test_leagues_t: test_leagues_t.o leagues_t.o sql_query.o data_list.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_league_divisions_t: test_league_divisions_t.o league_divisions_t.o sql_query.o data_list.o
@@ -176,6 +177,9 @@ test_division_service: test_division_service.o libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_league_service: test_league_service.o libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_org_service: test_org_service.o libmbadata.a libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_file_utils: test_file_utils.o file_utils.o data_list.o parse_csv.o
@@ -237,14 +241,23 @@ MBADATA_OBJECTS = \
  team_service_remove.o \
  team_service_free.o \
  division_service.o \
- league_service.o
+ league_service.o \
+ org_service.o
 
 libmbadata.a: $(MBADATA_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^
 
 MBABUILDERS_OBJECTS = \
- build_pitcher_stats.o \
+ build_league.o \
+ build_league_team.o \
+ build_league_division.o \
+ build_division.o \
+ build_division_team.o \
+ build_team.o \
  build_team_pitching_stats.o \
+ build_team_player.o \
+ build_player.o \
+ build_pitcher_stats.o \
  build_file_leagname.o \
  build_file_parks.o \
  build_file_players.o \

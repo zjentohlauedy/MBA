@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sqlite3.h>
+#include "builders.h"
 #include "league.h"
 #include "unit_test.h"
 
@@ -59,8 +60,7 @@ static char *leagues_t_create__ShouldInsertRecordsInTheLeaguesTTable()
 {
      league_s expected = { 0 };
 
-     /**/    expected.league_id = 5;
-     strcpy( expected.name,      "LeagueName1" );
+     buildIntoLeague( &expected, 1 );
 
      assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
 
@@ -78,8 +78,7 @@ static char *leagues_t_create__ShouldGiveAnErrorIfLeagueIdAlreadyExists()
 {
      league_s expected = { 0 };
 
-     /**/    expected.league_id = 5;
-     strcpy( expected.name,      "LeagueName1" );
+     buildIntoLeague( &expected, 1 );
 
      assertEquals( SQLITE_OK, leagues_t_create( db, &expected ) );
 
@@ -96,8 +95,7 @@ static char *leagues_t_read__ShouldRetrieveMatchingRecord_GivenTheLeagueId()
 {
      league_s expected = { 0 };
 
-     /**/    expected.league_id = 5;
-     strcpy( expected.name,      "LeagueName1" );
+     buildIntoLeague( &expected, 1 );
 
      insert_a_league( &expected );
 
@@ -115,12 +113,45 @@ static char *leagues_t_read__ShouldRetrieveMatchingRecord_GivenTheLeagueId()
      return NULL;
 }
 
+static char *leagues_t_read_all__ShouldRetrieveAllLeagueRecords_WhenCalled()
+{
+     league_s expected1 = { 0 };
+     league_s expected2 = { 0 };
+
+     buildIntoLeague( &expected1, 1 );
+     buildIntoLeague( &expected2, 2 );
+
+     insert_a_league( &expected1 );
+     insert_a_league( &expected2 );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, leagues_t_read_all( db, &list ) );
+
+     assertEquals( 2, list.count );
+
+     league_s *actual = list.data;
+
+     assertNotNull( actual );
+
+     assertEqualsInt( expected1.league_id, actual[0].league_id );
+     assertEqualsStr( expected1.name,      actual[0].name      );
+
+     assertEqualsInt( expected2.league_id, actual[1].league_id );
+     assertEqualsStr( expected2.name,      actual[1].name      );
+
+     free( actual );
+
+     sqlite3_exec( db, "delete from leagues_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
 static char *leagues_t_update__ShouldModifyMatchingRecord_GivenTheLeagueId()
 {
      league_s expected = { 0 };
 
-     /**/    expected.league_id = 5;
-     strcpy( expected.name,      "LeagueName1" );
+     buildIntoLeague( &expected, 1 );
 
      insert_a_league( &expected );
 
@@ -142,8 +173,7 @@ static char *leagues_t_delete__ShouldDeleteMatchingRecord_GivenTheLeagueId()
 {
      league_s expected = { 0 };
 
-     /**/    expected.league_id = 5;
-     strcpy( expected.name,      "LeagueName1" );
+     buildIntoLeague( &expected, 1 );
 
      insert_a_league( &expected );
 
@@ -169,6 +199,7 @@ static void run_all_tests()
      run_test( leagues_t_create__ShouldInsertRecordsInTheLeaguesTTable,       check_sqlite_error );
      run_test( leagues_t_create__ShouldGiveAnErrorIfLeagueIdAlreadyExists,    check_sqlite_error );
      run_test( leagues_t_read__ShouldRetrieveMatchingRecord_GivenTheLeagueId, check_sqlite_error );
+     run_test( leagues_t_read_all__ShouldRetrieveAllLeagueRecords_WhenCalled, check_sqlite_error );
      run_test( leagues_t_update__ShouldModifyMatchingRecord_GivenTheLeagueId, check_sqlite_error );
      run_test( leagues_t_delete__ShouldDeleteMatchingRecord_GivenTheLeagueId, check_sqlite_error );
 }

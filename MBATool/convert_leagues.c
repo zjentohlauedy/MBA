@@ -103,13 +103,3 @@ org_league_s *convertLeagues( const org_data_s *org_data )
 
      return list.data;
 }
-
-void freeOrgLeagues( org_league_s *org_leagues )
-{
-     for ( int i = 0; org_leagues[i].league != NULL; ++i )
-     {
-          free_league( org_leagues[i].league );
-     }
-
-     free( org_leagues );
-}

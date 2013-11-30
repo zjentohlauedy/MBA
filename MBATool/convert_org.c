@@ -32,13 +32,3 @@ org_s *convertOrg( const org_data_s *org_data )
 
      return org;
 }
-
-void freeOrg( org_s *org )
-{
-     if ( org->leagues != NULL )
-     {
-          freeOrgLeagues( org->leagues );
-     }
-
-     free( org );
-}

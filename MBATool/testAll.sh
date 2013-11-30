@@ -72,6 +72,7 @@ runTestProg test_player_service
 runTestProg test_team_service
 runTestProg test_division_service
 runTestProg test_league_service
+runTestProg test_org_service
 
 TESTARGS="."
 
