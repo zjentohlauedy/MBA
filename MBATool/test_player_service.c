@@ -23,16 +23,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerObject_GivenAPlayerId()
 {
      player_s expected = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -40,16 +40,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerObject_GivenAPlayerId()
 
      assertNotNull( actual );
 
-     assertEqualsInt( expected.player_id,      actual->player_id      );
-     assertEqualsStr( expected.first_name,     actual->first_name     );
-     assertEqualsStr( expected.last_name,      actual->last_name      );
-     assertEqualsStr( expected.first_phonetic, actual->first_phonetic );
-     assertEqualsStr( expected.last_phonetic,  actual->last_phonetic  );
-     assertEqualsInt( expected.skin_tone,      actual->skin_tone      );
-     assertEqualsInt( expected.handedness,     actual->handedness     );
-     assertEqualsInt( expected.player_type,    actual->player_type    );
-     assertEqualsInt( expected.rookie_season,  actual->rookie_season  );
-     assertEqualsInt( expected.longevity,      actual->longevity      );
+     assertEqualsInt( expected.player_id,       actual->player_id       );
+     assertEqualsStr( expected.first_name,      actual->first_name      );
+     assertEqualsStr( expected.last_name,       actual->last_name       );
+     assertEqualsStr( expected.first_phoenetic, actual->first_phoenetic );
+     assertEqualsStr( expected.last_phoenetic,  actual->last_phoenetic  );
+     assertEqualsInt( expected.skin_tone,       actual->skin_tone       );
+     assertEqualsInt( expected.handedness,      actual->handedness      );
+     assertEqualsInt( expected.player_type,     actual->player_type     );
+     assertEqualsInt( expected.rookie_season,   actual->rookie_season   );
+     assertEqualsInt( expected.longevity,       actual->longevity       );
 
      free_player( actual );
 
@@ -64,16 +64,16 @@ static char *get_player__ShoultReturnTheMatchingPlayerWithAccolades_GivenAPlayer
      player_accolade_s expected_accolade1 = { 0 };
      player_accolade_s expected_accolade2 = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -122,16 +122,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingDetails_GivenA
      player_s  expected         = { 0 };
      pitcher_s expected_pitcher = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -174,16 +174,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingStats_GivenAPl
      pitcher_stats_s *expected_pitcher_stats1 = buildPitcherStats( 1, 1, sp_Regular );
      pitcher_stats_s *expected_pitcher_stats2 = buildPitcherStats( 1, 1, sp_Playoff );
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -235,16 +235,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithPitchingAccolades_Give
      pitcher_accolade_s expected_accolade1 = { 0 };
      pitcher_accolade_s expected_accolade2 = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -308,16 +308,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithBattingDetails_GivenAP
      player_s expected        = { 0 };
      batter_s expected_batter = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -368,16 +368,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithBattingStats_GivenAPla
      batter_stats_s expected_batter_stats1 = { 0 };
      batter_stats_s expected_batter_stats2 = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -505,16 +505,16 @@ static char *get_player__ShouldReturnTheMatchingPlayerWithBattingAccolades_Given
      batter_accolade_s expected_batter_accolade1 = { 0 };
      batter_accolade_s expected_batter_accolade2 = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -579,16 +579,16 @@ static char *save_player__ShouldSaveThePlayerToTheDatabase_GivenAPlayerObject()
 {
      player_s expected = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, save_player( db, &expected ) );
 
@@ -598,16 +598,16 @@ static char *save_player__ShouldSaveThePlayerToTheDatabase_GivenAPlayerObject()
 
      assertEquals( SQLITE_OK, players_t_read( db, &actual ) );
 
-     assertEqualsInt( expected.player_id,      actual.player_id      );
-     assertEqualsStr( expected.first_name,     actual.first_name     );
-     assertEqualsStr( expected.last_name,      actual.last_name      );
-     assertEqualsStr( expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( expected.last_phonetic,  actual.last_phonetic  );
-     assertEqualsInt( expected.skin_tone,      actual.skin_tone      );
-     assertEqualsInt( expected.handedness,     actual.handedness     );
-     assertEqualsInt( expected.player_type,    actual.player_type    );
-     assertEqualsInt( expected.rookie_season,  actual.rookie_season  );
-     assertEqualsInt( expected.longevity,      actual.longevity      );
+     assertEqualsInt( expected.player_id,       actual.player_id       );
+     assertEqualsStr( expected.first_name,      actual.first_name      );
+     assertEqualsStr( expected.last_name,       actual.last_name       );
+     assertEqualsStr( expected.first_phoenetic, actual.first_phoenetic );
+     assertEqualsStr( expected.last_phoenetic,  actual.last_phoenetic  );
+     assertEqualsInt( expected.skin_tone,       actual.skin_tone       );
+     assertEqualsInt( expected.handedness,      actual.handedness      );
+     assertEqualsInt( expected.player_type,     actual.player_type     );
+     assertEqualsInt( expected.rookie_season,   actual.rookie_season   );
+     assertEqualsInt( expected.longevity,       actual.longevity       );
 
      assertEquals( SQLITE_OK, players_t_delete( db, &expected ) );
 
@@ -619,16 +619,16 @@ static char *save_player__ShouldSavePlayerAccoladesToTheDatabase_GivenAPlayerWit
      player_s          expected              = { 0 };
      player_accolade_s expected_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_accolades[0].player_id = 1;
      expected_accolades[0].season    = 1;
@@ -676,16 +676,16 @@ static char *save_player__ShouldSavePitcherDetailsToTheDatabase_GivenAPlayerWith
      player_s  expected         = { 0 };
      pitcher_s expected_pitcher = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_pitcher.player_id = 1;
      expected_pitcher.speed     = 5;
@@ -721,16 +721,16 @@ static char *save_player__ShouldSavePitcherStatsToTheDatabase_GivenAPlayerWithPi
      pitcher_s       expected_pitcher          = { 0 };
      pitcher_stats_s expected_pitcher_stats[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_pitcher.player_id = 1;
      expected_pitcher.speed     = 5;
@@ -777,16 +777,16 @@ static char *save_player__ShouldSavePitcherAccoladesToTheDatabase_GivenAPlayerWi
      pitcher_s          expected_pitcher      = { 0 };
      pitcher_accolade_s expected_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_pitcher.player_id = 1;
      expected_pitcher.speed     = 5;
@@ -845,16 +845,16 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      pitcher_stats_s    expected_pitcher_stats[3]     = { 0 };
      pitcher_accolade_s expected_pitcher_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_accolades[0].player_id = 1;
      expected_accolades[0].season    = 1;
@@ -895,8 +895,8 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      strcpy( expected.first_name,      "FirstName2" );
      strcpy( expected.last_name,       "LastName2"  );
-     strcpy( expected.first_phonetic,  "FirstPho2"  );
-     strcpy( expected.last_phonetic,   "LastPho2"   );
+     strcpy( expected.first_phoenetic, "FirstPho2"  );
+     strcpy( expected.last_phoenetic,  "LastPho2"   );
 
      expected_pitcher.speed     = 8;
      expected_pitcher.control   = 6;
@@ -919,16 +919,16 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      assertEquals( SQLITE_OK, players_t_read( db, &actual ) );
 
-     assertEqualsInt( expected.player_id,      actual.player_id      );
-     assertEqualsStr( expected.first_name,     actual.first_name     );
-     assertEqualsStr( expected.last_name,      actual.last_name      );
-     assertEqualsStr( expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( expected.last_phonetic,  actual.last_phonetic  );
-     assertEqualsInt( expected.skin_tone,      actual.skin_tone      );
-     assertEqualsInt( expected.handedness,     actual.handedness     );
-     assertEqualsInt( expected.player_type,    actual.player_type    );
-     assertEqualsInt( expected.rookie_season,  actual.rookie_season  );
-     assertEqualsInt( expected.longevity,      actual.longevity      );
+     assertEqualsInt( expected.player_id,       actual.player_id       );
+     assertEqualsStr( expected.first_name,      actual.first_name      );
+     assertEqualsStr( expected.last_name,       actual.last_name       );
+     assertEqualsStr( expected.first_phoenetic, actual.first_phoenetic );
+     assertEqualsStr( expected.last_phoenetic,  actual.last_phoenetic  );
+     assertEqualsInt( expected.skin_tone,       actual.skin_tone       );
+     assertEqualsInt( expected.handedness,      actual.handedness      );
+     assertEqualsInt( expected.player_type,     actual.player_type     );
+     assertEqualsInt( expected.rookie_season,   actual.rookie_season   );
+     assertEqualsInt( expected.longevity,       actual.longevity       );
 
      data_list_s accolade_list = { 0 };
 
@@ -1014,16 +1014,16 @@ static char *save_player__ShouldSaveBatterDetailsToTheDatabase_GivenAPlayerWithB
      player_s expected        = { 0 };
      batter_s expected_batter = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_batter.player_id          = 1;
      expected_batter.power              = 6;
@@ -1067,16 +1067,16 @@ static char *save_player__ShouldSaveBatterStatsToTheDatabase_GivenAPlayerWithBat
      batter_s       expected_batter          = { 0 };
      batter_stats_s expected_batter_stats[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_batter.player_id          = 1;
      expected_batter.power              = 6;
@@ -1185,16 +1185,16 @@ static char *save_player__ShouldSaveBatterAccoladesToTheDatabase_GivenAPlayerWit
      batter_s          expected_batter              = { 0 };
      batter_accolade_s expected_batter_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_batter.player_id          = 1;
      expected_batter.power              = 6;
@@ -1258,16 +1258,16 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
      batter_stats_s    expected_batter_stats[3]     = { 0 };
      batter_accolade_s expected_batter_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      expected_accolades[0].player_id = 1;
      expected_accolades[0].season    = 1;
@@ -1346,8 +1346,8 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      strcpy( expected.first_name,      "FirstName1" );
      strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
+     strcpy( expected.first_phoenetic, "FirstPho1"  );
+     strcpy( expected.last_phoenetic,  "LastPho1"   );
 
      expected_batter.power              = 3;
      expected_batter.hit_n_run          = 3;
@@ -1369,16 +1369,16 @@ static char *save_player__ShouldUpdateRecordsIfTheyExistAndInsertIfTheyDont_Give
 
      assertEquals( SQLITE_OK, players_t_read( db, &actual ) );
 
-     assertEqualsInt( expected.player_id,      actual.player_id      );
-     assertEqualsStr( expected.first_name,     actual.first_name     );
-     assertEqualsStr( expected.last_name,      actual.last_name      );
-     assertEqualsStr( expected.first_phonetic, actual.first_phonetic );
-     assertEqualsStr( expected.last_phonetic,  actual.last_phonetic  );
-     assertEqualsInt( expected.skin_tone,      actual.skin_tone      );
-     assertEqualsInt( expected.handedness,     actual.handedness     );
-     assertEqualsInt( expected.player_type,    actual.player_type    );
-     assertEqualsInt( expected.rookie_season,  actual.rookie_season  );
-     assertEqualsInt( expected.longevity,      actual.longevity      );
+     assertEqualsInt( expected.player_id,       actual.player_id       );
+     assertEqualsStr( expected.first_name,      actual.first_name      );
+     assertEqualsStr( expected.last_name,       actual.last_name       );
+     assertEqualsStr( expected.first_phoenetic, actual.first_phoenetic );
+     assertEqualsStr( expected.last_phoenetic,  actual.last_phoenetic  );
+     assertEqualsInt( expected.skin_tone,       actual.skin_tone       );
+     assertEqualsInt( expected.handedness,      actual.handedness      );
+     assertEqualsInt( expected.player_type,     actual.player_type     );
+     assertEqualsInt( expected.rookie_season,   actual.rookie_season   );
+     assertEqualsInt( expected.longevity,       actual.longevity       );
 
      data_list_s accolade_list = { 0 };
 
@@ -1496,16 +1496,16 @@ static char *remove_player__ShouldRemoveThePlayerFromTheDatabase_GivenAPlayerObj
 {
      player_s expected = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1525,16 +1525,16 @@ static char *remove_player__ShouldRemoveThePlayerAccoladesFromTheDatabase_GivenA
      player_s          expected              = { 0 };
      player_accolade_s expected_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1567,16 +1567,16 @@ static char *remove_player__ShouldRemoveThePitchingDetailsFromTheDatabase_GivenA
      player_s  expected         = { 0 };
      pitcher_s expected_pitcher = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1607,16 +1607,16 @@ static char *remove_player__ShouldRemoveThePitchingStatsFromTheDatabase_GivenAPl
      pitcher_s       expected_pitcher          = { 0 };
      pitcher_stats_s expected_pitcher_stats[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1654,16 +1654,16 @@ static char *remove_player__ShouldRemoveThePitchingAccoladesFromTheDatabase_Give
      pitcher_s          expected_pitcher      = { 0 };
      pitcher_accolade_s expected_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Pitcher;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1705,16 +1705,16 @@ static char *remove_player__ShouldRemoveTheBattingDetailsFromTheDatabase_GivenAP
      player_s expected        = { 0 };
      batter_s expected_batter = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1749,16 +1749,16 @@ static char *remove_player__ShouldRemoveTheBattingStatsFromTheDatabase_GivenAPla
      batter_s       expected_batter          = { 0 };
      batter_stats_s expected_batter_stats[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 
@@ -1829,16 +1829,16 @@ static char *remove_player__ShouldRemoveTheBattingAccoladesFromTheDatabase_Given
      batter_s          expected_batter              = { 0 };
      batter_accolade_s expected_batter_accolades[3] = { 0 };
 
-     /**/    expected.player_id       = 1;
-     strcpy( expected.first_name,      "FirstName1" );
-     strcpy( expected.last_name,       "LastName1"  );
-     strcpy( expected.first_phonetic,  "FirstPho1"  );
-     strcpy( expected.last_phonetic,   "LastPho1"   );
-     /**/    expected.skin_tone       = st_Light;
-     /**/    expected.handedness      = hnd_Right;
-     /**/    expected.player_type     = pt_Batter;
-     /**/    expected.rookie_season   = 1;
-     /**/    expected.longevity       = 5;
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Batter;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
 
      assertEquals( SQLITE_OK, players_t_create( db, &expected ) );
 

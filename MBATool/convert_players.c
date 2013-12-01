@@ -228,8 +228,8 @@ static player_s *createPlayer( const int season, const season_phase_e season_pha
 
      strcpy( player->first_name,       convertTerminatedBuffer( players_data->first_name,  sizeof(players_data->first_name)  ) );
      strcpy( player->last_name,        convertTerminatedBuffer( players_data->last_name,   sizeof(players_data->last_name)   ) );
-     strcpy( player->first_phonetic,   convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
-     strcpy( player->last_phonetic,    convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
+     strcpy( player->first_phoenetic,  convertTerminatedBuffer( players_data->first_phoen, sizeof(players_data->first_phoen) ) );
+     strcpy( player->last_phoenetic,   convertTerminatedBuffer( players_data->last_phoen,  sizeof(players_data->last_phoen)  ) );
      /**/    player->player_id         =                        player_id;
      /**/    player->rookie_season     =              byte2int( players_data->year ) - YEAR_SEASON_OFFSET;
 

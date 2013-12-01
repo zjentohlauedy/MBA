@@ -166,13 +166,13 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDi
                int idx = (i * PLAYERS_PER_TEAM) + j;
                int id  = (i * PLAYERS_PER_TEAM) + j + 1;
 
-               assertNotNull(                                    team_players[j].player                 );
-               assertEqualsInt( division_teams[i].team_id,       team_players[j].team_id                );
-               assertEqualsInt( org_data.season,                 team_players[j].season                 );
-               assertEqualsStr( players_data[idx].first_name,    team_players[j].player->first_name     );
-               assertEqualsStr( players_data[idx].last_name,     team_players[j].player->last_name      );
-               assertEqualsStr( players_data[idx].first_phoen,   team_players[j].player->first_phonetic );
-               assertEqualsStr( players_data[idx].last_phoen,    team_players[j].player->last_phonetic  );
+               assertNotNull(                                    team_players[j].player                  );
+               assertEqualsInt( division_teams[i].team_id,       team_players[j].team_id                 );
+               assertEqualsInt( org_data.season,                 team_players[j].season                  );
+               assertEqualsStr( players_data[idx].first_name,    team_players[j].player->first_name      );
+               assertEqualsStr( players_data[idx].last_name,     team_players[j].player->last_name       );
+               assertEqualsStr( players_data[idx].first_phoen,   team_players[j].player->first_phoenetic );
+               assertEqualsStr( players_data[idx].last_phoen,    team_players[j].player->last_phoenetic  );
           }
      }
 

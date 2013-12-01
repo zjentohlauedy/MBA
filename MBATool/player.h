@@ -213,10 +213,10 @@ typedef struct
 typedef struct
 {
      int                player_id;
-     char               first_name     [ 20 + 1 ];
-     char               last_name      [ 20 + 1 ];
-     char               first_phonetic [ 20 + 1 ];
-     char               last_phonetic  [ 20 + 1 ];
+     char               first_name      [ 20 + 1 ];
+     char               last_name       [ 20 + 1 ];
+     char               first_phoenetic [ 20 + 1 ];
+     char               last_phoenetic  [ 20 + 1 ];
      skin_tone_e        skin_tone;
      handedness_e       handedness;
      playertype_e       player_type;

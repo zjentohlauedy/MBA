@@ -129,12 +129,12 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                assertEqualsInt( team_id,         team_players[j].team_id );
                assertEqualsInt( org_data.season, team_players[j].season  );
 
-               assertEqualsInt(                   player_id,     player->player_id      );
-               assertEqualsStr( players_data[idx].first_name,    player->first_name     );
-               assertEqualsStr( players_data[idx].last_name,     player->last_name      );
-               assertEqualsStr( players_data[idx].first_phoen,   player->first_phonetic );
-               assertEqualsStr( players_data[idx].last_phoen,    player->last_phonetic  );
-               assertEqualsInt(                   rookie_season, player->rookie_season  );
+               assertEqualsInt(                   player_id,     player->player_id       );
+               assertEqualsStr( players_data[idx].first_name,    player->first_name      );
+               assertEqualsStr( players_data[idx].last_name,     player->last_name       );
+               assertEqualsStr( players_data[idx].first_phoen,   player->first_phoenetic );
+               assertEqualsStr( players_data[idx].last_phoen,    player->last_phoenetic  );
+               assertEqualsInt(                   rookie_season, player->rookie_season   );
 
                if   ( hand == fh_Right ) assertEqualsInt( hnd_Right, player->handedness );
                else                      assertEqualsInt( hnd_Left,  player->handedness );
@@ -184,10 +184,10 @@ static char *convertPlayers_ShouldRemoveTerminatorsOnPlayerNamesAndPhoenetics_Gi
 
      assertNotNull( player );
 
-     assertEqualsStr( first_name,  player->first_name     );
-     assertEqualsStr( last_name,   player->last_name      );
-     assertEqualsStr( first_phoen, player->first_phonetic );
-     assertEqualsStr( last_phoen,  player->last_phonetic  );
+     assertEqualsStr( first_name,  player->first_name      );
+     assertEqualsStr( last_name,   player->last_name       );
+     assertEqualsStr( first_phoen, player->first_phoenetic );
+     assertEqualsStr( last_phoen,  player->last_phoenetic  );
 
      free_team_players( team_players );
 

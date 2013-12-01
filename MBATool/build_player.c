@@ -25,8 +25,8 @@ void buildIntoPlayer( player_s *player, const int player_id )
      player->rookie_season = (rand() %  5) + 1;
      player->longevity     = (rand() % 10) + 1;
 
-     sprintf( player->first_name,     "", player_id );
-     sprintf( player->last_name,      "", player_id );
-     sprintf( player->first_phonetic, "", player_id );
-     sprintf( player->last_phonetic,  "", player_id );
+     sprintf( player->first_name,      "Fname%d",  player_id );
+     sprintf( player->last_name,       "Lname%d",  player_id );
+     sprintf( player->first_phoenetic, "Fphoen%d", player_id );
+     sprintf( player->last_phoenetic,  "Lphoen%d", player_id );
 }
