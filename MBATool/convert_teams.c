@@ -193,7 +193,7 @@ static data_list_s *convertTeams( const org_data_s *org_data,
                return NULL;
           }
 
-          if ( (teams[i]->stats = convertTeamStats( &(org_data->records->teams[i]) )) == NULL )
+          if ( (teams[i]->stats = convertTeamStats( &(org_data->records->teams[team_idx]) )) == NULL )
           {
                freeTeams( teams, TOTAL_TEAMS );
 

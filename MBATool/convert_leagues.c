@@ -76,7 +76,7 @@ org_league_s *convertLeagues( const org_data_s *org_data )
           }
           else
           {
-               if ( (leagues[i]->divisions = convertDivisions( org_data, league_id )) == NULL )
+               if ( (leagues[i]->divisions = convertDivisions( org_data, league_id, i )) == NULL )
                {
                     freeLeagues( leagues, TOTAL_LEAGUES );
 

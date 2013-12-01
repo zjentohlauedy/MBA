@@ -49,34 +49,35 @@ static division_stats_s *convertDivisionStats( division_stats_s *division_stats 
      return list.data;
 }
 
-league_division_s *convertDivisions( const org_data_s *org_data, const int league_id )
+league_division_s *convertDivisions( const org_data_s *org_data, const int league_id, const int league_idx )
 {
      data_list_s        list                            = { 0 };
      league_division_s  sentinel                        = LEAGUE_DIVISION_SENTINEL;
      division_s        *divisions[DIVISIONS_PER_LEAGUE] = { 0 };
 
 
-     int idx = (league_id - 1) * DIVISIONS_PER_LEAGUE;
+     int idx = league_idx * DIVISIONS_PER_LEAGUE;
 
      for ( int i = 0; i < DIVISIONS_PER_LEAGUE; ++i )
      {
-          int division_id = idx + i + 1;
+          int division_idx = idx + i;
+          int division_id  = idx + i + 1;
 
-          if ( (divisions[i] = createDivision( division_id, org_data->league_data->divisions[idx + i].name )) == NULL )
+          if ( (divisions[i] = createDivision( division_id, org_data->league_data->divisions[division_idx].name )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
                return NULL;
           }
 
-          if ( (divisions[i]->teams = convertDivisionTeams( org_data, division_id, i )) == NULL )
+          if ( (divisions[i]->teams = convertDivisionTeams( org_data, division_id, division_idx )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 
                return NULL;
           }
 
-          if ( (divisions[i]->stats = convertDivisionStats( &(org_data->records->divisions[i]) )) == NULL )
+          if ( (divisions[i]->stats = convertDivisionStats( &(org_data->records->divisions[division_idx]) )) == NULL )
           {
                freeDivisions( divisions, DIVISIONS_PER_LEAGUE );
 

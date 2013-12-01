@@ -20,7 +20,7 @@ static char *convertDivisions_ShouldReturnAListOfLeagueDivisions_GivenALeagueFil
      org_data.records      = buildRecords( org_data.league_data, 1, sp_Regular );
 
      fileleagname_s    *league_data      = org_data.league_data;
-     league_division_s *league_divisions = convertDivisions( &org_data, 1 );
+     league_division_s *league_divisions = convertDivisions( &org_data, 1, 0 );
 
      assertNotNull( league_divisions );
 
@@ -40,7 +40,7 @@ static char *convertDivisions_ShouldReturnAListOfLeagueDivisions_GivenALeagueFil
 
      free_league_divisions( league_divisions );
 
-     league_divisions = convertDivisions( &org_data, 2 );
+     league_divisions = convertDivisions( &org_data, 2, 1 );
 
      assertNotNull( league_divisions );
 
@@ -74,7 +74,7 @@ static char *convertDivisions_ShouldReturnDivisionsWithTeams_GivenALeagueFileDat
 
      fileleagname_s    *league_data      = org_data.league_data;
      fileparks_s       *parks_data       = org_data.parks_data;
-     league_division_s *league_divisions = convertDivisions( &org_data, 1 );
+     league_division_s *league_divisions = convertDivisions( &org_data, 1, 0 );
 
      for ( int i = 0; i < DIVISIONS_PER_LEAGUE; ++i )
      {
@@ -118,7 +118,7 @@ static char *convertDivisions_ShouldReturnDivisionsWithStats_GivenOrgData()
 
      records_s *records = org_data.records;
 
-     league_division_s *league_divisions = convertDivisions( &org_data, 1 );
+     league_division_s *league_divisions = convertDivisions( &org_data, 1, 0 );
 
      for ( int i = 0; i < DIVISIONS_PER_LEAGUE; ++i )
      {

@@ -44,7 +44,7 @@ int    saveOrg( sqlite3 *db, const org_s *org    );
 
 org_s             *convertOrg(           const org_data_s *org_data                                                );
 org_league_s      *convertLeagues(       const org_data_s *org_data                                                );
-league_division_s *convertDivisions(     const org_data_s *org_data, const int league_id                           );
+league_division_s *convertDivisions(     const org_data_s *org_data, const int league_id,   const int league_idx   );
 division_team_s   *convertDivisionTeams( const org_data_s *org_data, const int division_id, const int division_idx );
 league_team_s     *convertLeagueTeams(   const org_data_s *org_data, const int league_id,   const int league_idx   );
 team_player_s     *convertPlayers(       const org_data_s *org_data, const int team_id,     const int team_idx     );

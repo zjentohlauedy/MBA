@@ -10,7 +10,8 @@ progs = \
    set_longevity \
    copy_longevity \
    format_amiga_to_dos \
-   format_dos_to_amiga
+   format_dos_to_amiga \
+   import_season
 
 tests = \
    test_gen_player_ids \
@@ -77,6 +78,9 @@ format_amiga_to_dos: format_amiga_to_dos.o format_amiga_to_dos_main.o file_utils
 
 format_dos_to_amiga: format_dos_to_amiga.o format_dos_to_amiga_main.o file_utils.o data_list.o parse_csv.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+import_season: import_season.o file_utils.o data_list.o calc_records.o parse_csv.o libmbaconversion.a libmbadata.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbaconversion -lmbadata
 
 TESTS: $(tests) mba_test.db TAGS
 
