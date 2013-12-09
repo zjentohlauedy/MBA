@@ -93,6 +93,7 @@ runTestProg test_format_amiga_to_dos
 runTestProg test_format_dos_to_amiga
 runTestProg test_parse_csv
 runTestProg test_calc_records
+runTestProg test_generate_file_leagname
 
 if [ $FAIL -ne 0 ]; then
 

@@ -55,7 +55,8 @@ tests = \
    test_convert_teams \
    test_convert_players \
    test_parse_csv \
-   test_calc_records
+   test_calc_records \
+   test_generate_file_leagname
 
 ALL: PROGS TESTS
 
@@ -208,6 +209,9 @@ test_parse_csv: test_parse_csv.o parse_csv.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 test_calc_records: test_calc_records.o calc_records.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+test_generate_file_leagname: test_generate_file_leagname.o generate_file_leagname.o file_utils.o data_list.o parse_csv.o libmbabuilders.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 MBADATA_OBJECTS = \
