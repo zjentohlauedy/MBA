@@ -53,6 +53,7 @@ records_s         *calculateRecords(     const schedule_s *schedule, const filel
 char *getCalculateRecordsError( void );
 
 fileleagname_s *generateFileLeagName( org_s *org );
+fileplayer_s   *generateFilePlayers(  org_s *org );
 
 void freeOrg(        org_s        *org         );
 void freeOrgLeagues( org_league_s *org_leagues );

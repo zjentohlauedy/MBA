@@ -109,3 +109,4 @@ MBATool/test_format_dos_to_amiga
 MBATool/test_parse_csv
 MBATool/test_calc_records
 MBATool/test_generate_file_leagname
+MBATool/test_generate_file_players

@@ -94,6 +94,7 @@ runTestProg test_format_dos_to_amiga
 runTestProg test_parse_csv
 runTestProg test_calc_records
 runTestProg test_generate_file_leagname
+runTestProg test_generate_file_players
 
 if [ $FAIL -ne 0 ]; then
 

@@ -48,6 +48,20 @@ static int  __unit_tests_failed__ = 0;
           }                                                             \
      } while ( 0 )
 
+#define assertEqualsBfr( E, A, L )                                      \
+     do                                                                 \
+     {                                                                  \
+          char *__expected__ = (E);                                     \
+          char *__actual__   = (A);                                     \
+          int   __length__   = (L);                                     \
+          if ( memcmp( __expected__, __actual__, __length__ ) != 0 )    \
+          {                                                             \
+               sprintf( __unit_test_msgbuf__, "\033[0;31mFailed: %s; expected: %.*s, actual: %.*s\033[0m", #A, \
+                        __length__, __expected__, __length__, __actual__ ); \
+               return __unit_test_msgbuf__;                             \
+          }                                                             \
+     } while ( 0 )
+
 #define assertNotNull( actual )                                    \
      do                                                            \
      {                                                             \
