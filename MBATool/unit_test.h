@@ -9,6 +9,10 @@ static int  __unit_tests_run__    = 0;
 static int  __unit_tests_passed__ = 0;
 static int  __unit_tests_failed__ = 0;
 
+/*
+#define max(a,b) ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); _a > _b ? _a : _b; })
+*/
+
 #define assert(message, test) do { if (!(test)) return message; } while (0)
 
 #define assertEqualsDbl( E, A )                                         \

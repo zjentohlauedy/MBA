@@ -269,7 +269,9 @@ MBABUILDERS_OBJECTS = \
  build_team_pitching_stats.o \
  build_team_player.o \
  build_player.o \
+ build_pitcher.o \
  build_pitcher_stats.o \
+ build_batter.o \
  build_file_leagname.o \
  build_file_parks.o \
  build_file_players.o \

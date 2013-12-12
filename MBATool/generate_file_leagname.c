@@ -4,7 +4,7 @@
 #include "file_formats.h"
 #include "org.h"
 
-fileleagname_s *generateFileLeagName( org_s *org )
+fileleagname_s *generateFileLeagName( const org_s *org )
 {
      fileleagname_s *league_file = NULL;
 

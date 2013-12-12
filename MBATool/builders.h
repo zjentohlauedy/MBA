@@ -31,8 +31,14 @@ void                   buildIntoTeamPitchingStats( team_pitching_stats_s *team_p
 player_s *buildPlayer(                       const int player_id );
 void      buildIntoPlayer( player_s *player, const int player_id );
 
+pitcher_s *buildPitcher(                         const int player_id );
+void       buildIntoPitcher( pitcher_s *pitcher, const int player_id );
+
 pitcher_stats_s *buildPitcherStats(                                     const int player_id, const int season, const season_phase_e season_phase );
 void             buildIntoPitcherStats( pitcher_stats_s *pitcher_stats, const int player_id, const int season, const season_phase_e season_phase );
+
+batter_s *buildBatter(                       const int player_id );
+void      buildIntoBatter( batter_s *batter, const int player_id );
 
 fileleagname_s *buildFileLeagName(          void );
 fileparks_s    *buildFileParks(             void );

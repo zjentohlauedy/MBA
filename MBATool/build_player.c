@@ -22,7 +22,7 @@ void buildIntoPlayer( player_s *player, const int player_id )
      player->skin_tone     = (rand() %  2) + 1;
      player->handedness    = (rand() %  2) + 1;
      player->player_type   = (rand() %  2) + 1;
-     player->rookie_season = (rand() %  5) + 1;
+     player->rookie_season = (rand() % 25) + 1;
      player->longevity     = (rand() % 10) + 1;
 
      sprintf( player->first_name,      "Fname%d",  player_id );

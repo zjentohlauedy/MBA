@@ -1,12 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 #include "builders.h"
 #include "unit_test.h"
 
 
 static char *result;
 
+
+static fileposition_e mapPosition( const position_e position )
+{
+     switch ( position )
+     {
+     case pos_Catcher:     return fpos_Catcher;
+     case pos_FirstBase:   return fpos_FirstBaseman;
+     case pos_SecondBase:  return fpos_SecondBaseman;
+     case pos_ThirdBase:   return fpos_ThirdBaseman;
+     case pos_ShortStop:   return fpos_ShortStop;
+     case pos_LeftField:   return fpos_LeftField;
+     case pos_CenterField: return fpos_CenterField;
+     case pos_RightField:  return fpos_RightField;
+     case pos_Infield:     return fpos_Infield;
+     case pos_Outfield:    return fpos_Outfield;
+     }
+
+     return fpos_DesignatedHitter;
+}
 
 static org_s *buildOrg( void )
 {
@@ -51,6 +71,9 @@ static org_s *buildOrg( void )
                          buildIntoPlayer( &players[i][j][k][l], player_id );
                          buildIntoTeamPlayer( &team_players[i][j][k][l], team_id, 0, player_id );
 
+                         if   ( players[i][j][k][l].player_type == pt_Pitcher ) players[i][j][k][l].details.pitching = buildPitcher( player_id );
+                         else                                                   players[i][j][k][l].details.batting  = buildBatter(  player_id );
+
                          team_players[i][j][k][l].player = &players[i][j][k][l];
                     }
 
@@ -87,7 +110,7 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersObject_GivenAnOrgObject
 {
      org_s org = { 0 };
 
-     fileplayer_s *players_file = generateFilePlayers( &org );
+     fileplayer_s *players_file = generateFilePlayers( &org, 0 );
 
      assertNotNull( players_file );
 
@@ -98,9 +121,10 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersObject_GivenAnOrgObject
 
 static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgObject()
 {
-     org_s *org = buildOrg();
+     org_s *org    = buildOrg();
+     int    season = 13;
 
-     fileplayer_s *players_file = generateFilePlayers( org );
+     fileplayer_s *players_file = generateFilePlayers( org, season );
 
      assertNotNull( players_file );
 
@@ -139,21 +163,58 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                          assertEquals( team_players[l].player->player_id,     word2int( players_file[idx].acc_stats.action.id_info.player_id ) );
                          assertEquals( team_players[l].player->rookie_season, byte2int( players_file[idx].year ) - YEAR_SEASON_OFFSET );
 
+                         int age_adjustment = (team_players[l].player->longevity + 3) - (season - team_players[l].player->rookie_season);
+
                          if ( team_players[l].player->player_type == pt_Pitcher )
                          {
-                              filehand_e  handedness = nibble( players_file[idx].position[0], n_Low );
-                              filecolor_e color      = byte2int( players_file[idx].filestats.filepitching.color );
+                              pitcher_s      *pitcher  = team_players[l].player->details.pitching;
+                              filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
 
-                              if   ( team_players[l].player->handedness == hnd_Right ) assertEquals( fh_Right, handedness );
-                              else                                                     assertEquals( fh_Left,  handedness );
+                              filehand_e  handedness = (team_players[l].player->handedness == hnd_Right) ? fh_Right : fh_Left;
+                              filecolor_e color      = byte2int( pitching->color );
+
+                              int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
+                              int control = (age_adjustment >= 0) ? pitcher->control : MIN( pitcher->control - age_adjustment, 1 );
+                              int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MIN( pitcher->fatigue - age_adjustment, 1 );
+
+                              assertEquals( fpos_Pitcher, nibble( players_file[idx].position[0], n_High ) );
+                              assertEquals( handedness,   nibble( players_file[idx].position[0], n_Low  ) );
+
+                              assertEquals(                         speed,     nibble( pitching->ratings[0], n_High ) );
+                              assertEquals(                         control,   nibble( pitching->ratings[0], n_Low  ) );
+                              assertEquals(                         fatigue,   nibble( pitching->ratings[1], n_High ) );
+                              assertEquals( team_players[l].player->longevity, nibble( pitching->ratings[1], n_Low  ) );
 
                               if   ( team_players[l].player->skin_tone == st_Dark ) assertEquals( fc_Dark,  color );
                               else                                                  assertEquals( fc_Light, color );
                          }
                          else
                          {
-                              filehand_e  handedness = nibble( players_file[idx].filestats.filebatting.ratings[0], n_High );
-                              filecolor_e color      = byte2int( players_file[idx].filestats.filebatting.color );
+                              batter_s      *batter  = team_players[l].player->details.batting;
+                              filebatting_s *batting = &(players_file[idx].filestats.filebatting);
+
+                              filehand_e     handedness    = nibble( batting->ratings[0], n_High );
+                              filecolor_e    color         = byte2int( players_file[idx].filestats.filebatting.color );
+                              fileposition_e primary_pos   = mapPosition( batter->primary_position   );
+                              fileposition_e secondary_pos = mapPosition( batter->secondary_position );
+
+                              int arm       = (age_adjustment >= 0) ? batter->arm       : MIN( batter->arm       - age_adjustment, 1 );
+                              int running   = (age_adjustment >= 0) ? batter->running   : MIN( batter->running   - age_adjustment, 1 );
+                              int range     = (age_adjustment >= 0) ? batter->range     : MIN( batter->range     - age_adjustment, 1 );
+                              int power     = (age_adjustment >= 0) ? batter->power     : MIN( batter->power     - age_adjustment, 1 );
+                              int bunt      = (age_adjustment >= 0) ? batter->bunt      : MIN( batter->bunt      - age_adjustment, 1 );
+                              int hit_n_run = (age_adjustment >= 0) ? batter->hit_n_run : MIN( batter->hit_n_run - age_adjustment, 1 );
+
+                              assertEquals( primary_pos,   nibble( players_file[idx].position[0], n_High ) );
+                              assertEquals( secondary_pos, nibble( players_file[idx].position[0], n_Low  ) );
+
+                              assertEquals(                         arm,       nibble( batting->ratings[0], n_Low  ) );
+                              assertEquals(                         running,   nibble( batting->ratings[1], n_High ) );
+                              assertEquals(                         range,     nibble( batting->ratings[1], n_Low  ) );
+                              assertEquals(                         power,     nibble( batting->ratings[2], n_High ) );
+                              assertEquals( team_players[l].player->longevity, nibble( batting->ratings[2], n_Low  ) );
+                              assertEquals(                         bunt,      nibble( batting->ratings[3], n_High ) );
+                              assertEquals(                         hit_n_run, nibble( batting->ratings[3], n_Low  ) );
 
                               if   ( team_players[l].player->handedness == hnd_Right ) assertEquals( fh_Right, handedness );
                               else                                                     assertEquals( fh_Left,  handedness );
@@ -175,7 +236,6 @@ static void run_all_tests()
 {
      run_test( generateFilePlayers_ShouldReturnAFilePlayersObject_GivenAnOrgObject,      null );
      run_test( generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgObject, null );
-     // longevity ratings modification
 }
 
 int main( int argc, char *argv[] )
