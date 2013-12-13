@@ -22,5 +22,5 @@ void buildIntoPitcher( pitcher_s *pitcher, const int player_id )
      pitcher->speed     = (rand() % 10) + 1;
      pitcher->control   = (rand() % 10) + 1;
      pitcher->bunt      = (rand() % 10) + 1;
-     pitcher->fatigue   = (rand() % 10) + 1;
+     pitcher->fatigue   = (rand() %  7) + 4;
 }
