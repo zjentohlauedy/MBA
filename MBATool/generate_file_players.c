@@ -205,6 +205,207 @@ static fileposition_e mapPosition( const position_e position )
      return fpos_DesignatedHitter;
 }
 
+
+static boolean_e generateFilePlayer( const player_s *player, const int season, const int player_idx, fileplayer_s *players_file )
+{
+     int2word( players_file[player_idx].acc_stats.action.id_info.player_id, player->player_id );
+
+     memcpy( players_file[player_idx].first_name,  player->first_name,      sizeof(players_file[player_idx].first_name)  );
+     memcpy( players_file[player_idx].last_name,   player->last_name,       sizeof(players_file[player_idx].last_name)   );
+     memcpy( players_file[player_idx].first_phoen, player->first_phoenetic, sizeof(players_file[player_idx].first_phoen) );
+     memcpy( players_file[player_idx].last_phoen,  player->last_phoenetic,  sizeof(players_file[player_idx].last_phoen)  );
+
+     termName( players_file[player_idx].first_name,  sizeof(players_file[player_idx].first_name)  );
+     termName( players_file[player_idx].last_name,   sizeof(players_file[player_idx].last_name)   );
+     termName( players_file[player_idx].first_phoen, sizeof(players_file[player_idx].first_phoen) );
+     termName( players_file[player_idx].last_phoen,  sizeof(players_file[player_idx].last_phoen)  );
+
+     int2byte( players_file[player_idx].year, player->rookie_season + YEAR_SEASON_OFFSET );
+
+     int age_adjustment = (player->longevity + 3) - (season - player->rookie_season);
+
+     if ( player->player_type == pt_Pitcher )
+     {
+          pitcher_s      *pitcher  = player->details.pitching;
+          filepitching_s *pitching = &(players_file[player_idx].filestats.filepitching);
+
+          filehand_e hand = (player->handedness == hnd_Right) ? fh_Right : fh_Left;
+
+          int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
+          int control = (age_adjustment >= 0) ? pitcher->control : MIN( pitcher->control - age_adjustment, 1 );
+          int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MIN( pitcher->fatigue - age_adjustment, 4 );
+
+          players_file[player_idx].position[0] = (fpos_Pitcher << 4) + hand;
+
+          pitching->ratings[0] = (speed   << 4) +         control;
+          pitching->ratings[1] = (fatigue << 4) + player->longevity;
+
+          if   ( player->skin_tone == st_Dark ) int2byte( pitching->color, fc_Dark  );
+          else                                  int2byte( pitching->color, fc_Light );
+
+          int games = (rand() % 15) + 30;
+          int era   = getValueForTwo( earned_run_avg,   speed, control );
+          int vsba  = getValueForTwo( vs_batting_avg,   speed, control );
+          int innpg = getValueForTwo( innings_per_game, speed, control );
+          int wpct  = getValueForTwo( win_pct,          speed, control );
+          int abpi  = getValueForTwo( at_bats_per_inn,  speed, control );
+          int dpct  = innpg + 200;
+          int maxcg = (int)round( (double)((games * innpg) - (games * (innpg - 200))) / (double)(1100 - innpg) );
+          int cpct  = getValueForOne( cg_pct, fatigue );
+          int sop9  = getValueForOne( so_per_9, speed );
+          int bbp9  = getValueForOne( walks_per_9, control );
+          int hrp9  = getValueForOne( hr_per_9, speed );
+          int decisions = (int)round((float)games * ((float)dpct / 1000.0) );
+          int fat_fact = getFatigueFactor( fatigue );
+
+          if ( fat_fact < innpg ) innpg = fat_fact;
+
+          int2word( players_file[player_idx].real_avg, era );
+
+          double dinn = (double)games * (double)innpg / 100.0;
+          int    inn  = (int)floor( dinn ) * 10 + (rand() % 3);
+
+          dinn  = (double)inn / 10.0;
+          dinn += (((double)inn / 10.0) - dinn) / 3.0;
+
+          int2byte( pitching->real_wins,   (int)ceil( (double)decisions * (double)wpct / 1000.0 ) );
+          int2byte( pitching->real_losses, (int)ceil( (double)decisions * (1.0 - (double)wpct / 1000.0) ) );
+          int2byte( pitching->real_games,  games );
+          int2byte( pitching->real_starts, games );
+          int2byte( pitching->real_cg,     (int)round( (double)maxcg * (double)cpct / 100.0 ) );
+
+          int2byte( pitching->real_fa, 1 );
+          int2byte( pitching->real_er, (int)round( dinn * (double)era / 900.0 ) ); // era is ERA * 100
+          int2byte( pitching->vl_hr,   (int)round( dinn * (double)hrp9 / 900.0 ) ); // hrp9 is HR/9 * 100
+          int2byte( pitching->vl_bb,   (int)round( dinn * (double)bbp9 / 90.0 ) ); // bbp9 is BB/9 * 10
+
+          double dvsba = (double)vsba / 1000.0;
+          int    ab    = (int)round( dinn * ((float)abpi / 100.0) );
+          int    hits  = (int)round( dvsba * (float)ab );
+          int    so    = (int)round( dinn * (double)sop9 / 90.0 ); // sop9 is SO/9 * 10
+
+          int2word( pitching->real_inn,  inn  );
+          int2word( pitching->vl_ab,     ab   );
+          int2word( pitching->vl_hits,   hits );
+          int2word( pitching->vl_so,     so   );
+     }
+     else
+     {
+          batter_s      *batter  = player->details.batting;
+          filebatting_s *batting = &(players_file[player_idx].filestats.filebatting);
+
+          filehand_e     hand      = (player->handedness == hnd_Right) ? fh_Right : fh_Left;
+          fileposition_e primary   = mapPosition( batter->primary_position   );
+          fileposition_e secondary = mapPosition( batter->secondary_position );
+
+          int arm       = (age_adjustment >= 0) ? batter->arm       : MIN( batter->arm       - age_adjustment, 1 );
+          int running   = (age_adjustment >= 0) ? batter->running   : MIN( batter->running   - age_adjustment, 1 );
+          int range     = (age_adjustment >= 0) ? batter->range     : MIN( batter->range     - age_adjustment, 1 );
+          int power     = (age_adjustment >= 0) ? batter->power     : MIN( batter->power     - age_adjustment, 1 );
+          int bunt      = (age_adjustment >= 0) ? batter->bunt      : MIN( batter->bunt      - age_adjustment, 1 );
+          int hit_n_run = (age_adjustment >= 0) ? batter->hit_n_run : MIN( batter->hit_n_run - age_adjustment, 1 );
+
+          players_file[player_idx].position[0] = (primary << 4) + secondary;
+
+          batting->ratings[0] = (hand    << 4) +         arm;
+          batting->ratings[1] = (running << 4) +         range;
+          batting->ratings[2] = (power   << 4) + player->longevity;
+          batting->ratings[3] = (bunt    << 4) +         hit_n_run;
+
+          if   ( player->skin_tone == st_Dark ) int2byte( batting->color, fc_Dark  );
+          else                                  int2byte( batting->color, fc_Light );
+
+          int games = (rand() % 25) + 120;
+          int ab    = (int)round( (double)games * ab_per_game );
+          int po    = (int)round( (double)games * ((double)getValueForTwo( put_outs, primary, range ) / 100.0) );
+          int as    = (int)round( (double)games * ((double)getValueForTwo( assists, primary, arm ) / 100.0) );
+          int ba    = getValueForTwo( batting_avg, power, hit_n_run );
+          int soa   = getValueForOne( strikeout_avg, hit_n_run );
+          int fa    = getValueForTwo( fielding_avg, range, arm ) + 9000;
+          int fa2   = roll( 9500, fa - 9500 );
+          int hits  = (int)round( (double)ab * (double)ba  / 1000.0 );
+          int so    = (int)round( (double)ab * (double)soa / 1000.0 );
+          int err   = (int)round( (double)(po + as) / (double)fa * 10000.0 ) - (po + as);
+
+          if ( err < 0 ) err = 0;
+
+          hits += getValueForOne( extra_hits, running );
+
+          int2word( players_file[player_idx].real_avg, ba );
+
+          int2byte( batting->real_games, games );
+          int2byte( batting->real_sb,    getValueForOne( steals, running ) );
+          int2word( batting->vl_ab,      ab   );
+          int2word( batting->vl_hits,    hits );
+          int2byte( batting->vl_2b,      getValueForOne( doubles, power ) );
+          int2byte( batting->vl_3b,      getValueForTwo( triples, power, running ) );
+          int2byte( batting->vl_hr,      getValueForOne( home_runs, power ) );
+          int2byte( batting->vl_bb,      getValueForOne( walks, hit_n_run ) );
+          int2byte( batting->vl_so,      so );
+          int2byte( batting->real_runs,  batting->vl_hr[0] + getValueForOne( runs, running ) );
+          int2byte( batting->real_rbi,   batting->vl_hr[0] + getValueForOne( rbi, power ) );
+          int2word( batting->real_po,    po   );
+          int2word( batting->real_as,    as   );
+          int2byte( batting->real_err,   err );
+          int2byte( batting->real_fa2,   (int)round( (10000.0 - (double)fa2) / 10.0 ) );
+     }
+
+     return bl_True;
+}
+
+
+static boolean_e iteratePlayers( const team_player_s *team_players, const int season, const int team_idx, fileplayer_s *players_file )
+{
+     for ( int l = 0; team_players[l].player != NULL; ++l )
+     {
+          player_s *player = team_players[l].player;
+
+          if ( ! generateFilePlayer( player, season, (team_idx * PLAYERS_PER_TEAM) + l, players_file ) ) return bl_False;
+     }
+
+     return bl_True;
+}
+
+
+static boolean_e iterateTeams( const division_team_s *division_teams, const int season, const int division_idx, fileplayer_s *players_file )
+{
+     for ( int k = 0; division_teams[k].team != NULL; ++k )
+     {
+          team_s *team = division_teams[k].team;
+
+          if ( ! iteratePlayers( team->players, season, (division_idx * TEAMS_PER_DIVISION) + k, players_file ) ) return bl_False;
+     }
+
+     return bl_True;
+}
+
+
+static boolean_e iterateDivisions( const league_division_s *league_divisions, const int season, const int league_idx, fileplayer_s *players_file )
+{
+     for ( int j = 0; league_divisions[j].division != NULL; ++j )
+     {
+          division_s *division = league_divisions[j].division;
+
+          if ( ! iterateTeams( division->teams, season, (league_idx * DIVISIONS_PER_LEAGUE) + j, players_file ) ) return bl_False;
+     }
+
+     return bl_True;
+}
+
+
+static boolean_e iterateLeagues( const org_league_s *org_leagues, const int season, fileplayer_s *players_file )
+{
+     for ( int i = 0; org_leagues[i].league != NULL; ++i )
+     {
+          league_s *league = org_leagues[i].league;
+
+          if ( ! iterateDivisions( league->divisions, season, i, players_file ) ) return bl_False;
+     }
+
+     return bl_True;
+}
+
+
 fileplayer_s *generateFilePlayers( const org_s *org, const int season )
 {
      fileplayer_s *players_file = NULL;
@@ -213,6 +414,14 @@ fileplayer_s *generateFilePlayers( const org_s *org, const int season )
 
      if ( org->leagues == NULL ) return players_file;
 
+     if ( ! iterateLeagues( org->leagues, season, players_file ) )
+     {
+          free( players_file );
+
+          return NULL;
+     }
+
+/*
      for ( int i = 0; org->leagues[i].league != NULL; ++i )
      {
           league_s *league = org->leagues[i].league;
@@ -391,6 +600,7 @@ fileplayer_s *generateFilePlayers( const org_s *org, const int season )
                }
           }
      }
+*/
 
      return players_file;
 }
