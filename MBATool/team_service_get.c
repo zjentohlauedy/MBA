@@ -76,6 +76,29 @@ static team_stats_s *get_team_stats( sqlite3 *db, const int team_id )
      return list.data;
 }
 
+static team_player_s *get_team_players_for_season( sqlite3 *db, const int team_id, const int season )
+{
+     static team_player_s sentinel = TEAM_PLAYER_SENTINEL;
+
+     data_list_s list = { 0 };
+
+     team_player_s team_player = { 0 };
+
+     team_player.team_id = team_id;
+     team_player.season  = season;
+
+     if ( team_players_t_read_by_team_and_season( db, &team_player, &list ) != SQLITE_OK ) return NULL;
+
+     if ( add_to_data_list( &list, &sentinel, sizeof(team_player_s), 10 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
+
+     return list.data;
+}
+
 static team_player_s *get_team_players( sqlite3 *db, const int team_id )
 {
      static team_player_s sentinel = TEAM_PLAYER_SENTINEL;
@@ -110,6 +133,17 @@ static team_s *get_team_details( sqlite3 *db, const int team_id )
 
           return NULL;
      }
+
+     return team;
+}
+
+team_s *get_team_for_season( sqlite3 *db, const int team_id, const int season )
+{
+     team_s *team = NULL;
+
+     if ( (team = get_team_details( db, team_id )) == NULL ) return NULL;
+
+     team->players = get_team_players_for_season( db, team_id, season );
 
      return team;
 }

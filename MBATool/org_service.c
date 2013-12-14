@@ -11,11 +11,11 @@ static void getTeamPlayers( sqlite3 *db, team_player_s *team_players )
      }
 }
 
-static void getDivisionTeams( sqlite3 *db, division_team_s *division_teams )
+static void getDivisionTeams( sqlite3 *db, division_team_s *division_teams, const int season )
 {
      for ( int i = 0; division_teams[i].division_id > 0; ++i )
      {
-          division_teams[i].team = get_team( db, division_teams[i].team_id );
+          division_teams[i].team = get_team_for_season( db, division_teams[i].team_id, season );
 
           if ( division_teams[i].team->players != NULL )
           {
@@ -24,7 +24,7 @@ static void getDivisionTeams( sqlite3 *db, division_team_s *division_teams )
      }
 }
 
-static void getLeagueDivisions( sqlite3 *db, league_division_s *league_divisions )
+static void getLeagueDivisions( sqlite3 *db, league_division_s *league_divisions, const int season )
 {
      for ( int i = 0; league_divisions[i].league_id > 0; ++i )
      {
@@ -32,7 +32,7 @@ static void getLeagueDivisions( sqlite3 *db, league_division_s *league_divisions
 
           if ( league_divisions[i].division->teams != NULL )
           {
-               getDivisionTeams( db, league_divisions[i].division->teams );
+               getDivisionTeams( db, league_divisions[i].division->teams, season );
           }
      }
 }
@@ -91,7 +91,7 @@ org_s *getOrg( sqlite3 *db, const int season )
 
           if ( league->teams != NULL ) getLeagueTeams( db, league->teams );
 
-          if ( league->divisions != NULL ) getLeagueDivisions( db, league->divisions );
+          if ( league->divisions != NULL ) getLeagueDivisions( db, league->divisions, season );
 
           org_league.league = league;
 

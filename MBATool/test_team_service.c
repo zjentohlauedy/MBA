@@ -423,6 +423,114 @@ static char *get_team__ShouldReturnTheMatchingTeamWithAccolades_GivenATeamId()
      return NULL;
 }
 
+static char *get_team_for_season__ShouldReturnTheMatchingTeamWithPlayersForSeason_GivenATeamIdAndSeason()
+{
+     team_s        expected              = { 0 };
+     team_player_s expected_team_player1 = { 0 };
+     team_player_s expected_team_player2 = { 0 };
+     int           expected_season       =   1;
+
+     /**/    expected.team_id         = 1;
+     strcpy( expected.name,            "TeamName1" );
+     strcpy( expected.location,        "Location1" );
+     /**/    expected.primary_color   = cl_Blue;
+     /**/    expected.secondary_color = cl_Gold;
+
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
+
+     expected_team_player1.team_id   = 1;
+     expected_team_player1.season    = expected_season;
+     expected_team_player1.player_id = 1;
+
+     expected_team_player2.team_id   = 1;
+     expected_team_player2.season    = expected_season;
+     expected_team_player2.player_id = 2;
+
+     assertEquals( SQLITE_OK, team_players_t_create( db, &expected_team_player1 ) );
+     assertEquals( SQLITE_OK, team_players_t_create( db, &expected_team_player2 ) );
+
+     team_s *actual = get_team_for_season( db, expected.team_id, expected_season );
+
+     assertNotNull( actual );
+
+     team_player_s *actual_team_players = actual->players;
+
+     assertNotNull( actual_team_players );
+
+     assertEquals( expected_team_player1.team_id,   actual_team_players[0].team_id   );
+     assertEquals( expected_team_player1.season,    actual_team_players[0].season    );
+     assertEquals( expected_season,                 actual_team_players[0].season    );
+     assertEquals( expected_team_player1.player_id, actual_team_players[0].player_id );
+
+     assertEquals( expected_team_player2.team_id,   actual_team_players[1].team_id   );
+     assertEquals( expected_season,                 actual_team_players[1].season    );
+     assertEquals( expected_team_player2.player_id, actual_team_players[1].player_id );
+
+     assertEquals( team_player_sentinel.team_id,   actual_team_players[2].team_id   );
+     assertEquals( team_player_sentinel.season,    actual_team_players[2].season    );
+     assertEquals( team_player_sentinel.player_id, actual_team_players[2].player_id );
+
+     free_team( actual );
+
+     assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, team_players_t_delete( db, &expected_team_player1 ) );
+     assertEquals( SQLITE_OK, team_players_t_delete( db, &expected_team_player2 ) );
+
+     return NULL;
+}
+
+static char *get_team_for_season__ShouldReturnOnlyMatchingTeamWithPlayersForSeason_GivenATeamIdAndSeason()
+{
+     team_s        expected              = { 0 };
+     team_player_s expected_team_player1 = { 0 };
+     team_player_s expected_team_player2 = { 0 };
+     int           expected_season       =   1;
+
+     /**/    expected.team_id         = 1;
+     strcpy( expected.name,            "TeamName1" );
+     strcpy( expected.location,        "Location1" );
+     /**/    expected.primary_color   = cl_Blue;
+     /**/    expected.secondary_color = cl_Gold;
+
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
+
+     expected_team_player1.team_id   = 1;
+     expected_team_player1.season    = expected_season;
+     expected_team_player1.player_id = 1;
+
+     expected_team_player2.team_id   = 1;
+     expected_team_player2.season    = expected_season + 1;
+     expected_team_player2.player_id = 2;
+
+     assertEquals( SQLITE_OK, team_players_t_create( db, &expected_team_player1 ) );
+     assertEquals( SQLITE_OK, team_players_t_create( db, &expected_team_player2 ) );
+
+     team_s *actual = get_team_for_season( db, expected.team_id, expected_season );
+
+     assertNotNull( actual );
+
+     team_player_s *actual_team_players = actual->players;
+
+     assertNotNull( actual_team_players );
+
+     assertEquals( expected_team_player1.team_id,   actual_team_players[0].team_id   );
+     assertEquals( expected_team_player1.season,    actual_team_players[0].season    );
+     assertEquals( expected_season,                 actual_team_players[0].season    );
+     assertEquals( expected_team_player1.player_id, actual_team_players[0].player_id );
+
+     assertEquals( team_player_sentinel.team_id,   actual_team_players[1].team_id   );
+     assertEquals( team_player_sentinel.season,    actual_team_players[1].season    );
+     assertEquals( team_player_sentinel.player_id, actual_team_players[1].player_id );
+
+     free_team( actual );
+
+     assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, team_players_t_delete( db, &expected_team_player1 ) );
+     assertEquals( SQLITE_OK, team_players_t_delete( db, &expected_team_player2 ) );
+
+     return NULL;
+}
+
 static char *save_team__ShouldPersistTheTeamInTheDatabase_GivenATeamObject()
 {
      team_s expected = { 0 };
@@ -1367,6 +1475,10 @@ static void run_all_tests()
      run_test( get_team__ShouldReturnTheMatchingTeamWithPitchingStats_GivenATeamId, check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithBattingStats_GivenATeamId,  check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithAccolades_GivenATeamId,     check_sqlite_error );
+
+     // get_team_by_season()
+     run_test( get_team_for_season__ShouldReturnTheMatchingTeamWithPlayersForSeason_GivenATeamIdAndSeason,  check_sqlite_error );
+     run_test( get_team_for_season__ShouldReturnOnlyMatchingTeamWithPlayersForSeason_GivenATeamIdAndSeason, check_sqlite_error );
 
      // save_team()
      run_test( save_team__ShouldPersistTheTeamInTheDatabase_GivenATeamObject,                     check_sqlite_error );

@@ -160,6 +160,47 @@ static char *team_players_t_read_by_team__ShouldRetrieveAllMatchingRecords_Given
      return NULL;
 }
 
+static char *team_players_t_read_by_team_and_season__ShouldRetrieveMatchingRecord_GivenTheTeamIdAndSeason()
+{
+     team_player_s expected        = { 0 };
+     team_player_s unexpected      = { 0 };
+     int           expected_season =   4;
+
+     expected.team_id   = 123;
+     expected.season    = expected_season;
+     expected.player_id = 567;
+
+     unexpected.team_id   = 123;
+     unexpected.season    = expected_season + 1;
+     unexpected.player_id = 234;
+
+     insert_a_team_player( &expected   );
+     insert_a_team_player( &unexpected );
+
+     data_list_s list = { 0 };
+
+     team_player_s team_player = { 0 };
+
+     team_player.team_id = expected.team_id;
+     team_player.season  = expected_season;
+
+     assertEquals( SQLITE_OK, team_players_t_read_by_team_and_season( db, &team_player, &list ) );
+
+     assertEquals( 1, list.count );
+
+     team_player_s *actual = list.data;
+
+     assertEquals( expected.team_id,   actual[0].team_id   );
+     assertEquals( expected.season,    actual[0].season    );
+     assertEquals( expected.player_id, actual[0].player_id );
+
+     free( actual );
+
+     sqlite3_exec( db, "delete from team_players_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
 static char *team_players_t_delete__ShouldDeleteMatchingRecord_GivenATeamPlayer()
 {
      team_player_s expected = { 0 };
@@ -218,12 +259,13 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( team_players_t_create__ShouldInsertRecordsInTheTeamPlayersTTable,             check_sqlite_error );
-     run_test( team_players_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInserted,          check_sqlite_error );
-     run_test( team_players_t_read_by_team__ShouldRetrieveMatchingRecord_GivenTheTeamId,     check_sqlite_error );
-     run_test( team_players_t_read_by_team__ShouldRetrieveAllMatchingRecords_GivenTheTeamId, check_sqlite_error );
-     run_test( team_players_t_delete__ShouldDeleteMatchingRecord_GivenATeamPlayer,           check_sqlite_error );
-     run_test( team_players_t_delete__ShouldOnlyDeleteMatchingRecord_GivenATeamPlayer,       check_sqlite_error );
+     run_test( team_players_t_create__ShouldInsertRecordsInTheTeamPlayersTTable,                             check_sqlite_error );
+     run_test( team_players_t_create__ShouldGiveAnErrorIfDuplicateRecordIsInserted,                          check_sqlite_error );
+     run_test( team_players_t_read_by_team__ShouldRetrieveMatchingRecord_GivenTheTeamId,                     check_sqlite_error );
+     run_test( team_players_t_read_by_team__ShouldRetrieveAllMatchingRecords_GivenTheTeamId,                 check_sqlite_error );
+     run_test( team_players_t_read_by_team_and_season__ShouldRetrieveMatchingRecord_GivenTheTeamIdAndSeason, check_sqlite_error );
+     run_test( team_players_t_delete__ShouldDeleteMatchingRecord_GivenATeamPlayer,                           check_sqlite_error );
+     run_test( team_players_t_delete__ShouldOnlyDeleteMatchingRecord_GivenATeamPlayer,                       check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )
