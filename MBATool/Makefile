@@ -11,7 +11,8 @@ progs = \
    copy_longevity \
    format_amiga_to_dos \
    format_dos_to_amiga \
-   import_season
+   import_season \
+   export_season
 
 tests = \
    test_gen_player_ids \
@@ -83,6 +84,9 @@ format_dos_to_amiga: format_dos_to_amiga.o format_dos_to_amiga_main.o file_utils
 
 import_season: import_season.o file_utils.o data_list.o calc_records.o parse_csv.o libmbaconversion.a libmbadata.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ -lmbaconversion -lmbadata
+
+export_season: export_season.o file_utils.o data_list.o parse_csv.o libmbadata.a libmbaconversion.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 TESTS: $(tests) mba_test.db TAGS
 
@@ -295,7 +299,9 @@ MBACONVERSION_OBJECTS = \
  convert_leagues.o \
  convert_divisions.o \
  convert_teams.o \
- convert_players.o
+ convert_players.o \
+ generate_file_leagname.o \
+ generate_file_players.o
 
 libmbaconversion.a: $(MBACONVERSION_OBJECTS)
 	$(AR) $(ARFLAGS) $@ $^

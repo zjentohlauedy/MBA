@@ -65,6 +65,7 @@ MBATool/set_longevity
 MBATool/format_amiga_to_dos
 MBATool/format_dos_to_amiga
 MBATool/import_season
+MBATool/export_season
 
 MBATool/test_players_t
 MBATool/test_player_accolades_t
