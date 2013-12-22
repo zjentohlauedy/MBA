@@ -160,7 +160,9 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                          assertEqualsBfr( first_phoen, players_file[idx].first_phoen, sizeof(first_phoen) );
                          assertEqualsBfr( last_phoen,  players_file[idx].last_phoen,  sizeof(last_phoen)  );
 
-                         assertEquals( team_players[l].player->player_id,     word2int( players_file[idx].acc_stats.action.id_info.player_id ) );
+                         assertEquals(               team_players[l].player->player_id,   word2int( players_file[idx].acc_stats.action.id_info.player_id ) );
+                         assertEquals( calcChecksum( team_players[l].player->player_id ), byte2int( players_file[idx].acc_stats.action.id_info.checksum  ) );
+
                          assertEquals( team_players[l].player->rookie_season, byte2int( players_file[idx].year ) - YEAR_SEASON_OFFSET );
 
                          int age_adjustment = (team_players[l].player->longevity + 3) - (season - team_players[l].player->rookie_season);

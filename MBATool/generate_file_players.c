@@ -208,7 +208,8 @@ static fileposition_e mapPosition( const position_e position )
 
 static boolean_e generateFilePlayer( const player_s *player, const int season, const int player_idx, fileplayer_s *players_file )
 {
-     int2word( players_file[player_idx].acc_stats.action.id_info.player_id, player->player_id );
+     int2word( players_file[player_idx].acc_stats.action.id_info.player_id,               player->player_id   );
+     int2byte( players_file[player_idx].acc_stats.action.id_info.checksum,  calcChecksum( player->player_id ) );
 
      memcpy( players_file[player_idx].first_name,  player->first_name,      sizeof(players_file[player_idx].first_name)  );
      memcpy( players_file[player_idx].last_name,   player->last_name,       sizeof(players_file[player_idx].last_name)   );
