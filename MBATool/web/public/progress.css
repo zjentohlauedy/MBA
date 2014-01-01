@@ -1,0 +1,87 @@
+body {
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+ol.progress {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ol.progress li {
+    display: inline-block;
+    text-align: center;
+    line-height: 3em;
+}
+
+ol.progress[data-progress-steps="2"] li { width: 49%; }
+ol.progress[data-progress-steps="3"] li { width: 33%; }
+ol.progress[data-progress-steps="4"] li { width: 24%; }
+ol.progress[data-progress-steps="5"] li { width: 19%; }
+ol.progress[data-progress-steps="6"] li { width: 16%; }
+ol.progress[data-progress-steps="7"] li { width: 14%; }
+ol.progress[data-progress-steps="8"] li { width: 12%; }
+ol.progress[data-progress-steps="9"] li { width: 11%; }
+
+ol.progress li.progress-done {
+    color: black;
+    border-bottom: 4px solid yellowgreen;
+}
+
+ol.progress li.progress-todo {
+    color: silver;
+    border-bottom: 4px solid silver;
+}
+
+ol.progress li:after {
+    content: "\00a0\00a0";
+}
+
+ol.progress li:before {
+    position: relative;
+    bottom: -1.6em;
+    float: left;
+    left: 50%;
+    line-height: 1em;
+}
+
+ol.progress li.progress-done:before {
+    content: "\2713";
+    color: white;
+    background-color: yellowgreen;
+    height: 1.2em;
+    width: 1.2em;
+    line-height: 1.2em;
+    border: none;
+    border-radius: 1.2em;
+    font-size: 1.5em;
+}
+
+ol.progress li.progress-todo:before {
+    content: "\039F";
+    color: silver;
+    background-color: white;
+    font-size: 1.5em;
+    bottom: -1.6em;
+}
+
+button.next {
+    display: block;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 138.5%;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #659635;
+    background: -moz-linear-gradient(top,
+                                     #CFE782 0%,
+                                     #9BCB2A 2%,
+                                     #5DA331 97%,
+                                     #659635 100%);
+    text-shadow: -1px -1px 2px #777777;
+    color: #ffffff;
+    border-radius: 10px;
+    margin: 1em;
+}
