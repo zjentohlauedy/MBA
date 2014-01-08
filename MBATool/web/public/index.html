@@ -3,21 +3,204 @@
   <head>
     <title>MBA</title>
     <link rel="stylesheet" href="progress.css" type="text/css"/>
-    <script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
-    <script type="text/javascript" src="progress.js"></script>
   </head>
   <body>
-    <script type="text/x-handlebars" id="start-season">
-      <h2>Click Next to start a new season.</h2>
+    <script type="text/x-handlebars">
+      <header>
+        <h1>Header</h1>
+      </header>
+
+      <div>
+        {{render "progress"}}
+      </div>
+
+      <div>
+        {{render "next-button"}}
+      </div>
+
+      <div>
+        {{outlet}}
+      </div>
+
+      <footer>
+        Footer
+      </footer>
     </script>
-    <ol class="progress">
-      <li>Start New Season</li><!--
-   --><li>Roster Cut</li><!--
-   --><li>Rookie Draft</li><!--
-   --><li>Free Agent Draft</li><!--
-   --><li>Export Season</li><!--
-   --><li>Import Season</li>
-    </ol>
-    <button class="next">Next</button>
+    <script type="text/x-handlebars" data-template-name="progress">
+      <ol class="progress" {{bind-attr data-progress-steps="stages.length"}}>
+        {{#each stages}}<li {{bind-attr class="isDone:progress-done:progress-todo"}}>{{name}}</li>{{/each}}
+      </ol>
+    </script>
+    <script type="text/x-handlebars" data-template-name="next-button">
+      <button class="next">{{view.name}}</button>
+    </script>
+    <script type="text/x-handlebars" data-template-name="start-season">
+      <h1>Start A New Season!</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="roster-cut">
+      <ul class="teamlist">
+        <li>Team01</li>
+        <li>Team02</li>
+        <li>Team03</li>
+        <li>Team04</li>
+        <li>Team05</li>
+        <li>Team06</li>
+        <li>Team07</li>
+        <li>Team08</li>
+        <li>Team09</li>
+        <li>Team10</li>
+        <li>Team11</li>
+        <li>Team12</li>
+        <li>Team13</li>
+        <li>Team14</li>
+        <li>Team15</li>
+        <li>Team16</li>
+        <li>Team17</li>
+        <li>Team18</li>
+        <li>Team19</li>
+        <li>Team20</li>
+        <li>Team21</li>
+        <li>Team22</li>
+        <li>Team23</li>
+        <li>Team24</li>
+        <li>Team25</li>
+        <li>Team26</li>
+        <li>Team27</li>
+        <li>Team28</li>
+        <li>Team29</li>
+        <li>Team30</li>
+        <li>Team31</li>
+        <li>Team32</li>
+      </ul>
+      <table>
+        <caption>Pitchers</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Record</th>
+            <th>ERA</th>
+            <th>Vs. BA</th>
+            <th>INN/G</th>
+            <th>WHIP</th>
+            <th>SO/9</th>
+            <th>EFF</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conley, Bud</td><td>2 - 11</td><td>6.84</td><td>.239</td><td>6.25</td><td>1.569</td><td>5.40</td><td>-58</td>
+          </tr>
+          <tr>
+            <td>Gold, Johnny</td><td>3 - 5</td><td>4.67</td><td>.215</td><td>6.93</td><td>1.288</td><td>7.88</td><td>+3</td>
+          </tr>
+          <tr>
+            <td>Hartman, Dave</td><td>0 - 0</td><td>9.00</td><td>.227</td><td>5.00</td><td>1.400</td><td>3.60</td><td>-3</td>
+          </tr>
+          <tr>
+            <td>Hearns, Bill</td><td>1 - 0</td><td>2.08</td><td>.211</td><td>0.87</td><td>1.385</td><td>9.69</td><td>+3</td>
+          </tr>
+          <tr>
+            <td>Michael, Danny</td><td>0 - 0</td><td>2.11</td><td>.206</td><td>2.84</td><td>0.998</td><td>8.98</td><td>+6</td>
+          </tr>
+          <tr>
+            <td>Montgomery, Curtis</td><td>5 - 5</td><td>4.20</td><td>.217</td><td>1.94</td><td>1.450</td><td>8.25</td><td>-1</td>
+          </tr>
+          <tr>
+            <td>Risc, Paul</td><td>3 - 7</td><td>6.37</td><td>.215</td><td>7.38</td><td>1.302</td><td>5.91</td><td>-19</td>
+          </tr>
+          <tr>
+            <td>Stern, Dan</td><td>6 - 1</td><td>4.22</td><td>.213</td><td>6.75</td><td>1.111</td><td>5.44</td><td>-12</td>
+          </tr>
+          <tr>
+            <td>Thorpe, Denny</td><td>1 - 1</td><td>5.57</td><td>.250</td><td>1.11</td><td>1.762</td><td>8.57</td><td>-9</td>
+          </tr>
+          <tr>
+            <td>Vowles, Keith</td><td>5 - 5</td><td>4.12</td><td>.236</td><td>1.92</td><td>1.581</td><td>5.43</td><td>-27</td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <caption>Batters</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>POS</th>
+            <th>Games</th>
+            <th>BA</th>
+            <th>HR</th>
+            <th>SB</th>
+            <th>SA</th>
+            <th>OBA</th>
+            <th>RPG</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stamper, Jason     </td><td>C </td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>2.00</td>
+          </tr>
+          <tr>
+            <td>Ulrich, Ed         </td><td>C </td><td>62</td><td>.279</td><td>19</td><td>0</td><td>.598</td><td>.301</td><td>1.03</td>
+          </tr>
+          <tr>
+            <td>Bennett, Richard   </td><td>1B</td><td>62</td><td>.286</td><td>14</td><td>9</td><td>.514</td><td>.361</td><td>0.98</td>
+          </tr>
+          <tr>
+            <td>Graysmark, John    </td><td>1B</td><td>13</td><td>.265</td><td> 0</td><td>1</td><td>.408</td><td>.294</td><td>0.69</td>
+          </tr>
+          <tr>
+            <td>Bond, Charles      </td><td>2B</td><td>16</td><td>.304</td><td> 1</td><td>0</td><td>.478</td><td>.347</td><td>0.75</td>
+          </tr>
+          <tr>
+            <td>Thomas, Roy        </td><td>2B</td><td>52</td><td>.282</td><td>11</td><td>0</td><td>.518</td><td>.358</td><td>1.04</td>
+          </tr>
+          <tr>
+            <td>Kaume, Robert      </td><td>3B</td><td>62</td><td>.281</td><td>22</td><td>0</td><td>.628</td><td>.338</td><td>1.05</td>
+          </tr>
+          <tr>
+            <td>Brenneys, Marty    </td><td>SS</td><td>62</td><td>.197</td><td> 6</td><td>1</td><td>.305</td><td>.255</td><td>0.50</td>
+          </tr>
+          <tr>
+            <td>Giles, Charles     </td><td>SS</td><td>52</td><td>.212</td><td> 5</td><td>0</td><td>.380</td><td>.291</td><td>0.62</td>
+          </tr>
+          <tr>
+            <td>Fasching, Scott    </td><td>LF</td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
+          </tr>
+          <tr>
+            <td>Smith, Guy         </td><td>LF</td><td>62</td><td>.185</td><td> 9</td><td>0</td><td>.373</td><td>.243</td><td>0.68</td>
+          </tr>
+          <tr>
+            <td>Ford, Roy          </td><td>CF</td><td> 0</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
+          </tr>
+          <tr>
+            <td>Nicholson, Benjamin</td><td>CF</td><td>62</td><td>.210</td><td> 9</td><td>0</td><td>.410</td><td>.325</td><td>0.76</td>
+          </tr>
+          <tr>
+            <td>Campbell, Colin    </td><td>RF</td><td>62</td><td>.226</td><td>12</td><td>2</td><td>.481</td><td>.348</td><td>0.98</td>
+          </tr>
+          <tr>
+            <td>Mooney, Robert     </td><td>RF</td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </script>
+    <script type="text/x-handlebars" data-template-name="rookie-draft">
+      <h1>Draft Rookies!</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="free-agents">
+      <h1>Draft Free Agents!</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="export-season">
+      <h1>Export The Season!</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="import-season">
+      <h1>Import The Season!</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="season-complete">
+      <h1>The Season Has Completed!</h1>
+    </script>
+    <script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="lib/handlebars-1.1.2.js"></script>
+    <script type="text/javascript" src="lib/ember-1.2.0.js"></script>
+    <script type="text/javascript" src="app.js"></script>
   </body>
 </html>

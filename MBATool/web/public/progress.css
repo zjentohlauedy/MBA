@@ -85,3 +85,16 @@ button.next {
     border-radius: 10px;
     margin: 1em;
 }
+
+ul.teamlist {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    list-style-type: none;
+    columns: 4;
+    -webkit-columns: 4;
+    -moz-columns: 4;
+}
+
+ul.teamlist li {
+}
