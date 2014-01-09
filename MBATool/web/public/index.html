@@ -39,40 +39,10 @@
     </script>
     <script type="text/x-handlebars" data-template-name="roster-cut">
       <ul class="teamlist">
-        <li>Team01</li>
-        <li>Team02</li>
-        <li>Team03</li>
-        <li>Team04</li>
-        <li>Team05</li>
-        <li>Team06</li>
-        <li>Team07</li>
-        <li>Team08</li>
-        <li>Team09</li>
-        <li>Team10</li>
-        <li>Team11</li>
-        <li>Team12</li>
-        <li>Team13</li>
-        <li>Team14</li>
-        <li>Team15</li>
-        <li>Team16</li>
-        <li>Team17</li>
-        <li>Team18</li>
-        <li>Team19</li>
-        <li>Team20</li>
-        <li>Team21</li>
-        <li>Team22</li>
-        <li>Team23</li>
-        <li>Team24</li>
-        <li>Team25</li>
-        <li>Team26</li>
-        <li>Team27</li>
-        <li>Team28</li>
-        <li>Team29</li>
-        <li>Team30</li>
-        <li>Team31</li>
-        <li>Team32</li>
+        {{#each teams}}<li>{{name}}</li>{{/each}}
       </ul>
-      <table>
+      <div class="container">
+      <table class="left pretty">
         <caption>Pitchers</caption>
         <thead>
           <tr>
@@ -87,39 +57,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Conley, Bud</td><td>2 - 11</td><td>6.84</td><td>.239</td><td>6.25</td><td>1.569</td><td>5.40</td><td>-58</td>
-          </tr>
-          <tr>
-            <td>Gold, Johnny</td><td>3 - 5</td><td>4.67</td><td>.215</td><td>6.93</td><td>1.288</td><td>7.88</td><td>+3</td>
-          </tr>
-          <tr>
-            <td>Hartman, Dave</td><td>0 - 0</td><td>9.00</td><td>.227</td><td>5.00</td><td>1.400</td><td>3.60</td><td>-3</td>
-          </tr>
-          <tr>
-            <td>Hearns, Bill</td><td>1 - 0</td><td>2.08</td><td>.211</td><td>0.87</td><td>1.385</td><td>9.69</td><td>+3</td>
-          </tr>
-          <tr>
-            <td>Michael, Danny</td><td>0 - 0</td><td>2.11</td><td>.206</td><td>2.84</td><td>0.998</td><td>8.98</td><td>+6</td>
-          </tr>
-          <tr>
-            <td>Montgomery, Curtis</td><td>5 - 5</td><td>4.20</td><td>.217</td><td>1.94</td><td>1.450</td><td>8.25</td><td>-1</td>
-          </tr>
-          <tr>
-            <td>Risc, Paul</td><td>3 - 7</td><td>6.37</td><td>.215</td><td>7.38</td><td>1.302</td><td>5.91</td><td>-19</td>
-          </tr>
-          <tr>
-            <td>Stern, Dan</td><td>6 - 1</td><td>4.22</td><td>.213</td><td>6.75</td><td>1.111</td><td>5.44</td><td>-12</td>
-          </tr>
-          <tr>
-            <td>Thorpe, Denny</td><td>1 - 1</td><td>5.57</td><td>.250</td><td>1.11</td><td>1.762</td><td>8.57</td><td>-9</td>
-          </tr>
-          <tr>
-            <td>Vowles, Keith</td><td>5 - 5</td><td>4.12</td><td>.236</td><td>1.92</td><td>1.581</td><td>5.43</td><td>-27</td>
-          </tr>
+          {{#each pitchers}}<tr><td>{{name}}</td><td>{{record}}</td><td>{{era}}</td><td>{{vsba}}</td><td>{{ipg}}</td><td>{{whip}}</td><td>{{sop9}}</td><td>{{eff}}</td></tr>{{/each}}
         </tbody>
       </table>
-      <table>
+      <table class="right pretty">
         <caption>Batters</caption>
         <thead>
           <tr>
@@ -182,12 +123,459 @@
           </tr>
         </tbody>
       </table>
+      </div>
     </script>
     <script type="text/x-handlebars" data-template-name="rookie-draft">
-      <h1>Draft Rookies!</h1>
+      <div class="left">
+        <span class="heading">Team01</span>
+      <table class="full pretty">
+        <caption>Pitchers</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Throws</th>
+            <th>Speed</th>
+            <th>Control</th>
+            <th>Bunt</th>
+            <th>Fatigue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="full pretty">
+        <caption>Batters</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>POS1</th>
+            <th>POS2</th>
+            <th>Hits</th>
+            <th>Power</th>
+            <th>Hit & Run</th>
+            <th>Bunt</th>
+            <th>Running</th>
+            <th>Range</th>
+            <th>Arm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="right">
+        <span class="heading">Rookies</span>
+      <table class="full pretty">
+        <caption>Pitchers</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Throws</th>
+            <th>Speed</th>
+            <th>Control</th>
+            <th>Bunt</th>
+            <th>Fatigue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="full pretty">
+        <caption>Batters</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>POS1</th>
+            <th>POS2</th>
+            <th>Hits</th>
+            <th>Power</th>
+            <th>Hit & Run</th>
+            <th>Bunt</th>
+            <th>Running</th>
+            <th>Range</th>
+            <th>Arm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
     </script>
     <script type="text/x-handlebars" data-template-name="free-agents">
-      <h1>Draft Free Agents!</h1>
+      <div class="left">
+        <span class="heading">Team01</span>
+      <table class="full pretty">
+        <caption>Pitchers</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Throws</th>
+            <th>Speed</th>
+            <th>Control</th>
+            <th>Bunt</th>
+            <th>Fatigue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="full pretty">
+        <caption>Batters</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>POS1</th>
+            <th>POS2</th>
+            <th>Hits</th>
+            <th>Power</th>
+            <th>Hit & Run</th>
+            <th>Bunt</th>
+            <th>Running</th>
+            <th>Range</th>
+            <th>Arm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="right">
+        <span class="heading">Free Agents</span>
+      <table class="full pretty">
+        <caption>Pitchers</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Throws</th>
+            <th>Speed</th>
+            <th>Control</th>
+            <th>Bunt</th>
+            <th>Fatigue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="full pretty">
+        <caption>Batters</caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>POS1</th>
+            <th>POS2</th>
+            <th>Hits</th>
+            <th>Power</th>
+            <th>Hit & Run</th>
+            <th>Bunt</th>
+            <th>Running</th>
+            <th>Range</th>
+            <th>Arm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
+          </tr>
+          <tr>
+            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+          <tr>
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
     </script>
     <script type="text/x-handlebars" data-template-name="export-season">
       <h1>Export The Season!</h1>

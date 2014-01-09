@@ -3,6 +3,25 @@ body {
     font-size: 12px;
 }
 
+.left {
+    width: 49%;
+    float: left;
+}
+
+.right {
+    width: 49%;
+    float: right;
+}
+
+.full {
+    width: 100%;
+}
+
+.container {
+    width: 100%;
+    display: inline-block;
+}
+
 ol.progress {
     margin: 0;
     padding: 0;
@@ -97,4 +116,40 @@ ul.teamlist {
 }
 
 ul.teamlist li {
+    font-weight: bold;
+}
+
+ul.teamlist li:hover {
+    background-color: #DDDDDD;
+}
+
+table.pretty {
+    border: 1px solid;
+}
+
+table.pretty caption {
+    background-color: #CCCCCC;
+    border: 1px solid;
+    padding: 0.5em;
+    text-align: left;
+}
+
+table.pretty thead {
+    text-align: left;
+}
+
+table.pretty th {
+    border-bottom: 1px solid;
+}
+
+table.pretty tbody tr:nth-child(even) {
+    background-color: #EEEEEE;
+}
+
+table.pretty tbody tr:hover {
+    background-color: #DDDDDD;
+}
+
+span.heading {
+    font-weight: bold;
 }
