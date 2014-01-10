@@ -39,7 +39,7 @@
     </script>
     <script type="text/x-handlebars" data-template-name="roster-cut">
       <ul class="teamlist">
-        {{#each teams}}<li>{{name}}</li>{{/each}}
+        {{#each team in teams}}<li {{bind-attr class="team.isSelected"}} {{action "selectTeam" team on="click"}}>{{team.name}}</li>{{/each}}
       </ul>
       <div class="container">
       <table class="left pretty">
@@ -57,7 +57,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each pitchers}}<tr><td>{{name}}</td><td>{{record}}</td><td>{{era}}</td><td>{{vsba}}</td><td>{{ipg}}</td><td>{{whip}}</td><td>{{sop9}}</td><td>{{eff}}</td></tr>{{/each}}
+          {{#each currentTeam.pitchers}}<tr><td>{{name}}</td><td>{{record}}</td><td>{{era}}</td><td>{{vsba}}</td><td>{{ipg}}</td><td>{{whip}}</td><td>{{sop9}}</td><td>{{eff}}</td></tr>{{/each}}
         </tbody>
       </table>
       <table class="right pretty">
@@ -76,51 +76,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Stamper, Jason     </td><td>C </td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>2.00</td>
-          </tr>
-          <tr>
-            <td>Ulrich, Ed         </td><td>C </td><td>62</td><td>.279</td><td>19</td><td>0</td><td>.598</td><td>.301</td><td>1.03</td>
-          </tr>
-          <tr>
-            <td>Bennett, Richard   </td><td>1B</td><td>62</td><td>.286</td><td>14</td><td>9</td><td>.514</td><td>.361</td><td>0.98</td>
-          </tr>
-          <tr>
-            <td>Graysmark, John    </td><td>1B</td><td>13</td><td>.265</td><td> 0</td><td>1</td><td>.408</td><td>.294</td><td>0.69</td>
-          </tr>
-          <tr>
-            <td>Bond, Charles      </td><td>2B</td><td>16</td><td>.304</td><td> 1</td><td>0</td><td>.478</td><td>.347</td><td>0.75</td>
-          </tr>
-          <tr>
-            <td>Thomas, Roy        </td><td>2B</td><td>52</td><td>.282</td><td>11</td><td>0</td><td>.518</td><td>.358</td><td>1.04</td>
-          </tr>
-          <tr>
-            <td>Kaume, Robert      </td><td>3B</td><td>62</td><td>.281</td><td>22</td><td>0</td><td>.628</td><td>.338</td><td>1.05</td>
-          </tr>
-          <tr>
-            <td>Brenneys, Marty    </td><td>SS</td><td>62</td><td>.197</td><td> 6</td><td>1</td><td>.305</td><td>.255</td><td>0.50</td>
-          </tr>
-          <tr>
-            <td>Giles, Charles     </td><td>SS</td><td>52</td><td>.212</td><td> 5</td><td>0</td><td>.380</td><td>.291</td><td>0.62</td>
-          </tr>
-          <tr>
-            <td>Fasching, Scott    </td><td>LF</td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
-          </tr>
-          <tr>
-            <td>Smith, Guy         </td><td>LF</td><td>62</td><td>.185</td><td> 9</td><td>0</td><td>.373</td><td>.243</td><td>0.68</td>
-          </tr>
-          <tr>
-            <td>Ford, Roy          </td><td>CF</td><td> 0</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
-          </tr>
-          <tr>
-            <td>Nicholson, Benjamin</td><td>CF</td><td>62</td><td>.210</td><td> 9</td><td>0</td><td>.410</td><td>.325</td><td>0.76</td>
-          </tr>
-          <tr>
-            <td>Campbell, Colin    </td><td>RF</td><td>62</td><td>.226</td><td>12</td><td>2</td><td>.481</td><td>.348</td><td>0.98</td>
-          </tr>
-          <tr>
-            <td>Mooney, Robert     </td><td>RF</td><td> 1</td><td>.000</td><td> 0</td><td>0</td><td>.000</td><td>.000</td><td>0.00</td>
-          </tr>
+          {{#each currentTeam.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{games}}</td><td>{{avg}}</td><td>{{homers}}</td><td>{{steals}}</td><td>{{slugging}}</td><td>{{oba}}</td><td>{{rpg}}</td></tr>{{/each}}
         </tbody>
       </table>
       </div>
@@ -128,453 +84,161 @@
     <script type="text/x-handlebars" data-template-name="rookie-draft">
       <div class="left">
         <span class="heading">Team01</span>
-      <table class="full pretty">
-        <caption>Pitchers</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Throws</th>
-            <th>Speed</th>
-            <th>Control</th>
-            <th>Bunt</th>
-            <th>Fatigue</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="full pretty">
-        <caption>Batters</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>POS1</th>
-            <th>POS2</th>
-            <th>Hits</th>
-            <th>Power</th>
-            <th>Hit & Run</th>
-            <th>Bunt</th>
-            <th>Running</th>
-            <th>Range</th>
-            <th>Arm</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="full pretty">
+          <caption>Pitchers</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Throws</th>
+              <th>Speed</th>
+              <th>Control</th>
+              <th>Bunt</th>
+              <th>Fatigue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each team.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+          </tbody>
+        </table>
+        <table class="full pretty">
+          <caption>Batters</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>POS1</th>
+              <th>POS2</th>
+              <th>Bats</th>
+              <th>Power</th>
+              <th>Hit & Run</th>
+              <th>Bunt</th>
+              <th>Running</th>
+              <th>Range</th>
+              <th>Arm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each team.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+          </tbody>
+        </table>
       </div>
       <div class="right">
         <span class="heading">Rookies</span>
-      <table class="full pretty">
-        <caption>Pitchers</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Throws</th>
-            <th>Speed</th>
-            <th>Control</th>
-            <th>Bunt</th>
-            <th>Fatigue</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="full pretty">
-        <caption>Batters</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>POS1</th>
-            <th>POS2</th>
-            <th>Hits</th>
-            <th>Power</th>
-            <th>Hit & Run</th>
-            <th>Bunt</th>
-            <th>Running</th>
-            <th>Range</th>
-            <th>Arm</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="full pretty">
+          <caption>Pitchers</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Throws</th>
+              <th>Speed</th>
+              <th>Control</th>
+              <th>Bunt</th>
+              <th>Fatigue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each rookies.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+          </tbody>
+        </table>
+        <table class="full pretty">
+          <caption>Batters</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>POS1</th>
+              <th>POS2</th>
+              <th>Hits</th>
+              <th>Power</th>
+              <th>Hit & Run</th>
+              <th>Bunt</th>
+              <th>Running</th>
+              <th>Range</th>
+              <th>Arm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each rookies.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+          </tbody>
+        </table>
       </div>
     </script>
     <script type="text/x-handlebars" data-template-name="free-agents">
       <div class="left">
         <span class="heading">Team01</span>
-      <table class="full pretty">
-        <caption>Pitchers</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Throws</th>
-            <th>Speed</th>
-            <th>Control</th>
-            <th>Bunt</th>
-            <th>Fatigue</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="full pretty">
-        <caption>Batters</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>POS1</th>
-            <th>POS2</th>
-            <th>Hits</th>
-            <th>Power</th>
-            <th>Hit & Run</th>
-            <th>Bunt</th>
-            <th>Running</th>
-            <th>Range</th>
-            <th>Arm</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="full pretty">
+          <caption>Pitchers</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Throws</th>
+              <th>Speed</th>
+              <th>Control</th>
+              <th>Bunt</th>
+              <th>Fatigue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each team.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+          </tbody>
+        </table>
+        <table class="full pretty">
+          <caption>Batters</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>POS1</th>
+              <th>POS2</th>
+              <th>Bats</th>
+              <th>Power</th>
+              <th>Hit & Run</th>
+              <th>Bunt</th>
+              <th>Running</th>
+              <th>Range</th>
+              <th>Arm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each team.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+          </tbody>
+        </table>
       </div>
       <div class="right">
         <span class="heading">Free Agents</span>
-      <table class="full pretty">
-        <caption>Pitchers</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Throws</th>
-            <th>Speed</th>
-            <th>Control</th>
-            <th>Bunt</th>
-            <th>Fatigue</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Conley, Bud</td><td>L</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Gold, Johnny</td><td>R</td><td>6</td><td>6</td><td>5</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Hartman, Dave</td><td>R</td><td>4</td><td>4</td><td>6</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
-      <table class="full pretty">
-        <caption>Batters</caption>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>POS1</th>
-            <th>POS2</th>
-            <th>Hits</th>
-            <th>Power</th>
-            <th>Hit & Run</th>
-            <th>Bunt</th>
-            <th>Running</th>
-            <th>Range</th>
-            <th>Arm</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Ulrich, Ed</td><td>C</td><td>1B</td><td>R</td><td>7</td><td>5</td><td>6</td><td>5</td><td>3</td><td>6</td>
-          </tr>
-          <tr>
-            <td>Graysmark, John</td><td>1B</td><td>IF</td><td>L</td><td>5</td><td>8</td><td>6</td><td>7</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Kaume, Robert</td><td>3B</td><td>OF</td><td>R</td><td>7</td><td>5</td><td>4</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Smith, Guy</td><td>LF</td><td>OF</td><td>L</td><td>6</td><td>5</td><td>4</td><td>4</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td>Ford, Roy</td><td>CF</td><td>OF</td><td>L</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-          <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="full pretty">
+          <caption>Pitchers</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Throws</th>
+              <th>Speed</th>
+              <th>Control</th>
+              <th>Bunt</th>
+              <th>Fatigue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each agents.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+          </tbody>
+        </table>
+        <table class="full pretty">
+          <caption>Batters</caption>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>POS1</th>
+              <th>POS2</th>
+              <th>Hits</th>
+              <th>Power</th>
+              <th>Hit & Run</th>
+              <th>Bunt</th>
+              <th>Running</th>
+              <th>Range</th>
+              <th>Arm</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each agents.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+          </tbody>
+        </table>
       </div>
     </script>
     <script type="text/x-handlebars" data-template-name="export-season">

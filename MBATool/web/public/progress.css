@@ -119,6 +119,10 @@ ul.teamlist li {
     font-weight: bold;
 }
 
+ul.teamlist li.is-selected {
+    color: #FF0000;
+}
+
 ul.teamlist li:hover {
     background-color: #DDDDDD;
 }
