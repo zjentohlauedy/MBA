@@ -89,12 +89,13 @@
       </table>
       </div>
       <div>
-        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage"}}>Next</button>
+        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
       </div>
     </script>
     <script type="text/x-handlebars" data-template-name="rookie-draft">
+      <div class="container">
       <div class="left">
-        <span class="heading">Team01</span>
+        <span class="heading">{{team.name}}</span>
         <table class="full pretty">
           <caption>Pitchers</caption>
           <thead>
@@ -134,7 +135,7 @@
       </div>
       <div class="right">
         <span class="heading">Rookies</span>
-        <table class="full pretty">
+        <table {{bind-attr class=":full :pretty showRookiePitchers:visible:invisible"}}>
           <caption>Pitchers</caption>
           <thead>
             <tr>
@@ -147,10 +148,14 @@
             </tr>
           </thead>
           <tbody>
-            {{#each rookies.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+            {{#each pitcher in rookies.pitchers}}
+            <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectRookiePitcher" pitcher on="click"}}>
+              <td>{{pitcher.name}}</td><td>{{pitcher.hand}}</td><td>{{pitcher.speed}}</td><td>{{pitcher.control}}</td><td>{{pitcher.bunt}}</td><td>{{pitcher.fatigue}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
-        <table class="full pretty">
+        <table {{bind-attr class=":full :pretty showRookieBatters:visible:invisible"}}>
           <caption>Batters</caption>
           <thead>
             <tr>
@@ -167,9 +172,25 @@
             </tr>
           </thead>
           <tbody>
-            {{#each rookies.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+            {{#each batter in rookies.batters}}
+            <tr {{bind-attr class="batter.isSelected"}} {{action "selectRookieBatter" batter on="click"}}>
+              <td>{{batter.name}}</td><td>{{batter.position}}</td><td>{{batter.pos2}}</td><td>{{batter.hand}}</td><td>{{batter.power}}</td><td>{{batter.hitnrun}}</td><td>{{batter.bunt}}</td><td>{{batter.running}}</td><td>{{batter.range}}</td><td>{{batter.arm}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
+      </div>
+      </div>
+      <div class="container">
+      <div>
+        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
+      </div>
+      <div>
+        <button class="enabled" {{action "toggleRookieTable" on="click"}}>{{toggleRookieButtonLabel}}</button>
+      </div>
+      <div>
+        <button {{bind-attr class="canDraft:enabled:disabled"}} {{action "draftRookie" on="click"}}>Draft</button>
+      </div>
       </div>
     </script>
     <script type="text/x-handlebars" data-template-name="free-agents">
