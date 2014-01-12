@@ -39,11 +39,11 @@
     </script>
     <script type="text/x-handlebars" data-template-name="roster-cut">
       <ul class="teamlist">
-        {{#each team in teams}}<li {{bind-attr class="team.isSelected"}} {{action "selectTeam" team on="click"}}>{{team.name}}</li>{{/each}}
+        {{#each team in teams}}<li {{bind-attr class="team.isSelected team.isError team.isComplete"}} {{action "selectTeam" team on="click"}}>{{team.name}}</li>{{/each}}
       </ul>
       <div class="container">
       <table class="left pretty">
-        <caption>Pitchers</caption>
+        <caption {{bind-attr class="pitchers.isComplete pitchers.isError"}}>Pitchers</caption>
         <thead>
           <tr>
             <th>Name</th>
@@ -57,11 +57,15 @@
           </tr>
         </thead>
         <tbody>
-          {{#each currentTeam.pitchers}}<tr><td>{{name}}</td><td>{{record}}</td><td>{{era}}</td><td>{{vsba}}</td><td>{{ipg}}</td><td>{{whip}}</td><td>{{sop9}}</td><td>{{eff}}</td></tr>{{/each}}
+          {{#each pitcher in currentTeam.pitchers}}
+          <tr {{bind-attr class="pitcher.isCut:removed"}} {{action "toggleCutPitcher" pitcher on="click"}}>
+            <td><span>{{pitcher.name}}</span></td><td>{{pitcher.record}}</td><td>{{pitcher.era}}</td><td>{{pitcher.vsba}}</td><td>{{pitcher.ipg}}</td><td>{{pitcher.whip}}</td><td>{{pitcher.sop9}}</td><td>{{pitcher.eff}}</td>
+          </tr>
+          {{/each}}
         </tbody>
       </table>
       <table class="right pretty">
-        <caption>Batters</caption>
+        <caption {{bind-attr class="batters.isComplete batters.isError"}}>Batters</caption>
         <thead>
           <tr>
             <th>Name</th>
@@ -76,9 +80,16 @@
           </tr>
         </thead>
         <tbody>
-          {{#each currentTeam.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{games}}</td><td>{{avg}}</td><td>{{homers}}</td><td>{{steals}}</td><td>{{slugging}}</td><td>{{oba}}</td><td>{{rpg}}</td></tr>{{/each}}
+          {{#each batter in currentTeam.batters}}
+          <tr {{bind-attr class="batter.isCut:removed"}} {{action "toggleCutBatter" batter on="click"}}>
+            <td>{{batter.name}}</td><td>{{batter.position}}</td><td>{{batter.games}}</td><td>{{batter.avg}}</td><td>{{batter.homers}}</td><td>{{batter.steals}}</td><td>{{batter.slugging}}</td><td>{{batter.oba}}</td><td>{{batter.rpg}}</td>
+          </tr>
+          {{/each}}
         </tbody>
       </table>
+      </div>
+      <div>
+        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage"}}>Next</button>
       </div>
     </script>
     <script type="text/x-handlebars" data-template-name="rookie-draft">
