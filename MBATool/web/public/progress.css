@@ -29,6 +29,10 @@ body {
     display: none;
 }
 
+div.spacer {
+    margin-top: 1em;
+}
+
 ol.progress {
     margin: 0;
     padding: 0;
@@ -39,6 +43,15 @@ ol.progress li {
     display: inline-block;
     text-align: center;
     line-height: 3em;
+}
+
+ol.progress li span.number {
+//    font-size: 2.3em;
+    margin: 0px 3px;
+}
+
+ol.progress li span.name {
+//    width: 10em;
 }
 
 ol.progress[data-progress-steps="2"] li { width: 49%; }
@@ -183,6 +196,7 @@ ul.teamlist li:hover {
 
 table.pretty {
     border: 1px solid;
+    width: 42em;
 }
 
 table.pretty caption {
@@ -202,10 +216,22 @@ table.pretty caption.is-error {
 
 table.pretty thead {
     text-align: left;
+    display: block;
+    width: 100%;
 }
 
 table.pretty th {
     border-bottom: 1px solid;
+}
+
+table.pretty tbody {
+    height: 23em;
+    display: block;
+    overflow: auto;
+}
+
+table.pretty tbody.tall {
+    height: 52em;
 }
 
 table.pretty tbody tr.removed {
@@ -224,6 +250,45 @@ table.pretty tbody tr:nth-child(even) {
 table.pretty tbody tr:hover {
     background-color: #DDDDDD;
 }
+
+
+table.pretty th.pname1,  td.pname1  { width: 12.7em; }
+table.pretty th.record,  td.record  { width:  4.2em; }
+table.pretty th.innings, td.innings { width:  4.4em; }
+table.pretty th.era,     td.era     { width:  2.3em; }
+table.pretty th.vsba,    td.vsba    { width:  3.4em; }
+table.pretty th.innpg,   td.innpg   { width:  3.3em; }
+table.pretty th.whip,    td.whip    { width:  3.2em; }
+table.pretty th.sop9,    td.sop9    { width:  2.8em; }
+table.pretty th.eff,     td.eff     { width:  2.0em; }
+
+table.pretty th.bname1, td.bname1 { width:  18.6em; }
+table.pretty th.pos,    td.pos    { width:   2.5em; }
+table.pretty th.games,  td.games  { width:   4.1em; }
+table.pretty th.ba,     td.ba     { width:   2.4em; }
+table.pretty th.hr,     td.hr     { width:   1.7em; }
+table.pretty th.sb,     td.sb     { width:   1.6em; }
+table.pretty th.sa,     td.sa     { width:   2.4em; }
+table.pretty th.oba,    td.oba    { width:   2.5em; }
+table.pretty th.rpg,    td.rpg    { width:   2.4em; }
+
+table.pretty th.pname2,  td.pname2  { width: 17.7em; }
+table.pretty th.throws,  td.throws  { width:  4.5em; }
+table.pretty th.speed,   td.speed   { width:  3.9em; }
+table.pretty th.control, td.control { width:  4.5em; }
+table.pretty th.bunt,    td.bunt    { width:  2.9em; }
+table.pretty th.fatigue, td.fatigue { width:  4.5em; }
+
+table.pretty th.bname2, td.bname2 { width:  15.9em; }
+table.pretty th.pos1,   td.pos1   { width:   1.8em; }
+table.pretty th.pos2,   td.pos2   { width:   1.8em; }
+table.pretty th.hits,   td.hits   { width:   2.5em; }
+table.pretty th.power,  td.power  { width:   2.3em; }
+table.pretty th.hnr,    td.hnr    { width:   2.5em; }
+table.pretty th.run,    td.run    { width:   2.3em; }
+table.pretty th.range,  td.range  { width:   2.3em; }
+table.pretty th.arm,    td.arm    { width:   2.3em; }
+
 
 span.heading {
     font-weight: bold;

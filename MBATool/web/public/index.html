@@ -28,7 +28,7 @@
     </script>
     <script type="text/x-handlebars" data-template-name="progress">
       <ol class="progress" {{bind-attr data-progress-steps="stages.length"}}>
-        {{#each stages}}<li {{bind-attr class="isDone:progress-done:progress-todo"}}>{{name}}</li>{{/each}}
+        {{#each stages}}<li {{bind-attr class="isDone:progress-done:progress-todo"}}><span class="number">{{number}}</span><span class="name">{{name}}</span></li>{{/each}}
       </ol>
     </script>
     <script type="text/x-handlebars" data-template-name="next-button">
@@ -46,20 +46,29 @@
         <caption {{bind-attr class="pitchers.isComplete pitchers.isError"}}>Pitchers</caption>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Record</th>
-            <th>ERA</th>
-            <th>Vs. BA</th>
-            <th>INN/G</th>
-            <th>WHIP</th>
-            <th>SO/9</th>
-            <th>EFF</th>
+            <th class="pname1" >Name</th>
+            <th class="record" >Record</th>
+            <th class="innings">Innings</th>
+            <th class="era"    >ERA</th>
+            <th class="vsba"   >Vs.BA</th>
+            <th class="innpg"  >INN/G</th>
+            <th class="whip"   >WHIP</th>
+            <th class="sop9"   >SO/9</th>
+            <th class="eff"    >EFF</th>
           </tr>
         </thead>
         <tbody>
           {{#each pitcher in currentTeam.pitchers}}
           <tr {{bind-attr class="pitcher.isCut:removed"}} {{action "toggleCutPitcher" pitcher on="click"}}>
-            <td><span>{{pitcher.name}}</span></td><td>{{pitcher.record}}</td><td>{{pitcher.era}}</td><td>{{pitcher.vsba}}</td><td>{{pitcher.ipg}}</td><td>{{pitcher.whip}}</td><td>{{pitcher.sop9}}</td><td>{{pitcher.eff}}</td>
+            <td class="pname1" >{{pitcher.name}}</td>
+            <td class="record" >{{pitcher.record}}</td>
+            <td class="innings">{{pitcher.innings}}</td>
+            <td class="era"    >{{pitcher.era}}</td>
+            <td class="vsba"   >{{pitcher.vsba}}</td>
+            <td class="innpg"  >{{pitcher.ipg}}</td>
+            <td class="whip"   >{{pitcher.whip}}</td>
+            <td class="sop9"   >{{pitcher.sop9}}</td>
+            <td class="eff"    >{{pitcher.eff}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -68,21 +77,29 @@
         <caption {{bind-attr class="batters.isComplete batters.isError"}}>Batters</caption>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>POS</th>
-            <th>Games</th>
-            <th>BA</th>
-            <th>HR</th>
-            <th>SB</th>
-            <th>SA</th>
-            <th>OBA</th>
-            <th>RPG</th>
+            <th class="bname1">Name</th>
+            <th class="pos"   >POS</th>
+            <th class="games" >Games</th>
+            <th class="ba"    >BA</th>
+            <th class="hr"    >HR</th>
+            <th class="sb"    >SB</th>
+            <th class="sa"    >SA</th>
+            <th class="oba"   >OBA</th>
+            <th class="rpg"   >RPG</th>
           </tr>
         </thead>
         <tbody>
           {{#each batter in currentTeam.batters}}
           <tr {{bind-attr class="batter.isCut:removed"}} {{action "toggleCutBatter" batter on="click"}}>
-            <td>{{batter.name}}</td><td>{{batter.position}}</td><td>{{batter.games}}</td><td>{{batter.avg}}</td><td>{{batter.homers}}</td><td>{{batter.steals}}</td><td>{{batter.slugging}}</td><td>{{batter.oba}}</td><td>{{batter.rpg}}</td>
+            <td class="bname1">{{batter.name}}</td>
+            <td class="pos"   >{{batter.position}}</td>
+            <td class="games" >{{batter.games}}</td>
+            <td class="ba"    >{{batter.avg}}</td>
+            <td class="hr"    >{{batter.homers}}</td>
+            <td class="sb"    >{{batter.steals}}</td>
+            <td class="sa"    >{{batter.slugging}}</td>
+            <td class="oba"   >{{batter.oba}}</td>
+            <td class="rpg"   >{{batter.rpg}}</td>
           </tr>
           {{/each}}
         </tbody>
@@ -100,36 +117,59 @@
           <caption>Pitchers</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Throws</th>
-              <th>Speed</th>
-              <th>Control</th>
-              <th>Bunt</th>
-              <th>Fatigue</th>
+              <th class="pname2" >Name</th>
+              <th class="throws" >Throws</th>
+              <th class="speed"  >Speed</th>
+              <th class="control">Control</th>
+              <th class="fatigue">Fatigue</th>
+              <th class="bunt"   >Bunt</th>
             </tr>
           </thead>
           <tbody>
-            {{#each team.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+            {{#each team.pitchers}}
+            <tr>
+              <td class="pname2" >{{name}}</td>
+              <td class="throws" >{{hand}}</td>
+              <td class="speed"  >{{speed}}</td>
+              <td class="control">{{control}}</td>
+              <td class="fatigue">{{fatigue}}</td>
+              <td class="bunt"   >{{bunt}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
+        <div class="spacer"></div>
         <table class="full pretty">
           <caption>Batters</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>POS1</th>
-              <th>POS2</th>
-              <th>Bats</th>
-              <th>Power</th>
-              <th>Hit & Run</th>
-              <th>Bunt</th>
-              <th>Running</th>
-              <th>Range</th>
-              <th>Arm</th>
+              <th class="bname2">Name</th>
+              <th class="pos1"  >P1</th>
+              <th class="pos2"  >P2</th>
+              <th class="hits"  >Bats</th>
+              <th class="power" >Pwr</th>
+              <th class="hnr"   >H&amp;R</th>
+              <th class="bunt"  >Bunt</th>
+              <th class="run"   >Run</th>
+              <th class="range" >Rng</th>
+              <th class="arm"   >Arm</th>
             </tr>
           </thead>
           <tbody>
-            {{#each team.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+            {{#each team.batters}}
+            <tr>
+              <td class="bname2">{{name}}</td>
+              <td class="pos1"  >{{position}}</td>
+              <td class="pos2"  >{{pos2}}</td>
+              <td class="hits"  >{{hand}}</td>
+              <td class="power" >{{power}}</td>
+              <td class="hnr"   >{{hitnrun}}</td>
+              <td class="bunt"  >{{bunt}}</td>
+              <td class="run"   >{{running}}</td>
+              <td class="range" >{{range}}</td>
+              <td class="arm"   >{{arm}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
       </div>
@@ -139,18 +179,23 @@
           <caption>Pitchers</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Throws</th>
-              <th>Speed</th>
-              <th>Control</th>
-              <th>Bunt</th>
-              <th>Fatigue</th>
+              <th class="pname2"  {{action sortPitchers "name"    on="click"}}>Name</th>
+              <th class="throws"  {{action sortPitchers "hand"    on="click"}}>Throws</th>
+              <th class="speed"   {{action sortPitchers "speed"   on="click"}}>Speed</th>
+              <th class="control" {{action sortPitchers "control" on="click"}}>Control</th>
+              <th class="fatigue" {{action sortPitchers "fatigue" on="click"}}>Fatigue</th>
+              <th class="bunt"    {{action sortPitchers "bunt"    on="click"}}>Bunt</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="tall">
             {{#each pitcher in rookies.pitchers}}
             <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectRookiePitcher" pitcher on="click"}}>
-              <td>{{pitcher.name}}</td><td>{{pitcher.hand}}</td><td>{{pitcher.speed}}</td><td>{{pitcher.control}}</td><td>{{pitcher.bunt}}</td><td>{{pitcher.fatigue}}</td>
+              <td class="pname2" >{{pitcher.name}}</td>
+              <td class="throws" >{{pitcher.hand}}</td>
+              <td class="speed"  >{{pitcher.speed}}</td>
+              <td class="control">{{pitcher.control}}</td>
+              <td class="fatigue">{{pitcher.fatigue}}</td>
+              <td class="bunt"   >{{pitcher.bunt}}</td>
             </tr>
             {{/each}}
           </tbody>
@@ -159,22 +204,31 @@
           <caption>Batters</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>POS1</th>
-              <th>POS2</th>
-              <th>Hits</th>
-              <th>Power</th>
-              <th>Hit & Run</th>
-              <th>Bunt</th>
-              <th>Running</th>
-              <th>Range</th>
-              <th>Arm</th>
+              <th class="bname2" {{action sortBatters "name"     on="click"}}>Name</th>
+              <th class="pos1"   {{action sortBatters "position" on="click"}}>P1</th>
+              <th class="pos2"   {{action sortBatters "pos2"     on="click"}}>P2</th>
+              <th class="hits"   {{action sortBatters "hand"     on="click"}}>Hits</th>
+              <th class="power"  {{action sortBatters "power"    on="click"}}>Pwr</th>
+              <th class="hnr"    {{action sortBatters "hitnrun"  on="click"}}>H&amp;R</th>
+              <th class="bunt"   {{action sortBatters "bunt"     on="click"}}>Bunt</th>
+              <th class="run"    {{action sortBatters "running"  on="click"}}>Run</th>
+              <th class="range"  {{action sortBatters "range"    on="click"}}>Rng</th>
+              <th class="arm"    {{action sortBatters "arm"      on="click"}}>Arm</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="tall">
             {{#each batter in rookies.batters}}
             <tr {{bind-attr class="batter.isSelected"}} {{action "selectRookieBatter" batter on="click"}}>
-              <td>{{batter.name}}</td><td>{{batter.position}}</td><td>{{batter.pos2}}</td><td>{{batter.hand}}</td><td>{{batter.power}}</td><td>{{batter.hitnrun}}</td><td>{{batter.bunt}}</td><td>{{batter.running}}</td><td>{{batter.range}}</td><td>{{batter.arm}}</td>
+              <td class="bname2">{{batter.name}}</td>
+              <td class="pos1"  >{{batter.position}}</td>
+              <td class="pos2"  >{{batter.pos2}}</td>
+              <td class="hits"  >{{batter.hand}}</td>
+              <td class="power" >{{batter.power}}</td>
+              <td class="hnr"   >{{batter.hitnrun}}</td>
+              <td class="bunt"  >{{batter.bunt}}</td>
+              <td class="run"   >{{batter.running}}</td>
+              <td class="range" >{{batter.range}}</td>
+              <td class="arm"   >{{batter.arm}}</td>
             </tr>
             {{/each}}
           </tbody>
@@ -201,36 +255,59 @@
           <caption>Pitchers</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Throws</th>
-              <th>Speed</th>
-              <th>Control</th>
-              <th>Bunt</th>
-              <th>Fatigue</th>
+              <th class="pname2" >Name</th>
+              <th class="throws" >Throws</th>
+              <th class="speed"  >Speed</th>
+              <th class="control">Control</th>
+              <th class="fatigue">Fatigue</th>
+              <th class="bunt"   >Bunt</th>
             </tr>
           </thead>
           <tbody>
-            {{#each team.pitchers}}<tr><td>{{name}}</td><td>{{hand}}</td><td>{{speed}}</td><td>{{control}}</td><td>{{bunt}}</td><td>{{fatigue}}</td></tr>{{/each}}
+            {{#each team.pitchers}}
+            <tr>
+              <td class="pname2" >{{name}}</td>
+              <td class="throws" >{{hand}}</td>
+              <td class="speed"  >{{speed}}</td>
+              <td class="control">{{control}}</td>
+              <td class="fatigue">{{fatigue}}</td>
+              <td class="bunt"   >{{bunt}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
+        <div class="spacer"></div>
         <table class="full pretty">
           <caption>Batters</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>POS1</th>
-              <th>POS2</th>
-              <th>Bats</th>
-              <th>Power</th>
-              <th>Hit & Run</th>
-              <th>Bunt</th>
-              <th>Running</th>
-              <th>Range</th>
-              <th>Arm</th>
+              <th class="bname2">Name</th>
+              <th class="pos1"  >P1</th>
+              <th class="pos2"  >P2</th>
+              <th class="hits"  >Bats</th>
+              <th class="power" >Pwr</th>
+              <th class="hnr"   >H&amp;R</th>
+              <th class="bunt"  >Bunt</th>
+              <th class="run"   >Run</th>
+              <th class="range" >Rng</th>
+              <th class="arm"   >Arm</th>
             </tr>
           </thead>
           <tbody>
-            {{#each team.batters}}<tr><td>{{name}}</td><td>{{position}}</td><td>{{pos2}}</td><td>{{hand}}</td><td>{{power}}</td><td>{{hitnrun}}</td><td>{{bunt}}</td><td>{{running}}</td><td>{{range}}</td><td>{{arm}}</td></tr>{{/each}}
+            {{#each team.batters}}
+            <tr>
+              <td class="bname2">{{name}}</td>
+              <td class="pos1"  >{{position}}</td>
+              <td class="pos2"  >{{pos2}}</td>
+              <td class="hits"  >{{hand}}</td>
+              <td class="power" >{{power}}</td>
+              <td class="hnr"   >{{hitnrun}}</td>
+              <td class="bunt"  >{{bunt}}</td>
+              <td class="run"   >{{running}}</td>
+              <td class="range" >{{range}}</td>
+              <td class="arm"   >{{arm}}</td>
+            </tr>
+            {{/each}}
           </tbody>
         </table>
       </div>
@@ -240,23 +317,23 @@
           <caption>Pitchers</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Throws</th>
-              <th>Speed</th>
-              <th>Control</th>
-              <th>Bunt</th>
-              <th>Fatigue</th>
+              <th class="pname2"  {{action sortPitchers "name"    on="click"}}>Name</th>
+              <th class="throws"  {{action sortPitchers "hand"    on="click"}}>Throws</th>
+              <th class="speed"   {{action sortPitchers "speed"   on="click"}}>Speed</th>
+              <th class="control" {{action sortPitchers "control" on="click"}}>Control</th>
+              <th class="fatigue" {{action sortPitchers "fatigue" on="click"}}>Fatigue</th>
+              <th class="bunt"    {{action sortPitchers "bunt"    on="click"}}>Bunt</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="tall">
             {{#each pitcher in freeAgents.pitchers}}
             <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectFreeAgentPitcher" pitcher on="click"}}>
-              <td>{{pitcher.name}}</td>
-              <td>{{pitcher.hand}}</td>
-              <td>{{pitcher.speed}}</td>
-              <td>{{pitcher.control}}</td>
-              <td>{{pitcher.bunt}}</td>
-              <td>{{pitcher.fatigue}}</td>
+              <td class="pname2" >{{pitcher.name}}</td>
+              <td class="throws" >{{pitcher.hand}}</td>
+              <td class="speed"  >{{pitcher.speed}}</td>
+              <td class="control">{{pitcher.control}}</td>
+              <td class="fatigue">{{pitcher.fatigue}}</td>
+              <td class="bunt"   >{{pitcher.bunt}}</td>
             </tr>
             {{/each}}
           </tbody>
@@ -265,22 +342,31 @@
           <caption>Batters</caption>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>POS1</th>
-              <th>POS2</th>
-              <th>Hits</th>
-              <th>Power</th>
-              <th>Hit & Run</th>
-              <th>Bunt</th>
-              <th>Running</th>
-              <th>Range</th>
-              <th>Arm</th>
+              <th class="bname2" {{action sortBatters "name"     on="click"}}>Name</th>
+              <th class="pos1"   {{action sortBatters "position" on="click"}}>P1</th>
+              <th class="pos2"   {{action sortBatters "pos2"     on="click"}}>P2</th>
+              <th class="hits"   {{action sortBatters "hand"     on="click"}}>Hits</th>
+              <th class="power"  {{action sortBatters "power"    on="click"}}>Pwr</th>
+              <th class="hnr"    {{action sortBatters "hitnrun"  on="click"}}>H&amp;R</th>
+              <th class="bunt"   {{action sortBatters "bunt"     on="click"}}>Bunt</th>
+              <th class="run"    {{action sortBatters "running"  on="click"}}>Run</th>
+              <th class="range"  {{action sortBatters "range"    on="click"}}>Rng</th>
+              <th class="arm"    {{action sortBatters "arm"      on="click"}}>Arm</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="tall">
             {{#each batter in freeAgents.batters}}
             <tr {{bind-attr class="batter.isSelected"}} {{action "selectFreeAgentBatter" batter on="click"}}>
-              <td>{{batter.name}}</td><td>{{batter.position}}</td><td>{{batter.pos2}}</td><td>{{batter.hand}}</td><td>{{batter.power}}</td><td>{{batter.hitnrun}}</td><td>{{batter.bunt}}</td><td>{{batter.running}}</td><td>{{batter.range}}</td><td>{{batter.arm}}</td>
+              <td class="bname2">{{batter.name}}</td>
+              <td class="pos1"  >{{batter.position}}</td>
+              <td class="pos2"  >{{batter.pos2}}</td>
+              <td class="hits"  >{{batter.hand}}</td>
+              <td class="power" >{{batter.power}}</td>
+              <td class="hnr"   >{{batter.hitnrun}}</td>
+              <td class="bunt"  >{{batter.bunt}}</td>
+              <td class="run"   >{{batter.running}}</td>
+              <td class="range" >{{batter.range}}</td>
+              <td class="arm"   >{{batter.arm}}</td>
             </tr>
             {{/each}}
           </tbody>
