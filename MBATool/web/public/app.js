@@ -12,12 +12,12 @@ App._constants = {
 App._progress = {
     stage: 0,
     stages: [
-        { number: "1", name: "Start New Season", isDone: false, route: "start-season"  },
-        { number: "2", name: "Roster Cut",       isDone: false, route: "roster-cut"    },
-        { number: "3", name: "Rookie Draft",     isDone: false, route: "rookie-draft"  },
-        { number: "4", name: "Free Agent Draft", isDone: false, route: "free-agents"   },
-        { number: "5", name: "Export Season",    isDone: false, route: "export-season" },
-        { number: "6", name: "Import Season",    isDone: false, route: "import-season" }
+        { number: "1", name: "Start New Season", status: "progress-curr", route: "start-season"  },
+        { number: "2", name: "Roster Cut",       status: "progress-todo", route: "roster-cut"    },
+        { number: "3", name: "Rookie Draft",     status: "progress-todo", route: "rookie-draft"  },
+        { number: "4", name: "Free Agent Draft", status: "progress-todo", route: "free-agents"   },
+        { number: "5", name: "Export Season",    status: "progress-todo", route: "export-season" },
+        { number: "6", name: "Import Season",    status: "progress-todo", route: "import-season" }
     ].map(function(entry){
         return Ember.Object.create().setProperties(entry);
     })
@@ -1611,19 +1611,23 @@ App.ProgressController = Ember.ObjectController.extend({
     actions: {
         nextStage: function() {
             if (this.stage >= this.stages.length) {
-                this.stages.setEach("isDone", false);
+                this.stages.setEach("status", "progress-todo");
                 this.stage = 0;
 
                 this.transitionToRoute(this.stages[this.stage].route);
 
+                this.stages[this.stage].set("status", "progress-curr");
+
                 return;
             }
 
-            this.stages[this.stage].set("isDone", true);
+            this.stages[this.stage].set("status", "progress-done");
             this.stage++;
 
             if (this.stage < this.stages.length) {
                 this.transitionToRoute(this.stages[this.stage].route);
+
+                this.stages[this.stage].set("status", "progress-curr");
             }
             else {
                 this.transitionToRoute("season-complete");

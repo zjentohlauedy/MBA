@@ -45,15 +45,6 @@ ol.progress li {
     line-height: 3em;
 }
 
-ol.progress li span.number {
-//    font-size: 2.3em;
-    margin: 0px 3px;
-}
-
-ol.progress li span.name {
-//    width: 10em;
-}
-
 ol.progress[data-progress-steps="2"] li { width: 49%; }
 ol.progress[data-progress-steps="3"] li { width: 33%; }
 ol.progress[data-progress-steps="4"] li { width: 24%; }
@@ -64,8 +55,13 @@ ol.progress[data-progress-steps="8"] li { width: 12%; }
 ol.progress[data-progress-steps="9"] li { width: 11%; }
 
 ol.progress li.progress-done {
-    color: black;
+    color: yellowgreen;
     border-bottom: 4px solid yellowgreen;
+}
+
+ol.progress li.progress-curr {
+    color: black;
+    border-bottom: 4px solid red;
 }
 
 ol.progress li.progress-todo {
@@ -95,6 +91,19 @@ ol.progress li.progress-done:before {
     border: none;
     border-radius: 1.2em;
     font-size: 1.5em;
+}
+
+ol.progress li.progress-curr:before {
+    content: "\2605";
+    color: white;
+    background-color: red;
+    border-radius: 1.2em;
+    height: 1.2em;
+    width: 1.2em;
+    line-height: 1.2em;
+    border: none;
+    font-size: 1.5em;
+    bottom: -1.6em;
 }
 
 ol.progress li.progress-todo:before {

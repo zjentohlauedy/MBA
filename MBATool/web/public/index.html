@@ -28,7 +28,7 @@
     </script>
     <script type="text/x-handlebars" data-template-name="progress">
       <ol class="progress" {{bind-attr data-progress-steps="stages.length"}}>
-        {{#each stages}}<li {{bind-attr class="isDone:progress-done:progress-todo"}}><span class="number">{{number}}</span><span class="name">{{name}}</span></li>{{/each}}
+        {{#each stages}}<li {{bind-attr class="status"}}>{{name}}</li>{{/each}}
       </ol>
     </script>
     <script type="text/x-handlebars" data-template-name="next-button">
