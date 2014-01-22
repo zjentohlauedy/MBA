@@ -92,7 +92,7 @@
           {{#each batter in currentTeam.batters}}
           <tr {{bind-attr class="batter.isCut:removed"}} {{action "toggleCutBatter" batter on="click"}}>
             <td class="bname1">{{batter.name}}</td>
-            <td class="pos"   >{{batter.position}}</td>
+            <td class="pos"   >{{batter.primary_position}}</td>
             <td class="games" >{{batter.games}}</td>
             <td class="ba"    >{{batter.avg}}</td>
             <td class="hr"    >{{batter.homers}}</td>

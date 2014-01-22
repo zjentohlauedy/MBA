@@ -23,6 +23,8 @@ App._progress = {
     })
 };
 
+App._teams = [];
+/*
 App._teams = [
     { name: "Team01",
       isSelected: true,
@@ -1307,7 +1309,7 @@ App._teams = [
 ].map(function(entry){
     return Ember.Object.create().setProperties(entry);
 });
-
+*/
 App._rookies = Ember.Object.create().setProperties({
     draftOrder: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,
                  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
@@ -1636,10 +1638,96 @@ App.ProgressController = Ember.ObjectController.extend({
     }
 });
 
+
+var loadPlayerStats = function(team, player) {
+    for (var i = 0; i < player.links.length; i++) {
+        if (player.links[i].rel == "stats") {
+            $.ajax(player.links[i].href + "?season=2&phase=1", {
+                success: function(data) {
+                    stats = data[0];
+
+                    player.isCut = false;
+
+                    if (player.player_type == 1) {
+                        innings = stats.innings + (stats.outs / 10);
+                        at_bats = (stats.innings * 3) + stats.outs + stats.walks + stats.hits;
+                        era     = (innings == 0) ? 0 : stats.earned_runs / (innings / 9);
+                        vsba    = (at_bats == 0) ? 0 : stats.hits / at_bats;
+                        ipg     = (stats.games == 0) ? 0 : innings / stats.games;
+                        whip    = (innings == 0) ? 0 : (stats.walks + stats.hits) / innings;
+                        sop9    = (innings == 0) ? 0 : stats.strike_outs / (innings / 9);
+                        eff     = (stats.innings - stats.hits) + (stats.strike_outs - stats.hits);
+
+                        player.record  = stats.wins + " - " + stats.losses;
+                        player.innings = innings.toFixed(1);
+                        player.era     = era.toFixed(2);
+                        player.vsba    = vsba.toFixed(3).replace(/^0\./,".");
+                        player.ipg     = ipg.toFixed(2);
+                        player.whip    = whip.toFixed(3);
+                        player.sop9    = sop9.toFixed(2);
+                        player.eff     = (eff > 0) ? "+" + eff : eff;
+
+                        team.pitchers.addObject(Ember.Object.create().setProperties(player));
+                    }
+
+                    if (player.player_type == 2) {
+                        avg      = (stats.at_bats == 0) ? 0 : stats.hits / stats.at_bats;
+                        slugging = (stats.at_bats == 0) ? 0 : (stats.hits + (2 * stats.doubles) + (3 * stats.triples) + (4 *stats.home_runs)) / stats.at_bats;
+                        oba      = (stats.at_bats == 0) ? 0 : (stats.hits + stats.walks) / stats.at_bats;
+                        rpg      = (stats.games   == 0) ? 0 : (stats.runs + stats.runs_batted_in - stats.home_runs) / stats.games;
+
+                        player.games    = stats.games;
+                        player.avg      = avg.toFixed(3).replace(/^0\./,".");
+                        player.homers   = stats.home_runs;
+                        player.steals   = stats.steals;
+                        player.slugging = slugging.toFixed(3).replace(/^0\./,".");
+                        player.oba      = oba.toFixed(3).replace(/^0\./,".");
+                        player.rpg      = rpg.toFixed(2);
+
+                        team.batters.addObject(Ember.Object.create().setProperties(player));
+                    }
+                },
+                error: function() {
+                    alert("Error loading player stats!")
+                }
+            });
+        }
+    }
+}
+
+var loadPlayer = function(team, player) {
+    for (var i = 0; i < player.links.length; i++) {
+        if (player.links[i].rel == "self") {
+            $.ajax( player.links[i].href, {
+                success: function(data) {
+                    loadPlayerStats(team, data);
+                },
+                error: function() {
+                    alert("Error loading player!")
+                }
+            });
+        }
+    }
+}
+
+
+var loadPlayers = function(team) {
+    $.ajax( "http://localhost:4567/mba/resources/teams/" + team.team_id + "/players?season=2&phase=1", {
+        success: function(data) {
+            for (var i = 0; i < data.length; i++) {
+                loadPlayer(team, data[i]);
+            }
+        },
+        error: function() {
+            alert("Error loading players!")
+        }
+    });
+}
+
 App.RosterCutController = Ember.ObjectController.extend({
     needs:          "progress",
     teams:          App._teams,
-    currentTeam:    App._teams[0],
+    currentTeam:    Ember.Object.create(),//App._teams[0],
     pitchers: {
         isComplete: false,
         isError:    false
@@ -1656,6 +1744,12 @@ App.RosterCutController = Ember.ObjectController.extend({
             team.set("isSelected", true);
             this.currentTeam.set("isSelected", false);
             this.set( "currentTeam", team );
+
+
+            if ( team.pitchers.length == 0 ) {
+                loadPlayers(team);
+            }
+
 
             this.send("updatePitchersStatus");
             this.send("updateBattersStatus");
@@ -1711,7 +1805,7 @@ App.RosterCutController = Ember.ObjectController.extend({
 
 App.RookieDraftController = Ember.ObjectController.extend({
     needs:                   "progress",
-    team:                    App._teams[App._rookies.draftOrder[0]],
+    team:                    {},//App._teams[App._rookies.draftOrder[0]],
     rookies:                 App._rookies,
     currentTeamIdx:          0,
     currentPitcherSortField: "",
@@ -1842,7 +1936,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
 
 App.FreeAgentsController = Ember.ObjectController.extend({
     needs:                      "progress",
-    team:                       App._teams[0],
+    team:                       {},//App._teams[0],
     freeAgents:                 App._freeAgents,
     currentTeamIdx:             0,
     currentPitcherSortField:    "",
@@ -1980,3 +2074,34 @@ App.NextButtonView = Ember.View.extend({
         this.get("controller.controllers.progress").send('nextStage');
     }
 });
+
+
+var decorateTeams = function(teams) {
+
+    for ( var i = 0; i < teams.length; i++ ) {
+        teams[i].pitchers             = [];
+        teams[i].batters              = [];
+        teams[i].isSelected           = false;
+        teams[i].isComplete           = false;
+        teams[i].isError              = false;
+        teams[i].draftedRookiePitcher = false;
+        teams[i].draftedRookieBatter  = false;
+    }
+
+    return teams.map(function(entry){
+        return Ember.Object.create().setProperties(entry);
+    });
+}
+
+
+$(window).load( function() {
+    $.ajax( "http://localhost:4567/mba/resources/teams", {
+        success: function(data) {
+            App._teams.setObjects(decorateTeams(data));
+        },
+        error: function() {
+            alert("Error loading teams!")
+        }
+    });
+});
+
