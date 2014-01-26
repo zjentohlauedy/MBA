@@ -27,7 +27,7 @@ class Repository
     end
 
     def get_teams
-      return @mapper.map_teams_response @db.execute 'select * from teams_t'
+      return @mapper.map_teams_response @db.execute 'select * from teams_t where team_id in (select distinct team_id from division_teams_t)'
     end
 
     def get_team( params )
@@ -129,6 +129,36 @@ class Repository
       if params.has_key? "phase";  query = "#{query} and season_phase  = :phase";  args[:phase ] = params[:phase ] end
 
       return @mapper.map_batter_stats_response @db.execute query, args
+    end
+
+    def get_max_player_id
+      args = {}
+
+      query = 'select max(player_id) Player_Id from team_players_t'
+
+      return (@db.execute query, args)[0]
+    end
+
+    def get_current_season
+      args = {}
+
+      query = 'select max(season) Season from team_players_t'
+
+      return (@db.execute query, args)[0]
+    end
+
+    def copy_team_players_for_new_season( current, new )
+      args = {}
+
+      query = '''insert into team_players_t (team_id, season, player_id)
+                   select team_id, :new, player_id from team_players_t where season = :current
+                     and team_id in (select distinct team_id from division_teams_t)
+              '''
+
+      args[:current] = current
+      args[:new    ] = new
+
+      @db.execute query, args
     end
 
 end

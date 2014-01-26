@@ -8,17 +8,20 @@ $: << "#{location}"
 require 'sinatra'
 require 'json'
 require 'decorator'
+require 'player_generator'
 require 'repository'
 require 'response_mapper'
 
 
 my_url         = 'http://localhost:4567'
 mba_root       = '/mba'
+actions_root   = "#{mba_root}/actions"
 resources_root = "#{mba_root}/resources"
 
-decorator       = Decorator.new "#{my_url + resources_root}"
-response_mapper = ResponseMapper.new decorator
-repository      = Repository.new response_mapper
+decorator        = Decorator.new "#{my_url + resources_root}"
+response_mapper  = ResponseMapper.new decorator
+repository       = Repository.new response_mapper
+player_generator = PlayerGenerator.new repository
 
 get '/' do
   redirect '/index.html'
@@ -71,4 +74,8 @@ get "#{resources_root}/players/:player_id/stats/?" do
   content_type 'application/json'
 
   JSON.generate repository.get_player_stats params
+end
+
+post "#{actions_root}/start_season" do
+  
 end
