@@ -65,6 +65,16 @@ class ResponseMapper
     return result
   end
 
+  def map_team_player_response( team_player )
+    mapped_team_player = {}
+
+    mapped_team_player[ :team_id   ] = team_player[ 'Team_Id'   ]
+    mapped_team_player[ :player_id ] = team_player[ 'Player_Id' ]
+    mapped_team_player[ :season    ] = team_player[ 'Season'    ]
+
+    return @decorator.decorate_team_player mapped_team_player
+  end
+
   def map_players_response( players )
     result = []
 

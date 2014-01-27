@@ -34,6 +34,16 @@ class Decorator
     return team_stats
   end
 
+  def decorate_team_player( team_player )
+    links = []
+
+    links << { :rel => 'self', :href => "#{@repository_root}/teams/#{team_player[:team_id]}/players/#{team_player[:player_id]}/season/#{team_player[:season]}" }
+
+    team_player[:links] = links
+
+    return team_player
+  end
+
   def decorate_player( player )
     links = []
 

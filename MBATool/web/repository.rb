@@ -26,6 +26,18 @@ class Repository
       @db.close
     end
 
+    def start_transaction
+      @db.transaction
+    end
+
+    def commit
+      @db.commit
+    end
+
+    def rollback
+      @db.rollback
+    end
+
     def get_teams
       return @mapper.map_teams_response @db.execute 'select * from teams_t where team_id in (select distinct team_id from division_teams_t)'
     end
@@ -61,8 +73,60 @@ class Repository
       return @mapper.map_players_response @db.execute query, args
     end
 
+    def get_team_player( params )
+      args = {}
+
+      query = 'select * from team_players_t where team_id = :team_id and player_id = :player_id and season = :season'
+
+      args[ :team_id   ] = params[ :team_id   ]
+      args[ :player_id ] = params[ :player_id ]
+      args[ :season    ] = params[ :season    ]
+
+      return @mapper.map_team_player_response @db.get_first_row query, args
+    end
+
+    def save_team_player( params )
+      args = {}
+
+      query = 'insert into team_players_t values ( :team_id, :season, :player_id )'
+
+      args[ :team_id   ] = params[ :team_id   ]
+      args[ :player_id ] = params[ :player_id ]
+      args[ :season    ] = params[ :season    ]
+
+      return @db.execute query, args
+    end
+
+    def delete_team_player( params )
+      args = {}
+
+      query = 'delete from team_players_t where team_id = :team_id and player_id = :player_id and season = :season'
+
+      args[ :team_id   ] = params[ :team_id   ]
+      args[ :player_id ] = params[ :player_id ]
+      args[ :season    ] = params[ :season    ]
+
+      return @db.execute query, args
+    end
+
     def get_players
       return @mapper.map_players_response @db.execute 'select * from players_t'
+    end
+
+    def get_rookies( params )
+      args = {}
+
+      query = 'select * from players_t where rookie_season = :season'; args[:season] = params[:season]
+
+      return @mapper.map_players_response @db.execute query, args
+    end
+
+    def get_free_agents( params )
+      args = {}
+
+      query = 'select * from players_t where player_id not in (select player_id from team_players_t where season = :season)'; args[:season] = params[:season]
+
+      return @mapper.map_players_response @db.execute query, args
     end
 
     def get_player( params )
@@ -134,7 +198,7 @@ class Repository
     def get_max_player_id
       args = {}
 
-      query = 'select max(player_id) Player_Id from team_players_t'
+      query = 'select max(player_id) Player_Id from players_t'
 
       return (@db.execute query, args)[0]
     end
@@ -157,6 +221,57 @@ class Repository
 
       args[:current] = current
       args[:new    ] = new
+
+      @db.execute query, args
+    end
+
+    def save_player( params )
+      args = {}
+
+      query = 'insert into players_t values ( :player_id, :first_name, :last_name, :first_phoenetic, :last_phoenetic, :skin_tone, :handedness, :player_type, :rookie_season, :longevity )'
+
+      args[ :player_id       ] = params[ :player_id       ]
+      args[ :first_name      ] = params[ :first_name      ]
+      args[ :last_name       ] = params[ :last_name       ]
+      args[ :first_phoenetic ] = params[ :first_phoenetic ]
+      args[ :last_phoenetic  ] = params[ :last_phoenetic  ]
+      args[ :skin_tone       ] = params[ :skin_tone       ]
+      args[ :handedness      ] = params[ :handedness      ]
+      args[ :player_type     ] = params[ :player_type     ]
+      args[ :rookie_season   ] = params[ :rookie_season   ]
+      args[ :longevity       ] = params[ :longevity       ]
+
+      @db.execute query, args
+    end
+
+    def save_pitcher( params )
+      args = {}
+
+      query = 'insert into pitchers_t values ( :player_id, :speed, :control, :bunt, :fatigue )'
+
+      args[ :player_id ] = params[ :player_id ]
+      args[ :speed     ] = params[ :speed     ]
+      args[ :control   ] = params[ :control   ]
+      args[ :bunt      ] = params[ :bunt      ]
+      args[ :fatigue   ] = params[ :fatigue   ]
+
+      @db.execute query, args
+    end
+
+    def save_batter( params )
+      args = {}
+
+      query = 'insert into batters_t values ( :player_id, :power, :hit_n_run, :bunt, :running, :range, :arm, :primary_position, :secondary_position )'
+
+      args[ :player_id          ] = params[ :player_id          ]
+      args[ :primary_position   ] = params[ :primary_position   ]
+      args[ :secondary_position ] = params[ :secondary_position ]
+      args[ :power              ] = params[ :power              ]
+      args[ :hit_n_run          ] = params[ :hit_n_run          ]
+      args[ :bunt               ] = params[ :bunt               ]
+      args[ :running            ] = params[ :running            ]
+      args[ :range              ] = params[ :range              ]
+      args[ :arm                ] = params[ :arm                ]
 
       @db.execute query, args
     end

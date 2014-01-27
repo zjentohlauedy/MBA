@@ -25,9 +25,10 @@ class PlayerGenerator
   RightFielder =  8
   Outfielder   = 10
 
-  def initialize( repository )
-    @random     = Random.new
-    @repository = repository
+  def initialize( repository, name_manager )
+    @random       = Random.new
+    @repository   = repository
+    @name_manager = name_manager
 
     #                     0    1   2     3     4     5     6     7     8     9   10
     #     percentage:     0  .05  .9  3.75  12.5    50    25  6.25  1.25   0.2  0.1
@@ -126,7 +127,11 @@ class PlayerGenerator
   end
 
   def get_next_name
-    return { :first => 'Firstname', :last => 'Lastname' }
+    name = @name_manager.get_name.split
+
+    if name.length != 2; raise "Unable to process name with #{name.length} parts." end
+
+    return { :first => name[0], :last => name[1] }
   end
 
   def pick_skin_tone
