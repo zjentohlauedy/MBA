@@ -118,12 +118,15 @@ end
 post "#{actions_root}/start_season" do
   content_type 'application/json'
 
+  puts "Start Season directive received with #{params.inspect}"
+
   current_season = repository.get_current_season['Season']
 
   name_manager.load_names
   repository.start_transaction
 
   begin
+    puts "Creating Season #{current_season + 1}"
     repository.copy_team_players_for_new_season current_season, current_season + 1
 
     (1..32).each do
