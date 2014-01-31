@@ -42,6 +42,22 @@ class Repository
       return @mapper.map_teams_response @db.execute 'select * from teams_t where team_id in (select distinct team_id from division_teams_t)'
     end
 
+    def get_teams_with_stats( params )
+      args = {}
+
+      query = '''select * from division_teams_t dt
+                          join teams_t           t on dt.team_id =  t.team_id
+                          join team_stats_t     ts on dt.team_id = ts.team_id
+                 where ts.season       = :season
+                 and   ts.season_phase = :phase
+              '''
+
+      args[:season] = params[:season]
+      args[:phase ] = params[:phase ]
+
+      return @db.execute query, args
+    end
+
     def get_team( params )
       args = {}
 

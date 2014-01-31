@@ -8,6 +8,7 @@ $: << "#{location}"
 require 'sinatra'
 require 'json'
 require 'decorator'
+require 'draft_generator'
 require 'name_manager'
 require 'player_generator'
 require 'repository'
@@ -24,6 +25,7 @@ response_mapper  = ResponseMapper.new decorator
 repository       = Repository.new response_mapper
 name_manager     = NameManager.new
 player_generator = PlayerGenerator.new repository, name_manager
+draft_generator  = DraftGenerator.new repository
 
 get '/' do
   redirect '/index.html'
@@ -113,6 +115,18 @@ get "#{resources_root}/players/:player_id/stats/?" do
   content_type 'application/json'
 
   JSON.generate repository.get_player_stats params
+end
+
+get "#{resources_root}/drafts/rookie/season/:season/?" do |season|
+  content_type 'application/json'
+
+  JSON.generate draft_generator.get_rookie_draft season
+end
+
+get "#{resources_root}/drafts/free-agent/season/:season/?" do |season|
+  content_type 'application/json'
+
+  JSON.generate draft_generator.get_free_agent_draft season
 end
 
 post "#{actions_root}/start_season" do
