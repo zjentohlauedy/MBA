@@ -28,6 +28,18 @@ static fileposition_e mapPosition( const position_e position )
      return fpos_DesignatedHitter;
 }
 
+static filehand_e mapHandedness( const handedness_e handedness )
+{
+     switch ( handedness )
+     {
+     case hnd_Right:  return fh_Right;
+     case hnd_Left:   return fh_Left;
+     case hnd_Switch: return fh_Switch;
+     }
+
+     return hnd_Right;
+}
+
 static org_s *buildOrg( void )
 {
      static org_s             org                                                                                                      = { 0 };
@@ -172,7 +184,7 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               pitcher_s      *pitcher  = team_players[l].player->details.pitching;
                               filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
 
-                              filehand_e  handedness = (team_players[l].player->handedness == hnd_Right) ? fh_Right : fh_Left;
+                              filehand_e  handedness = mapHandedness( team_players[l].player->handedness );
                               filecolor_e color      = byte2int( pitching->color );
 
                               int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
@@ -228,7 +240,7 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               batter_s      *batter  = team_players[l].player->details.batting;
                               filebatting_s *batting = &(players_file[idx].filestats.filebatting);
 
-                              filehand_e     handedness    = nibble( batting->ratings[0], n_High );
+                              filehand_e     handedness    = mapHandedness( team_players[l].player->handedness );
                               filecolor_e    color         = byte2int( players_file[idx].filestats.filebatting.color );
                               fileposition_e primary_pos   = mapPosition( batter->primary_position   );
                               fileposition_e secondary_pos = mapPosition( batter->secondary_position );
@@ -243,16 +255,14 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               assertEquals( primary_pos,   nibble( players_file[idx].position[0], n_High ) );
                               assertEquals( secondary_pos, nibble( players_file[idx].position[0], n_Low  ) );
 
-                              assertEquals(                         arm,       nibble( batting->ratings[0], n_Low  ) );
-                              assertEquals(                         running,   nibble( batting->ratings[1], n_High ) );
-                              assertEquals(                         range,     nibble( batting->ratings[1], n_Low  ) );
-                              assertEquals(                         power,     nibble( batting->ratings[2], n_High ) );
-                              assertEquals( team_players[l].player->longevity, nibble( batting->ratings[2], n_Low  ) );
-                              assertEquals(                         bunt,      nibble( batting->ratings[3], n_High ) );
-                              assertEquals(                         hit_n_run, nibble( batting->ratings[3], n_Low  ) );
-
-                              if   ( team_players[l].player->handedness == hnd_Right ) assertEquals( fh_Right, handedness );
-                              else                                                     assertEquals( fh_Left,  handedness );
+                              assertEquals(                         handedness, nibble( batting->ratings[0], n_High ) );
+                              assertEquals(                         arm,        nibble( batting->ratings[0], n_Low  ) );
+                              assertEquals(                         running,    nibble( batting->ratings[1], n_High ) );
+                              assertEquals(                         range,      nibble( batting->ratings[1], n_Low  ) );
+                              assertEquals(                         power,      nibble( batting->ratings[2], n_High ) );
+                              assertEquals( team_players[l].player->longevity,  nibble( batting->ratings[2], n_Low  ) );
+                              assertEquals(                         bunt,       nibble( batting->ratings[3], n_High ) );
+                              assertEquals(                         hit_n_run,  nibble( batting->ratings[3], n_Low  ) );
 
                               if   ( team_players[l].player->skin_tone == st_Dark ) assertEquals( fc_Dark,  color );
                               else                                                  assertEquals( fc_Light, color );

@@ -61,6 +61,7 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
      {
 	  // Pitcher
 	  player->type = pt_Pitcher;
+          player->hand = (fileplayer->position[0] & 0x0F);
 
 	  pitcher_s *pitcher = &(player->data.pitcher);
 
@@ -148,6 +149,7 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 	  const struct batting_s *b = &(fileplayer->filestats.filebatting);
 
           player->injury_days = b->injury_days[0];
+          player->hand        = (b->ratings[0]>>4);
 
 	  batter->power     = (b->ratings[2]>>4);
 	  batter->hit_n_run = (b->ratings[3] & 0x0F);

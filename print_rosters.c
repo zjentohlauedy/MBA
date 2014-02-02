@@ -22,6 +22,18 @@ typedef enum
 static printstyle_e  print_style;
 
 
+static char *displayHand( const int hand )
+{
+     switch ( hand )
+     {
+     case 0: return "R";
+     case 1: return "L";
+     case 2: return "S";
+     }
+
+     return "X";
+}
+
 static char *displayAvg( const double avg )
 {
      static char buffer[5 + 1];
@@ -40,8 +52,8 @@ static void printPitchingHeader( void )
      {
      case ps_Fielding:  printf( "   Pitchers                FA\n" ); break;
           //                     P  Pitcher, Average      .987
-     case ps_Ratings:   printf( "   Pitchers                ID  S  C  F  B  L\n" ); break;
-          //                     P  Bosanquet, Simon       123  4 10  9  8  8
+     case ps_Ratings:   printf( "   Pitchers                ID H  S  C  F  B  L\n" ); break;
+          //                     P  Bosanquet, Simon       123 L  4 10  9  8  8
      case ps_Potential:
      case ps_Simulated: printf( "   Pitchers              W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G  WHIP  SO/9  HR/9  EFF\n" ); break;
           //                     P  Alphin, Nick         12  5  3.64  24  0 173.1 187  70  27  34 232 0.000  7.21 0.973 12.07  6.93 +123
@@ -55,8 +67,8 @@ static void printHittingHeader( void )
      {
      case ps_Fielding:  printf( "   Batters                G   PO   AS  E    FA  POS2   FA2\n" ); break;
           //                     C  Batter, Average      123  600   75  9  .987   P   1.000
-     case ps_Ratings:   printf( "   Batters                 ID  P  H  B  S  R  A  L\n" ); break;
-          //                     2B Hammerman, Howard      123  9  4  4  4  7  9
+     case ps_Ratings:   printf( "   Batters                 ID H  P  H  B  S  R  A  L\n" ); break;
+          //                     2B Hammerman, Howard      123 R  9  4  4  4  7  9
      case ps_Potential:
      case ps_Simulated: printf( "   Batters                 BA   G  AB   R   H  2B  3B  HR RBI  BB  SO  SB  E    SA   OBA   SOA  RPG\n" ); break;
           //                     CF Base, Darryl          .345  96 374  84 129  23   7  46 109  29 129   0  0 0.813 0.392 0.000 0.00
@@ -110,6 +122,8 @@ static void printHitterStats( const hitting_s *stats )
 static void printHitterRatings( const player_s *player )
 {
      printf( "%5d ", player->player_id );
+
+     printf( "%s ", displayHand( player->hand ) );
 
      const batter_s *batter = &(player->data.batter);
 
@@ -182,6 +196,8 @@ static void printPitcherStats( const pitching_s *stats )
 static void printPitcherRatings( const player_s *player )
 {
      printf( "%5d ", player->player_id );
+
+     printf( "%s ", displayHand( player->hand ) );
 
      const pitcher_s *pitcher = &(player->data.pitcher);
 

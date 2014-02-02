@@ -186,6 +186,18 @@ static int getFatigueFactor( const int fatigue )
      return factors[fatigue];
 }
 
+static filehand_e mapHandedness( const handedness_e handedness )
+{
+     switch ( handedness )
+     {
+     case hnd_Right:  return fh_Right;
+     case hnd_Left:   return fh_Left;
+     case hnd_Switch: return fh_Switch;
+     }
+
+     return fh_Right;
+}
+
 static fileposition_e mapPosition( const position_e position )
 {
      switch ( position )
@@ -230,7 +242,7 @@ static boolean_e generateFilePlayer( const player_s *player, const int season, c
           pitcher_s      *pitcher  = player->details.pitching;
           filepitching_s *pitching = &(players_file[player_idx].filestats.filepitching);
 
-          filehand_e hand = (player->handedness == hnd_Right) ? fh_Right : fh_Left;
+          filehand_e hand = mapHandedness( player->handedness );
 
           int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
           int control = (age_adjustment >= 0) ? pitcher->control : MIN( pitcher->control - age_adjustment, 1 );
@@ -295,7 +307,7 @@ static boolean_e generateFilePlayer( const player_s *player, const int season, c
           batter_s      *batter  = player->details.batting;
           filebatting_s *batting = &(players_file[player_idx].filestats.filebatting);
 
-          filehand_e     hand      = (player->handedness == hnd_Right) ? fh_Right : fh_Left;
+          filehand_e     hand      = mapHandedness( player->handedness );
           fileposition_e primary   = mapPosition( batter->primary_position   );
           fileposition_e secondary = mapPosition( batter->secondary_position );
 

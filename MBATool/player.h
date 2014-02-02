@@ -91,9 +91,10 @@ typedef enum
 
 typedef enum
 {
-     hnd_None  = 0,
-     hnd_Right = 1,
-     hnd_Left  = 2,
+     hnd_None   = 0,
+     hnd_Right  = 1,
+     hnd_Left   = 2,
+     hnd_Switch = 3
 
 } handedness_e;
 
@@ -109,7 +110,7 @@ typedef enum
 {
      st_None  = 0,
      st_Light = 1,
-     st_Dark  = 2,
+     st_Dark  = 2
 
 } skin_tone_e;
 

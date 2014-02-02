@@ -97,7 +97,6 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           memset( &players_data[i], '\0', sizeof(fileplayer_s) );
 
           unsigned char pos       = pickPosition();
-          unsigned char hand      = ((rand() % 100)) > 49 ? fh_Right : fh_Left;
           unsigned char color     = ((rand() % 100)) > 49 ? fc_Light : fc_Dark;
           unsigned char longevity = (rand() % 10) + 1;
           unsigned char position;
@@ -109,6 +108,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           {
                filepitching_s *pitching = &(players_data[i].filestats.filepitching);
 
+               unsigned char hand      = ((rand() % 100)) > 49 ? fh_Right : fh_Left;
                unsigned char speed     = (rand() % 10) + 1;
                unsigned char control   = (rand() % 10) + 1;
                unsigned char fatigue   = (rand() % 10) + 1;
@@ -125,6 +125,7 @@ fileplayer_s *buildFilePlayersWithoutIds( void )
           {
                filebatting_s *batting = &(players_data[i].filestats.filebatting);
 
+               unsigned char hand      = ((rand() % 100)) < 50 ? fh_Left : (rand() % 100) > 94 ? fh_Switch : fh_Right;
                unsigned char pos2      = pickPosition();
                unsigned char power     = (rand() % 10) + 1;
                unsigned char hit_n_run = (rand() % 10) + 1;

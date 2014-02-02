@@ -20,8 +20,9 @@ static handedness_e mapHandedness( const filehand_e filehandedness )
 {
      switch ( filehandedness )
      {
-     case fh_Right: return hnd_Right;
-     case fh_Left:  return hnd_Left;
+     case fh_Right:  return hnd_Right;
+     case fh_Left:   return hnd_Left;
+     case fh_Switch: return hnd_Switch;
      }
 
      return hnd_None;

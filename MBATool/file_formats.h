@@ -60,8 +60,9 @@ typedef enum
 
 typedef enum
 {
-     fh_Right = 0,
-     fh_Left  = 1
+     fh_Right  = 0,
+     fh_Left   = 1,
+     fh_Switch = 2
 
 } filehand_e;
 

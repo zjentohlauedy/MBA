@@ -36,6 +36,7 @@ App._utils = {
 
         player.isCut      = false;
         player.isSelected = false;
+        player.rating     = player.speed + player.control + player.fatigue;
 
         if (stats) {
             innings = stats.innings + (stats.outs / 10);
@@ -63,6 +64,7 @@ App._utils = {
 
         player.isCut      = false;
         player.isSelected = false;
+        player.rating     = player.power + player.hit_n_run + player.running;
 
         if (stats) {
             avg      = (stats.at_bats == 0) ? 0 : stats.hits / stats.at_bats;
@@ -116,207 +118,9 @@ App._rookies = Ember.Object.create().setProperties({
 });
 
 App._freeAgents = Ember.Object.create().setProperties({
-    draftOrder: [0,1,2,3,3,2,1,0],
-    pitchers: [
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false },
-        { name: "Hartman, Dave",      hand: "R", speed: "4", control: "4", bunt: "6", fatigue: "5", record: "0 - 0",  innings:   "5.0", era: "9.00", vsba: ".227", ipg: "5.00", whip: "1.400", sop9: "3.60", eff: "-3",  isSelected: false },
-        { name: "Hearns, Bill",       hand: "R", speed: "6", control: "3", bunt: "5", fatigue: "8", record: "1 - 0",  innings:  "13.0", era: "2.08", vsba: ".211", ipg: "0.87", whip: "1.385", sop9: "9.69", eff: "+3",  isSelected: false },
-        { name: "Michael, Danny",     hand: "R", speed: "5", control: "5", bunt: "4", fatigue: "7", record: "0 - 0",  innings:  "17.1", era: "2.11", vsba: ".206", ipg: "2.84", whip: "0.998", sop9: "8.98", eff: "+6",  isSelected: false },
-        { name: "Montgomery, Curtis", hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "6", record: "5 - 5",  innings:  "60.0", era: "4.20", vsba: ".217", ipg: "1.94", whip: "1.450", sop9: "8.25", eff: "-1" , isSelected: false },
-        { name: "Risc, Paul",         hand: "R", speed: "5", control: "6", bunt: "4", fatigue: "7", record: "3 - 7",  innings:  "96.0", era: "6.37", vsba: ".215", ipg: "7.38", whip: "1.302", sop9: "5.91", eff: "-19", isSelected: false },
-        { name: "Stern, Dan",         hand: "L", speed: "5", control: "6", bunt: "5", fatigue: "5", record: "6 - 1",  innings:  "81.0", era: "4.22", vsba: ".213", ipg: "6.75", whip: "1.111", sop9: "5.44", eff: "-12", isSelected: false },
-        { name: "Thorpe, Denny",      hand: "R", speed: "5", control: "5", bunt: "6", fatigue: "6", record: "1 - 1",  innings:  "21.0", era: "5.57", vsba: ".250", ipg: "1.11", whip: "1.762", sop9: "8.57", eff: "-9",  isSelected: false },
-        { name: "Vowles, Keith",      hand: "L", speed: "5", control: "5", bunt: "7", fatigue: "7", record: "5 - 5",  innings:  "48.2", era: "4.12", vsba: ".236", ipg: "1.92", whip: "1.581", sop9: "5.43", eff: "-27", isSelected: false },
-        { name: "Conley, Bud",        hand: "R", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "2 - 11", innings: "100.1", era: "6.84", vsba: ".239", ipg: "6.25", whip: "1.569", sop9: "5.40", eff: "-58", isSelected: false },
-        { name: "Gold, Johnny",       hand: "L", speed: "6", control: "6", bunt: "5", fatigue: "6", record: "3 - 5",  innings: "104.0", era: "4.67", vsba: ".215", ipg: "6.93", whip: "1.288", sop9: "7.88", eff: "+3",  isSelected: false }
-    ].map(function(entry){
-        return Ember.Object.create().setProperties(entry);
-    }),
-    batters: [
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Stamper, Jason",      position: "C",  pos2: "IF", hand: "L", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "2.00", isSelected: false },
-        { name: "Ulrich, Ed",          position: "C",  pos2: "1B", hand: "R", power: "7", hitnrun: "5", bunt: "6", running: "5", range: "3", arm: "6", games: "62", avg: ".279", homers: "19", steals: "0", slugging: ".598", oba: ".301", rpg: "1.03", isSelected: false },
-        { name: "Bennett, Richard",    position: "1B", pos2: "OF", hand: "R", power: "5", hitnrun: "6", bunt: "5", running: "7", range: "5", arm: "5", games: "62", avg: ".286", homers: "14", steals: "9", slugging: ".514", oba: ".361", rpg: "0.98", isSelected: false },
-        { name: "Graysmark, John",     position: "1B", pos2: "IF", hand: "R", power: "5", hitnrun: "8", bunt: "6", running: "7", range: "5", arm: "5", games: "13", avg: ".265", homers: "0",  steals: "1", slugging: ".408", oba: ".294", rpg: "0.69", isSelected: false },
-        { name: "Bond, Charles",       position: "2B", pos2: "IF", hand: "R", power: "5", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "16", avg: ".304", homers: "1",  steals: "0", slugging: ".478", oba: ".347", rpg: "0.75", isSelected: false },
-        { name: "Thomas, Roy",         position: "2B", pos2: "C",  hand: "L", power: "5", hitnrun: "5", bunt: "5", running: "6", range: "6", arm: "7", games: "52", avg: ".282", homers: "11", steals: "0", slugging: ".518", oba: ".358", rpg: "1.04", isSelected: false },
-        { name: "Kaume, Robert",       position: "3B", pos2: "OF", hand: "R", power: "7", hitnrun: "5", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".281", homers: "22", steals: "0", slugging: ".628", oba: ".338", rpg: "1.05", isSelected: false },
-        { name: "Brenneys, Marty",     position: "SS", pos2: "IF", hand: "R", power: "6", hitnrun: "5", bunt: "6", running: "5", range: "5", arm: "6", games: "62", avg: ".197", homers: "6",  steals: "1", slugging: ".305", oba: ".255", rpg: "0.50", isSelected: false },
-        { name: "Giles, Charles",      position: "SS", pos2: "IF", hand: "L", power: "5", hitnrun: "4", bunt: "5", running: "5", range: "2", arm: "6", games: "52", avg: ".212", homers: "5",  steals: "0", slugging: ".380", oba: ".291", rpg: "0.62", isSelected: false },
-        { name: "Fasching, Scott",     position: "LF", pos2: "C",  hand: "L", power: "3", hitnrun: "3", bunt: "6", running: "2", range: "6", arm: "6", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Smith, Guy",          position: "LF", pos2: "OF", hand: "L", power: "6", hitnrun: "5", bunt: "4", running: "4", range: "5", arm: "5", games: "62", avg: ".185", homers: "9",  steals: "0", slugging: ".373", oba: ".243", rpg: "0.68", isSelected: false },
-        { name: "Ford, Roy",           position: "CF", pos2: "OF", hand: "R", power: "5", hitnrun: "5", bunt: "5", running: "5", range: "5", arm: "5", games: "0",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Nicholson, Benjamin", position: "CF", pos2: "IF", hand: "R", power: "4", hitnrun: "6", bunt: "4", running: "5", range: "5", arm: "5", games: "62", avg: ".210", homers: "9",  steals: "0", slugging: ".410", oba: ".325", rpg: "0.76", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false },
-        { name: "Campbell, Colin",     position: "RF", pos2: "C",  hand: "L", power: "5", hitnrun: "6", bunt: "6", running: "7", range: "6", arm: "6", games: "62", avg: ".226", homers: "12", steals: "2", slugging: ".481", oba: ".348", rpg: "0.98", isSelected: false },
-        { name: "Mooney, Robert",      position: "RF", pos2: "OF", hand: "R", power: "4", hitnrun: "6", bunt: "5", running: "5", range: "4", arm: "5", games: "1",  avg: ".000", homers: "0",  steals: "0", slugging: ".000", oba: ".000", rpg: "0.00", isSelected: false }
-    ].map(function(entry){
-        return Ember.Object.create().setProperties(entry);
-    })
+    draftOrder: [],
+    pitchers:   [],
+    batters:    []
 });
 
 App.Router.map(function() {
@@ -411,8 +215,13 @@ var loadPlayer = function(player, team, needStats) {
                 $.ajax( App._utils.findLink( playerDetails.links, "stats" ) + "?season=" + (App._season - 1) + "&phase=1", {
                     success: function(playerStats) {
 
-                        if (playerDetails.player_type == 1) { team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, playerStats[0])); }
-                        if (playerDetails.player_type == 2) { team.batters. addObject(App._utils.decorateBatter( playerDetails, playerStats[0])); }
+                        if (playerDetails.player_type === "Pitcher") {
+                            team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, playerStats[0]));
+                        }
+
+                        if (playerDetails.player_type === "Batter") {
+                            team.batters. addObject(App._utils.decorateBatter( playerDetails, playerStats[0]));
+                        }
 
                         deferred.resolve();
                     },
@@ -425,8 +234,13 @@ var loadPlayer = function(player, team, needStats) {
                 return;
             }
 
-            if (playerDetails.player_type == 1) { team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, null)); }
-            if (playerDetails.player_type == 2) { team.batters. addObject(App._utils.decorateBatter( playerDetails, null)); }
+            if (playerDetails.player_type === "Pitcher") {
+                team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, null));
+            }
+
+            if (playerDetails.player_type === "Batter") {
+                team.batters. addObject(App._utils.decorateBatter( playerDetails, null));
+            }
 
             deferred.resolve();
         },
@@ -568,6 +382,9 @@ App.RosterCutController = Ember.ObjectController.extend({
             }
 
             $.when.apply(null, promises).done(function() {
+                App._rookies.set( "pitchers", App._rookies.pitchers.sortBy("rating").reverseObjects());
+                App._rookies.set( "batters",  App._rookies.batters .sortBy("rating").reverseObjects());
+
                 controller.get("controllers.rookie-draft").send('showFirstTeam');
                 controller.get("controllers.progress").send('nextStage');
             });
@@ -599,7 +416,7 @@ App.RosterCutController = Ember.ObjectController.extend({
 });
 
 App.RookieDraftController = Ember.ObjectController.extend({
-    needs:                   "progress",
+    needs:                   ["progress", "free-agents"],
     team:                    {},
     rookies:                 App._rookies,
     currentTeamIdx:          0,
@@ -609,7 +426,9 @@ App.RookieDraftController = Ember.ObjectController.extend({
     showRookiePitchers:      true,
     showRookieBatters:       false,
     canDraft:                true,
-    stageComplete:           false,
+// TEMP
+//    stageComplete:           false,
+    stageComplete:           true,
     actions: {
         toggleRookieTable: function() {
             if (this.showRookiePitchers) {
@@ -639,7 +458,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
 
             this.set("currentPitcherSortField", field);
 
-            this.rookies.set("pitchers", this.rookies.pitchers.sortBy(field));
+            this.rookies.set("pitchers", this.rookies.pitchers.sortBy(field, "rating"));
         },
         sortBatters: function(field) {
             if (field === this.currentBatterSortField) {
@@ -649,7 +468,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
 
             this.set("currentBatterSortField", field);
 
-            this.rookies.set("batters", this.rookies.batters.sortBy(field));
+            this.rookies.set("batters", this.rookies.batters.sortBy(field, "rating"));
         },
         selectRookiePitcher: function(pitcher) {
             if (pitcher.isSelected) {
@@ -782,9 +601,40 @@ App.RookieDraftController = Ember.ObjectController.extend({
 
             this.set("canDraft", true);
         },
+        loadFreeAgents: function(freeAgents) {
+            var promises = [];
+            var controller = this;
+
+            for (var i = 0; i < freeAgents.length; i++) {
+                promises.push( loadPlayer(freeAgents[i], App._freeAgents, false) );
+            }
+
+            $.when.apply(null, promises).done(function() {
+                controller.get("controllers.free-agents").send('showFirstTeam');
+                controller.get("controllers.progress").send('nextStage');
+            });
+        },
         finishStage: function() {
+            var controller = this;
+
             if (this.stageComplete) {
-                this.get("controllers.progress").send('nextStage');
+                $.ajax( "/mba/resources/drafts/free-agent/season/" + (App._season - 1), {
+                    success: function(draft) {
+                        App._freeAgents.set( "draftOrder", draft );
+
+                        $.ajax( "/mba/resources/players?freeagent=true", {
+                            success: function(freeAgents) {
+                                controller.send( "loadFreeAgents", freeAgents );
+                            },
+                            error: function() {
+                                alert("Error retrieving free agents!");
+                            }
+                        });
+                    },
+                    error: function() {
+                        alert("Error retrieving draft!");
+                    }
+                });
             }
         }
     }
@@ -792,7 +642,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
 
 App.FreeAgentsController = Ember.ObjectController.extend({
     needs:                      "progress",
-    team:                       {},//App._teams[0],
+    team:                       {},
     freeAgents:                 App._freeAgents,
     currentTeamIdx:             0,
     currentPitcherSortField:    "",
@@ -866,21 +716,46 @@ App.FreeAgentsController = Ember.ObjectController.extend({
         draftFreeAgent: function() {
             if (!this.canDraft) return;
 
-            var pitcher;
-            if (pitcher = this.freeAgents.pitchers.findBy("isSelected")) {
-                this.freeAgents.pitchers.removeObject(pitcher);
-                this.team.      pitchers.   addObject(pitcher);
-                this.send("showNextTeam");
-                return;
-            }
+            var freeAgent;
+            if      (freeAgent = this.freeAgents.pitchers.findBy("isSelected")) { this.send("draftPitcher", freeAgent); }
+            else if (freeAgent = this.freeAgents.batters. findBy("isSelected")) { this.send("draftBatter",  freeAgent); }
+        },
+        draftPitcher: function(pitcher) {
+            var controller = this;
+            var url = App._utils.findLink( this.team.links, "players" ) + "/" + pitcher.player_id + "/season/" + App._season;
 
-            var batter;
-            if (batter = this.freeAgents.batters.findBy("isSelected")) {
-                this.freeAgents.batters.removeObject(batter);
-                this.team      .batters.   addObject(batter);
-                this.send("showNextTeam");
-                return;
-            }
+            $.ajax( url, {
+                type: 'POST',
+                success: function() {
+                    controller.freeAgents.pitchers.removeObject(pitcher);
+                    controller.team.      pitchers.   addObject(pitcher);
+                    controller.send("showNextTeam");
+                },
+                error: function() {
+                    alert("Error drafting pitcher!");
+                }
+            });
+        },
+        draftBatter: function(batter) {
+            var controller = this;
+            var url = App._utils.findLink( this.team.links, "players" ) + "/" + batter.player_id + "/season/" + App._season;
+
+            $.ajax( url, {
+                type: 'POST',
+                success: function() {
+                    controller.freeAgents.batters.removeObject(batter);
+                    controller.team      .batters.   addObject(batter);
+                    controller.send("showNextTeam");
+                },
+                error: function() {
+                    alert("Error drafting pitcher!");
+                }
+            });
+        },
+        showFirstTeam: function() {
+            this.set("currentTeamIdx", 0);
+
+            this.send("loadTeam", App._rookies.draftOrder[this.currentTeamIdx] );
         },
         showNextTeam: function() {
             var nextTeamIdx = this.currentTeamIdx + 1;
@@ -892,9 +767,43 @@ App.FreeAgentsController = Ember.ObjectController.extend({
             }
 
             this.set("currentTeamIdx", nextTeamIdx);
-            this.set("team", App._teams[App._freeAgents.draftOrder[nextTeamIdx]]);
 
-            this.send("setDraftStatus");
+            this.send("loadTeam", App._freeAgents.draftOrder[this.currentTeamIdx] );
+        },
+        loadTeam: function(teamId) {
+            var controller = this;
+
+            $.ajax( "/mba/resources/teams/" + teamId, {
+                success: function(team) {
+                    team.pitchers = [];
+                    team.batters  = [];
+
+                    $.ajax( App._utils.findLink( team.links, "players" ) + "?season=" + App._season, {
+                        success: function(players) {
+                            controller.send('loadPlayers', team, players );
+                        },
+                        error: function() {
+                            alert("Error retrieving players!");
+                        }
+                    });
+                },
+                error: function() {
+                    alert("Error retrieving team!");
+                }
+            });
+        },
+        loadPlayers: function(team, players) {
+            var promises = [];
+            var controller = this;
+
+            for (var i = 0; i < players.length; i++) {
+                promises.push( loadPlayer(players[i], team, false) );
+            }
+
+            $.when.apply(null, promises).done(function() {
+                controller.set("team", Ember.Object.create().setProperties(team));
+                controller.send("setDraftStatus");
+            });
         },
         setDraftStatus: function() {
             if (this.stageComplete) return;

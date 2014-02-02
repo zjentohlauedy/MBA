@@ -12,6 +12,59 @@ class ResponseMapper
     @decorator = decorator
   end
 
+  def display_season_phase( season_phase )
+    case season_phase
+    when 1; return 'Regular'
+    when 2; return 'Playoff'
+    when 3; return 'Allstar'
+    end
+
+    return 'Unknown'
+  end
+
+  def display_player_type( player_type )
+    case player_type
+    when 1; return 'Pitcher'
+    when 2; return 'Batter'
+    end
+  end
+
+  def display_handedness( handedness )
+    case handedness
+    when 1; return 'R'
+    when 2; return 'L'
+    when 3; return 'S'
+    end
+
+    return 'X'
+  end
+
+  def display_skin_tone( skin_tone )
+    case skin_tone
+    when 1; return 'Light'
+    when 2; return 'Dark'
+    end
+
+    return 'Unknown'
+  end
+
+  def display_position( position )
+    case position
+    when  1; return  "C"
+    when  2; return "1B"
+    when  3; return "2B"
+    when  4; return "3B"
+    when  5; return "SS"
+    when  6; return "LF"
+    when  7; return "CF"
+    when  8; return "RF"
+    when  9; return "IF"
+    when 10; return "OF"
+    end
+
+    return "DH"
+  end
+
   def map_teams_response( teams )
     result = []
 
@@ -95,13 +148,13 @@ class ResponseMapper
     mapped_player[ :name      ] = "#{player['First_Name']} #{player['Last_Name']}"
 
     if detailed
-      mapped_player[ :first_phoenetic ] = player[ 'First_Phoenetic' ]
-      mapped_player[ :last_phoenetic  ] = player[ 'Last_Phoenetic'  ]
-      mapped_player[ :skin_tone       ] = player[ 'Skin_Tone'       ]
-      mapped_player[ :handedness      ] = player[ 'Handedness'      ]
-      mapped_player[ :player_type     ] = player[ 'Player_Type'     ]
-      mapped_player[ :rookie_season   ] = player[ 'Rookie_Season'   ]
-      mapped_player[ :longevity       ] = player[ 'Longevity'       ]
+      mapped_player[ :first_phoenetic ] =                     player[ 'First_Phoenetic' ]
+      mapped_player[ :last_phoenetic  ] =                     player[ 'Last_Phoenetic'  ]
+      mapped_player[ :skin_tone       ] = display_skin_tone   player[ 'Skin_Tone'       ]
+      mapped_player[ :handedness      ] = display_handedness  player[ 'Handedness'      ]
+      mapped_player[ :player_type     ] = display_player_type player[ 'Player_Type'     ]
+      mapped_player[ :rookie_season   ] =                     player[ 'Rookie_Season'   ]
+      mapped_player[ :longevity       ] =                     player[ 'Longevity'       ]
 
       if player.has_key? 'Details'
         details = player[ 'Details' ]
@@ -114,14 +167,14 @@ class ResponseMapper
         end
 
         if player['Player_Type'] == 2
-          mapped_player[ :primary_position   ] = details[ 'Primary_Position'   ]
-          mapped_player[ :secondary_position ] = details[ 'Secondary_Position' ]
-          mapped_player[ :power              ] = details[ 'Power'              ]
-          mapped_player[ :hit_n_run          ] = details[ 'Hit_N_Run'          ]
-          mapped_player[ :bunt               ] = details[ 'Bunt'               ]
-          mapped_player[ :running            ] = details[ 'Running'            ]
-          mapped_player[ :range              ] = details[ 'Range'              ]
-          mapped_player[ :arm                ] = details[ 'Arm'                ]
+          mapped_player[ :primary_position   ] = display_position details[ 'Primary_Position'   ]
+          mapped_player[ :secondary_position ] = display_position details[ 'Secondary_Position' ]
+          mapped_player[ :power              ] =                  details[ 'Power'              ]
+          mapped_player[ :hit_n_run          ] =                  details[ 'Hit_N_Run'          ]
+          mapped_player[ :bunt               ] =                  details[ 'Bunt'               ]
+          mapped_player[ :running            ] =                  details[ 'Running'            ]
+          mapped_player[ :range              ] =                  details[ 'Range'              ]
+          mapped_player[ :arm                ] =                  details[ 'Arm'                ]
         end
       end
     end

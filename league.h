@@ -97,6 +97,7 @@ typedef struct
 typedef struct
 {
      int          player_id;
+     int          hand;
      playertype_e type;
      int          injury_days;
 

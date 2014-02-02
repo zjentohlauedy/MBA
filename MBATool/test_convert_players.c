@@ -136,8 +136,9 @@ static char *convertPlayers_ShouldReturnAListOfTeamPlayers_GivenPlayersFileDataA
                assertEqualsStr( players_data[idx].last_phoen,    player->last_phoenetic  );
                assertEqualsInt(                   rookie_season, player->rookie_season   );
 
-               if   ( hand == fh_Right ) assertEqualsInt( hnd_Right, player->handedness );
-               else                      assertEqualsInt( hnd_Left,  player->handedness );
+               if      ( hand == fh_Right ) assertEqualsInt( hnd_Right,  player->handedness );
+               else if ( hand == fh_Left  ) assertEqualsInt( hnd_Left,   player->handedness );
+               else                         assertEqualsInt( hnd_Switch,  player->handedness );
 
                if   ( color == fc_Light ) assertEqualsInt( st_Light, player->skin_tone );
                else                       assertEqualsInt( st_Dark,  player->skin_tone );
