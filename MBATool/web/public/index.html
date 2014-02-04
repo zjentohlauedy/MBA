@@ -7,7 +7,6 @@
   <body>
     <script type="text/x-handlebars">
       <header>
-        <h1>Header</h1>
       </header>
 
       <div>
@@ -15,24 +14,16 @@
       </div>
 
       <div>
-        {{render "next-button"}}
-      </div>
-
-      <div>
         {{outlet}}
       </div>
 
       <footer>
-        Footer
       </footer>
     </script>
     <script type="text/x-handlebars" data-template-name="progress">
       <ol class="progress" {{bind-attr data-progress-steps="stages.length"}}>
         {{#each stages}}<li {{bind-attr class="status"}}>{{name}}</li>{{/each}}
       </ol>
-    </script>
-    <script type="text/x-handlebars" data-template-name="next-button">
-      <button class="next">{{view.name}}</button>
     </script>
     <script type="text/x-handlebars" data-template-name="start-season">
       <button class="new-season" {{action "startNewSeason" on="click"}}>Start A New Season</button>

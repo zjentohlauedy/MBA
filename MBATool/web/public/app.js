@@ -3,16 +3,10 @@ window.App = Ember.Application.create();
 var App = window.App
 
 App._constants = {
-/* TEMP
     TEAM_MAX_PITCHERS:          10,
     TEAM_MAX_BATTERS:           15,
     ROSTER_CUT_TARGET_PITCHERS:  3,
     ROSTER_CUT_TARGET_BATTERS:   5
-*/
-    TEAM_MAX_PITCHERS:          15,
-    TEAM_MAX_BATTERS:           20,
-    ROSTER_CUT_TARGET_PITCHERS: 10,
-    ROSTER_CUT_TARGET_BATTERS:  15
 };
 
 App._utils = {
@@ -266,9 +260,7 @@ App.RosterCutController = Ember.ObjectController.extend({
         isComplete: false,
         isError:    false
     },
-// TEMP
-//    stageComplete:  false,
-    stageComplete:  true,
+    stageComplete:  false,
     actions: {
         selectTeam: function(team) {
             if (team.isSelected) return;
@@ -426,9 +418,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
     showRookiePitchers:      true,
     showRookieBatters:       false,
     canDraft:                true,
-// TEMP
-//    stageComplete:           false,
-    stageComplete:           true,
+    stageComplete:           false,
     actions: {
         toggleRookieTable: function() {
             if (this.showRookiePitchers) {
@@ -827,16 +817,3 @@ App.FreeAgentsController = Ember.ObjectController.extend({
         }
     }
 });
-
-App.NextButtonController = Ember.ObjectController.extend({
-    needs: ['progress']
-});
-
-App.NextButtonView = Ember.View.extend({
-    templateName: "next-button",
-    name: "Next",
-    click: function(event) {
-        this.get("controller.controllers.progress").send('nextStage');
-    }
-});
-

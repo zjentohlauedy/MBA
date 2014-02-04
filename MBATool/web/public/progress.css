@@ -114,26 +114,6 @@ ol.progress li.progress-todo:before {
     bottom: -1.6em;
 }
 
-button.next {
-    display: block;
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: bold;
-    font-size: 138.5%;
-    text-align: center;
-    text-decoration: none;
-    padding: 10px;
-    border: 1px solid #659635;
-    background: -moz-linear-gradient(top,
-                                     #CFE782 0%,
-                                     #9BCB2A 2%,
-                                     #5DA331 97%,
-                                     #659635 100%);
-    text-shadow: -1px -1px 2px #777777;
-    color: #ffffff;
-    border-radius: 10px;
-    margin: 1em;
-}
-
 button.enabled {
     display: block;
     float: left;
