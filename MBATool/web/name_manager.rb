@@ -9,7 +9,7 @@ $: << "#{location}"
 class NameManager
 
   def initialize
-    @filename = "names.txt"
+    @filename = "/home/zjentohlauedy/Amiga/HD/MBA/names.txt"
     @names    = nil
   end
 

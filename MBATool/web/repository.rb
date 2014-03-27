@@ -16,7 +16,7 @@ class Repository
     end
 
     def connect
-      @db = SQLite3::Database.new "mba.db"
+      @db = SQLite3::Database.new "/home/zjentohlauedy/Amiga/HD/MBA/mba.db"
 
       @db.results_as_hash  = true
       @db.type_translation = true

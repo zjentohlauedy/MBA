@@ -5,6 +5,8 @@ var App = window.App
 App._constants = {
     TEAM_MAX_PITCHERS:          10,
     TEAM_MAX_BATTERS:           15,
+    ROOKIE_DRAFT_MAX_PITCHERS:   4,
+    ROOKIE_DRAFT_MAX_BATTERS:    6,
     ROSTER_CUT_TARGET_PITCHERS:  3,
     ROSTER_CUT_TARGET_BATTERS:   5
 };
@@ -579,12 +581,12 @@ App.RookieDraftController = Ember.ObjectController.extend({
         setDraftStatus: function() {
             if (this.stageComplete) return;
 
-            if (this.showRookiePitchers && this.team.draftedRookiePitcher) {
+            if (this.showRookiePitchers && (this.team.pitchers.length >= App._constants.ROOKIE_DRAFT_MAX_PITCHERS)) {
                 this.set("canDraft", false);
                 return;
             }
 
-            if (this.showRookieBatters && this.team.draftedRookieBatter) {
+            if (this.showRookieBatters && (this.team.batters.length >= App._constants.ROOKIE_DRAFT_MAX_BATTERS)) {
                 this.set("canDraft", false);
                 return;
             }
