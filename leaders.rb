@@ -51,8 +51,7 @@ end
 class Pitcher < Stats
   attr_reader :name, :team, :wins, :losses, :era, :games, :saves, :innings
   attr_reader :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba
-  attr_reader :inn_per_game, :hits_per_9, :walks_per_9, :so_per_9, :hr_per_9
-  attr_reader :win_pct, :efficiency
+  attr_reader :inn_per_game, :whip, :so_per_9, :hr_per_9, :win_pct, :efficiency
 
   def initialize( str, team )
     fields = str.split(/ +/)
@@ -73,11 +72,10 @@ class Pitcher < Stats
     @strike_outs  = fields[13].to_i
     @vsba         = fields[14].to_f
     @inn_per_game = fields[15].to_f
-    @hits_per_9   = fields[16].to_f
-    @walks_per_9  = fields[17].to_f
+    @whip         = fields[16].to_f
     @so_per_9     = fields[17].to_f
-    @hr_per_9     = fields[17].to_f
-    @win_pct      = @wins.to_f / (@wins + @losses)
+    @hr_per_9     = fields[18].to_f
+    @win_pct      = (@wins + @losses) > 0 ? @wins.to_f / (@wins + @losses) : 0
     @efficiency   = (@innings.to_i - @hits) + (@strike_outs - @hits)
   end
 
@@ -227,34 +225,33 @@ end
 rosters_prog = ProgRunner.new location, "print_rosters"
 
 categories = {
-  'pitching'      => {  'label' => "Pitching Leaders",    'type' => :pitchers,
-    'stats'       => [{ 'label' => "Wins",                'stat' => :wins,         'format' => '%2d',   'direction' => :descending },
-                      { 'label' => "Win Percentage",      'stat' => :win_pct,      'format' => '%5.3f', 'direction' => :descending },
-                      { 'label' => "Earned Run Average",  'stat' => :era,          'format' => '%5.2f', 'direction' => :ascending  },
-                      { 'label' => "vs. Batting Average", 'stat' => :vsba,         'format' => '%5.3f', 'direction' => :ascending  },
-                      { 'label' => "Saves",               'stat' => :saves,        'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Strike Outs",         'stat' => :strike_outs,  'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Innings Per Game",    'stat' => :inn_per_game, 'format' => '%5.2f', 'direction' => :descending },
-                      { 'label' => "Hits Per 9 Innings",  'stat' => :hits_per_9,   'format' => '%5.2f', 'direction' => :ascending  },
-                      { 'label' => "Walks Per 9 Innings", 'stat' => :walks_per_9,  'format' => '%5.2f', 'direction' => :ascending  },
-                      { 'label' => "Strikeouts Per 9 Inn",'stat' => :so_per_9,     'format' => '%5.2f', 'direction' => :descending },
-                      { 'label' => "Home Runs Per 9 Inn", 'stat' => :hr_per_9,     'format' => '%5.2f', 'direction' => :ascending  },
-                      { 'label' => "Efficiency",          'stat' => :efficiency,   'format' => '%+3d',  'direction' => :descending }]},
+  'pitching'      => {  'label' => "Pitching Leaders",     'type' => :pitchers,
+    'stats'       => [{ 'label' => "Wins",                 'stat' => :wins,         'format' => '%2d',   'direction' => :descending },
+                      { 'label' => "Win Percentage",       'stat' => :win_pct,      'format' => '%5.3f', 'direction' => :descending },
+                      { 'label' => "Earned Run Average",   'stat' => :era,          'format' => '%5.2f', 'direction' => :ascending  },
+                      { 'label' => "vs. Batting Average",  'stat' => :vsba,         'format' => '%5.3f', 'direction' => :ascending  },
+                      { 'label' => "Saves",                'stat' => :saves,        'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Strike Outs",          'stat' => :strike_outs,  'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Innings Per Game",     'stat' => :inn_per_game, 'format' => '%5.2f', 'direction' => :descending },
+                      { 'label' => "Walks & Hits Per Inn", 'stat' => :whip,         'format' => '%5.2f', 'direction' => :ascending  },
+                      { 'label' => "Strikeouts Per 9 Inn", 'stat' => :so_per_9,     'format' => '%5.2f', 'direction' => :descending },
+                      { 'label' => "Home Runs Per 9 Inn",  'stat' => :hr_per_9,     'format' => '%5.2f', 'direction' => :ascending  },
+                      { 'label' => "Efficiency",           'stat' => :efficiency,   'format' => '%+3d',  'direction' => :descending }]},
 
-  'batting '      => {  'label' => "Hitting Leaders",     'type' => :batters,
-    'stats'       => [{ 'label' => "Batting Average",     'stat' => :average,      'format' => '%5.3f', 'direction' => :descending },
-                      { 'label' => "Doubles",             'stat' => :doubles,      'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Triples",             'stat' => :triples,      'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Home Runs",           'stat' => :home_runs,    'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Runs",                'stat' => :runs,         'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Runs Batted In",      'stat' => :rbi,          'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Stolen Bases",        'stat' => :steals,       'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Walks",               'stat' => :walks,        'format' => '%3d',   'direction' => :descending },
-                      { 'label' => "Errors",              'stat' => :errors,       'format' => '%3d',   'direction' => :ascending  },
-                      { 'label' => "Slugging Average",    'stat' => :slugging,     'format' => '%5.3f', 'direction' => :descending },
-                      { 'label' => "On Base Percentage",  'stat' => :obp,          'format' => '%5.3f', 'direction' => :descending },
-                      { 'label' => "Strike Out Average",  'stat' => :soa,          'format' => '%5.3f', 'direction' => :ascending  },
-                      { 'label' => "Runs Per Game",       'stat' => :rpg,          'format' => '%4.2f', 'direction' => :descending }]}
+  'batting '      => {  'label' => "Hitting Leaders",      'type' => :batters,
+    'stats'       => [{ 'label' => "Batting Average",      'stat' => :average,      'format' => '%5.3f', 'direction' => :descending },
+                      { 'label' => "Doubles",              'stat' => :doubles,      'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Triples",              'stat' => :triples,      'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Home Runs",            'stat' => :home_runs,    'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Runs",                 'stat' => :runs,         'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Runs Batted In",       'stat' => :rbi,          'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Stolen Bases",         'stat' => :steals,       'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Walks",                'stat' => :walks,        'format' => '%3d',   'direction' => :descending },
+                      { 'label' => "Errors",               'stat' => :errors,       'format' => '%3d',   'direction' => :ascending  },
+                      { 'label' => "Slugging Average",     'stat' => :slugging,     'format' => '%5.3f', 'direction' => :descending },
+                      { 'label' => "On Base Percentage",   'stat' => :obp,          'format' => '%5.3f', 'direction' => :descending },
+                      { 'label' => "Strike Out Average",   'stat' => :soa,          'format' => '%5.3f', 'direction' => :ascending  },
+                      { 'label' => "Runs Per Game",        'stat' => :rpg,          'format' => '%4.2f', 'direction' => :descending }]}
 }
 
 
