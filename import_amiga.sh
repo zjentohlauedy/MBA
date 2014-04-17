@@ -25,7 +25,12 @@ source ~/Amiga/HD/MBA/setgames
 
 echo "Copying files..."
 
-~/Amiga/HD/MBA/ewbcopyleague ~/Amiga/HD/MBA/S03/LeagName.Dat LEAGNAME.DAT
+~/Amiga/HD/MBA/ewbcopyleague ~/Amiga/HD/MBA/S03/LeagName.Dat LEAGNAME.DAT || exit
 cp ~/Amiga/HD/MBA/S03/parks.dat PARKS.DAT
-~/Amiga/HD/MBA/ewbamiga2dos ~/Amiga/HD/MBA/S03/Players.S PLAYERS.DAT
+~/Amiga/HD/MBA/ewbamiga2dos ~/Amiga/HD/MBA/S03/Players.S PLAYERS.DAT || exit
 
+echo "Making Backups..."
+
+cp LEAGNAME.DAT .LEAGNAME.DAT.bak
+cp PARKS.DAT .PARKS.DAT.bak
+cp PLAYERS.DAT .PLAYERS.DAT.bak
