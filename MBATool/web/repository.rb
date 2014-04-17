@@ -16,7 +16,8 @@ class Repository
     end
 
     def connect
-      @db = SQLite3::Database.new "/home/zjentohlauedy/Amiga/HD/MBA/mba.db"
+#      @db = SQLite3::Database.new "/home/zjentohlauedy/Amiga/HD/MBA/mba.db"
+      @db = SQLite3::Database.new "mba.db"
 
       @db.results_as_hash  = true
       @db.type_translation = true
@@ -153,6 +154,10 @@ class Repository
       player = (@db.execute query, args)[0]
 
       player['Details'] = get_player_details player
+
+      if ! params[:season].nil?
+        player['Season'] = params[:season].to_i
+      end
 
       return @mapper.map_player_response player
     end

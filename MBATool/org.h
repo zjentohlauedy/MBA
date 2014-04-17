@@ -55,6 +55,8 @@ char *getCalculateRecordsError( void );
 fileleagname_s *generateFileLeagName( const org_s *org                   );
 fileplayer_s   *generateFilePlayers(  const org_s *org, const int season );
 
+int adjustRating( const int rating, const int season, const player_s *player );
+
 void freeOrg(        org_s        *org         );
 void freeOrgLeagues( org_league_s *org_leagues );
 void freeRecords(    records_s    *records     );

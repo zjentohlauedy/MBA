@@ -217,6 +217,19 @@ static fileposition_e mapPosition( const position_e position )
      return fpos_DesignatedHitter;
 }
 
+int adjustRating( const int rating, const int season, const player_s *player )
+{
+     int age_adjustment = (season - player->rookie_season) - (player->longevity + 3);
+
+     if (age_adjustment < 0 ) age_adjustment = 0;
+
+     return MAX( rating - age_adjustment, 1 );
+}
+
+static int adjustFatigue( const int rating, const int season, const player_s *player )
+{
+     return MAX( adjustRating( rating, season, player ), 4 );
+}
 
 static boolean_e generateFilePlayer( const player_s *player, const int season, const int player_idx, fileplayer_s *players_file )
 {
@@ -235,8 +248,6 @@ static boolean_e generateFilePlayer( const player_s *player, const int season, c
 
      int2byte( players_file[player_idx].year, player->rookie_season + YEAR_SEASON_OFFSET );
 
-     int age_adjustment = (player->longevity + 3) - (season - player->rookie_season);
-
      if ( player->player_type == pt_Pitcher )
      {
           pitcher_s      *pitcher  = player->details.pitching;
@@ -244,9 +255,9 @@ static boolean_e generateFilePlayer( const player_s *player, const int season, c
 
           filehand_e hand = mapHandedness( player->handedness );
 
-          int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
-          int control = (age_adjustment >= 0) ? pitcher->control : MIN( pitcher->control - age_adjustment, 1 );
-          int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MIN( pitcher->fatigue - age_adjustment, 4 );
+          int speed   = adjustRating(  pitcher->speed,   season, player );
+          int control = adjustRating(  pitcher->control, season, player );
+          int fatigue = adjustFatigue( pitcher->fatigue, season, player );
 
           players_file[player_idx].position[0] = (fpos_Pitcher << 4) + hand;
 
@@ -311,12 +322,12 @@ static boolean_e generateFilePlayer( const player_s *player, const int season, c
           fileposition_e primary   = mapPosition( batter->primary_position   );
           fileposition_e secondary = mapPosition( batter->secondary_position );
 
-          int arm       = (age_adjustment >= 0) ? batter->arm       : MIN( batter->arm       - age_adjustment, 1 );
-          int running   = (age_adjustment >= 0) ? batter->running   : MIN( batter->running   - age_adjustment, 1 );
-          int range     = (age_adjustment >= 0) ? batter->range     : MIN( batter->range     - age_adjustment, 1 );
-          int power     = (age_adjustment >= 0) ? batter->power     : MIN( batter->power     - age_adjustment, 1 );
-          int bunt      = (age_adjustment >= 0) ? batter->bunt      : MIN( batter->bunt      - age_adjustment, 1 );
-          int hit_n_run = (age_adjustment >= 0) ? batter->hit_n_run : MIN( batter->hit_n_run - age_adjustment, 1 );
+          int arm       = adjustRating( batter->arm,       season, player );
+          int running   = adjustRating( batter->running,   season, player );
+          int range     = adjustRating( batter->range,     season, player );
+          int power     = adjustRating( batter->power,     season, player );
+          int bunt      = adjustRating( batter->bunt,      season, player );
+          int hit_n_run = adjustRating( batter->hit_n_run, season, player );
 
           players_file[player_idx].position[0] = (primary << 4) + secondary;
 

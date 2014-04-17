@@ -187,9 +187,9 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               filehand_e  handedness = mapHandedness( team_players[l].player->handedness );
                               filecolor_e color      = byte2int( pitching->color );
 
-                              int speed   = (age_adjustment >= 0) ? pitcher->speed   : MIN( pitcher->speed   - age_adjustment, 1 );
-                              int control = (age_adjustment >= 0) ? pitcher->control : MIN( pitcher->control - age_adjustment, 1 );
-                              int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MIN( pitcher->fatigue - age_adjustment, 4 );
+                              int speed   = (age_adjustment >= 0) ? pitcher->speed   : MAX( pitcher->speed   + age_adjustment, 1 );
+                              int control = (age_adjustment >= 0) ? pitcher->control : MAX( pitcher->control + age_adjustment, 1 );
+                              int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MAX( pitcher->fatigue + age_adjustment, 4 );
 
                               assertEquals( fpos_Pitcher, nibble( players_file[idx].position[0], n_High ) );
                               assertEquals( handedness,   nibble( players_file[idx].position[0], n_Low  ) );
@@ -245,12 +245,12 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               fileposition_e primary_pos   = mapPosition( batter->primary_position   );
                               fileposition_e secondary_pos = mapPosition( batter->secondary_position );
 
-                              int arm       = (age_adjustment >= 0) ? batter->arm       : MIN( batter->arm       - age_adjustment, 1 );
-                              int running   = (age_adjustment >= 0) ? batter->running   : MIN( batter->running   - age_adjustment, 1 );
-                              int range     = (age_adjustment >= 0) ? batter->range     : MIN( batter->range     - age_adjustment, 1 );
-                              int power     = (age_adjustment >= 0) ? batter->power     : MIN( batter->power     - age_adjustment, 1 );
-                              int bunt      = (age_adjustment >= 0) ? batter->bunt      : MIN( batter->bunt      - age_adjustment, 1 );
-                              int hit_n_run = (age_adjustment >= 0) ? batter->hit_n_run : MIN( batter->hit_n_run - age_adjustment, 1 );
+                              int arm       = (age_adjustment >= 0) ? batter->arm       : MAX( batter->arm       + age_adjustment, 1 );
+                              int running   = (age_adjustment >= 0) ? batter->running   : MAX( batter->running   + age_adjustment, 1 );
+                              int range     = (age_adjustment >= 0) ? batter->range     : MAX( batter->range     + age_adjustment, 1 );
+                              int power     = (age_adjustment >= 0) ? batter->power     : MAX( batter->power     + age_adjustment, 1 );
+                              int bunt      = (age_adjustment >= 0) ? batter->bunt      : MAX( batter->bunt      + age_adjustment, 1 );
+                              int hit_n_run = (age_adjustment >= 0) ? batter->hit_n_run : MAX( batter->hit_n_run + age_adjustment, 1 );
 
                               assertEquals( primary_pos,   nibble( players_file[idx].position[0], n_High ) );
                               assertEquals( secondary_pos, nibble( players_file[idx].position[0], n_Low  ) );
@@ -318,10 +318,78 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
      return NULL;
 }
 
+static char *adjustRating_ShouldReturnSameValue_GivenAPlayerThatIsntAgeing()
+{
+     player_s player1 = { 0 };
+     player_s player2 = { 0 };
+     int      season  =  10;
+
+     player1.rookie_season = season;
+     player1.longevity     = 5;
+
+     player2.rookie_season = 2;
+     player2.longevity     = 5;
+
+     assertEquals( 7, adjustRating( 7, season, &player1 ) );
+     assertEquals( 7, adjustRating( 7, season, &player2 ) );
+
+     return NULL;
+}
+
+static char *adjustRating_ShouldReturnIncrementallyReducedValue_GivenAPlayerThatIsAgeing()
+{
+     player_s player1 = { 0 };
+     player_s player2 = { 0 };
+     player_s player3 = { 0 };
+     int      season  =  10;
+
+     player1.rookie_season = season;
+     player1.longevity     = 5;
+
+     player2.rookie_season = 1;
+     player2.longevity     = 5;
+
+     player3.rookie_season = 1;
+     player3.longevity     = 4;
+
+     assertEquals( 7, adjustRating( 7, season, &player1 ) );
+     assertEquals( 6, adjustRating( 7, season, &player2 ) );
+     assertEquals( 5, adjustRating( 7, season, &player3 ) );
+
+     return NULL;
+}
+
+static char *adjustRating_ShouldNeverReturnLessThanOne()
+{
+     player_s player1 = { 0 };
+     player_s player2 = { 0 };
+     player_s player3 = { 0 };
+     int      season  =  15;
+
+     player1.rookie_season = 1;
+     player1.longevity     = 10;
+
+     player2.rookie_season = 1;
+     player2.longevity     = 1;
+
+     player3.rookie_season = 1;
+     player3.longevity     = 5;
+
+     assertEquals( 1, adjustRating( 1, season, &player1 ) );
+     assertEquals( 1, adjustRating( 1, season, &player2 ) );
+     assertEquals( 1, adjustRating( 1, season, &player3 ) );
+
+     return NULL;
+}
+
 static void run_all_tests()
 {
      run_test( generateFilePlayers_ShouldReturnAFilePlayersObject_GivenAnOrgObject,      null );
      run_test( generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgObject, null );
+
+     run_test( adjustRating_ShouldReturnSameValue_GivenAPlayerThatIsntAgeing, null );
+     run_test( adjustRating_ShouldReturnIncrementallyReducedValue_GivenAPlayerThatIsAgeing, null );
+     run_test( adjustRating_ShouldNeverReturnLessThanOne, null );
 }
 
 int main( int argc, char *argv[] )

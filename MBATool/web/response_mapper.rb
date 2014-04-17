@@ -65,6 +65,26 @@ class ResponseMapper
     return "DH"
   end
 
+  def adjust_rating( rating, player )
+    if player.nil? then return rating end
+
+    if ! player.has_key? 'Season' then return rating end
+
+    adjustment = (player['Season'] - player['Rookie_Season']) - (player['Longevity'] + 3)
+
+    if adjustment < 0 then adjustment = 0 end
+
+    rating -= adjustment
+
+    return (rating > 1) ? rating : 1
+  end
+
+  def adjust_fatigue( rating, player )
+    rating = adjust_rating rating, player
+
+    (rating > 4) ? rating : 4
+  end
+
   def map_teams_response( teams )
     result = []
 
@@ -154,27 +174,26 @@ class ResponseMapper
       mapped_player[ :handedness      ] = display_handedness  player[ 'Handedness'      ]
       mapped_player[ :player_type     ] = display_player_type player[ 'Player_Type'     ]
       mapped_player[ :rookie_season   ] =                     player[ 'Rookie_Season'   ]
-      mapped_player[ :longevity       ] =                     player[ 'Longevity'       ]
 
       if player.has_key? 'Details'
         details = player[ 'Details' ]
 
         if player['Player_Type'] == 1
-          mapped_player[ :speed   ] = details[ 'Speed'   ]
-          mapped_player[ :control ] = details[ 'Control' ]
-          mapped_player[ :bunt    ] = details[ 'Bunt'    ]
-          mapped_player[ :fatigue ] = details[ 'Fatigue' ]
+          mapped_player[ :speed   ] = adjust_rating  details[ 'Speed'   ], player
+          mapped_player[ :control ] = adjust_rating  details[ 'Control' ], player
+          mapped_player[ :bunt    ] = adjust_rating  details[ 'Bunt'    ], player
+          mapped_player[ :fatigue ] = adjust_fatigue details[ 'Fatigue' ], player
         end
 
         if player['Player_Type'] == 2
           mapped_player[ :primary_position   ] = display_position details[ 'Primary_Position'   ]
           mapped_player[ :secondary_position ] = display_position details[ 'Secondary_Position' ]
-          mapped_player[ :power              ] =                  details[ 'Power'              ]
-          mapped_player[ :hit_n_run          ] =                  details[ 'Hit_N_Run'          ]
-          mapped_player[ :bunt               ] =                  details[ 'Bunt'               ]
-          mapped_player[ :running            ] =                  details[ 'Running'            ]
-          mapped_player[ :range              ] =                  details[ 'Range'              ]
-          mapped_player[ :arm                ] =                  details[ 'Arm'                ]
+          mapped_player[ :power              ] = adjust_rating    details[ 'Power'              ], player
+          mapped_player[ :hit_n_run          ] = adjust_rating    details[ 'Hit_N_Run'          ], player
+          mapped_player[ :bunt               ] = adjust_rating    details[ 'Bunt'               ], player
+          mapped_player[ :running            ] = adjust_rating    details[ 'Running'            ], player
+          mapped_player[ :range              ] = adjust_rating    details[ 'Range'              ], player
+          mapped_player[ :arm                ] = adjust_rating    details[ 'Arm'                ], player
         end
       end
     end
