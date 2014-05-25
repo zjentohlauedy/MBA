@@ -15,9 +15,9 @@ echo "Copying files..."
 cp ~/DOS/earlw1/LEAGNAME.DAT LeagName.Dat
 cp ~/DOS/earlw1/PARKS.DAT parks.dat
 
-echo "Moving Boxscores..."
+echo "Copying Boxscores..."
 
-mv ~/DOS/earlw1/D*G*.TXT .
+cp ~/DOS/earlw1/D*G*.TXT .
 chmod 444 D*G*.TXT
 
 echo "Creating Backups..."

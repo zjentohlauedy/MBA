@@ -3,6 +3,9 @@
 FILE_MATCHER="D[0-9][0-9][0-9]G[0-9][0-9].TXT"
 BOXSCORES=($FILE_MATCHER)
 
+echo "Removing uaem files"
+rm *.uaem
+
 if [[ "${BOXSCORES[0]}" == "$FILE_MATCHER" ]]
 then
     echo "No boxscore files. Nothing to do here."

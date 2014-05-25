@@ -34,3 +34,7 @@ echo "Making Backups..."
 cp LEAGNAME.DAT .LEAGNAME.DAT.bak
 cp PARKS.DAT .PARKS.DAT.bak
 cp PLAYERS.DAT .PLAYERS.DAT.bak
+
+echo "Removing Boxscores..."
+
+rm D*G*.TXT
