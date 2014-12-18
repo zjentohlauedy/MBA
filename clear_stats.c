@@ -42,14 +42,12 @@ int main( const int argc, const char *argv[] )
           {
                struct pitching_s *pitching = &(playersFile[idx].filestats.filepitching);
 
-               pitching->action    = clear_pitcher_stats;
                pitching->simulated = clear_pitcher_stats;
           }
           else
           {
                struct batting_s *batting = &(playersFile[idx].filestats.filebatting);
 
-               batting->action    = clear_batter_stats;
                batting->simulated = clear_batter_stats;
           }
      }
