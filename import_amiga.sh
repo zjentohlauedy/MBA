@@ -35,6 +35,11 @@ cp LEAGNAME.DAT .LEAGNAME.DAT.bak
 cp PARKS.DAT .PARKS.DAT.bak
 cp PLAYERS.DAT .PLAYERS.DAT.bak
 
-echo "Removing Boxscores..."
 
-rm D*G*.TXT
+n_boxscores=$(ls -1 D*G*.TXT 2>/dev/null | wc -l)
+if [[ $n_boxscores -gt 0 ]]
+then
+    echo "Removing Boxscores..."
+
+    rm D*G*.TXT
+fi
