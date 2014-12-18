@@ -3,8 +3,12 @@
 FILE_MATCHER="D[0-9][0-9][0-9]G[0-9][0-9].TXT"
 BOXSCORES=($FILE_MATCHER)
 
-echo "Removing uaem files"
-rm *.uaem
+n_uaem_files=$(ls -1 *.uaem 2>/dev/null | wc -l)
+if [[ $n_uaem_files -gt 0 ]]
+then
+    echo "Removing uaem files"
+    rm *.uaem
+fi
 
 if [[ "${BOXSCORES[0]}" == "$FILE_MATCHER" ]]
 then
@@ -12,7 +16,7 @@ then
     exit
 elif [[ ${#BOXSCORES[@]} -ne 16 ]]
 then
-    echo "Incorrect number of files: $BOXSCORE_COUNT."
+    echo "Incorrect number of files: ${#BOXSCORES[@]}."
     exit
 fi
 
