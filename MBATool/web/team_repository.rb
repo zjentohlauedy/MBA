@@ -11,7 +11,7 @@ class TeamRepository
 
     query = 'select * from teams_t where team_id = :team_id'
 
-    return Utils::transform_hash @db.execute query, args
+    return Utils::transform_hash @db.get_first_row query, args
   end
 
   def get_team_stats( team_id, season = nil, phase = nil )
@@ -21,6 +21,10 @@ class TeamRepository
 
     unless season.nil?; query = "#{query} and season        = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase  = :phase";  args[:phase ] = phase  end
+
+    unless season.nil? or phase.nil?
+      return Utils::transform_hash @db.get_first_row query, args
+    end
 
     return Utils::transform_hash @db.execute query, args
   end
