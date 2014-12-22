@@ -37,5 +37,24 @@ describe Utils do
       expect( result[1][:key_two  ] ).to eq nil
       expect( result[1][:key_three] ).to eq 'test'
     end
-  end
+
+    it 'should return nil if the given object is not a hash or array' do
+      expect( Utils::transform_hash nil ).to be_nil
+      expect( Utils::transform_hash 123 ).to be_nil
+      expect( Utils::transform_hash 'x' ).to be_nil
+      expect( Utils::transform_hash Object.new ).to be_nil
+    end
+
+    it 'should return nil if the given array is not an array of hashes' do
+      expect( Utils::transform_hash [1,2,3] ).to be_nil
+    end
+
+    it 'should return an empty hash given an empty hash' do
+      expect( Utils::transform_hash Hash.new ).to eq Hash.new
+    end
+
+    it 'should return an empty array given an empty array' do
+      expect( Utils::transform_hash Array.new ).to eq Array.new
+    end
+end
 end
