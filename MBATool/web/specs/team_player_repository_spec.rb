@@ -6,7 +6,7 @@ require 'team_player_repository'
 
 describe TeamPlayerRepository do
   before :each do
-    @db = SQLite3::Database.new "mba.db"
+    @db = SQLite3::Database.new "test_mba.db"
 
     @db.results_as_hash  = true
     @db.type_translation = true

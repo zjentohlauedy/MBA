@@ -7,7 +7,7 @@ require 'phases'
 
 describe TeamRepository do
   before :each do
-    @db = SQLite3::Database.new "mba.db"
+    @db = SQLite3::Database.new "test_mba.db"
 
     @db.results_as_hash  = true
     @db.type_translation = true
@@ -45,19 +45,47 @@ describe TeamRepository do
 
   describe '#get_division_teams' do
     it 'should return an array containing all teams within any division' do
+      @db.execute 'insert into division_teams_t values (1, 1)'
+      @db.execute 'insert into division_teams_t values (2, 2)'
+      @db.execute 'insert into division_teams_t values (3, 3)'
+      @db.execute 'insert into teams_t values (1, "Name1", "Location1", 0, 1)'
+      @db.execute 'insert into teams_t values (2, "Name2", "Location2", 5, 3)'
+      @db.execute 'insert into teams_t values (3, "Name3", "Location3", 4, 2)'
+
       result = @team_repository.get_division_teams
 
       expect( result        ).to_not be_nil
       expect( result        ).to     be_a   Array
-      expect( result.length ).to     eq     32
+      expect( result.length ).to     eq     3
 
-      result.each do |team|
-        expect( team[:division_id    ] ).to be_a Integer
-        expect( team[:name           ] ).to be_a String
-        expect( team[:location       ] ).to be_a String
-        expect( team[:primary_color  ] ).to be_a Integer
-        expect( team[:secondary_color] ).to be_a Integer
-      end
+      expect( result[0][:division_id    ] ).to eq 1
+      expect( result[0][:team_id        ] ).to eq 1
+      expect( result[0][:name           ] ).to eq 'Name1'
+      expect( result[0][:location       ] ).to eq 'Location1'
+      expect( result[0][:primary_color  ] ).to eq 0
+      expect( result[0][:secondary_color] ).to eq 1
+
+      expect( result[1][:division_id    ] ).to eq 2
+      expect( result[1][:team_id        ] ).to eq 2
+      expect( result[1][:name           ] ).to eq 'Name2'
+      expect( result[1][:location       ] ).to eq 'Location2'
+      expect( result[1][:primary_color  ] ).to eq 5
+      expect( result[1][:secondary_color] ).to eq 3
+
+      expect( result[2][:division_id    ] ).to eq 3
+      expect( result[2][:team_id        ] ).to eq 3
+      expect( result[2][:name           ] ).to eq 'Name3'
+      expect( result[2][:location       ] ).to eq 'Location3'
+      expect( result[2][:primary_color  ] ).to eq 4
+      expect( result[2][:secondary_color] ).to eq 2
+    end
+
+    it 'should return an empty array if there are no teams' do
+      result = @team_repository.get_division_teams
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
     end
   end
 
@@ -154,34 +182,84 @@ describe TeamRepository do
 
   describe '#get_division_teams_with_stats' do
     it 'should return an array containing all teams within any division including team stats' do
+      @db.execute 'insert into division_teams_t values (1, 1)'
+      @db.execute 'insert into division_teams_t values (2, 2)'
+      @db.execute 'insert into division_teams_t values (3, 3)'
+      @db.execute 'insert into teams_t values (1, "Name1", "Location1", 0, 1)'
+      @db.execute 'insert into teams_t values (2, "Name2", "Location2", 5, 3)'
+      @db.execute 'insert into teams_t values (3, "Name3", "Location3", 4, 2)'
+      @db.execute "insert into team_stats_t values (1,1,#{Phases::RegularSeason},12,10,6,4,7,2,5,1,3,8,25,32)"
+      @db.execute "insert into team_stats_t values (2,1,#{Phases::RegularSeason},15,12,8,1,6,4,3,7,5,2,28,22)"
+      @db.execute "insert into team_stats_t values (3,1,#{Phases::RegularSeason},14,16,9,7,5,1,6,8,4,2,37,21)"
+
       result = @team_repository.get_division_teams_with_stats 1, Phases::RegularSeason
 
       expect( result        ).to_not be_nil
       expect( result        ).to     be_a   Array
-      expect( result.length ).to     eq     32
+      expect( result.length ).to     eq     3
 
-      result.each do |team|
-        expect( team[:division_id    ] ).to be_a Integer
-        expect( team[:team_id        ] ).to be_a Integer
-        expect( team[:name           ] ).to be_a String
-        expect( team[:location       ] ).to be_a String
-        expect( team[:primary_color  ] ).to be_a Integer
-        expect( team[:secondary_color] ).to be_a Integer
-        expect( team[:season         ] ).to eq   1
-        expect( team[:season_phase   ] ).to eq   Phases::RegularSeason
-        expect( team[:wins           ] ).to be_a Integer
-        expect( team[:losses         ] ).to be_a Integer
-        expect( team[:home_wins      ] ).to be_a Integer
-        expect( team[:home_losses    ] ).to be_a Integer
-        expect( team[:road_wins      ] ).to be_a Integer
-        expect( team[:road_losses    ] ).to be_a Integer
-        expect( team[:division_wins  ] ).to be_a Integer
-        expect( team[:division_losses] ).to be_a Integer
-        expect( team[:league_wins    ] ).to be_a Integer
-        expect( team[:league_losses  ] ).to be_a Integer
-        expect( team[:runs_scored    ] ).to be_a Integer
-        expect( team[:runs_allowed   ] ).to be_a Integer
-      end
+      expect( result[0][:division_id    ] ).to eq 1
+      expect( result[0][:team_id        ] ).to eq 1
+      expect( result[0][:name           ] ).to eq 'Name1'
+      expect( result[0][:location       ] ).to eq 'Location1'
+      expect( result[0][:primary_color  ] ).to eq 0
+      expect( result[0][:secondary_color] ).to eq 1
+      expect( result[0][:season         ] ).to eq 1
+      expect( result[0][:season_phase   ] ).to eq Phases::RegularSeason
+      expect( result[0][:wins           ] ).to eq 12
+      expect( result[0][:losses         ] ).to eq 10
+      expect( result[0][:home_wins      ] ).to eq 6
+      expect( result[0][:home_losses    ] ).to eq 4
+      expect( result[0][:road_wins      ] ).to eq 7
+      expect( result[0][:road_losses    ] ).to eq 2
+      expect( result[0][:division_wins  ] ).to eq 5
+      expect( result[0][:division_losses] ).to eq 1
+      expect( result[0][:league_wins    ] ).to eq 3
+      expect( result[0][:league_losses  ] ).to eq 8
+      expect( result[0][:runs_scored    ] ).to eq 25
+      expect( result[0][:runs_allowed   ] ).to eq 32
+
+      expect( result[1][:division_id    ] ).to eq 2
+      expect( result[1][:team_id        ] ).to eq 2
+      expect( result[1][:name           ] ).to eq 'Name2'
+      expect( result[1][:location       ] ).to eq 'Location2'
+      expect( result[1][:primary_color  ] ).to eq 5
+      expect( result[1][:secondary_color] ).to eq 3
+      expect( result[1][:season         ] ).to eq 1
+      expect( result[1][:season_phase   ] ).to eq Phases::RegularSeason
+      expect( result[1][:wins           ] ).to eq 15
+      expect( result[1][:losses         ] ).to eq 12
+      expect( result[1][:home_wins      ] ).to eq 8
+      expect( result[1][:home_losses    ] ).to eq 1
+      expect( result[1][:road_wins      ] ).to eq 6
+      expect( result[1][:road_losses    ] ).to eq 4
+      expect( result[1][:division_wins  ] ).to eq 3
+      expect( result[1][:division_losses] ).to eq 7
+      expect( result[1][:league_wins    ] ).to eq 5
+      expect( result[1][:league_losses  ] ).to eq 2
+      expect( result[1][:runs_scored    ] ).to eq 28
+      expect( result[1][:runs_allowed   ] ).to eq 22
+
+      expect( result[2][:division_id    ] ).to eq 3
+      expect( result[2][:team_id        ] ).to eq 3
+      expect( result[2][:name           ] ).to eq 'Name3'
+      expect( result[2][:location       ] ).to eq 'Location3'
+      expect( result[2][:primary_color  ] ).to eq 4
+      expect( result[2][:secondary_color] ).to eq 2
+      expect( result[2][:season         ] ).to eq 1
+      expect( result[2][:season_phase   ] ).to eq Phases::RegularSeason
+      expect( result[2][:wins           ] ).to eq 14
+      expect( result[2][:losses         ] ).to eq 16
+      expect( result[2][:home_wins      ] ).to eq 9
+      expect( result[2][:home_losses    ] ).to eq 7
+      expect( result[2][:road_wins      ] ).to eq 5
+      expect( result[2][:road_losses    ] ).to eq 1
+      expect( result[2][:division_wins  ] ).to eq 6
+      expect( result[2][:division_losses] ).to eq 8
+      expect( result[2][:league_wins    ] ).to eq 4
+      expect( result[2][:league_losses  ] ).to eq 2
+      expect( result[2][:runs_scored    ] ).to eq 37
+      expect( result[2][:runs_allowed   ] ).to eq 21
     end
   end
 end
