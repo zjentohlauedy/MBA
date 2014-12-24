@@ -39,10 +39,12 @@ class Repository
       @db.rollback
     end
 
+    # tr
     def get_teams
       return @mapper.map_teams_response @db.execute 'select * from teams_t where team_id in (select distinct team_id from division_teams_t)'
     end
 
+    #tr
     def get_teams_with_stats( params )
       args = {}
 
@@ -59,6 +61,7 @@ class Repository
       return @db.execute query, args
     end
 
+    #tr
     def get_team( params )
       args = {}
 
@@ -67,6 +70,7 @@ class Repository
       return @mapper.map_team_response (@db.execute query, args)[0]
     end
 
+    #tr
     def get_team_stats( params )
       args = {}
 
@@ -78,6 +82,7 @@ class Repository
       return @mapper.map_team_stats_response @db.execute query, args
     end
 
+    #pr
     def get_team_players( params )
       args = {}
 
@@ -90,6 +95,7 @@ class Repository
       return @mapper.map_players_response @db.execute query, args
     end
 
+    # tpr
     def get_team_player( params )
       args = {}
 
@@ -102,6 +108,7 @@ class Repository
       return @mapper.map_team_player_response @db.get_first_row query, args
     end
 
+    #tpr
     def save_team_player( params )
       args = {}
 
@@ -114,6 +121,7 @@ class Repository
       return @db.execute query, args
     end
 
+    #tpr
     def delete_team_player( params )
       args = {}
 
@@ -126,10 +134,12 @@ class Repository
       return @db.execute query, args
     end
 
+    #pr
     def get_players
       return @mapper.map_players_response @db.execute 'select * from players_t'
     end
 
+    #pr
     def get_rookies( params )
       args = {}
 
@@ -138,6 +148,7 @@ class Repository
       return @mapper.map_players_response @db.execute query, args
     end
 
+    #pr
     def get_free_agents( params )
       args = {}
 
@@ -146,6 +157,7 @@ class Repository
       return @mapper.map_players_response @db.execute query, args
     end
 
+    #pr
     def get_player( params )
       args = {}
 
@@ -162,6 +174,7 @@ class Repository
       return @mapper.map_player_response player
     end
 
+    #pr
     def get_player_details( player )
       args = {}
 
@@ -176,6 +189,7 @@ class Repository
       return (@db.execute query, args)[0]
     end
 
+    #xx
     def get_player_stats( params )
       args = {}
 
@@ -194,6 +208,7 @@ class Repository
       return []
     end
 
+    #pr
     def get_pitcher_stats( params )
       args = {}
 
@@ -205,6 +220,7 @@ class Repository
       return @mapper.map_pitcher_stats_response @db.execute query, args
     end
 
+    #pr
     def get_batter_stats( params )
       args = {}
 
@@ -246,6 +262,7 @@ class Repository
       @db.execute query, args
     end
 
+    #pr
     def save_player( params )
       args = {}
 
@@ -265,6 +282,7 @@ class Repository
       @db.execute query, args
     end
 
+    #pr
     def save_pitcher( params )
       args = {}
 
@@ -279,6 +297,7 @@ class Repository
       @db.execute query, args
     end
 
+    #pr
     def save_batter( params )
       args = {}
 
