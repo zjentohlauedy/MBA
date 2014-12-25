@@ -19,4 +19,25 @@ module Utils
       return Hash[hash.map {|key,value| [key.downcase.to_sym, value]}]
     end
   end
+
+  def self.adjust_rating( rating, season, rookie_season, longevity )
+    adjustment = (season - rookie_season) - (longevity + 3)
+
+    if adjustment < 0 then adjustment = 0 end
+
+    rating -= adjustment
+
+    return (rating > 1) ? rating : 1
+  end
+
+  def self.adjust_fatigue( rating, season, rookie_season, longevity )
+    adjustment = (season - rookie_season) - (longevity + 3)
+
+    if adjustment < 0 then adjustment = 0 end
+
+    rating -= adjustment
+
+    return (rating > 4) ? rating : 4
+  end
+
 end

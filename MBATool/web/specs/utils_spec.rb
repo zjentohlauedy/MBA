@@ -56,5 +56,55 @@ describe Utils do
     it 'should return an empty array given an empty array' do
       expect( Utils::transform_hash Array.new ).to eq Array.new
     end
-end
+  end
+
+  describe '::adjust_rating' do
+    it 'should return an adjusted rating' do
+      expect( Utils::adjust_rating 5, 5, 5, 5 ).to be_a Integer
+    end
+
+    it 'should adjust the rating based on the given season, rookie season and longevity' do
+      expect( Utils::adjust_rating 5,  5, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5,  6, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5,  7, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5,  8, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5,  9, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5, 10, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5, 11, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5, 12, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5, 13, 5, 5 ).to eq 5
+      expect( Utils::adjust_rating 5, 14, 5, 5 ).to eq 4
+      expect( Utils::adjust_rating 5, 15, 5, 5 ).to eq 3
+      expect( Utils::adjust_rating 5, 16, 5, 5 ).to eq 2
+      expect( Utils::adjust_rating 5, 17, 5, 5 ).to eq 1
+      expect( Utils::adjust_rating 5, 18, 5, 5 ).to eq 1
+      expect( Utils::adjust_rating 5, 19, 5, 5 ).to eq 1
+      expect( Utils::adjust_rating 5, 20, 5, 5 ).to eq 1
+    end
+  end
+
+  describe '::adjust_fatigue' do
+    it 'should return an adjusted fatigue rating' do
+      expect( Utils::adjust_fatigue 5, 5, 5, 5 ).to be_a Integer
+    end
+
+    it 'should adjust the fatigue rating based on the given season, rookie season and longevity' do
+      expect( Utils::adjust_fatigue 9,  5, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9,  6, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9,  7, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9,  8, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9,  9, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9, 10, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9, 11, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9, 12, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9, 13, 5, 5 ).to eq 9
+      expect( Utils::adjust_fatigue 9, 14, 5, 5 ).to eq 8
+      expect( Utils::adjust_fatigue 9, 15, 5, 5 ).to eq 7
+      expect( Utils::adjust_fatigue 9, 16, 5, 5 ).to eq 6
+      expect( Utils::adjust_fatigue 9, 17, 5, 5 ).to eq 5
+      expect( Utils::adjust_fatigue 9, 18, 5, 5 ).to eq 4
+      expect( Utils::adjust_fatigue 9, 19, 5, 5 ).to eq 4
+      expect( Utils::adjust_fatigue 9, 20, 5, 5 ).to eq 4
+    end
+  end
 end
