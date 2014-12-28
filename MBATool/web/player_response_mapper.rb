@@ -73,8 +73,6 @@ class PlayerResponseMapper
 
     unless player.has_key? :season then return rating end
 
-    puts "Rating: #{rating}"
-
     return Utils::adjust_fatigue rating, player[:season], player[:rookie_season], player[:longevity]
   end
 
@@ -147,5 +145,21 @@ class PlayerResponseMapper
     pl[:secondary_position] = display_position batter[:secondary_position]
 
     return pl
+  end
+
+  def map_pitcher_stats( pitcher_stats )
+    return nil unless pitcher_stats.is_a? Hash
+
+    pitcher_stats[:season_phase] = display_season_phase pitcher_stats[:season_phase]
+
+    return pitcher_stats
+  end
+
+  def map_batter_stats( batter_stats )
+    return nil unless batter_stats.is_a? Hash
+
+    batter_stats[:season_phase] = display_season_phase batter_stats[:season_phase]
+
+    return batter_stats
   end
 end

@@ -361,4 +361,87 @@ describe PlayerResponseMapper do
       expect( result ).to be_nil
     end
   end
+
+  describe '#map_pitcher_stats' do
+    it 'should return a mapped pitcher stats hash' do
+      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+
+      result = @player_response_mapper.map_pitcher_stats pitcher_stats
+
+      expect( result                 ).to_not be_nil
+      expect( result                 ).to     be_a   Hash
+      expect( result[:player_id    ] ).to_not be_nil
+      expect( result[:season       ] ).to_not be_nil
+      expect( result[:season_phase ] ).to_not be_nil
+      expect( result[:wins         ] ).to_not be_nil
+      expect( result[:losses       ] ).to_not be_nil
+      expect( result[:games        ] ).to_not be_nil
+      expect( result[:saves        ] ).to_not be_nil
+      expect( result[:innings      ] ).to_not be_nil
+      expect( result[:outs         ] ).to_not be_nil
+      expect( result[:hits         ] ).to_not be_nil
+      expect( result[:earned_runs  ] ).to_not be_nil
+      expect( result[:home_runs    ] ).to_not be_nil
+      expect( result[:walks        ] ).to_not be_nil
+      expect( result[:strike_outs  ] ).to_not be_nil
+    end
+
+    it 'should replace season phase with a user friendly value' do
+      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+
+      result = @player_response_mapper.map_pitcher_stats pitcher_stats
+
+      expect( result                ).to_not be_nil
+      expect( result                ).to     be_a   Hash
+      expect( result[:season_phase] ).to     eq     'Regular'
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @player_response_mapper.map_pitcher_stats Object.new
+
+      expect( result ).to be_nil
+    end
+  end
+
+  describe '#map_batter_stats' do
+    it 'should return a mapped batter stats hash' do
+      batter_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
+
+      result = @player_response_mapper.map_batter_stats batter_stats
+
+      expect( result                  ).to_not be_nil
+      expect( result                  ).to     be_a   Hash
+      expect( result[:player_id     ] ).to_not be_nil
+      expect( result[:season        ] ).to_not be_nil
+      expect( result[:season_phase  ] ).to_not be_nil
+      expect( result[:games         ] ).to_not be_nil
+      expect( result[:at_bats       ] ).to_not be_nil
+      expect( result[:runs          ] ).to_not be_nil
+      expect( result[:hits          ] ).to_not be_nil
+      expect( result[:doubles       ] ).to_not be_nil
+      expect( result[:triples       ] ).to_not be_nil
+      expect( result[:home_runs     ] ).to_not be_nil
+      expect( result[:runs_batted_in] ).to_not be_nil
+      expect( result[:walks         ] ).to_not be_nil
+      expect( result[:strike_outs   ] ).to_not be_nil
+      expect( result[:steals        ] ).to_not be_nil
+      expect( result[:errors        ] ).to_not be_nil
+    end
+
+    it 'should replace season phase with a user friendly value' do
+      batter_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
+
+      result = @player_response_mapper.map_batter_stats batter_stats
+
+      expect( result                ).to_not be_nil
+      expect( result                ).to     be_a   Hash
+      expect( result[:season_phase] ).to     eq     'Regular'
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @player_response_mapper.map_batter_stats Object.new
+
+      expect( result ).to be_nil
+    end
+  end
 end
