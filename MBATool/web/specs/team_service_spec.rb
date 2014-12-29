@@ -24,7 +24,7 @@ describe TeamService do
       @team_service.get_teams
     end
 
-    it 'should call the response mapper with each of the team records from the repository' do
+    it 'should call the response mapper with the team list from the repository' do
       team_list = [{team_id: 1, name: 'Team1'},{team_id: 2, name: 'Team2'},{team_id: 3, name: 'Team3'}]
 
       allow( @repo ).to receive( :get_division_teams ).and_return team_list
@@ -40,9 +40,9 @@ describe TeamService do
       allow( @repo ).to receive( :get_division_teams )
       allow( @mapper ).to receive( :map_team_list ).and_return mapped_team_list
 
-      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[0]
-      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[1]
-      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[2]
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[0], nil, nil
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[1], nil, nil
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[2], nil, nil
 
       @team_service.get_teams
     end
@@ -66,6 +66,19 @@ describe TeamService do
         expect( entry[:name   ] ).to_not be_nil
         expect( entry[:_links ] ).to_not be_nil
       end
+    end
+
+    it 'should pass season and phase parameters to the decorator' do
+      mapped_team_list = [{team_id: 1, name: 'Team1'},{team_id: 2, name: 'Team2'},{team_id: 3, name: 'Team3'}]
+
+      allow( @repo ).to receive( :get_division_teams )
+      allow( @mapper ).to receive( :map_team_list ).and_return mapped_team_list
+
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[0], 3, Phases::Playoff
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[1], 3, Phases::Playoff
+      expect( @deco ).to receive( :decorate_team ).with mapped_team_list[2], 3, Phases::Playoff
+
+      @team_service.get_teams 3, Phases::Playoff
     end
   end
 

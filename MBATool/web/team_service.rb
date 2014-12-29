@@ -14,13 +14,13 @@ class TeamService
     @decorator  = decorator
   end
 
-  def get_teams
+  def get_teams( season = nil, phase = nil )
     teams = @repository.get_division_teams
 
     teams = @mapper.map_team_list teams
 
     teams.each do |team|
-      @decorator.decorate_team team
+      @decorator.decorate_team team, season, phase
     end
 
     return teams
