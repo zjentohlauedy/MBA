@@ -304,7 +304,7 @@ describe PlayerService do
       allow( @mapper ).to receive( :map_pitcher )
       allow( @deco ).to receive( :decorate_player )
 
-      expect( @repo ).to receive( :get_pitcher ).with( 1 ).and_return Hash.new
+      expect( @repo ).to receive( :get_pitcher_details ).with( 1 ).and_return Hash.new
 
       @player_service.get_player 1
     end
@@ -316,7 +316,7 @@ describe PlayerService do
       allow( @mapper ).to receive( :map_batter )
       allow( @deco ).to receive( :decorate_player )
 
-      expect( @repo ).to receive( :get_batter ).with( 1 ).and_return Hash.new
+      expect( @repo ).to receive( :get_batter_details ).with( 1 ).and_return Hash.new
 
       @player_service.get_player 1
     end
@@ -337,7 +337,7 @@ describe PlayerService do
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       allow( @repo ).to receive( :get_player  ).and_return player
-      allow( @repo ).to receive( :get_pitcher ).and_return pitcher
+      allow( @repo ).to receive( :get_pitcher_details ).and_return pitcher
       allow( @deco ).to receive( :decorate_player )
 
       expect( @mapper ).to receive( :map_pitcher ).with player, pitcher
@@ -350,7 +350,7 @@ describe PlayerService do
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_batter ).and_return batter
+      allow( @repo ).to receive( :get_batter_details ).and_return batter
       allow( @deco ).to receive( :decorate_player )
 
       expect( @mapper ).to receive( :map_batter ).with player, batter
@@ -375,7 +375,7 @@ describe PlayerService do
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_pitcher ).and_return Hash.new
+      allow( @repo ).to receive( :get_pitcher_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_pitcher ).and_return mapped_player
 
       expect( @deco ).to receive( :decorate_player ).with mapped_player, nil, nil
@@ -388,7 +388,7 @@ describe PlayerService do
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_batter ).and_return Hash.new
+      allow( @repo ).to receive( :get_batter_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_batter ).and_return mapped_player
 
       expect( @deco ).to receive( :decorate_player ).with mapped_player, nil, nil
@@ -412,7 +412,7 @@ describe PlayerService do
       mapped_decorated_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7, _links: {}}
 
       allow( @repo ).to receive( :get_player  ).and_return player
-      allow( @repo ).to receive( :get_pitcher ).and_return Hash.new
+      allow( @repo ).to receive( :get_pitcher_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_pitcher )
       allow( @deco ).to receive( :decorate_player ).and_return mapped_decorated_player
 
@@ -424,7 +424,7 @@ describe PlayerService do
       mapped_decorated_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7, _links: {}}
 
       allow( @repo ).to receive( :get_player  ).and_return player
-      allow( @repo ).to receive( :get_batter ).and_return Hash.new
+      allow( @repo ).to receive( :get_batter_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_batter )
       allow( @deco ).to receive( :decorate_player ).and_return mapped_decorated_player
 
@@ -448,7 +448,7 @@ describe PlayerService do
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_pitcher ).and_return Hash.new
+      allow( @repo ).to receive( :get_pitcher_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_pitcher ).and_return mapped_player
 
       expect( @deco ).to receive( :decorate_player ).with mapped_player, 3, Phases::RegularSeason
@@ -461,7 +461,7 @@ describe PlayerService do
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_batter ).and_return Hash.new
+      allow( @repo ).to receive( :get_batter_details ).and_return Hash.new
       allow( @mapper ).to receive( :map_batter ).and_return mapped_player
 
       expect( @deco ).to receive( :decorate_player ).with mapped_player, 3, Phases::RegularSeason
@@ -479,7 +479,7 @@ describe PlayerService do
       player = {player_id: 1, player_type: PlayerTypes::Pitcher}
 
       allow( @repo ).to receive( :get_player  ).and_return player
-      allow( @repo ).to receive( :get_pitcher )
+      allow( @repo ).to receive( :get_pitcher_details )
 
       expect { @player_service.get_player 1 }.to raise_error InternalServerError, 'There was an error retrieving Pitcher with Player ID 1.'
     end
@@ -488,7 +488,7 @@ describe PlayerService do
       player = {player_id: 1, player_type: PlayerTypes::Batter}
 
       allow( @repo ).to receive( :get_player ).and_return player
-      allow( @repo ).to receive( :get_batter )
+      allow( @repo ).to receive( :get_batter_details )
 
       expect { @player_service.get_player 1 }.to raise_error InternalServerError, 'There was an error retrieving Batter with Player ID 1.'
     end

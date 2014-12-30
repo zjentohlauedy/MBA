@@ -54,7 +54,7 @@ class PlayerService
   end
 
   def process_pitcher( player, season, phase )
-    pitcher = @repository.get_pitcher player[:player_id]
+    pitcher = @repository.get_pitcher_details player[:player_id]
 
     if pitcher.nil?
       raise InternalServerError.new "There was an error retrieving Pitcher with Player ID #{player[:player_id]}."
@@ -66,7 +66,7 @@ class PlayerService
   end
 
   def process_batter( player, season, phase )
-    batter = @repository.get_batter player[:player_id]
+    batter = @repository.get_batter_details player[:player_id]
 
     if batter.nil?
       raise InternalServerError.new "There was an error retrieving Batter with Player ID #{player[:player_id]}."
