@@ -120,7 +120,7 @@ describe TeamService do
       @team_service.get_team 1, 5, Phases::Playoff
     end
 
-    it 'should throw a resource not found error exception if the record is not in the database' do
+    it 'should raise a resource not found error exception if the record is not in the database' do
       allow( @repo ).to receive( :get_team )
 
       expect { @team_service.get_team 1 }.to raise_error ResourceNotFoundError, 'Team with Team ID 1 cannot be located.'
@@ -169,7 +169,7 @@ describe TeamService do
       expect( @team_service.get_team_stats 1, 1, Phases::RegularSeason ).to be decorated_team_stats
     end
 
-    it 'should throw a resource not found error exception if the record is not in the database' do
+    it 'should raise a resource not found error exception if the record is not in the database' do
       allow( @repo ).to receive( :get_team_stats ).with( 1, 1, Phases::RegularSeason )
 
       expect { @team_service.get_team_stats 1, 1, Phases::RegularSeason }.to raise_error ResourceNotFoundError, "Team Stats for Team ID 1, Season 1 and Phase #{Phases::RegularSeason} cannot be located."
@@ -213,7 +213,7 @@ describe TeamService do
       @team_service.get_team_stats 1
     end
 
-    it 'should return the mapped, decorated team list' do
+    it 'should return the mapped, decorated team stats list' do
       team_stats_list = [{team_id: 1, season: 1, season_phase: Phases::RegularSeason},{team_id: 1, season: 1, season_phase: Phases::Playoff},{team_id: 1, season: 2, season_phase: Phases::RegularSeason},{team_id: 1, season: 2, season_phase: Phases::Playoff}]
       mapped_team_stats_list = [{team_id: 1, season: 1, season_phase: 'Regular'},{team_id: 1, season: 1, season_phase: 'Playoff'},{team_id: 1, season: 2, season_phase: 'Regular'},{team_id: 1, season: 2, season_phase: 'Playoff'}]
 

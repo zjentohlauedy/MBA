@@ -61,7 +61,7 @@ describe TeamPlayerRepository do
       expect( result['Player_Id'] ).to     eq     123
     end
 
-    it 'should throw an exception on failure' do
+    it 'should raise an exception on failure' do
       @team_player_repository.save_team_player 99, 5, 123
 
       expect { @team_player_repository.save_team_player 99, 5, 123 }.to raise_error SQLite3::ConstraintException

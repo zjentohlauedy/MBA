@@ -41,7 +41,7 @@ describe TeamPlayerService do
       expect( @team_player_service.get_team_player 1, 2 ,3 ).to be decorated_db_record
     end
 
-    it 'should throw a resource not found error exception if the record is not in the database' do
+    it 'should raise a resource not found error exception if the record is not in the database' do
       allow( @repo ).to receive( :get_team_player ).with( 1, 2, 3 )
 
       expect { @team_player_service.get_team_player 1, 2 ,3 }.to raise_error ResourceNotFoundError, 'Team Player with Team ID 1, Player ID 3 and Season 2 cannot be located.'

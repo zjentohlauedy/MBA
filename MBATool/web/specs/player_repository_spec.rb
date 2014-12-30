@@ -657,7 +657,7 @@ describe PlayerRepository do
       expect( result['Longevity'      ] ).to     eq     8
     end
 
-    it 'should throw an exception on failure' do
+    it 'should raise an exception on failure' do
       player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: 2, handedness: 2, player_type: 1, rookie_season: 3, longevity: 8}
 
       @player_repository.save_player player
@@ -693,7 +693,7 @@ describe PlayerRepository do
       expect( result['Fatigue'  ] ).to     eq     7
     end
 
-    it 'should throw an exception on failure' do
+    it 'should raise an exception on failure' do
       pitcher = {player_id: 1, speed: 5, control: 3, bunt: 8, fatigue: 7}
 
       @player_repository.save_pitcher pitcher
@@ -733,7 +733,7 @@ describe PlayerRepository do
       expect( result['Secondary_Position'] ).to     eq     2
     end
 
-    it 'should throw an exception on failure' do
+    it 'should raise an exception on failure' do
       batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 8, running: 7, range: 6, arm: 4, primary_position: 9, secondary_position: 2}
 
       @player_repository.save_batter batter
