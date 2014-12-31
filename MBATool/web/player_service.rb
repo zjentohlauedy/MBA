@@ -100,17 +100,19 @@ class PlayerService
     if pitcher_stats.is_a? Hash
       pitcher_stats = @mapper.map_pitcher_stats pitcher_stats
 
-      return @decorator.decorate_player_stats pitcher_stats
+      return @decorator.decorate_player_stats pitcher_stats, phase
     end
 
     results = []
 
     pitcher_stats.each do |stats|
-      stats = @mapper.map_pitcher_stats stats
+      phase = stats[:season_phase]
 
-      @decorator.decorate_player_stats stats
+      mapped_stats = @mapper.map_pitcher_stats stats
 
-      results.push stats
+      @decorator.decorate_player_stats mapped_stats, phase
+
+      results.push mapped_stats
     end
 
     return results
@@ -126,17 +128,19 @@ class PlayerService
     if batter_stats.is_a? Hash
       batter_stats = @mapper.map_batter_stats batter_stats
 
-      return @decorator.decorate_player_stats batter_stats
+      return @decorator.decorate_player_stats batter_stats, phase
     end
 
     results = []
 
     batter_stats.each do |stats|
-      stats = @mapper.map_batter_stats stats
+      phase = stats[:season_phase]
 
-      @decorator.decorate_player_stats stats
+      mapped_stats = @mapper.map_batter_stats stats
 
-      results.push stats
+      @decorator.decorate_player_stats mapped_stats, phase
+
+      results.push mapped_stats
     end
 
     return results

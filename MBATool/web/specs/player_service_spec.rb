@@ -540,7 +540,7 @@ describe PlayerService do
       allow( @repo ).to receive( :get_pitcher_stats ).and_return Hash.new
       allow( @mapper ).to receive( :map_pitcher_stats ).and_return mapped_pitcher_stats
 
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats, Phases::RegularSeason
 
       @player_service.get_player_stats 1, 3, Phases::RegularSeason
     end
@@ -595,10 +595,10 @@ describe PlayerService do
       allow( @mapper ).to receive( :map_pitcher_stats ).with( pitcher_stats[2] ).and_return mapped_pitcher_stats[2]
       allow( @mapper ).to receive( :map_pitcher_stats ).with( pitcher_stats[3] ).and_return mapped_pitcher_stats[3]
 
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[0]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[1]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[2]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[3]
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[0], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[1], Phases::Playoff
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[2], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_pitcher_stats[3], Phases::Playoff
 
       @player_service.get_player_stats 1
     end
@@ -663,7 +663,7 @@ describe PlayerService do
       allow( @repo ).to receive( :get_batter_stats ).and_return Hash.new
       allow( @mapper ).to receive( :map_batter_stats ).and_return mapped_batter_stats
 
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats, Phases::RegularSeason
 
       @player_service.get_player_stats 1, 3, Phases::RegularSeason
     end
@@ -719,10 +719,10 @@ describe PlayerService do
       allow( @mapper ).to receive( :map_batter_stats ).with( batter_stats[2] ).and_return mapped_batter_stats[2]
       allow( @mapper ).to receive( :map_batter_stats ).with( batter_stats[3] ).and_return mapped_batter_stats[3]
 
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[0]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[1]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[2]
-      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[3]
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[0], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[1], Phases::Playoff
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[2], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_player_stats ).with mapped_batter_stats[3], Phases::Playoff
 
       @player_service.get_player_stats 1
     end

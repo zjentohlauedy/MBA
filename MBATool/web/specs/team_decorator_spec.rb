@@ -231,7 +231,7 @@ describe TeamDecorator do
     it 'should return the given team stats hash with links added [deprecated]' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       expect( result                   ).to_not be_nil
       expect( result                   ).to     be_a   Hash
@@ -256,7 +256,7 @@ describe TeamDecorator do
     it 'should add a self link [deprecated]' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       link = find_link result[:links], 'self'
 
@@ -268,7 +268,7 @@ describe TeamDecorator do
     it 'should return the given team stats hash with links added' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       expect( result                   ).to_not be_nil
       expect( result                   ).to     be_a   Hash
@@ -293,7 +293,7 @@ describe TeamDecorator do
     it 'should add a self link' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       self_link = result[:_links][:self]
 
@@ -306,7 +306,7 @@ describe TeamDecorator do
     it 'should add a team link' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       team_link = result[:_links][:team]
 
@@ -319,7 +319,7 @@ describe TeamDecorator do
     it 'should add a stats link' do
       team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
 
-      result = @team_decorator.decorate_team_stats team_stats
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
 
       stats_link = result[:_links][:stats]
 

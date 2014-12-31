@@ -46,17 +46,19 @@ class TeamService
     if team_stats.is_a? Hash
       team_stats = @mapper.map_team_stats team_stats
 
-      return @decorator.decorate_team_stats team_stats
+      return @decorator.decorate_team_stats team_stats, phase
     end
 
     results = []
 
     team_stats.each do |stats|
-      result = @mapper.map_team_stats stats
+      phase = stats[:season_phase]
 
-      @decorator.decorate_team_stats result
+      mapped_stats = @mapper.map_team_stats stats
 
-      results.push result
+      @decorator.decorate_team_stats mapped_stats, phase
+
+      results.push mapped_stats
     end
 
     return results

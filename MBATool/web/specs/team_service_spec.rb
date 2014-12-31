@@ -154,7 +154,7 @@ describe TeamService do
       allow( @repo ).to receive( :get_team_stats ).with( 1, 1, Phases::RegularSeason ).and_return Hash.new
       allow( @mapper ).to receive( :map_team_stats ).and_return mapped_team_stats
 
-      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats
+      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats, Phases::RegularSeason
 
       @team_service.get_team_stats 1, 1, Phases::RegularSeason
     end
@@ -205,10 +205,10 @@ describe TeamService do
       allow( @mapper ).to receive( :map_team_stats ).with( team_stats_list[2] ).and_return mapped_team_stats_list[2]
       allow( @mapper ).to receive( :map_team_stats ).with( team_stats_list[3] ).and_return mapped_team_stats_list[3]
 
-      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[0]
-      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[1]
-      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[2]
-      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[3]
+      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[0], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[1], Phases::Playoff
+      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[2], Phases::RegularSeason
+      expect( @deco ).to receive( :decorate_team_stats ).with mapped_team_stats_list[3], Phases::Playoff
 
       @team_service.get_team_stats 1
     end

@@ -188,9 +188,9 @@ describe PlayerDecorator do
 
   describe '#decorate_player_stats' do
     it 'should return the given pitcher stats hash with links added [deprecated]' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       expect( result                 ).to_not be_nil
       expect( result                 ).to     be_a   Hash
@@ -212,9 +212,9 @@ describe PlayerDecorator do
     end
 
     it 'should return the given batter stats hash with links added [deprecated]' do
-      batter_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
+      batter_stats = {player_id: 1, season: 1, season_phase: 'Regular', games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
 
-      result = @player_decorator.decorate_player_stats batter_stats
+      result = @player_decorator.decorate_player_stats batter_stats, Phases::RegularSeason
 
       expect( result                  ).to_not be_nil
       expect( result                  ).to     be_a   Hash
@@ -237,9 +237,9 @@ describe PlayerDecorator do
     end
 
     it 'should add a self link [deprecated]' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       link = find_link result[:links], 'self'
 
@@ -249,9 +249,9 @@ describe PlayerDecorator do
     end
 
     it 'should return the given pitcher stats hash with links added' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       expect( result                 ).to_not be_nil
       expect( result                 ).to     be_a   Hash
@@ -273,9 +273,9 @@ describe PlayerDecorator do
     end
 
     it 'should return the given batter stats hash with links added' do
-      batter_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
+      batter_stats = {player_id: 1, season: 1, season_phase: 'Regular', games: 152, at_bats: 602, runs: 83, hits: 153, doubles: 25, triples: 2, home_runs: 21, runs_batted_in: 77, walks: 74, strike_outs: 95, steals: 22, errors: 5}
 
-      result = @player_decorator.decorate_player_stats batter_stats
+      result = @player_decorator.decorate_player_stats batter_stats, Phases::RegularSeason
 
       expect( result                  ).to_not be_nil
       expect( result                  ).to     be_a   Hash
@@ -298,9 +298,9 @@ describe PlayerDecorator do
     end
 
     it 'should add a self link' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       link = find_link result[:links], 'self'
 
@@ -313,9 +313,9 @@ describe PlayerDecorator do
     end
 
     it 'should add a player link' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       link = find_link result[:links], 'player'
 
@@ -328,9 +328,9 @@ describe PlayerDecorator do
     end
 
     it 'should add a stats link' do
-      pitcher_stats = {player_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
+      pitcher_stats = {player_id: 1, season: 1, season_phase: 'Regular', wins: 22, losses: 13, games: 37, saves: 5, innings: 303, outs: 1, hits: 309, earned_runs: 150, home_runs: 64, walks: 100, strike_outs: 205}
 
-      result = @player_decorator.decorate_player_stats pitcher_stats
+      result = @player_decorator.decorate_player_stats pitcher_stats, Phases::RegularSeason
 
       link = find_link result[:links], 'stats'
 
