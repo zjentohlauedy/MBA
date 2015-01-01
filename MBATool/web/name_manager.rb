@@ -8,10 +8,8 @@ $: << "#{location}"
 
 class NameManager
 
-  def initialize
-#    @filename = "/home/zjentohlauedy/Amiga/HD/MBA/names.txt"
-    @filename = "names.txt"
-    @names    = nil
+  def initialize( filename )
+    @filename = filename
   end
 
   def load_names
@@ -23,7 +21,11 @@ class NameManager
   end
 
   def get_name
-    return @names.pop
+    name = @names.pop.split
+
+    if name.length != 2; raise "Unable to process name with #{name.length} parts." end
+
+    return { first: name[0], last: name[1] }
   end
 
 end

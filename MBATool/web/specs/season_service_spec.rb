@@ -3,8 +3,8 @@ $: << "#{location}"
 
 require 'sqlite3'
 require 'player_repository'
-require 'name_manager2'
-require 'player_generator2'
+require 'name_manager'
+require 'player_generator'
 require 'season_service'
 
 describe SeasonService do

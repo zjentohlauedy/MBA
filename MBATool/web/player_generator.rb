@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 #
-# Parses output of print_rosters and displays
-# league leaders in several categories
 location = File.dirname __FILE__
-
 $: << "#{location}"
 
 class PlayerGenerator
@@ -25,9 +22,9 @@ class PlayerGenerator
   RightFielder =  8
   Outfielder   = 10
 
-  def initialize( repository, name_manager )
+  def initialize( db, name_manager )
     @random       = Random.new
-    @repository   = repository
+    @db           = db
     @name_manager = name_manager
 
     #                     0    1   2     3     4     5     6     7     8     9   10
@@ -52,10 +49,10 @@ class PlayerGenerator
                       [   20,    0,    0,   10,    0,   70 ]]  # RF
   end
 
-  def generate_pitcher
+  def generate_pitcher( season )
     pitcher = {}
 
-    name = get_next_name
+    name = @name_manager.get_name
 
     pitcher[ :player_id       ] = get_next_player_id
     pitcher[ :first_name      ] = name[ :first ]
@@ -65,7 +62,7 @@ class PlayerGenerator
     pitcher[ :skin_tone       ] = pick_skin_tone
     pitcher[ :handedness      ] = pick_handedness
     pitcher[ :player_type     ] = PlayerTypePitcher
-    pitcher[ :rookie_season   ] = get_current_season
+    pitcher[ :rookie_season   ] = season
     pitcher[ :longevity       ] = roll
 
     details = {}
@@ -81,10 +78,10 @@ class PlayerGenerator
     return pitcher
   end
 
-  def generate_batter
+  def generate_batter( season )
     batter = {}
 
-    name = get_next_name
+    name = @name_manager.get_name
 
     batter[ :player_id       ] = get_next_player_id
     batter[ :first_name      ] = name[ :first ]
@@ -94,7 +91,7 @@ class PlayerGenerator
     batter[ :skin_tone       ] = pick_skin_tone
     batter[ :handedness      ] = pick_handedness true
     batter[ :player_type     ] = PlayerTypeBatter
-    batter[ :rookie_season   ] = get_current_season
+    batter[ :rookie_season   ] = season
     batter[ :longevity       ] = roll
 
     details = {}
@@ -115,23 +112,9 @@ class PlayerGenerator
   end
 
   def get_next_player_id
-    result = @repository.get_max_player_id
+    result = @db.get_first_row 'select max(player_id) player_id from players_t'
 
-    return result['Player_Id'] + 1
-  end
-
-  def get_current_season
-    result = @repository.get_current_season
-
-    return result['Season']
-  end
-
-  def get_next_name
-    name = @name_manager.get_name.split
-
-    if name.length != 2; raise "Unable to process name with #{name.length} parts." end
-
-    return { :first => name[0], :last => name[1] }
+    return result['player_id'] + 1
   end
 
   def pick_skin_tone

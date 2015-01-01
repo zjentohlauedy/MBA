@@ -174,7 +174,7 @@ App.StartSeasonController = Ember.ObjectController.extend({
             $.ajax( "/mba/actions/start_season", {
                 type: 'POST',
                 success: function(data) {
-                    App._season = data.Season;
+                    App._season = data.season;
                     controller.send('loadTeams');
                 },
                 error: function() {
@@ -212,11 +212,11 @@ var loadPlayer = function(player, team, needStats) {
                     success: function(playerStats) {
 
                         if (playerDetails.player_type === "Pitcher") {
-                            team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, playerStats[0]));
+                            team.pitchers.addObject(App._utils.decoratePitcher(playerDetails, playerStats));
                         }
 
                         if (playerDetails.player_type === "Batter") {
-                            team.batters. addObject(App._utils.decorateBatter( playerDetails, playerStats[0]));
+                            team.batters. addObject(App._utils.decorateBatter( playerDetails, playerStats));
                         }
 
                         deferred.resolve();
@@ -391,7 +391,7 @@ App.RosterCutController = Ember.ObjectController.extend({
                     success: function(draft) {
                         App._rookies.set( "draftOrder", draft );
 
-                        $.ajax( "/mba/resources/players?rookie=true", {
+                        $.ajax( "/mba/resources/players?rookie=true&season=" + App._season, {
                             success: function(rookies) {
                                 controller.send( "loadRookies", rookies );
                             },
@@ -614,7 +614,7 @@ App.RookieDraftController = Ember.ObjectController.extend({
                     success: function(draft) {
                         App._freeAgents.set( "draftOrder", draft );
 
-                        $.ajax( "/mba/resources/players?freeagent=true", {
+                        $.ajax( "/mba/resources/players?freeagent=true&season=" + App._season, {
                             success: function(freeAgents) {
                                 controller.send( "loadFreeAgents", freeAgents );
                             },
