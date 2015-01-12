@@ -1,6 +1,6 @@
-window.App = Ember.Application.create();
+(function() {
 
-var App = window.App
+var App = Ember.Application.create();
 
 App._constants = {
     TEAM_MAX_PITCHERS:          10,
@@ -819,3 +819,5 @@ App.FreeAgentsController = Ember.ObjectController.extend({
         }
     }
 });
+
+})();
