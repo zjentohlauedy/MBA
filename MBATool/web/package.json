@@ -1,0 +1,13 @@
+{
+  "name": "mba-app",
+  "description": "Browser app for managing MBA seasons",
+  "version": "0.0.1",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zjentohlauedy/MBA.git"
+  },
+  "dependencies": {
+    "bower": "^1.3.12"
+  }
+}
