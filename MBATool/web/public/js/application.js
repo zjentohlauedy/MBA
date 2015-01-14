@@ -1,5 +1,12 @@
 define([
-    'router', 'indexRoute', 'progressController', 'startSeasonController', 'rosterCutController', 'rookieDraftController', 'freeAgentsController', 'ember'
+    'routing/router',
+    'routing/indexRoute',
+    'controllers/progressController',
+    'controllers/startSeasonController',
+    'controllers/rosterCutController',
+    'controllers/rookieDraftController',
+    'controllers/freeAgentsController',
+    'ember'
 ], function(Router, IndexRoute, ProgressController, StartSeasonController, RosterCutController, RookieDraftController, FreeAgentsController, Ember) {
 
     var App = {

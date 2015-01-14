@@ -1,4 +1,4 @@
-define(['progress', 'ember'], function(Progress, Ember) {
+define(['objects/progress', 'ember'], function(Progress, Ember) {
 
     var ProgressController = Ember.ObjectController.extend({
         stage:  Progress.stage,

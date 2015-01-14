@@ -1,4 +1,4 @@
-define(['globals', 'utils', 'ember'], function(Globals, Utils, Ember) {
+define(['objects/globals', 'utils', 'ember'], function(Globals, Utils, Ember) {
 
     var StartSeasonController = Ember.ObjectController.extend({
         needs:   ['progress', 'roster-cut'],

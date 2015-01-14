@@ -1,4 +1,4 @@
-define(['constants', 'globals', 'utils', 'ember'], function(Constants, Globals, Utils, Ember) {
+define(['objects/constants', 'objects/globals', 'utils', 'ember'], function(Constants, Globals, Utils, Ember) {
 
     var RosterCutController = Ember.ObjectController.extend({
         needs:          ["progress", "rookie-draft"],

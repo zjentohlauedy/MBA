@@ -1,4 +1,4 @@
-define(['progress', 'ember'], function(Progress, Ember) {
+define(['objects/progress', 'ember'], function(Progress, Ember) {
 
     var IndexRoute = Ember.Route.extend({
         redirect: function() {
