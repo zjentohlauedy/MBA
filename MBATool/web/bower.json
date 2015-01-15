@@ -2,6 +2,7 @@
     "name": "mba-app",
     "dependencies": {
         "ember": "~1.6",
-        "requirejs": null
+        "requirejs": null,
+        "jquery-mockjax": "*"
     }
 }
