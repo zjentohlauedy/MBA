@@ -1,14 +1,46 @@
 define(['js/utils'], function(Utils) {
 
+    describe('decorateTeams', function() {
+
+        it('should add empty pitchers and batters lists', function() {
+            var teams = [{},{},{}];
+
+            Utils.decorateTeams(teams);
+
+            expect(teams[0].pitchers).toEqual([]);
+            expect(teams[0].batters ).toEqual([]);
+
+            expect(teams[1].pitchers).toEqual([]);
+            expect(teams[1].batters ).toEqual([]);
+
+            expect(teams[2].pitchers).toEqual([]);
+            expect(teams[2].batters ).toEqual([]);
+        });
+
+        it('should add flags', function() {
+            var teams = [{},{},{}];
+
+            Utils.decorateTeams(teams);
+
+            for ( var i = 0; i < teams.length; i++ ) {
+                expect(teams[i].isSelected          ).toBe(false);
+                expect(teams[i].isComplete          ).toBe(false);
+                expect(teams[i].isError             ).toBe(false);
+                expect(teams[i].draftedRookiePitcher).toBe(false);
+                expect(teams[i].draftedRookieBatter ).toBe(false);
+            }
+        });
+    });
+
     describe('decoratePitcher', function() {
 
-        it('should add the cut and selected boolean fields', function() {
+        it('should add the cut and selected flags', function() {
             var player = {};
 
             Utils.decoratePitcher(player, null);
 
-            expect(player.isCut     ).toEqual(false);
-            expect(player.isSelected).toEqual(false);
+            expect(player.isCut     ).toBe(false);
+            expect(player.isSelected).toBe(false);
         });
 
         it('should calculate the player rating', function() {
@@ -17,6 +49,158 @@ define(['js/utils'], function(Utils) {
             Utils.decoratePitcher(player, null);
 
             expect(player.rating).toEqual(17);
+        });
+
+        it('should calculate the pitcher record given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { wins: 21, losses: 13 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.record).toEqual('21 - 13');
+        });
+
+        it('should calculate the innings pitched given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 221, outs: 1 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.innings).toEqual('221.1');
+        });
+
+        it('should calculate the pitcher ERA given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, outs: 0, earned_runs: 18 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.era).toEqual('2.25');
+        });
+
+        it('should calculate the pitcher vs. batting average given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, outs: 0, earned_runs: 18, walks: 20, hits: 35 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.vsba).toEqual('.129');
+        });
+
+        it('should calculate the pitcher innings per game given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, outs: 0, games: 10 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.ipg).toEqual('7.20');
+        });
+
+        it('should calculate the pitcher WHIP given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, outs: 0, walks: 10, hits: 35 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.whip).toEqual('0.625');
+        });
+
+        it('should calculate the pitcher strike outs per 9 innings given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, outs: 0, strike_outs: 38 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.sop9).toEqual('4.75');
+        });
+
+        it('should calculate the pitcher efficiency given stats', function() {
+            var player = { speed: 5, control: 4, fatigue: 8 };
+            var stats  = { innings: 72, hits: 64, strike_outs: 85 };
+
+            Utils.decoratePitcher(player, stats);
+
+            expect(player.eff).toEqual('+29');
+        });
+    });
+
+    describe('decorateBatter', function() {
+
+        it('should add cut and selected flags', function() {
+            var player = {};
+
+            Utils.decorateBatter(player, null);
+
+            expect(player.isCut     ).toBe(false);
+            expect(player.isSelected).toBe(false);
+        });
+
+        it('should calculate the player rating', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+
+            Utils.decorateBatter(player, null);
+
+            expect(player.rating).toEqual(18);
+        });
+
+        it('should copy games, home_runs and steals stats to the player given stats', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+            var stats  = { games: 149, home_runs: 48, steals: 27 };
+
+            Utils.decorateBatter(player, stats);
+
+            expect(player.games).toEqual(149);
+            expect(player.homers).toEqual(48);
+            expect(player.steals).toEqual(27);
+        });
+
+        it('should calculate the player batting average given stats', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+            var stats  = { hits: 100, at_bats: 400 };
+
+            Utils.decorateBatter(player, stats);
+
+            expect(player.avg).toEqual('.250');
+        });
+
+        it('should calculate the player slugging average given stats', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+            var stats  = { hits: 100, at_bats: 400, doubles: 15, triples: 4, home_runs: 12 };
+
+            Utils.decorateBatter(player, stats);
+
+            expect(player.slugging).toEqual('.475');
+        });
+
+        it('should calculate the player on base average given stats', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+            var stats  = { hits: 100, at_bats: 400, walks: 30 };
+
+            Utils.decorateBatter(player, stats);
+
+            expect(player.oba).toEqual('.325');
+        });
+
+        it('should calculate the player runs per game given stats', function() {
+            var player = { power: 7, hit_n_run: 5, running: 6 };
+            var stats  = { games: 148, home_runs: 35, runs: 64, runs_batted_in: 88 };
+
+            Utils.decorateBatter(player, stats);
+
+            expect(player.rpg).toEqual('0.79');
+        });
+    });
+
+    describe('findLink', function() {
+
+        it('should return the href of the links entry that matches the given rel', function() {
+            var links = [{rel: 'self', href: 'http://www.website.com/rest/resource/thing/5'},
+                         {rel: 'next', href: 'http://www.website.com/rest/resource/thing/6'},
+                         {rel: 'prev', href: 'http://www.website.com/rest/resource/thing/4'}];
+
+            var result = Utils.findLink(links, 'next');
+
+            expect(result).toEqual('http://www.website.com/rest/resource/thing/6');
         });
     });
 });
