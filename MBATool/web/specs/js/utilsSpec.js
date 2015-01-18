@@ -1,4 +1,4 @@
-define(['js/utils'], function(Utils) {
+define(['utils'], function(Utils) {
 
     describe('decorateTeams', function() {
 
@@ -201,6 +201,286 @@ define(['js/utils'], function(Utils) {
             var result = Utils.findLink(links, 'next');
 
             expect(result).toEqual('http://www.website.com/rest/resource/thing/6');
+        });
+    });
+
+    describe('loadPlayer', function() {
+
+        it('should add a pitcher without stats to the given team pitcher list', function() {
+            var team    = { pitchers: [] };
+            var player  = { links: [{rel: 'self', href: 'url'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success({player_type: 'Pitcher'});
+            });
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect(team.pitchers.length).toBe(1);
+        });
+
+        it('should retrieve the pitcher without stats from the rest service using the self link in the player object', function() {
+            var selfUrl = 'http://localhost/rest/resource/thing/5';
+            var team    = { pitchers: [] };
+            var player  = { links: [{rel: 'self', href: selfUrl}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success({player_type: 'Pitcher'});
+            });
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect($.ajax).toHaveBeenCalledWith(selfUrl, jasmine.any(Object));
+        });
+
+        it('should decorate the pitcher without stats', function() {
+            var team          = { pitchers: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Pitcher' };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success(playerDetails);
+            });
+
+            spyOn(Utils, 'decoratePitcher').and.callThrough();
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, null);
+        });
+
+        it('should add a pitcher with stats to the given team pitcher list', function() {
+            var team          = { pitchers: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success({});
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect(team.pitchers.length).toBe(1);
+        });
+
+        it('should retrieve the pitcher stats from the rest service using the stats link in the player details object', function() {
+            var team          = { pitchers: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success({});
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect($.ajax).toHaveBeenCalledWith('statsUrl?season=4&phase=1', jasmine.any(Object));
+        });
+
+        it('should decorate the pitcher with stats', function() {
+            var team          = { pitchers: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+            var pitcherStats  = { innings: 100, outs: 0 };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success(pitcherStats);
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            spyOn(Utils, 'decoratePitcher').and.callThrough();
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, pitcherStats);
+        });
+
+        it('should add a batter without stats to the given team batter list', function() {
+            var team    = { batters: [] };
+            var player  = { links: [{rel: 'self', href: 'url'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success({player_type: 'Batter'});
+            });
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect(team.batters.length).toBe(1);
+        });
+
+        it('should retrieve the batter without stats from the rest service using the self link in the player object', function() {
+            var selfUrl = 'http://localhost/rest/resource/thing/5';
+            var team    = { batters: [] };
+            var player  = { links: [{rel: 'self', href: selfUrl}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success({player_type: 'Batter'});
+            });
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect($.ajax).toHaveBeenCalledWith(selfUrl, jasmine.any(Object));
+        });
+
+        it('should decorate the batter without stats', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter' };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success(playerDetails);
+            });
+
+            spyOn(Utils, 'decorateBatter').and.callThrough();
+
+            Utils.loadPlayer(player, team, 5, false);
+
+            expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, null);
+        });
+
+        it('should add a batter with stats to the given team batter list', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success({});
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect(team.batters.length).toBe(1);
+        });
+
+        it('should retrieve the batter stats from the rest service using the stats link in the player details object', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success({});
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect($.ajax).toHaveBeenCalledWith('statsUrl?season=4&phase=1', jasmine.any(Object));
+        });
+
+        it('should decorate the batter with stats', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+            var batterStats   = { innings: 100, outs: 0 };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success(batterStats);
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            spyOn(Utils, 'decorateBatter').and.callThrough();
+
+            Utils.loadPlayer(player, team, 5, true);
+
+            expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, batterStats);
+        });
+
+        it('should resolve the deferred object on successful player without stats load', function() {
+            var team    = { batters: [] };
+            var player  = { links: [{rel: 'self', href: 'url'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.success({player_type: 'Batter'});
+            });
+
+            var deferred = Utils.loadPlayer(player, team, 5, false);
+
+            expect(deferred.state()).toEqual("resolved");
+        });
+
+        it('should reject the deferred object on unsuccessful player without stats load', function() {
+            var team    = { batters: [] };
+            var player  = { links: [{rel: 'self', href: 'url'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+                options.error();
+            });
+
+            var deferred = Utils.loadPlayer(player, team, 5, false);
+
+            expect(deferred.state()).toEqual("rejected");
+        });
+        it('should resolve the deferred object on successful player with stats load', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.success({});
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            var deferred = Utils.loadPlayer(player, team, 5, true);
+
+            expect(deferred.state()).toEqual("resolved");
+        });
+
+        it('should reject the deferred object on unsuccessful player with stats load', function() {
+            var team          = { batters: [] };
+            var player        = { links: [{rel: 'self', href: 'url'}] };
+            var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+
+            spyOn($, 'ajax').and.callFake(function (req, options) {
+
+                if (req.match(/stats/)) {
+                    options.error();
+                }
+                else {
+                    options.success(playerDetails);
+                }
+            });
+
+            var deferred = Utils.loadPlayer(player, team, 5, true);
+
+            expect(deferred.state()).toEqual("rejected");
         });
     });
 });

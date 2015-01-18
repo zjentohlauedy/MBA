@@ -24,7 +24,11 @@ require.config({
   },
 
   paths: {
-    'js': 'public/js',
+    'App': 'public/js/application',
+    'utils': 'public/js/utils',
+    'controllers': 'public/js/controllers',
+    'objects': 'public/js/objects',
+    'routing': 'public/js/routing',
     'ember': 'public/js/libs/ember/ember',
     'handlebars': 'public/js/libs/handlebars/handlebars',
     'jquery': 'public/js/libs/jquery/dist/jquery'

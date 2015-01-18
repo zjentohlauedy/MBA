@@ -9,7 +9,7 @@ define([
     'ember'
 ], function(Router, IndexRoute, ProgressController, StartSeasonController, RosterCutController, RookieDraftController, FreeAgentsController, Ember) {
 
-    var App = {
+    var App = Ember.Application.create({
         Router:                Router,
         IndexRoute:            IndexRoute,
         ProgressController:    ProgressController,
@@ -17,7 +17,7 @@ define([
         RosterCutController:   RosterCutController,
         RookieDraftController: RookieDraftController,
         FreeAgentsController:  FreeAgentsController
-    };
+    });
 
     return App;
 });
