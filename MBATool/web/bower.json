@@ -1,7 +1,11 @@
 {
-    "name": "mba-app",
-    "dependencies": {
-        "ember": "~1.6",
-        "requirejs": null
-    }
+  "name": "mba-app",
+  "dependencies": {
+    "ember": "~1.7",
+    "ember-test-helpers": "^0.0.7",
+    "requirejs": null
+  },
+  "resolutions": {
+    "handlebars": ">= 1.0.0 < 2.0.0"
+  }
 }
