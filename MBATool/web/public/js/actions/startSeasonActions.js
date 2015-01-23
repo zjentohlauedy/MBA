@@ -16,7 +16,7 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
         loadTeams: function(controller) {
             $.ajax( "/mba/resources/teams", {
                 success: function(teams) {
-                    controller.get('controllers.roster-cut').set( 'teams', Utils.decorateTeams(teams));
+                    controller.get('controllers.roster-cut').set('teams', Utils.decorateTeams(teams));
                     controller.send('finishStage');
                 },
                 error: function() {
