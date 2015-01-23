@@ -26,6 +26,7 @@ require.config({
     paths: {
         'App': 'public/js/application',
         'utils': 'public/js/utils',
+        'actions': 'public/js/actions',
         'controllers': 'public/js/controllers',
         'objects': 'public/js/objects',
         'routing': 'public/js/routing',

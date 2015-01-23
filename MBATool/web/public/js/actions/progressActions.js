@@ -1,4 +1,4 @@
-define(['objects/progress'], function(Progress) {
+define([], function() {
 
     var ProgressActions = {
         nextStage: function(controller) {
