@@ -1,74 +1,77 @@
 define(['objects/progress', 'actions/progressActions'], function(Progress, Actions) {
 
-    describe('nextStage', function() {
+    describe('ProgressActions:', function() {
 
-        var controller;
+        describe('nextStage', function() {
 
-        beforeEach(function() {
+            var controller;
 
-            controller = jasmine.createSpyObj('controller', ['transitionToRoute']);
+            beforeEach(function() {
 
-            controller.stage  = Progress.stage;
-            controller.stages = Progress.stages.slice(0); // clone the array so it is reset before each test
-        });
+                controller = jasmine.createSpyObj('controller', ['transitionToRoute']);
 
-        it('should increment the stage', function() {
+                controller.stage  = Progress.stage;
+                controller.stages = Progress.stages.slice(0); // clone the array so it is reset before each test
+            });
 
-            Actions.nextStage(controller);
+            it('should increment the stage', function() {
 
-            expect(controller.stage).toBe(1);
-        });
+                Actions.nextStage(controller);
 
-        it('should reset the stage to 0 if it goes beyond the number of stages', function() {
+                expect(controller.stage).toBe(1);
+            });
 
-            controller.stage = controller.stages.length;
+            it('should reset the stage to 0 if it goes beyond the number of stages', function() {
 
-            Actions.nextStage(controller);
+                controller.stage = controller.stages.length;
 
-            expect(controller.stage).toBe(0);
-        });
+                Actions.nextStage(controller);
 
-        it('should set the previous stage status to done', function() {
+                expect(controller.stage).toBe(0);
+            });
 
-            Actions.nextStage(controller);
+            it('should set the previous stage status to done', function() {
 
-            expect(controller.stages[0].status).toEqual('progress-done');
-        });
+                Actions.nextStage(controller);
 
-        it('should set the current stage status to curr', function() {
+                expect(controller.stages[0].status).toEqual('progress-done');
+            });
 
-            Actions.nextStage(controller);
+            it('should set the current stage status to curr', function() {
 
-            expect(controller.stages[1].status).toEqual('progress-curr');
-        });
+                Actions.nextStage(controller);
 
-        it('should reset all but current stage status to todo if stage goes beyond the number of stages', function() {
+                expect(controller.stages[1].status).toEqual('progress-curr');
+            });
 
-            controller.stage = controller.stages.length;
+            it('should reset all but current stage status to todo if stage goes beyond the number of stages', function() {
 
-            controller.stages.setEach('status', 'progress-done');
+                controller.stage = controller.stages.length;
 
-            Actions.nextStage(controller);
+                controller.stages.setEach('status', 'progress-done');
 
-            for ( var i = 1; i < controller.stages.length; i++ ) {
-                expect(controller.stages[i].status).toEqual('progress-todo');
-            };
-        });
+                Actions.nextStage(controller);
 
-        it('should transition to the route of the new stage', function() {
+                for ( var i = 1; i < controller.stages.length; i++ ) {
+                    expect(controller.stages[i].status).toEqual('progress-todo');
+                };
+            });
 
-            Actions.nextStage(controller);
+            it('should transition to the route of the new stage', function() {
 
-            expect(controller.transitionToRoute).toHaveBeenCalledWith(controller.stages[controller.stage].route);
-        });
+                Actions.nextStage(controller);
 
-        it('should transition to season complete route if new stage is the last', function() {
+                expect(controller.transitionToRoute).toHaveBeenCalledWith(controller.stages[controller.stage].route);
+            });
 
-            controller.stage = controller.stages.length - 1;
+            it('should transition to season complete route if new stage is the last', function() {
 
-            Actions.nextStage(controller);
+                controller.stage = controller.stages.length - 1;
 
-            expect(controller.transitionToRoute).toHaveBeenCalledWith('season-complete');
+                Actions.nextStage(controller);
+
+                expect(controller.transitionToRoute).toHaveBeenCalledWith('season-complete');
+            });
         });
     });
 });
