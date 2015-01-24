@@ -8,7 +8,6 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             controller.currentTeam.set("isSelected", false);
             controller.set( "currentTeam", team );
 
-
             if ( team.pitchers.length == 0 ) {
                 $.ajax( "/mba/resources/teams/" + team.team_id + "/players?season=" + Globals.season + "&phase=1", {
                     success: function(players) {
