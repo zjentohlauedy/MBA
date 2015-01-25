@@ -590,7 +590,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 controller.rookies = Ember.Object.create({pitchers: [], batters: []});
 
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
-                rookieDraftController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+                rookieDraftController = jasmine.createSpyObj('rookieDraftController', ['send', 'get', 'set']);
 
                 controller.get = function(name) {
                     if (name == 'controllers.progress') {
@@ -666,7 +666,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 expect(rookieDraftController.set).toHaveBeenCalledWith('rookies', controller.rookies);
             });
 
-            it('should direct the rookie controller to show the first team', function() {
+            it('should direct the rookie draft controller to show the first team', function() {
 
                 var rookies = [];
 
@@ -740,7 +740,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 expect($.ajax).toHaveBeenCalledWith('/mba/resources/players?rookie=true&season=6', jasmine.any(Object));
             });
 
-            it('should call call the load rookies controller method to finish loading rookies', function() {
+            it('should call the load rookies controller method to finish loading rookies', function() {
 
                 Globals.season = 6;
                 controller.stageComplete = true;
