@@ -1,31 +1,39 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
+    var loadFreeAgentDetails = function(controller, deferred, freeAgents) {
+        var promises = [];
+
+        freeAgents.forEach(function(freeAgent) {
+            promises.push( Utils.loadPlayer(freeAgent, controller.freeAgents, Globals.season, false) );
+        });
+
+        $.when.apply(null, promises).done(function() {
+            controller.send('showFirstTeam');
+
+            deferred.resolve();
+        });
+    }
+
+    var loadFreeAgents = function(controller, deferred) {
+        $.ajax( "/mba/resources/players?freeagent=true&season=" + Globals.season, {
+            success: function(freeAgents) {
+                loadFreeAgentDetails(controller, deferred, freeAgents);
+            },
+            error: function() {
+                alert("Error retrieving free agents!");
+
+                deferred.reject();
+            }
+        });
+    }
+
     var FreeAgentsActions = {
         prepareData: function(controller, deferred) {
             $.ajax( "/mba/resources/drafts/free-agent/season/" + (Globals.season - 1), {
                 success: function(draft) {
                     controller.freeAgents.set( "draftOrder", draft );
 
-                    $.ajax( "/mba/resources/players?freeagent=true&season=" + Globals.season, {
-                        success: function(freeAgents) {
-                            var promises = [];
-
-                            for (var i = 0; i < freeAgents.length; i++) {
-                                promises.push( Utils.loadPlayer(freeAgents[i], controller.freeAgents, Globals.season, false) );
-                            }
-
-                            $.when.apply(null, promises).done(function() {
-                                controller.send('showFirstTeam');
-
-                                deferred.resolve();
-                            });
-                        },
-                        error: function() {
-                            alert("Error retrieving free agents!");
-
-                            deferred.reject();
-                        }
-                    });
+                    loadFreeAgents(controller, deferred);
                 },
                 error: function() {
                     alert("Error retrieving free agent draft!");
@@ -172,9 +180,9 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         loadPlayers: function(controller, team, players) {
             var promises = [];
 
-            for (var i = 0; i < players.length; i++) {
-                promises.push( Utils.loadPlayer(players[i], team, Globals.season, false) );
-            }
+            players.forEach(function(player) {
+                promises.push( Utils.loadPlayer(player, team, Globals.season, false) );
+            });
 
             $.when.apply(null, promises).done(function() {
                 controller.set("team", Ember.Object.create().setProperties(team));
