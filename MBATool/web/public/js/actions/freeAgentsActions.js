@@ -1,6 +1,39 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
     var FreeAgentsActions = {
+        prepareData: function(controller, deferred) {
+            $.ajax( "/mba/resources/drafts/free-agent/season/" + (Globals.season - 1), {
+                success: function(draft) {
+                    controller.freeAgents.set( "draftOrder", draft );
+
+                    $.ajax( "/mba/resources/players?freeagent=true&season=" + Globals.season, {
+                        success: function(freeAgents) {
+                            var promises = [];
+
+                            for (var i = 0; i < freeAgents.length; i++) {
+                                promises.push( Utils.loadPlayer(freeAgents[i], controller.freeAgents, Globals.season, false) );
+                            }
+
+                            $.when.apply(null, promises).done(function() {
+                                controller.send('showFirstTeam');
+
+                                deferred.resolve();
+                            });
+                        },
+                        error: function() {
+                            alert("Error retrieving free agents!");
+
+                            deferred.reject();
+                        }
+                    });
+                },
+                error: function() {
+                    alert("Error retrieving free agent draft!");
+
+                    deferred.reject();
+                }
+            });
+        },
         toggleFreeAgentTable: function(controller) {
             if (controller.showFreeAgentPitchers) {
                 controller.set("showFreeAgentPitchers", false);

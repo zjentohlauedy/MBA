@@ -845,7 +845,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
             });
         });
 
-        describe('loadFreeAgents', function() {
+        describe('finishStage', function() {
 
             var controller;
             var progressController;
@@ -854,8 +854,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
             beforeEach(function() {
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.freeAgents = Ember.Object.create({pitchers: [], batters: []});
-
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
                 freeAgentsController = jasmine.createSpyObj('freeAgentsController', ['send', 'get', 'set']);
 
@@ -871,184 +869,51 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
                 }
             });
 
-            it('should add pitchers and batters to free agents', function() {
+            it('should direct the free agents controller to prepare data and pass it a deferred object', function() {
 
-                var freeAgents = [{player_id: 1},{player_id: 2},{player_id: 3}];
+                var fakeDeferred = {promise: {then: function(){}}};
+                controller.stageComplete = true;
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
-                    if (player.player_id === 1) {
-                        team.pitchers.push(player);
-                    } else {
-                        team.batters.push(player);
-                    }
-                });
+                Actions.finishStage(controller);
 
-                Actions.loadFreeAgents(controller, freeAgents);
-
-                expect(controller.freeAgents.pitchers.length).toBe(1);
-                expect(controller.freeAgents.batters. length).toBe(2);
+                expect(freeAgentsController.send).toHaveBeenCalledWith('prepareData', fakeDeferred);
             });
 
-            it('should call utils loadPlayer for each player given', function() {
+            it('should direct the progress controller to move to the next stage when the free agents controller is finished preparing data', function() {
 
-                var freeAgents = [{},{},{},{},{}];
+                var fakeDeferred = {promise: {then: function(callback){ callback(); }}};
+                controller.stageComplete = true;
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
-                Actions.loadFreeAgents(controller, freeAgents);
-
-                expect(Utils.loadPlayer.calls.count()).toEqual(freeAgents.length);
-            });
-
-            it('should set the free agents on the free agents controller', function() {
-
-                var freeAgents = [];
-
-                Actions.loadFreeAgents(controller, freeAgents);
-
-                expect(freeAgentsController.set).toHaveBeenCalledWith('freeAgents', controller.freeAgents);
-            });
-
-            it('should direct the free agents controller to show the first team', function() {
-
-                var freeAgents = [];
-
-                Actions.loadFreeAgents(controller, freeAgents);
-
-                expect(freeAgentsController.send).toHaveBeenCalledWith('showFirstTeam');
-            });
-
-            it('should direct the progress controller to move to the next stage', function() {
-
-                var freeAgents = [];
-
-                Actions.loadFreeAgents(controller, freeAgents);
+                Actions.finishStage(controller);
 
                 expect(progressController.send).toHaveBeenCalledWith('nextStage');
             });
-        });
 
-        describe('finishStage', function() {
+            it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
 
-            var controller;
-
-            beforeEach(function() {
-
-                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.freeAgents = Ember.Object.create();
-            });
-
-            it('should request the free agent draft from the drafts resource', function() {
-
-                Globals.season = 6;
+                var fakeDeferred = {promise: {then: function(callback){}}};
                 controller.stageComplete = true;
 
-                spyOn($, 'ajax').and.callFake(function() {});
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
                 Actions.finishStage(controller);
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/drafts/free-agent/season/5', jasmine.any(Object));
-            });
-
-            it('should set the free agent draft on the free agents object', function() {
-
-                var draft = [1,2,3,4,5];
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success(draft);
-                });
-
-                spyOn(controller.freeAgents, 'set').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(controller.freeAgents.set).toHaveBeenCalledWith('draftOrder', draft);
-            });
-
-            it('should retrieve the free agents for the current season from the players resource', function() {
-
-                Globals.season = 6;
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/drafts/free-agent/season/5') {
-                        options.success([]);
-                    }
-                });
-
-                Actions.finishStage(controller);
-
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/players?freeagent=true&season=6', jasmine.any(Object));
-            });
-
-            it('should call the load free agents controller method to finish loading free agents', function() {
-
-                Globals.season = 6;
-                controller.stageComplete = true;
-
-                var freeAgents = [{},{},{},{},{}];
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/drafts/free-agent/season/5') {
-                        options.success([]);
-                    }
-                    else if (rel = '/mba/resources/players?freeagent=true&season=6') {
-                        options.success(freeAgents);
-                    }
-                });
-
-                Actions.finishStage(controller);
-
-                expect(controller.send).toHaveBeenCalledWith('loadFreeAgents', freeAgents);
+                expect(progressController.send).not.toHaveBeenCalled();
             });
 
             it('should do nothing if the stage is not complete', function() {
 
                 controller.stageComplete = false;
 
-                spyOn($, 'ajax').and.callFake(function() {});
+                spyOn(controller, 'get').and.callThrough();
 
                 Actions.finishStage(controller);
 
-                expect($.ajax.calls.count()).toBe(0);
-            });
-
-            it('should show an alert if the free agent draft ajax call fails', function() {
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.error();
-                });
-
-                spyOn(window, 'alert').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(window.alert).toHaveBeenCalled();
-            });
-
-            it('should show an alert if the free agent players ajax call fails', function() {
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-
-                    if (rel.match(/draft/)) {
-                        options.success([]);
-                    } else {
-                        options.error();
-                    }
-                });
-
-                spyOn(window, 'alert').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(window.alert).toHaveBeenCalled();
+                expect(controller.get.calls.count()).toBe(0);
             });
         });
     });

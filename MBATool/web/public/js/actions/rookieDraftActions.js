@@ -167,37 +167,15 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
             controller.set("canDraft", true);
         },
-        loadFreeAgents: function(controller, freeAgents) {
-            var promises = [];
-
-            for (var i = 0; i < freeAgents.length; i++) {
-                promises.push( Utils.loadPlayer(freeAgents[i], controller.freeAgents, Globals.season, false) );
-            }
-
-            $.when.apply(null, promises).done(function() {
-                controller.get("controllers.free-agents").set('freeAgents', controller.freeAgents);
-                controller.get("controllers.free-agents").send('showFirstTeam');
-                controller.get("controllers.progress").send('nextStage');
-            });
-        },
         finishStage: function(controller) {
             if (controller.stageComplete) {
-                $.ajax( "/mba/resources/drafts/free-agent/season/" + (Globals.season - 1), {
-                    success: function(draft) {
-                        controller.freeAgents.set( "draftOrder", draft );
+                var deferred = $.Deferred();
 
-                        $.ajax( "/mba/resources/players?freeagent=true&season=" + Globals.season, {
-                            success: function(freeAgents) {
-                                controller.send( "loadFreeAgents", freeAgents );
-                            },
-                            error: function() {
-                                alert("Error retrieving free agents!");
-                            }
-                        });
-                    },
-                    error: function() {
-                        alert("Error retrieving draft!");
-                    }
+                controller.get("controllers.free-agents").send('prepareData', deferred);
+
+                deferred.promise.then(function() {
+
+                    controller.get("controllers.progress").send('nextStage');
                 });
             }
         }
