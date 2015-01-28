@@ -1,6 +1,49 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
+    var loadRookieDetails = function(controller, deferred, rookies) {
+        var promises = [];
+
+        rookies.forEach(function(rookie) {
+            promises.push( Utils.loadPlayer(rookie, controller.rookies, Globals.season, false) );
+        });
+
+        $.when.apply(null, promises).done(function() {
+            controller.rookies.set( "pitchers", controller.rookies.pitchers.sortBy("rating").reverseObjects());
+            controller.rookies.set( "batters",  controller.rookies.batters .sortBy("rating").reverseObjects());
+            controller.send('showFirstTeam');
+
+            deferred.resolve();
+        });
+    }
+
+    var loadRookies = function(controller, deferred) {
+        $.ajax( "/mba/resources/players?rookie=true&season=" + Globals.season, {
+            success: function(rookies) {
+                loadRookieDetails(controller, deferred, rookies);
+            },
+            error: function() {
+                alert("Error retrieving rookies!");
+
+                deferred.reject();
+            }
+        });
+    }
+
     var RookieDraftActions = {
+        prepareData: function(controller, deferred) {
+            $.ajax( "/mba/resources/drafts/rookie/season/" + (Globals.season - 1), {
+                success: function(draft) {
+                    controller.rookies.set( "draftOrder", draft );
+
+                    loadRookies(controller, deferred);
+                },
+                error: function() {
+                    alert("Error retrieving rookie draft!");
+
+                    deferred.reject();
+                }
+            });
+        },
         toggleRookieTable: function(controller) {
             if (controller.showRookiePitchers) {
                 controller.set("showRookiePitchers", false);
@@ -143,9 +186,9 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         loadPlayers: function(controller, team, players) {
             var promises = [];
 
-            for (var i = 0; i < players.length; i++) {
-                promises.push( Utils.loadPlayer(players[i], team, Globals.season, false) );
-            }
+            players.forEach(function(player) {
+                promises.push( Utils.loadPlayer(player, team, Globals.season, false) );
+            });
 
             $.when.apply(null, promises).done(function() {
                 controller.set("team", Ember.Object.create().setProperties(team));

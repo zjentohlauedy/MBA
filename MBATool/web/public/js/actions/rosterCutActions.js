@@ -98,40 +98,15 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             if   (count > 0) controller.set("stageComplete", false);
             else             controller.set("stageComplete", true );
         },
-        loadRookies: function(controller, rookies) {
-            var promises = [];
-
-            for (var i = 0; i < rookies.length; i++) {
-                promises.push( Utils.loadPlayer(rookies[i], controller.rookies, Globals.season, false) );
-            }
-
-            $.when.apply(null, promises).done(function() {
-                controller.rookies.set( "pitchers", controller.rookies.pitchers.sortBy("rating").reverseObjects());
-                controller.rookies.set( "batters",  controller.rookies.batters .sortBy("rating").reverseObjects());
-
-                controller.get("controllers.rookie-draft").set('rookies', controller.rookies);
-                controller.get("controllers.rookie-draft").send('showFirstTeam');
-                controller.get("controllers.progress").send('nextStage');
-            });
-        },
         finishStage: function(controller) {
             if (controller.stageComplete) {
-                $.ajax( "/mba/resources/drafts/rookie/season/" + (Globals.season - 1), {
-                    success: function(draft) {
-                        controller.rookies.set( "draftOrder", draft );
+                var deferred = $.Deferred();
 
-                        $.ajax( "/mba/resources/players?rookie=true&season=" + Globals.season, {
-                            success: function(rookies) {
-                                controller.send( "loadRookies", rookies );
-                            },
-                            error: function() {
-                                alert("Error retrieving rookies!");
-                            }
-                        });
-                    },
-                    error: function() {
-                        alert("Error retrieving draft!");
-                    }
+                controller.get("controllers.rookie-draft").send('prepareData', deferred);
+
+                deferred.promise.then(function() {
+
+                    controller.get("controllers.progress").send('nextStage');
                 });
             }
         }

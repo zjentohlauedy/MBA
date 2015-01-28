@@ -578,7 +578,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
             });
         });
 
-        describe('loadRookies', function() {
+        describe('finishStage', function() {
 
             var controller;
             var progressController;
@@ -587,8 +587,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
             beforeEach(function() {
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.rookies = Ember.Object.create({pitchers: [], batters: []});
-
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
                 rookieDraftController = jasmine.createSpyObj('rookieDraftController', ['send', 'get', 'set']);
 
@@ -604,207 +602,51 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 }
             });
 
-            it('should add pitchers and batters to rookies', function() {
+            it('should direct the rookie draft controller to prepare data and pass it a deferred object', function() {
 
-                var rookies = [{player_id: 1},{player_id: 2},{player_id: 3}];
+                var fakeDeferred = {promise: {then: function(){}}};
+                controller.stageComplete = true;
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
-                    if (player.player_id === 1) {
-                        team.pitchers.push(player);
-                    } else {
-                        team.batters.push(player);
-                    }
-                });
+                Actions.finishStage(controller);
 
-                Actions.loadRookies(controller, rookies);
-
-                expect(controller.rookies.pitchers.length).toBe(1);
-                expect(controller.rookies.batters. length).toBe(2);
+                expect(rookieDraftController.send).toHaveBeenCalledWith('prepareData', fakeDeferred);
             });
 
-            it('should call utils loadPlayer for each player given', function() {
+            it('should direct the progress controller to move to the next stage when the rookie draft controller is finished preparing data', function() {
 
-                var rookies = [{},{},{},{},{}];
+                var fakeDeferred = {promise: {then: function(callback){ callback(); }}};
+                controller.stageComplete = true;
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
-                Actions.loadRookies(controller, rookies);
-
-                expect(Utils.loadPlayer.calls.count()).toEqual(rookies.length);
-            });
-
-            it('should sort rookie pitchers and batters by rating, descending', function() {
-
-                var rookies = [{player_id: 1},{player_id: 2},{player_id: 3},{player_id: 4}];
-
-                spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
-                    switch (player.player_id) {
-                    case 1: team.pitchers.push({player_id: 1, rating:  7}); break;
-                    case 2: team.pitchers.push({player_id: 2, rating: 10}); break;
-
-                    case 3: team.batters.push({player_id: 3, rating:  5}); break;
-                    case 4: team.batters.push({player_id: 4, rating: 12}); break;
-                    }
-                });
-
-                Actions.loadRookies(controller, rookies);
-
-                expect(controller.rookies.pitchers[0].player_id).toBe(2);
-                expect(controller.rookies.pitchers[1].player_id).toBe(1);
-
-                expect(controller.rookies.batters[0].player_id).toBe(4);
-                expect(controller.rookies.batters[1].player_id).toBe(3);
-            });
-
-            it('should set the rookies on the rookie draft controller', function() {
-
-                var rookies = [];
-
-                Actions.loadRookies(controller, rookies);
-
-                expect(rookieDraftController.set).toHaveBeenCalledWith('rookies', controller.rookies);
-            });
-
-            it('should direct the rookie draft controller to show the first team', function() {
-
-                var rookies = [];
-
-                Actions.loadRookies(controller, rookies);
-
-                expect(rookieDraftController.send).toHaveBeenCalledWith('showFirstTeam');
-            });
-
-            it('should direct the progress controller to move to the next stage', function() {
-
-                var rookies = [];
-
-                Actions.loadRookies(controller, rookies);
+                Actions.finishStage(controller);
 
                 expect(progressController.send).toHaveBeenCalledWith('nextStage');
             });
-        });
 
-        describe('finishStage', function() {
+            it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
 
-            var controller;
-
-            beforeEach(function() {
-
-                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.rookies = Ember.Object.create();
-            });
-
-            it('should request the rookie draft from the drafts resource', function() {
-
-                Globals.season = 6;
+                var fakeDeferred = {promise: {then: function(callback){}}};
                 controller.stageComplete = true;
 
-                spyOn($, 'ajax').and.callFake(function() {});
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
                 Actions.finishStage(controller);
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/drafts/rookie/season/5', jasmine.any(Object));
-            });
-
-            it('should set the rookie draft on the rookies object', function() {
-
-                var draft = [1,2,3,4,5];
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success(draft);
-                });
-
-                spyOn(controller.rookies, 'set').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(controller.rookies.set).toHaveBeenCalledWith('draftOrder', draft);
-            });
-
-            it('should retrieve the rookies for the current season from the players resource', function() {
-
-                Globals.season = 6;
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/drafts/rookie/season/5') {
-                        options.success([]);
-                    }
-                });
-
-                Actions.finishStage(controller);
-
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/players?rookie=true&season=6', jasmine.any(Object));
-            });
-
-            it('should call the load rookies controller method to finish loading rookies', function() {
-
-                Globals.season = 6;
-                controller.stageComplete = true;
-
-                var rookies = [{},{},{},{},{}];
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/drafts/rookie/season/5') {
-                        options.success([]);
-                    }
-                    else if (rel = '/mba/resources/players?rookie=true&season=6') {
-                        options.success(rookies);
-                    }
-                });
-
-                Actions.finishStage(controller);
-
-                expect(controller.send).toHaveBeenCalledWith('loadRookies', rookies);
+                expect(progressController.send).not.toHaveBeenCalled();
             });
 
             it('should do nothing if the stage is not complete', function() {
 
                 controller.stageComplete = false;
 
-                spyOn($, 'ajax').and.callFake(function() {});
+                spyOn(controller, 'get').and.callThrough();
 
                 Actions.finishStage(controller);
 
-                expect($.ajax.calls.count()).toBe(0);
-            });
-
-            it('should show an alert if the rookie draft ajax call fails', function() {
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.error();
-                });
-
-                spyOn(window, 'alert').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(window.alert).toHaveBeenCalled();
-            });
-
-            it('should show an alert if the rookie players ajax call fails', function() {
-
-                controller.stageComplete = true;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-
-                    if (rel.match(/draft/)) {
-                        options.success([]);
-                    } else {
-                        options.error();
-                    }
-                });
-
-                spyOn(window, 'alert').and.callThrough();
-
-                Actions.finishStage(controller);
-
-                expect(window.alert).toHaveBeenCalled();
+                expect(controller.get).not.toHaveBeenCalled();
             });
         });
     });
