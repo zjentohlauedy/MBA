@@ -18,6 +18,7 @@ define(['actions/rookieDraftActions', 'ember'], function(Actions, Ember) {
         canDraft:                true,
         stageComplete:           false,
         actions: {
+            prepareData:         function(deferred)      { Actions.prepareData(this, deferred);        },
             toggleRookieTable:   function()              { Actions.toggleRookieTable(this);            },
             sortPitchers:        function(field)         { Actions.sortPitchers(this, field);          },
             sortBatters:         function(field)         { Actions.sortBatters(this, field);           },
@@ -31,7 +32,6 @@ define(['actions/rookieDraftActions', 'ember'], function(Actions, Ember) {
             loadTeam:            function(teamId)        { Actions.loadTeam(this, teamId);             },
             loadPlayers:         function(team, players) { Actions.loadPlayers(this, team, players);   },
             setDraftStatus:      function()              { Actions.setDraftStatus(this);               },
-            loadFreeAgents:      function(freeAgents)    { Actions.loadFreeAgents(this, freeAgents);   },
             finishStage:         function()              { Actions.finishStage(this);                  }
         }
     });

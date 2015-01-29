@@ -13,6 +13,7 @@ define(['actions/freeAgentsActions', 'ember'], function(Actions, Ember) {
         canDraft:                   true,
         stageComplete:              false,
         actions: {
+            prepareData:            function(deferred)      { Actions.prepareData(this, deferred);           },
             toggleFreeAgentTable:   function()              { Actions.toggleFreeAgentTable(this);            },
             sortPitchers:           function(field)         { Actions.sortPitchers(this, field);             },
             sortBatters:            function(field)         { Actions.sortBatters(this, field);              },
