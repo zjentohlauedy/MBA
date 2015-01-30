@@ -6,26 +6,22 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
                 type: 'POST',
                 success: function(data) {
                     Globals.season = data.season;
-                    controller.send('loadTeams');
+                    controller.send('finishStage');
                 },
                 error: function() {
                     alert("Error starting new season!");
                 }
             });
         },
-        loadTeams: function(controller) {
-            $.ajax( "/mba/resources/teams", {
-                success: function(teams) {
-                    controller.get('controllers.roster-cut').set('teams', Utils.decorateTeams(teams));
-                    controller.send('finishStage');
-                },
-                error: function() {
-                    alert("Error loading teams!")
-                }
-            });
-        },
         finishStage: function(controller) {
-            controller.get("controllers.progress").send('nextStage');
+            var deferred = $.Deferred();
+
+            controller.get("controllers.roster-cut").send('prepareData', deferred);
+
+            deferred.promise().then(function() {
+
+                controller.get("controllers.progress").send('nextStage');
+            });
         }
     };
 

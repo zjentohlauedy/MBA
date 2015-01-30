@@ -2,6 +2,92 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
     describe('RosterCutActions:', function() {
 
+        describe('prepareData', function() {
+
+            var controller;
+            var deferred;
+
+            beforeEach(function() {
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+
+                deferred = jasmine.createSpyObj('deferred', ['resolve','reject']);
+            });
+
+            it('should send a request to the teams resource', function() {
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.prepareData(controller, deferred);
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams', jasmine.any(Object));
+            });
+
+            it('should set the teams on the controller', function() {
+
+                var teams = [{},{},{}];
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success(teams);
+                });
+
+                spyOn(Utils, 'decorateTeams').and.callFake(function(teams) { return teams });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(controller.set).toHaveBeenCalledWith('teams', teams);
+            });
+
+            it('should decorate the teams retrieved from the teams resource', function() {
+
+                var teams = [{},{},{}];
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success(teams);
+                });
+
+                spyOn(Utils, 'decorateTeams').and.callThrough();
+
+                Actions.prepareData(controller, deferred);
+
+                expect(Utils.decorateTeams).toHaveBeenCalledWith(teams);
+            });
+
+            it('should resolve the given promise when the work is complete', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success([]);
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(deferred.resolve).toHaveBeenCalled();
+            });
+
+            it('should reject the promise if the rookie draft ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.error();
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(deferred.reject).toHaveBeenCalled();
+            });
+
+            it('should show an alert if the ajax call failed', function() {
+
+                spyOn(window, 'alert').and.callThrough();
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.error();
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+        });
+
         describe('selectTeam', function() {
 
             var controller;
@@ -604,7 +690,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should direct the rookie draft controller to prepare data and pass it a deferred object', function() {
 
-                var fakeDeferred = {promise: {then: function(){}}};
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
@@ -616,7 +702,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should direct the progress controller to move to the next stage when the rookie draft controller is finished preparing data', function() {
 
-                var fakeDeferred = {promise: {then: function(callback){ callback(); }}};
+                var fakeDeferred = {promise: function(){ return{then: function(callback){ callback(); }}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
@@ -628,7 +714,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
 
-                var fakeDeferred = {promise: {then: function(callback){}}};
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });

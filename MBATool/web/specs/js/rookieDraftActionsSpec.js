@@ -1064,7 +1064,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
 
             it('should direct the free agents controller to prepare data and pass it a deferred object', function() {
 
-                var fakeDeferred = {promise: {then: function(){}}};
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
@@ -1076,7 +1076,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
 
             it('should direct the progress controller to move to the next stage when the free agents controller is finished preparing data', function() {
 
-                var fakeDeferred = {promise: {then: function(callback){ callback(); }}};
+                var fakeDeferred = {promise: function(){ return{then: function(callback){ callback(); }}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
@@ -1088,7 +1088,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
 
             it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
 
-                var fakeDeferred = {promise: {then: function(callback){}}};
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
                 controller.stageComplete = true;
 
                 spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });

@@ -7,7 +7,6 @@ define(['objects/globals', 'utils', 'actions/startSeasonActions'], function(Glob
             var controller;
 
             beforeEach(function() {
-
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
             });
 
@@ -34,15 +33,15 @@ define(['objects/globals', 'utils', 'actions/startSeasonActions'], function(Glob
                 expect(Globals.season).toBe(5);
             });
 
-            it('should load the teams', function() {
+            it('should call the finishStage action', function() {
 
-                spyOn($, 'ajax').and.callFake(function (rel, options) {
-                    options.success({ season: 5 });
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5});
                 });
 
                 Actions.startNewSeason(controller);
 
-                expect(controller.send).toHaveBeenCalledWith('loadTeams');
+                expect(controller.send).toHaveBeenCalledWith('finishStage');
             });
 
             it('should show an alert if the ajax call fails', function() {
@@ -59,18 +58,23 @@ define(['objects/globals', 'utils', 'actions/startSeasonActions'], function(Glob
             });
         });
 
-        describe('loadTeams', function() {
+        describe('finishStage', function() {
 
             var controller;
+            var progressController;
             var rosterCutController;
 
             beforeEach(function() {
 
-                controller          = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
                 rosterCutController = jasmine.createSpyObj('rosterCutController', ['send', 'get', 'set']);
 
                 controller.get = function(name) {
-                    if (name == 'controllers.roster-cut') {
+                    if (name == 'controllers.progress') {
+                        return progressController;
+                    }
+                    else if (name == 'controllers.roster-cut') {
                         return rosterCutController;
                     }
 
@@ -78,90 +82,37 @@ define(['objects/globals', 'utils', 'actions/startSeasonActions'], function(Glob
                 }
             });
 
-            it('should send a request to the teams resource', function() {
+            it('should direct the roster cut controller to prepare data and pass it a deferred object', function() {
 
-                spyOn($, 'ajax').and.callFake(function() {});
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
 
-                Actions.loadTeams(controller);
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams', jasmine.any(Object));
+                Actions.finishStage(controller);
+
+                expect(rosterCutController.send).toHaveBeenCalledWith('prepareData', fakeDeferred);
             });
 
-            it('should set the teams on the roster-cut controller', function() {
+            it('should direct the progress controller to move to the next stage when the roster cut controller is finished preparing data', function() {
 
-                var teams = [{},{},{}];
+                var fakeDeferred = {promise: function(){ return{then: function(callback){ callback(); }}; }};
 
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success(teams);
-                });
-
-                spyOn(Utils, 'decorateTeams').and.callFake(function(teams) { return teams });
-
-                Actions.loadTeams(controller);
-
-                expect(rosterCutController.set).toHaveBeenCalledWith('teams', teams);
-            });
-
-            it('should decorate the teams retrieved from the teams resource', function() {
-
-                var teams = [{},{},{}];
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success(teams);
-                });
-
-                spyOn(Utils, 'decorateTeams').and.callThrough();
-
-                Actions.loadTeams(controller);
-
-                expect(Utils.decorateTeams).toHaveBeenCalledWith(teams);
-            });
-
-            it('should call the finishStage action', function() {
-
-                var teams = [{},{},{}];
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success(teams);
-                });
-
-                Actions.loadTeams(controller);
-
-                expect(controller.send).toHaveBeenCalledWith('finishStage');
-            });
-
-            it('should show an alert if the ajax call faile', function() {
-
-                spyOn(window, 'alert').and.callThrough();
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.error();
-                });
-
-                Actions.loadTeams(controller);
-
-                expect(window.alert).toHaveBeenCalled();
-            });
-        });
-
-        describe('finishStage', function() {
-
-            it('should direct the progress controller to move to the next stage', function() {
-
-                var controller         = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                var progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
-
-                controller.get = function(name) {
-                    if (name == 'controllers.progress') {
-                        return progressController;
-                    }
-
-                    return null;
-                }
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
 
                 Actions.finishStage(controller);
 
                 expect(progressController.send).toHaveBeenCalledWith('nextStage');
+            });
+
+            it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
+
+                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
+
+                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
+
+                Actions.finishStage(controller);
+
+                expect(progressController.send).not.toHaveBeenCalled();
             });
         });
     });

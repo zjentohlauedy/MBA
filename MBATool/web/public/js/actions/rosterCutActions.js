@@ -1,6 +1,18 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
     var RosterCutActions = {
+        prepareData: function(controller, deferred) {
+            $.ajax( "/mba/resources/teams", {
+                success: function(teams) {
+                    controller.set('teams', Utils.decorateTeams(teams));
+                    deferred.resolve();
+                },
+                error: function() {
+                    alert("Error loading teams!")
+                    deferred.reject();
+                }
+            });
+        },
         selectTeam: function(controller, team) {
             if (team.isSelected) return;
 
@@ -104,7 +116,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
                 controller.get("controllers.rookie-draft").send('prepareData', deferred);
 
-                deferred.promise.then(function() {
+                deferred.promise().then(function() {
 
                     controller.get("controllers.progress").send('nextStage');
                 });

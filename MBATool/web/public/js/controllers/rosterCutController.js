@@ -19,6 +19,7 @@ define(['actions/rosterCutActions', 'ember'], function(Actions, Ember) {
         },
         stageComplete:  false,
         actions: {
+            prepareData:          function(deferred)      { Actions.prepareData(this, deferred);      },
             selectTeam:           function(team)          { Actions.selectTeam(this, team);           },
             loadPlayers:          function(team, players) { Actions.loadPlayers(this, team, players); },
             toggleCutPitcher:     function(pitcher)       { Actions.toggleCutPitcher(this, pitcher);  },
@@ -27,7 +28,6 @@ define(['actions/rosterCutActions', 'ember'], function(Actions, Ember) {
             updateBattersStatus:  function()              { Actions.updateBattersStatus(this);        },
             updateTeamStatus:     function()              { Actions.updateTeamStatus(this);           },
             updateStatus:         function()              { Actions.updateStatus(this);               },
-            loadRookies:          function(rookies)       { Actions.loadRookies(this, rookies);       },
             finishStage:          function()              { Actions.finishStage(this);                }
         }
     });
