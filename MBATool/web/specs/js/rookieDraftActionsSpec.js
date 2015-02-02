@@ -612,20 +612,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
                 expect(controller.team.pitchers.length).toBe(1);
             });
 
-            it('should mark the team as having drafted a rookie pitcher', function() {
-
-                var pitcher = {player_id: 123};
-
-                controller.rookies.pitchers.push(pitcher);
-                controller.team.draftedRookiePitcher = false;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(); });
-
-                Actions.draftPitcher(controller, pitcher);
-
-                expect(controller.team.draftedRookiePitcher).toBe(true);
-            });
-
             it('should move to the next team in the draft', function() {
 
                 var pitcher = {player_id: 123};
@@ -701,20 +687,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
                 Actions.draftBatter(controller, batter);
 
                 expect(controller.team.batters.length).toBe(1);
-            });
-
-            it('should mark the team as having drafted a rookie batter', function() {
-
-                var batter = {player_id: 123};
-
-                controller.rookies.batters.push(batter);
-                controller.team.draftedRookieBatter = false;
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(); });
-
-                Actions.draftBatter(controller, batter);
-
-                expect(controller.team.draftedRookieBatter).toBe(true);
             });
 
             it('should move to the next team in the draft', function() {
@@ -850,9 +822,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rookieDraftAct
 
                 expect(team.pitchers).toEqual([]);
                 expect(team.batters ).toEqual([]);
-
-                expect(team.draftedRookiePitcher).toBe(false);
-                expect(team.draftedRookieBatter ).toBe(false);
             });
 
             it('should retrieve the current season team players from the team resource endpoint', function() {

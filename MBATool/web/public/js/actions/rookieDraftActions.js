@@ -119,7 +119,6 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
                 success: function() {
                     controller.rookies.pitchers.removeObject(pitcher);
                     controller.team.   pitchers.   addObject(pitcher);
-                    controller.team.set("draftedRookiePitcher", true);
                     controller.send("showNextTeam");
                 },
                 error: function() {
@@ -135,7 +134,6 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
                 success: function() {
                     controller.rookies.batters.removeObject(batter);
                     controller.team   .batters.   addObject(batter);
-                    controller.team.set("draftedRookieBatter", true);
                     controller.send("showNextTeam");
                 },
                 error: function() {
@@ -164,10 +162,8 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         loadTeam: function(controller, teamId) {
             $.ajax( "/mba/resources/teams/" + teamId, {
                 success: function(team) {
-                    team.pitchers             = [];
-                    team.batters              = [];
-                    team.draftedRookiePitcher = false;
-                    team.draftedRookieBatter  = false;
+                    team.pitchers = [];
+                    team.batters  = [];
 
                     $.ajax( Utils.findLink( team.links, "players" ) + "?season=" + Globals.season, {
                         success: function(players) {
