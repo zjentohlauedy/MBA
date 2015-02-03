@@ -801,35 +801,6 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
             });
         });
 
-        describe('showFirstTeam', function() {
-
-            var controller;
-
-            beforeEach(function() {
-
-                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.draftOrder = [13,7,25,9,11];
-            });
-
-            it('should set the current team index to 0', function() {
-
-                Actions.showFirstTeam(controller);
-
-                expect(controller.set).toHaveBeenCalledWith('currentTeamIdx', 0);
-            });
-
-            it('should load the team at index 0 of the draft order', function() {
-
-                controller.set = function() {
-                    controller.currentTeamIdx = 0;
-                }
-
-                Actions.showFirstTeam(controller);
-
-                expect(controller.send).toHaveBeenCalledWith('loadTeam', 13);
-            });
-        });
-
         describe('showNextTeam', function() {
 
             var controller;
@@ -838,32 +809,155 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
                 controller.draftOrder = [13,7,25,9,11];
-            });
-
-            it('should load the next team in the draft', function() {
-
-                controller.currentTeamIdx = 3;
-
-                controller.set = function(field, idx) {
+                controller.set.and.callFake(function(field, idx) {
                     controller.currentTeamIdx = idx;
-                }
-
-                Actions.showNextTeam(controller);
-
-                expect(controller.send).toHaveBeenCalledWith('loadTeam', 11);
+                });
             });
 
             it('should increment the current team index', function() {
 
                 controller.currentTeamIdx = 3;
 
-                controller.set = function(field, idx) {
-                    controller.currentTeamIdx = idx;
-                }
+                spyOn($, 'ajax').and.callFake(function(rel, options) {});
 
                 Actions.showNextTeam(controller);
 
                 expect(controller.currentTeamIdx).toBe(4);
+            });
+
+            it('should retrieve the team from the team resource endpoint', function() {
+
+                var team = {team_id: 25, links: []};
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/25', jasmine.any(Object));
+            });
+
+            it('should decorate the team received from the team resource', function() {
+
+                var team = {team_id: 25, links: []};
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect(team.pitchers).toEqual([]);
+                expect(team.batters ).toEqual([]);
+            });
+
+            it('should retrieve the current season team players from the team resource endpoint', function() {
+
+                var team = {team_id: 25, links: [{rel: 'players', href: 'team-resource/players'}]};
+                controller.currentTeamIdx = 1;
+                Globals.season = 4;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect($.ajax).toHaveBeenCalledWith('team-resource/players?season=4', jasmine.any(Object));
+            });
+
+            it('should add pitchers and batters to the given team', function() {
+
+                var team = {team_id: 25, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    } else {
+                        options.success(players);
+                    }
+                });
+
+                spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
+                    if (player.player_id === 1) {
+                        team.pitchers.push(player);
+                    } else {
+                        team.batters.push(player);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect(team.pitchers.length).toBe(1);
+                expect(team.batters. length).toBe(2);
+            });
+
+            it('should call utils loadPlayer for each team player given', function() {
+
+                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var players = [{},{},{},{},{}];
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    } else {
+                        options.success(players);
+                    }
+                });
+
+                spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+
+                Actions.showNextTeam(controller);
+
+                expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
+            });
+
+            it('should set draft status', function() {
+
+                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    } else {
+                        options.success([]);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect(controller.send).toHaveBeenCalledWith('setDraftStatus');
+            });
+
+            it('should add a team to the controller', function() {
+
+                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    } else {
+                        options.success([]);
+                    }
+                });
+
+                Actions.showNextTeam(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('team', team);
             });
 
             it('should disable the draft and complete the stage if the end of the draft order is reached', function() {
@@ -874,6 +968,97 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                 expect(controller.set).toHaveBeenCalledWith('canDraft', false);
                 expect(controller.set).toHaveBeenCalledWith('stageComplete', true);
+            });
+
+            it('should show an alert if the team ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.error();
+                });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.showNextTeam(controller);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+
+            it('should show an alert if the team players ajax call fails', function() {
+
+                var team = {team_id: 23, links: []};
+                controller.currentTeamIdx = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25') {
+                        options.success(team);
+                    } else {
+                        options.error();
+                    }
+                });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.showNextTeam(controller);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+        });
+
+        describe('setDraftStatus', function() {
+
+            var controller;
+
+            beforeEach(function() {
+
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.maxPitchers = 8;
+                controller.maxBatters  = 14;
+                controller.team = Ember.Object.create({
+                    pitchers: [],
+                    batters:  []
+                });
+            });
+
+            it('should enable drafting', function() {
+
+                Actions.setDraftStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canDraft', true);
+            });
+
+            it('should disable drafting if showing pitchers and the team already has enough pitchers', function() {
+
+                controller.showAvailablePitchers = true;
+
+                for (var i = 0; i < controller.maxPitchers; i++) {
+                    controller.team.pitchers.push({});
+                }
+
+                Actions.setDraftStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canDraft', false);
+            });
+
+            it('should disable drafting if showing batters and the team already has enough batters', function() {
+
+                controller.showAvailableBatters = true;
+
+                for (var i = 0; i < controller.maxBatters; i++) {
+                    controller.team.batters.push({});
+                }
+
+                Actions.setDraftStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canDraft', false);
+            });
+
+            it('should do nothing if the stage is complete', function() {
+
+                controller.stageComplete = true;
+
+                Actions.setDraftStatus(controller);
+
+                expect(controller.set).not.toHaveBeenCalled();
             });
         });
     });

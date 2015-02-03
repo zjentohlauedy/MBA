@@ -167,7 +167,7 @@
       </div>
       <div class="right">
         <span class="heading">Rookies</span>
-        <table {{bind-attr class=":full :pretty showRookiePitchers:visible:invisible"}}>
+        <table {{bind-attr class=":full :pretty showAvailablePitchers:visible:invisible"}}>
           <caption>Pitchers</caption>
           <thead>
             <tr>
@@ -180,8 +180,8 @@
             </tr>
           </thead>
           <tbody class="tall">
-            {{#each pitcher in rookies.pitchers}}
-            <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectRookiePitcher" pitcher on="click"}}>
+            {{#each pitcher in availablePlayers.pitchers}}
+            <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectAvailablePlayer" availablePlayers.pitchers pitcher on="click"}}>
               <td class="pname2" >{{pitcher.name}}</td>
               <td class="throws" >{{pitcher.handedness}}</td>
               <td class="speed"  >{{pitcher.speed}}</td>
@@ -192,7 +192,7 @@
             {{/each}}
           </tbody>
         </table>
-        <table {{bind-attr class=":full :pretty showRookieBatters:visible:invisible"}}>
+        <table {{bind-attr class=":full :pretty showAvailableBatters:visible:invisible"}}>
           <caption>Batters</caption>
           <thead>
             <tr>
@@ -209,8 +209,8 @@
             </tr>
           </thead>
           <tbody class="tall">
-            {{#each batter in rookies.batters}}
-            <tr {{bind-attr class="batter.isSelected"}} {{action "selectRookieBatter" batter on="click"}}>
+            {{#each batter in availablePlayers.batters}}
+            <tr {{bind-attr class="batter.isSelected"}} {{action "selectAvailablePlayer" availablePlayers.batters batter on="click"}}>
               <td class="bname2">{{batter.name}}</td>
               <td class="pos1"  >{{batter.primary_position}}</td>
               <td class="pos2"  >{{batter.secondary_position}}</td>
@@ -232,10 +232,10 @@
         <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
       </div>
       <div>
-        <button class="enabled" {{action "toggleRookieTable" on="click"}}>{{toggleRookieButtonLabel}}</button>
+        <button class="enabled" {{action "toggleAvailablePlayersTable" on="click"}}>{{toggleButtonLabel}}</button>
       </div>
       <div>
-        <button {{bind-attr class="canDraft:enabled:disabled"}} {{action "draftRookie" on="click"}}>Draft</button>
+        <button {{bind-attr class="canDraft:enabled:disabled"}} {{action "draftSelectedPlayer" on="click"}}>Draft</button>
       </div>
       </div>
     </script>
@@ -305,7 +305,7 @@
       </div>
       <div class="right">
         <span class="heading">Free Agents</span>
-        <table {{bind-attr class=":full :pretty showFreeAgentPitchers:visible:invisible"}}>
+        <table {{bind-attr class=":full :pretty showAvailablePitchers:visible:invisible"}}>
           <caption>Pitchers</caption>
           <thead>
             <tr>
@@ -318,8 +318,8 @@
             </tr>
           </thead>
           <tbody class="tall">
-            {{#each pitcher in freeAgents.pitchers}}
-            <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectFreeAgentPitcher" pitcher on="click"}}>
+            {{#each pitcher in availablePlayers.pitchers}}
+            <tr {{bind-attr class="pitcher.isSelected"}} {{action "selectAvailablePlayer" availablePlayers.pitchers pitcher on="click"}}>
               <td class="pname2" >{{pitcher.name}}</td>
               <td class="throws" >{{pitcher.handedness}}</td>
               <td class="speed"  >{{pitcher.speed}}</td>
@@ -330,7 +330,7 @@
             {{/each}}
           </tbody>
         </table>
-        <table {{bind-attr class=":full :pretty showFreeAgentBatters:visible:invisible"}}>
+        <table {{bind-attr class=":full :pretty showAvailableBatters:visible:invisible"}}>
           <caption>Batters</caption>
           <thead>
             <tr>
@@ -347,8 +347,8 @@
             </tr>
           </thead>
           <tbody class="tall">
-            {{#each batter in freeAgents.batters}}
-            <tr {{bind-attr class="batter.isSelected"}} {{action "selectFreeAgentBatter" batter on="click"}}>
+            {{#each batter in availablePlayers.batters}}
+            <tr {{bind-attr class="batter.isSelected"}} {{action "selectAvailablePlayer" availablePlayers.batters batter on="click"}}>
               <td class="bname2">{{batter.name}}</td>
               <td class="pos1"  >{{batter.primary_position}}</td>
               <td class="pos2"  >{{batter.secondary_position}}</td>
@@ -370,10 +370,10 @@
         <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
       </div>
       <div>
-        <button class="enabled" {{action "toggleFreeAgentTable" on="click"}}>{{toggleFreeAgentButtonLabel}}</button>
+        <button class="enabled" {{action "toggleAvailablePlayersTable" on="click"}}>{{toggleButtonLabel}}</button>
       </div>
       <div>
-        <button {{bind-attr class="canDraft:enabled:disabled"}} {{action "draftFreeAgent" on="click"}}>Draft</button>
+        <button {{bind-attr class="canDraft:enabled:disabled"}} {{action "draftSelectedPlayer" on="click"}}>Draft</button>
       </div>
       </div>
     </script>

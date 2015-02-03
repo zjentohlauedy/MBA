@@ -179,11 +179,6 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
                 draftPlayer(controller, player, controller.availablePlayers.batters, controller.team.batters);
             }
         },
-        showFirstTeam: function(controller) {
-            controller.set("currentTeamIdx", 0);
-
-            controller.send("loadTeam", controller.draftOrder[controller.currentTeamIdx] );
-        },
         showNextTeam: function(controller) {
             var nextTeamIdx = controller.currentTeamIdx + 1;
 
@@ -195,7 +190,27 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
 
             controller.set("currentTeamIdx", nextTeamIdx);
 
-            controller.send("loadTeam", controller.draftOrder[controller.currentTeamIdx] );
+            var teamPromise = loadTeam(controller);
+
+            $.when(teamPromise).then(function(team) {
+                controller.set('team', team);
+                controller.send('setDraftStatus');
+            });
+        },
+        setDraftStatus: function(controller) {
+            if (controller.stageComplete) return;
+
+            if (controller.showAvailablePitchers && (controller.team.pitchers.length >= controller.maxPitchers)) {
+                controller.set("canDraft", false);
+                return;
+            }
+
+            if (controller.showAvailableBatters && (controller.team.batters.length >= controller.maxBatters)) {
+                controller.set("canDraft", false);
+                return;
+            }
+
+            controller.set("canDraft", true);
         }
     };
 

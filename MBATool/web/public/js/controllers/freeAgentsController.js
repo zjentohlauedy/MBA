@@ -1,33 +1,36 @@
-define(['actions/freeAgentsActions', 'ember'], function(Actions, Ember) {
+define(['objects/constants', 'objects/globals', 'actions/commonDraftActions', 'actions/freeAgentsActions', 'ember'],
+       function(Constants, Globals, CommonActions, AgentActions, Ember) {
 
     var FreeAgentsController = Ember.ObjectController.extend({
-        needs:                      "progress",
-        team:                       {},
-        freeAgents:                 null,
-        currentTeamIdx:             0,
-        currentPitcherSortField:    "",
-        currentBatterSortField:     "",
-        toggleFreeAgentButtonLabel: "Show Batters",
-        showFreeAgentPitchers:      true,
-        showFreeAgentBatters:       false,
-        canDraft:                   true,
-        stageComplete:              false,
+        needs:                   "progress",
+        team:                    {},
+        draftOrder:              null,
+        availablePlayers:        Ember.Object.create().setProperties({
+            pitchers:   [],
+            batters:    []
+        }),
+        maxPitchers:             Constants.TEAM_MAX_PITCHERS,
+        maxBatters:              Constants.TEAM_MAX_BATTERS,
+        currentTeamIdx:          0,
+        currentPitcherSortField: "",
+        currentBatterSortField:  "",
+        toggleButtonLabel:       "Show Batters",
+        showAvailablePitchers:   true,
+        showAvailableBatters:    false,
+        canDraft:                true,
+        stageComplete:           false,
+        draftResource:           function() { return "/mba/resources/drafts/rookie/season/" + (Globals.season - 1);   },
+        playersResource:         function() { return "/mba/resources/players?freeagent=true&season=" + Globals.season; },
         actions: {
-            prepareData:            function(deferred)      { Actions.prepareData(this, deferred);           },
-            toggleFreeAgentTable:   function()              { Actions.toggleFreeAgentTable(this);            },
-            sortPitchers:           function(field)         { Actions.sortPitchers(this, field);             },
-            sortBatters:            function(field)         { Actions.sortBatters(this, field);              },
-            selectFreeAgentPitcher: function(pitcher)       { Actions.selectFreeAgentPitcher(this, pitcher); },
-            selectFreeAgentBatter:  function(batter)        { Actions.selectFreeAgentBatter(this, batter);   },
-            draftFreeAgent:         function()              { Actions.draftFreeAgent(this);                  },
-            draftPitcher:           function(pitcher)       { Actions.draftPitcher(this, pitcher);           },
-            draftBatter:            function(batter)        { Actions.draftBatter(this, batter);             },
-            showFirstTeam:          function()              { Actions.showFirstTeam(this);                   },
-            showNextTeam:           function()              { Actions.showNextTeam(this);                    },
-            loadTeam:               function(teamId)        { Actions.loadTeam(this, teamId);                },
-            loadPlayers:            function(team, players) { Actions.loadPlayers(this, team, players);      },
-            setDraftStatus:         function()              { Actions.setDraftStatus(this);                  },
-            finishStage:            function()              { Actions.finishStage(this);                     }
+            prepareData:                 function(deferred)        { CommonActions.prepareData(this, deferred);                  },
+            toggleAvailablePlayersTable: function()                { CommonActions.toggleAvailablePlayersTable(this);            },
+            sortPitchers:                function(field)           { CommonActions.sortPitchers(this, field);                    },
+            sortBatters:                 function(field)           { CommonActions.sortBatters(this, field);                     },
+            selectAvailablePlayer:       function(players, player) { CommonActions.selectAvailablePlayer(this, players, player); },
+            draftSelectedPlayer:         function()                { CommonActions.draftSelectedPlayer(this);                    },
+            showNextTeam:                function()                { CommonActions.showNextTeam(this);                           },
+            setDraftStatus:              function()                { CommonActions.setDraftStatus(this);                         },
+            finishStage:                 function()                { AgentActions.finishStage(this);                             }
         }
     });
 
