@@ -210,7 +210,7 @@ define(['utils'], function(Utils) {
 
             it('should add a pitcher without stats to the given team pitcher list', function() {
                 var team    = { pitchers: [] };
-                var player  = { links: [{rel: 'self', href: 'url'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.success({player_type: 'Pitcher'});
@@ -224,7 +224,7 @@ define(['utils'], function(Utils) {
             it('should retrieve the pitcher without stats from the rest service using the self link in the player object', function() {
                 var selfUrl = 'http://localhost/rest/resource/thing/5';
                 var team    = { pitchers: [] };
-                var player  = { links: [{rel: 'self', href: selfUrl}] };
+                var player  = { _links: {self: {rel: 'self', href: selfUrl}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.success({player_type: 'Pitcher'});
@@ -237,7 +237,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the pitcher without stats', function() {
                 var team          = { pitchers: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Pitcher' };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -253,8 +253,8 @@ define(['utils'], function(Utils) {
 
             it('should add a pitcher with stats to the given team pitcher list', function() {
                 var team          = { pitchers: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Pitcher', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 
@@ -273,8 +273,8 @@ define(['utils'], function(Utils) {
 
             it('should retrieve the pitcher stats from the rest service using the stats link in the player details object', function() {
                 var team          = { pitchers: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Pitcher', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 
@@ -288,13 +288,13 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, true);
 
-                expect($.ajax).toHaveBeenCalledWith('statsUrl?season=4&phase=1', jasmine.any(Object));
+                expect($.ajax).toHaveBeenCalledWith('playerUrl/stats?season=4&phase=1', jasmine.any(Object));
             });
 
             it('should decorate the pitcher with stats', function() {
                 var team          = { pitchers: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Pitcher', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Pitcher', _links: {player: {rel: 'player', href: 'playerUrl'}} };
                 var pitcherStats  = { innings: 100, outs: 0 };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -316,7 +316,7 @@ define(['utils'], function(Utils) {
 
             it('should add a batter without stats to the given team batter list', function() {
                 var team    = { batters: [] };
-                var player  = { links: [{rel: 'self', href: 'url'}] };
+                var player  = { _links: {self: {rel: 'self', href: 'url'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.success({player_type: 'Batter'});
@@ -330,7 +330,7 @@ define(['utils'], function(Utils) {
             it('should retrieve the batter without stats from the rest service using the self link in the player object', function() {
                 var selfUrl = 'http://localhost/rest/resource/thing/5';
                 var team    = { batters: [] };
-                var player  = { links: [{rel: 'self', href: selfUrl}] };
+                var player  = { _links: {self: {rel: 'self', href: selfUrl}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.success({player_type: 'Batter'});
@@ -343,7 +343,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the batter without stats', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Batter' };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -359,8 +359,8 @@ define(['utils'], function(Utils) {
 
             it('should add a batter with stats to the given team batter list', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 
@@ -379,8 +379,8 @@ define(['utils'], function(Utils) {
 
             it('should retrieve the batter stats from the rest service using the stats link in the player details object', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 
@@ -394,13 +394,13 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, true);
 
-                expect($.ajax).toHaveBeenCalledWith('statsUrl?season=4&phase=1', jasmine.any(Object));
+                expect($.ajax).toHaveBeenCalledWith('playerUrl/stats?season=4&phase=1', jasmine.any(Object));
             });
 
             it('should decorate the batter with stats', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
                 var batterStats   = { innings: 100, outs: 0 };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -422,7 +422,7 @@ define(['utils'], function(Utils) {
 
             it('should resolve the deferred object on successful player without stats load', function() {
                 var team    = { batters: [] };
-                var player  = { links: [{rel: 'self', href: 'url'}] };
+                var player  = { _links: {self: {rel: 'self', href: 'url'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.success({player_type: 'Batter'});
@@ -435,7 +435,7 @@ define(['utils'], function(Utils) {
 
             it('should reject the deferred object on unsuccessful player without stats load', function() {
                 var team    = { batters: [] };
-                var player  = { links: [{rel: 'self', href: 'url'}] };
+                var player  = { _links: {self: {rel: 'self', href: 'url'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
                     options.error();
@@ -445,10 +445,11 @@ define(['utils'], function(Utils) {
 
                 expect(deferred.state()).toEqual("rejected");
             });
+
             it('should resolve the deferred object on successful player with stats load', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 
@@ -467,8 +468,8 @@ define(['utils'], function(Utils) {
 
             it('should reject the deferred object on unsuccessful player with stats load', function() {
                 var team          = { batters: [] };
-                var player        = { links: [{rel: 'self', href: 'url'}] };
-                var playerDetails = { player_type: 'Batter', links: [{rel: 'stats', href: 'statsUrl'}] };
+                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
 

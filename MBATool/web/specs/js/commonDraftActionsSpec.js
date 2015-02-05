@@ -36,17 +36,20 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
             it('should set the draft on the controller', function() {
 
                 var draft = [1,2,3,4,5];
+                var team = {team_id: 23, _links: {players: {href: ''}}};
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (rel.match(/draft/)) {
                         options.success(draft);
+                    } else if (rel.match(/teams/)) {
+                        options.success(team);
                     } else {
                         options.success([]);
                     }
                 });
 
                 spyOn(Utils, 'loadPlayer').and.callFake(function() {});
-                spyOn(Utils, 'findLink').and.callFake(function() {});
 
                 deferred.resolve.and.callFake(function(payload) { return payload; });
 
@@ -59,11 +62,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                 Globals.season = 6;
 
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == 'controller-draft-resource') {
-                        options.success([]);
-                    }
-                });
+                spyOn($, 'ajax').and.callFake(function(rel, options) {});
 
                 Actions.prepareData(controller, deferred);
 
@@ -75,6 +74,8 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
                 var availablePlayers = [{player_id: 1},{player_id: 2},{player_id: 3}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel.match(/draft/)) { return; }
+
                     if (rel == 'controller-draft-resource') { options.success([]); }
                     else                                    { options.success(availablePlayers); }
                 });
@@ -83,8 +84,6 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
                     if (player.player_id === 1) { team.pitchers.push(player); }
                     else                        { team.batters. push(player); }
                 });
-
-                spyOn(Utils, 'findLink').and.callFake(function() {});
 
                 Actions.prepareData(controller, deferred);
 
@@ -98,7 +97,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (rel == 'controller-draft-resource') {
-                        options.success([]);
+                        return;
                     } else if (rel == 'controller-players-resource') {
                         options.success(players);
                     } else {
@@ -108,8 +107,6 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                 spyOn(Utils, 'loadPlayer').and.callFake(function() {});
 
-                spyOn(Utils, 'findLink').and.callFake(function() {});
-
                 Actions.prepareData(controller, deferred);
 
                 expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
@@ -118,10 +115,10 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
             it('should set the current team index to 0', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success([]);
+                    if (! rel.match(/teams/)) {
+                        options.success([]);
+                    }
                 });
-
-                spyOn(Utils, 'findLink').and.callFake(function() {});
 
                 Actions.prepareData(controller, deferred);
 
@@ -130,29 +127,33 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should retrieve the team from the team resource endpoint', function() {
 
+                var team = {team_id: 23, _links: {players: {href: ''}}};
+                Globals.season = 4;
+
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (rel == 'controller-draft-resource') {
                         options.success([23]);
+                    } else if (rel == '/mba/resources/teams/23?season=4') {
+                        options.success(team);
                     } else {
                         options.success([]);
                     }
                 });
 
-                spyOn(Utils, 'findLink').and.callFake(function() {});
-
                 Actions.prepareData(controller, deferred);
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/23', jasmine.any(Object));
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/23?season=4', jasmine.any(Object));
             });
 
             it('should decorate the team received from the team resource', function() {
 
-                var team = {team_id: 23, links: []};
+                var team = {team_id: 23, _links: {players: {href: ''}}};
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (rel == 'controller-draft-resource') {
                         options.success([23]);
-                    } else if (rel == '/mba/resources/teams/23') {
+                    } else if (rel == '/mba/resources/teams/23?season=4') {
                         options.success(team);
                     } else {
                         options.success([]);
@@ -167,14 +168,15 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should retrieve the current season team players from the team resource endpoint', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players?season=4'}}};
+                var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
                 Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == 'controller-draft-resource') {
-                        options.success([23]);
-                    } else if (rel == '/mba/resources/teams/23') {
+                    if (rel == '/mba/resources/teams/23?season=4') {
                         options.success(team);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
@@ -187,16 +189,17 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should add pitchers and batters to the given team', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
                 var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
+                Globals.season = 5;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == 'controller-draft-resource') {
-                        options.success([23]);
-                    } else if (rel == '/mba/resources/teams/23') {
+                    if (rel == '/mba/resources/teams/23?season=5') {
                         options.success(team);
-                    } else if (rel.match(/season/)) {
+                    } else if (rel.match(/teams.*players/)) {
                         options.success(players);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
@@ -218,16 +221,17 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should call utils loadPlayer for each team player given', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
                 var players = [{},{},{},{},{}];
+                Globals.season = 5;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == 'controller-draft-resource') {
-                        options.success([23]);
-                    } else if (rel == '/mba/resources/teams/23') {
+                    if (rel == '/mba/resources/teams/23?season=5') {
                         options.success(team);
-                    } else if (rel.match(/season/)) {
+                    } else if (rel.match(/teams.*players/)) {
                         options.success(players);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
@@ -242,11 +246,20 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should set draft status', function() {
 
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success([]);
-                });
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
 
-                spyOn(Utils, 'findLink').and.callFake(function() {});
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
+                        options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
+                        options.success([]);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
+                    } else {
+                        options.success([]);
+                    }
+                });
 
                 Actions.prepareData(controller, deferred);
 
@@ -255,17 +268,20 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should add a team to the controller', function() {
 
-                var team = {team_id: 12};
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel.match(/teams/)) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
                         options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
+                        options.success([]);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
                 });
-
-                spyOn(Utils, 'findLink').and.callFake(function() {});
 
                 Actions.prepareData(controller, deferred);
 
@@ -274,11 +290,20 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should resolve the given promise when the work is complete', function() {
 
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success([]);
-                });
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
 
-                spyOn(Utils, 'findLink').and.callFake(function() {});
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
+                        options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
+                        options.success([]);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
+                    } else {
+                        options.success([]);
+                    }
+                });
 
                 Actions.prepareData(controller, deferred);
 
@@ -369,19 +394,20 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should reject the promise if the team players ajax call fails', function() {
 
-                var team = {team_id: 23, links: [{rel:'players', href: '/mba/resources/teams/23/players'}]};
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel.match(/teams/)) {
-                        options.success({});
-                    } else if (rel.match(/season/)) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
+                        options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
                         options.error();
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
                 });
-
-                spyOn(Utils, 'findLink').and.callFake(function() {});
 
                 Actions.prepareData(controller, deferred);
 
@@ -390,19 +416,21 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should show an alert if the team players ajax call fails', function() {
 
-                var team = {team_id: 23, links: [{rel:'players', href: '/mba/resources/teams/23/players'}]};
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel.match(/teams/)) {
-                        options.success({});
-                    } else if (rel.match(/season/)) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
+                        options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
                         options.error();
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
                     } else {
                         options.success([]);
                     }
                 });
 
-                spyOn(Utils, 'findLink').and.callFake(function() {});
                 spyOn(window, 'alert').and.callThrough();
 
                 Actions.prepareData(controller, deferred);
@@ -660,7 +688,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
             beforeEach(function() {
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.team = Ember.Object.create({batters: [], pitchers: [], links: [{rel: 'players', href: 'team-players-resource'}]});
+                controller.team = Ember.Object.create({batters: [], pitchers: [], _links: {team: {href: 'team-resource'}}});
                 controller.availablePlayers = Ember.Object.create({
                     pitchers: [],
                     batters:  []
@@ -679,7 +707,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                     Actions.draftSelectedPlayer(controller);
 
-                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-players-resource/123/season/7');
+                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-resource/players/123/season/7');
                     expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
                 });
 
@@ -717,7 +745,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
                     Actions.draftSelectedPlayer(controller);
 
-                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-players-resource/123/season/7');
+                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-resource/players/123/season/7');
                     expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
                 });
 
@@ -825,29 +853,26 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
                 expect(controller.currentTeamIdx).toBe(4);
             });
 
-            it('should retrieve the team from the team resource endpoint', function() {
+            it('should retrieve the team with season from the team resource endpoint', function() {
 
-                var team = {team_id: 25, links: []};
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
-                        options.success(team);
-                    }
-                });
+                spyOn($, 'ajax').and.callFake(function(rel, options) {});
 
                 Actions.showNextTeam(controller);
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/25', jasmine.any(Object));
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/25?season=4', jasmine.any(Object));
             });
 
             it('should decorate the team received from the team resource', function() {
 
-                var team = {team_id: 25, links: []};
+                var team = {team_id: 25, _links: {players: {href: 'team-resource/players'}}};
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     }
                 });
@@ -860,12 +885,12 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should retrieve the current season team players from the team resource endpoint', function() {
 
-                var team = {team_id: 25, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 25, _links: {players: {href: 'team-resource/players?season=4'}}};
                 controller.currentTeamIdx = 1;
                 Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     }
                 });
@@ -877,12 +902,13 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should add pitchers and batters to the given team', function() {
 
-                var team = {team_id: 25, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players'}}};
                 var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     } else {
                         options.success(players);
@@ -905,12 +931,13 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should call utils loadPlayer for each team player given', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players'}}};
                 var players = [{},{},{},{},{}];
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     } else {
                         options.success(players);
@@ -926,11 +953,12 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should set draft status', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players'}}};
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     } else {
                         options.success([]);
@@ -944,11 +972,12 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
 
             it('should add a team to the controller', function() {
 
-                var team = {team_id: 23, links: [{rel: 'players', href: 'team-resource/players'}]};
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players'}}};
                 controller.currentTeamIdx = 1;
+                Globals.season = 4;
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (rel == '/mba/resources/teams/25') {
+                    if (rel == '/mba/resources/teams/25?season=4') {
                         options.success(team);
                     } else {
                         options.success([]);

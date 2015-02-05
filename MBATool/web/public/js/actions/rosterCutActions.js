@@ -2,7 +2,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
     var RosterCutActions = {
         prepareData: function(controller, deferred) {
-            $.ajax( "/mba/resources/teams", {
+            $.ajax( Constants.TEAMS_URI + '?season=' + Globals.season, {
                 success: function(teams) {
                     controller.set('teams', Utils.decorateTeams(teams));
                     deferred.resolve();
@@ -21,7 +21,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             controller.set( "currentTeam", team );
 
             if ( team.pitchers.length == 0 ) {
-                $.ajax( "/mba/resources/teams/" + team.team_id + "/players?season=" + Globals.season + "&phase=1", {
+                $.ajax( team._links.players.href, {
                     success: function(players) {
                         controller.send('loadPlayers', team, players );
                     },
@@ -50,7 +50,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             });
         },
         toggleCutPitcher: function(controller, pitcher) {
-            var url = Utils.findLink( controller.currentTeam.links, "players" ) + "/" + pitcher.player_id + "/season/" + Globals.season;
+            var url = controller.currentTeam._links.team.href + "/players/" + pitcher.player_id + "/season/" + Globals.season;
 
             $.ajax( url, {
                 type: pitcher.isCut ? 'POST' : 'DELETE',
@@ -66,7 +66,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             });
         },
         toggleCutBatter: function(controller, batter) {
-            var url = Utils.findLink( controller.currentTeam.links, "players" ) + "/" + batter.player_id + "/season/" + Globals.season;
+            var url = controller.currentTeam._links.team.href + "/players/" + batter.player_id + "/season/" + Globals.season;
 
             $.ajax( url, {
                 type: batter.isCut ? 'POST' : 'DELETE',

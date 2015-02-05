@@ -15,11 +15,13 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should send a request to the teams resource', function() {
 
+                Globals.season = 8;
+
                 spyOn($, 'ajax').and.callFake(function() {});
 
                 Actions.prepareData(controller, deferred);
 
-                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams', jasmine.any(Object));
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams?season=8', jasmine.any(Object));
             });
 
             it('should set the teams on the controller', function() {
@@ -132,24 +134,26 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should retrieve the players from the backend', function() {
 
-                    var team    = Ember.Object.create().setProperties({team_id: 13, isSelected: false, pitchers: []});
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}}
+                    });
                     var players = [{}, {}, {}];
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
                         options.success(players);
                     });
 
-                    Globals.season = 7;
-
                     Actions.selectTeam(controller, team);
 
-                    expect($.ajax).toHaveBeenCalledWith('/mba/resources/teams/13/players?season=7&phase=1', jasmine.any(Object));
+                    expect($.ajax).toHaveBeenCalledWith('team-player-resource', jasmine.any(Object));
                     expect(controller.send).toHaveBeenCalledWith('loadPlayers', team, players);
                 });
 
                 it('should show an alert if the ajax call fails', function() {
 
-                    var team = Ember.Object.create().setProperties({isSelected: false, pitchers: []});
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}}
+                    });
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
                         options.error();
@@ -240,13 +244,13 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
                 controller.currentTeam = Ember.Object.create();
+                controller.currentTeam._links = {team:{href:'http://localhost/mba/resources/teams/7'}};
             });
 
             describe('when pitcher has not been cut', function() {
 
                 it('should send a delete request to the team player resource', function() {
 
-                    controller.currentTeam.links = [{rel:'players', href:'http://localhost/mba/resources/teams/7/players'}];
                     var pitcher = {player_id: 123};
                     Globals.season = 2;
 
@@ -260,7 +264,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should mark the pitcher as having been cut', function() {
 
-                    controller.currentTeam.links = [];
                     var pitcher = Ember.Object.create({isCut: false});
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -277,7 +280,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should send a post request to the team player resource', function() {
 
-                    controller.currentTeam.links = [{rel:'players', href:'http://localhost/mba/resources/teams/7/players'}];
                     var pitcher = {player_id: 123, isCut: true};
                     Globals.season = 2;
 
@@ -291,7 +293,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should mark the pitcher as not having been cut', function() {
 
-                    controller.currentTeam.links = [];
                     var pitcher = Ember.Object.create({isCut: true});
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -306,7 +307,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should update the pitchers and team status', function() {
 
-                controller.currentTeam.links = [];
                 var pitcher = Ember.Object.create({isCut: false});
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -321,7 +321,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should show an alert if the ajax call fails', function() {
 
-                controller.currentTeam.links = [];
                 var pitcher = {};
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -344,13 +343,13 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
                 controller.currentTeam = Ember.Object.create();
+                controller.currentTeam._links = {team:{href:'http://localhost/mba/resources/teams/7'}};
             });
 
             describe('when batter has not been cut', function() {
 
                 it('should send a delete request to the team player resource', function() {
 
-                    controller.currentTeam.links = [{rel:'players', href:'http://localhost/mba/resources/teams/7/players'}];
                     var batter = {player_id: 123};
                     Globals.season = 2;
 
@@ -364,7 +363,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should mark the batter as having been cut', function() {
 
-                    controller.currentTeam.links = [];
                     var batter = Ember.Object.create({isCut: false});
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -381,7 +379,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should send a post request to the team player resource', function() {
 
-                    controller.currentTeam.links = [{rel:'players', href:'http://localhost/mba/resources/teams/7/players'}];
                     var batter = {player_id: 123, isCut: true};
                     Globals.season = 2;
 
@@ -395,7 +392,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should mark the batter as not having been cut', function() {
 
-                    controller.currentTeam.links = [];
                     var batter = Ember.Object.create({isCut: true});
 
                     spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -410,7 +406,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should update the batters and team status', function() {
 
-                controller.currentTeam.links = [];
                 var batter = Ember.Object.create({isCut: false});
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -425,7 +420,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should show an alert if the ajax call fails', function() {
 
-                controller.currentTeam.links = [];
                 var batter = {};
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {

@@ -1,4 +1,4 @@
-define(['objects/globals', 'utils'], function(Globals, Utils) {
+define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
     var loadPlayerDetails = function(deferred, team, players) {
         var promises = [];
@@ -30,7 +30,7 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
     }
 
     var loadTeamPlayers = function(controller, deferred, team) {
-        $.ajax( Utils.findLink( team.links, "players" ) + "?season=" + Globals.season, {
+        $.ajax( team._links.players.href, {
             success: function(players) {
                 loadPlayerDetails(deferred, team, players);
             },
@@ -46,7 +46,7 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
         var defer = $.Deferred();
         var teamId = controller.draftOrder[controller.currentTeamIdx];
 
-        $.ajax( "/mba/resources/teams/" + teamId, {
+        $.ajax( Constants.TEAMS_URI + '/' + teamId + '?season=' + Globals.season, {
             success: function(team) {
                 team.pitchers = [];
                 team.batters  = [];
@@ -81,7 +81,7 @@ define(['objects/globals', 'utils'], function(Globals, Utils) {
     }
 
     var draftPlayer = function(controller, player, availablePlayers, teamPlayers) {
-        var url = Utils.findLink( controller.team.links, "players" ) + "/" + player.player_id + "/season/" + Globals.season;
+        var url = controller.team._links.team.href + "/players/" + player.player_id + "/season/" + Globals.season;
 
         $.ajax( url, {
             type: 'POST',

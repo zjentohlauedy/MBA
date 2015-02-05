@@ -1,8 +1,8 @@
-define(['objects/globals', 'utils'], function(Globals, Utils) {
+define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
     var StartSeasonActions = {
         startNewSeason: function(controller) {
-            $.ajax( "/mba/actions/start_season", {
+            $.ajax( Constants.START_SEASON_URI, {
                 type: 'POST',
                 success: function(data) {
                     Globals.season = data.season;

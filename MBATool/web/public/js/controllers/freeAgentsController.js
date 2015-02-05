@@ -19,8 +19,8 @@ define(['objects/constants', 'objects/globals', 'actions/commonDraftActions', 'a
         showAvailableBatters:    false,
         canDraft:                true,
         stageComplete:           false,
-        draftResource:           function() { return "/mba/resources/drafts/rookie/season/" + (Globals.season - 1);   },
-        playersResource:         function() { return "/mba/resources/players?freeagent=true&season=" + Globals.season; },
+        draftResource:           function() { return Constants.FREE_AGENT_DRAFT_URI + '/' + (Globals.season - 1);   },
+        playersResource:         function() { return Constants.PLAYERS_URI + "?freeagent=true&season=" + Globals.season; },
         actions: {
             prepareData:                 function(deferred)        { CommonActions.prepareData(this, deferred);                  },
             toggleAvailablePlayersTable: function()                { CommonActions.toggleAvailablePlayersTable(this);            },

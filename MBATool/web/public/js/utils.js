@@ -81,11 +81,11 @@ define(['ember'], function(Ember) {
         loadPlayer: function(player, team, season, needStats) {
             var deferred = $.Deferred();
 
-            $.ajax( Utils.findLink( player.links, "self" ), {
+            $.ajax( player._links.self.href, {
                 success: function(playerDetails) {
 
                     if (needStats) {
-                        $.ajax( Utils.findLink( playerDetails.links, "stats" ) + "?season=" + (season - 1) + "&phase=1", {
+                        $.ajax( playerDetails._links.player.href + "/stats?season=" + (season - 1) + "&phase=1", {
                             success: function(playerStats) {
 
                                 if (playerDetails.player_type === "Pitcher") {
