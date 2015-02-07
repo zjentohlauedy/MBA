@@ -1,5 +1,6 @@
 define({
     app_name: "mba-tool",
+    urlArgs: "bust=" + (new Date()).getTime(),
     shim: {
         'ember': {
             deps: ['handlebars', 'jquery'],
