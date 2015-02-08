@@ -10,14 +10,6 @@ class TeamPlayerDecorator
   end
 
   def decorate_team_player( team_player )
-    links = []
-
-    links << { rel: 'self', href: "#{@base_url}/teams/#{team_player[:team_id]}/players/#{team_player[:player_id]}/season/#{team_player[:season]}" }
-
-    team_player[:links] = links
-
-#
-
     _links = {}
 
     _links[:self] = { rel:  'self',

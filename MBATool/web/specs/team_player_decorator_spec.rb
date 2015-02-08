@@ -9,40 +9,7 @@ describe TeamPlayerDecorator do
     @team_player_decorator = TeamPlayerDecorator.new @base_url
   end
 
-  def find_link( links, rel )
-    links.each do |link|
-      if link[:rel] == rel; return link end
-    end
-
-    return nil
-  end
-
   describe '#decorate_team_player' do
-    it 'should return the given team player hash with links added [deprecated]' do
-      team_player = {team_id: 1, season: 2, player_id: 3}
-
-      result = @team_player_decorator.decorate_team_player team_player
-
-      expect( result                    ).to_not be_nil
-      expect( result                    ).to     be_a   Hash
-      expect( result[:team_id         ] ).to_not be_nil
-      expect( result[:season          ] ).to_not be_nil
-      expect( result[:player_id       ] ).to_not be_nil
-      expect( result[:links           ] ).to_not be_nil
-    end
-
-    it 'should add a self link [deprecated]' do
-      team_player = {team_id: 1, season: 2, player_id: 3}
-
-      result = @team_player_decorator.decorate_team_player team_player
-
-      link = find_link result[:links], 'self'
-
-      expect( link        ).to_not be_nil
-      expect( link[:rel ] ).to     eq     'self'
-      expect( link[:href] ).to     eq     "#{@base_url}/teams/1/players/3/season/2"
-    end
-
     it 'should return the given team player hash with links added' do
       team_player = {team_id: 1, season: 2, player_id: 3}
 

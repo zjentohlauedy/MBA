@@ -20,15 +20,6 @@ class PlayerDecorator
   end
 
   def decorate_player( player, season = nil, phase = nil )
-    links = []
-
-    links << { rel: 'self',  href: "#{@base_url}/players/#{player[:player_id]}"       }
-    links << { rel: 'stats', href: "#{@base_url}/players/#{player[:player_id]}/stats" }
-
-    player[:links] = links
-
-#
-
     _links = {}
 
     _links[:self]  = { rel: 'self',   href: "#{@base_url}/players/#{player[:player_id]}",       desc: 'This resource'              }
@@ -53,14 +44,6 @@ class PlayerDecorator
   end
 
   def decorate_player_stats( player_stats, phase )
-    links = []
-
-    links << { rel: 'self',  href: "#{@base_url}/players/#{player_stats[:player_id]}/stats?season=#{player_stats[:season]}&phase=#{phase}" }
-
-    player_stats[:links] = links
-
-#
-
     _links = {}
 
     _links[:self] = { rel:  'self',
