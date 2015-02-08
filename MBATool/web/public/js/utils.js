@@ -68,16 +68,6 @@ define(['ember'], function(Ember) {
 
             return Ember.Object.create().setProperties(player);
         },
-        findLink: function(links, rel) {
-
-            for (var i = 0; i < links.length; i++) {
-                if (links[i].rel === rel) {
-                    return links[i].href;
-                }
-            }
-
-            return null;
-        },
         loadPlayer: function(player, team, season, needStats) {
             var deferred = $.Deferred();
 

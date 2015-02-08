@@ -193,19 +193,6 @@ define(['utils'], function(Utils) {
             });
         });
 
-        describe('findLink', function() {
-
-            it('should return the href of the links entry that matches the given rel', function() {
-                var links = [{rel: 'self', href: 'http://www.website.com/rest/resource/thing/5'},
-                             {rel: 'next', href: 'http://www.website.com/rest/resource/thing/6'},
-                             {rel: 'prev', href: 'http://www.website.com/rest/resource/thing/4'}];
-
-                var result = Utils.findLink(links, 'next');
-
-                expect(result).toEqual('http://www.website.com/rest/resource/thing/6');
-            });
-        });
-
         describe('loadPlayer', function() {
 
             it('should add a pitcher without stats to the given team pitcher list', function() {
