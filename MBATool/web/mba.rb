@@ -7,6 +7,10 @@ require 'sinatra'
 require 'sqlite3'
 require 'json'
 
+require 'org_decorator'
+require 'org_repository'
+require 'org_service'
+
 require 'team_decorator'
 require 'team_repository'
 require 'team_response_mapper'
@@ -48,7 +52,7 @@ db = SQLite3::Database.new db_file
 db.results_as_hash  = true
 db.type_translation = true
 
-
+org_service         = OrgService.new( OrgRepository.new( db ), OrgDecorator.new( href_base_url ) )
 team_repository     = TeamRepository.new db
 player_repository   = PlayerRepository.new db
 team_service        = TeamService.new( team_repository, TeamResponseMapper.new, TeamDecorator.new( href_base_url ) )
@@ -69,6 +73,20 @@ get "#{mba_root}/status/?" do
 
   status = { :status => 'OK', :version => '0.0.2' }
   JSON.generate status
+end
+
+get "#{resources_root}/organizations/:org_id/?" do
+  content_type 'application/json'
+
+  JSON.generate org_service.get_org params[:org_id]
+end
+
+post "#{resources_root}/organizations/:org_id/?" do
+  content_type 'application/json'
+
+#  request.body.rewind
+
+  JSON.generate org_service.save_org params[:org_id], JSON.parse( request.body.read )
 end
 
 get "#{resources_root}/teams/?" do

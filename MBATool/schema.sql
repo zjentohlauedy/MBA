@@ -280,3 +280,22 @@ CREATE TABLE League_Teams_T
 --
    UNIQUE ( League_Id, Team_Id )
 );
+
+CREATE TABLE Organizations_T
+(
+   Organization_Id INTEGER PRIMARY KEY,
+   Name            TEXT,
+   Abbreviation    TEXT,
+   Season          INTEGER,
+   Stage           INTEGER,
+   Draft_Round     INTEGER,
+   Pick_Number     INGETER
+);
+
+CREATE TABLE Organization_Leagues_T
+(
+   Organization_Id INTEGER,
+   League_Id       INTEGER,
+--
+   UNIQUE ( Organization_Id, League_Id )
+);
