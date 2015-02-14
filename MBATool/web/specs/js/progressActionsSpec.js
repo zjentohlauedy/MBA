@@ -12,6 +12,10 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
 
                 controller.stage  = Progress.stage;
                 controller.stages = Progress.stages.slice(0); // clone the array so it is reset before each test
+
+                controller.send = function(method, data) {
+                    if (method == 'goToStage') { Actions.goToStage(controller, data); }
+                }
             });
 
             it('should increment the stage', function() {
@@ -71,6 +75,68 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 Actions.nextStage(controller);
 
                 expect(controller.transitionToRoute).toHaveBeenCalledWith('season-complete');
+            });
+        });
+
+        describe('goToStage', function() {
+
+            var controller;
+
+            beforeEach(function() {
+
+                controller = jasmine.createSpyObj('controller', ['transitionToRoute']);
+
+                controller.stage  = Progress.stage;
+                controller.stages = Progress.stages.slice(0); // clone the array so it is reset before each test
+            });
+
+            it('should transition to the route of the given stage', function() {
+
+                Actions.goToStage(controller, 3);
+
+                expect(controller.transitionToRoute).toHaveBeenCalledWith(controller.stages[3].route);
+            });
+
+            it('should update the controller stage property to the given stage', function() {
+
+                controller.stage = 0;
+
+                Actions.goToStage(controller, 3);
+
+                expect(controller.stage).toBe(3);
+            });
+
+            it('should set the current stage status to curr', function() {
+
+                Actions.goToStage(controller, 3);
+
+                expect(controller.stages[3].status).toEqual('progress-curr');
+            });
+
+            it('should set all previous stages status to done', function() {
+
+                Actions.goToStage(controller, 3);
+
+                expect(controller.stages[0].status).toEqual('progress-done');
+                expect(controller.stages[1].status).toEqual('progress-done');
+                expect(controller.stages[2].status).toEqual('progress-done');
+            });
+
+            it('should set all later stages status to todo', function() {
+
+                Actions.goToStage(controller, 3);
+
+                expect(controller.stages[4].status).toEqual('progress-todo');
+                expect(controller.stages[5].status).toEqual('progress-todo');
+            });
+
+            it('should show an alert if the given stage is out of range', function() {
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.goToStage(controller, 12);
+
+                expect(window.alert).toHaveBeenCalled();
             });
         });
     });

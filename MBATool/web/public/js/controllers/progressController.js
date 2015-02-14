@@ -4,7 +4,8 @@ define(['objects/progress', 'actions/progressActions', 'ember'], function(Progre
         stage:  Progress.stage,
         stages: Progress.stages,
         actions: {
-            nextStage: function() { Actions.nextStage(this); }
+            nextStage: function()      { Actions.nextStage(this);       },
+            goToStage: function(stage) { Actions.goToStage(this, stage) }
         }
     });
 
