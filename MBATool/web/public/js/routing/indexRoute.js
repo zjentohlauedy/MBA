@@ -1,9 +1,7 @@
-define(['objects/progress', 'ember'], function(Progress, Ember) {
+define(['actions/routeActions', 'ember'], function(Actions, Ember) {
 
     var IndexRoute = Ember.Route.extend({
-        redirect: function() {
-            this.transitionTo(Progress.stages[Progress.stage].route);
-        }
+        redirect: function() { Actions.indexRouteRedirect(this); }
     });
 
     return IndexRoute;

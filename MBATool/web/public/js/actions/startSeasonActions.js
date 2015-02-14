@@ -14,14 +14,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             });
         },
         finishStage: function(controller) {
-            var deferred = $.Deferred();
-
-            controller.get("controllers.roster-cut").send('prepareData', deferred);
-
-            deferred.promise().then(function() {
-
-                controller.get("controllers.progress").send('nextStage');
-            });
+            controller.get("controllers.progress").send('nextStage');
         }
     };
 
