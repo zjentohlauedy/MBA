@@ -20,6 +20,8 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
 
             it('should increment the stage', function() {
 
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
+
                 Actions.nextStage(controller);
 
                 expect(controller.stage).toBe(1);
@@ -29,12 +31,16 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
 
                 controller.stage = controller.stages.length;
 
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
+
                 Actions.nextStage(controller);
 
                 expect(controller.stage).toBe(0);
             });
 
             it('should set the previous stage status to done', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
 
                 Actions.nextStage(controller);
 
@@ -43,12 +49,16 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
 
             it('should set the current stage status to curr', function() {
 
+                spyOn($, 'ajax').and.callFake(function() {});
+
                 Actions.nextStage(controller);
 
                 expect(controller.stages[1].status).toEqual('progress-curr');
             });
 
             it('should reset all but current stage status to todo if stage goes beyond the number of stages', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
 
                 controller.stage = controller.stages.length;
 
@@ -61,7 +71,21 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 };
             });
 
+            it('should update the organization resource with the new stage value', function() {
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.nextStage(controller);
+
+                expect($.ajax).toHaveBeenCalled();
+                expect($.ajax.calls.mostRecent().args[0]).toEqual('/mba/resources/organizations/1');
+                expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
+                expect($.ajax.calls.mostRecent().args[1].data).toEqual('{"stage":1}');
+            });
+
             it('should transition to the route of the new stage', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
 
                 Actions.nextStage(controller);
 
@@ -75,6 +99,17 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 Actions.nextStage(controller);
 
                 expect(controller.transitionToRoute).toHaveBeenCalledWith('season-complete');
+            });
+
+            it('should show an alert if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error() });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.nextStage(controller);
+
+                expect(window.alert).toHaveBeenCalled();
             });
         });
 

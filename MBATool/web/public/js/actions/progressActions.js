@@ -1,15 +1,47 @@
 define([], function() {
 
+    var updateOrganization = function(data) {
+        var defer = $.Deferred();
+
+        $.ajax('/mba/resources/organizations/1', {
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(org) {
+                defer.resolve(org);
+            },
+            error: function() {
+                defer.reject();
+            }
+        });
+
+        return defer.promise();
+    };
+
     var ProgressActions = {
         nextStage: function(controller) {
             if (controller.stage >= controller.stages.length) {
+                $.when(updateOrganization({stage: 0})).then(
+                    function(org) {
+                        controller.send('goToStage', 0);
+                    },
+                    function() {
+                        alert('Error updating organization');
+                    }
+                );
 
-                controller.send('goToStage', 0);
                 return;
             }
 
             if ((controller.stage + 1) < controller.stages.length) {
-                controller.send('goToStage', controller.stage + 1);
+                $.when(updateOrganization({stage: controller.stage + 1})).then(
+                    function(org) {
+                        controller.send('goToStage', controller.stage + 1);
+                    },
+                    function() {
+                        alert('Error updating organization');
+                    }
+                );
+
                 return;
             }
 
