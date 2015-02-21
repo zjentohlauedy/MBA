@@ -17,9 +17,9 @@ define(['ember'], function(Ember) {
                 return Ember.Object.create().setProperties(entry);
             });
         },
-        decoratePitcher: function(player, stats) {
+        decoratePitcher: function(player, stats, isCut) {
 
-            player.isCut      = false;
+            player.isCut      = isCut;
             player.isSelected = false;
             player.rating     = player.speed + player.control + player.fatigue;
 
@@ -45,9 +45,9 @@ define(['ember'], function(Ember) {
 
             return Ember.Object.create().setProperties(player);
         },
-        decorateBatter: function(player, stats) {
+        decorateBatter: function(player, stats, isCut) {
 
-            player.isCut      = false;
+            player.isCut      = isCut;
             player.isSelected = false;
             player.rating     = player.power + player.hit_n_run + player.running;
 
@@ -68,6 +68,27 @@ define(['ember'], function(Ember) {
 
             return Ember.Object.create().setProperties(player);
         },
+        mergePlayerLists: function(list1, list2) {
+            var resultList = [];
+
+            list1.forEach(function(player) {
+                resultList.push(player);
+            });
+
+            list2.forEach(function(player) {
+                var found = false;
+
+                for (var i = 0; i < resultList.length; ++i) {
+                    if (resultList[i].player_id === player.player_id) {
+                        found = true;
+                    }
+                }
+
+                if (!found) { resultList.push(player) }
+            });
+
+            return resultList.sort(function(p1,p2) { return p1.player_id - p2.player_id; });
+        },
         loadPlayer: function(player, team, season, needStats) {
             var deferred = $.Deferred();
 
@@ -79,11 +100,11 @@ define(['ember'], function(Ember) {
                             success: function(playerStats) {
 
                                 if (playerDetails.player_type === "Pitcher") {
-                                    team.pitchers.addObject(Utils.decoratePitcher(playerDetails, playerStats));
+                                    team.pitchers.addObject(Utils.decoratePitcher(playerDetails, playerStats, player.isCut));
                                 }
 
                                 if (playerDetails.player_type === "Batter") {
-                                    team.batters. addObject(Utils.decorateBatter( playerDetails, playerStats));
+                                    team.batters. addObject(Utils.decorateBatter( playerDetails, playerStats, player.isCut));
                                 }
 
                                 deferred.resolve();
@@ -98,11 +119,11 @@ define(['ember'], function(Ember) {
                     }
 
                     if (playerDetails.player_type === "Pitcher") {
-                        team.pitchers.addObject(Utils.decoratePitcher(playerDetails, null));
+                        team.pitchers.addObject(Utils.decoratePitcher(playerDetails, null, player.isCut));
                     }
 
                     if (playerDetails.player_type === "Batter") {
-                        team.batters. addObject(Utils.decorateBatter( playerDetails, null));
+                        team.batters. addObject(Utils.decorateBatter( playerDetails, null, player.isCut));
                     }
 
                     deferred.resolve();

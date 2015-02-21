@@ -36,13 +36,20 @@ define(['utils'], function(Utils) {
 
         describe('decoratePitcher', function() {
 
-            it('should add the cut and selected flags', function() {
+            it('should add the selected flag', function() {
                 var player = {};
 
                 Utils.decoratePitcher(player, null);
 
-                expect(player.isCut     ).toBe(false);
                 expect(player.isSelected).toBe(false);
+            });
+
+            it('should add the cut flag based on the isCut argument', function() {
+                var player = {};
+
+                Utils.decoratePitcher(player, null, true);
+
+                expect(player.isCut).toBe(true);
             });
 
             it('should calculate the player rating', function() {
@@ -128,13 +135,20 @@ define(['utils'], function(Utils) {
 
         describe('decorateBatter', function() {
 
-            it('should add cut and selected flags', function() {
+            it('should add selected flag', function() {
                 var player = {};
 
                 Utils.decorateBatter(player, null);
 
-                expect(player.isCut     ).toBe(false);
                 expect(player.isSelected).toBe(false);
+            });
+
+            it('should add the cut flag based on the isCut argument', function() {
+                var player = {};
+
+                Utils.decorateBatter(player, null, true);
+
+                expect(player.isCut).toBe(true);
             });
 
             it('should calculate the player rating', function() {
@@ -193,6 +207,48 @@ define(['utils'], function(Utils) {
             });
         });
 
+        describe('mergePlayerLists', function() {
+
+            it('should return a list of players', function() {
+                var result = Utils.mergePlayerLists([], []);
+
+                expect(result).toEqual([]);
+            });
+
+            it('should combine the player lists', function() {
+                var result = Utils.mergePlayerLists([{player_id: 1}], [{player_id: 2},{player_id: 3}]);
+
+                expect(result.length).toBe(3);
+            });
+
+            it('should not return duplicates', function() {
+                var result = Utils.mergePlayerLists([{player_id: 1}], [{player_id: 1},{player_id: 3}]);
+
+                expect(result.length).toBe(2);
+            });
+
+            it('should always keep players from the first array when there are duplicates', function() {
+                var list1 = [{player_id: 1, season: 3},{player_id: 2, season: 3},{player_id: 4, season: 3}];
+                var list2 = [{player_id: 1, season: 4},{player_id: 2, season: 4},{player_id: 3, season: 4}];
+
+                var result = Utils.mergePlayerLists(list1,list2);
+
+                expect(result.length).toBe(4);
+
+                expect(result[0].season).toBe(3);
+                expect(result[1].season).toBe(3);
+                expect(result[2].season).toBe(4);
+                expect(result[3].season).toBe(3);
+            });
+
+            it('should sort the returned list by player id', function() {
+                var result = Utils.mergePlayerLists([{player_id: 2}],[{player_id: 1}]);
+
+                expect(result[0].player_id).toBe(1);
+                expect(result[1].player_id).toBe(2);
+            });
+        });
+
         describe('loadPlayer', function() {
 
             it('should add a pitcher without stats to the given team pitcher list', function() {
@@ -224,7 +280,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the pitcher without stats', function() {
                 var team          = { pitchers: [] };
-                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var player        = { isCut: false, _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Pitcher' };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -235,7 +291,7 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, false);
 
-                expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, null);
+                expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, null, player.isCut);
             });
 
             it('should add a pitcher with stats to the given team pitcher list', function() {
@@ -280,7 +336,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the pitcher with stats', function() {
                 var team          = { pitchers: [] };
-                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var player        = { isCut: false, _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Pitcher', _links: {player: {rel: 'player', href: 'playerUrl'}} };
                 var pitcherStats  = { innings: 100, outs: 0 };
 
@@ -298,7 +354,7 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, true);
 
-                expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, pitcherStats);
+                expect(Utils.decoratePitcher).toHaveBeenCalledWith(playerDetails, pitcherStats, player.isCut);
             });
 
             it('should add a batter without stats to the given team batter list', function() {
@@ -330,7 +386,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the batter without stats', function() {
                 var team          = { batters: [] };
-                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var player        = { isCut: false, _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Batter' };
 
                 spyOn($, 'ajax').and.callFake(function (req, options) {
@@ -341,7 +397,7 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, false);
 
-                expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, null);
+                expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, null, player.isCut);
             });
 
             it('should add a batter with stats to the given team batter list', function() {
@@ -386,7 +442,7 @@ define(['utils'], function(Utils) {
 
             it('should decorate the batter with stats', function() {
                 var team          = { batters: [] };
-                var player        = { _links: {self: {rel: 'self', href: 'url'}} };
+                var player        = { isCut: false, _links: {self: {rel: 'self', href: 'url'}} };
                 var playerDetails = { player_type: 'Batter', _links: {player: {rel: 'player', href: 'playerUrl'}} };
                 var batterStats   = { innings: 100, outs: 0 };
 
@@ -404,7 +460,7 @@ define(['utils'], function(Utils) {
 
                 Utils.loadPlayer(player, team, 5, true);
 
-                expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, batterStats);
+                expect(Utils.decorateBatter).toHaveBeenCalledWith(playerDetails, batterStats, player.isCut);
             });
 
             it('should resolve the deferred object on successful player without stats load', function() {

@@ -130,43 +130,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 expect(controller.set).toHaveBeenCalledWith('currentTeam', team);
             });
 
-            describe('when the given team has no players', function() {
-
-                it('should retrieve the players from the backend', function() {
-
-                    var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}}
-                    });
-                    var players = [{}, {}, {}];
-
-                    spyOn($, 'ajax').and.callFake(function(rel, options) {
-                        options.success(players);
-                    });
-
-                    Actions.selectTeam(controller, team);
-
-                    expect($.ajax).toHaveBeenCalledWith('team-player-resource', jasmine.any(Object));
-                    expect(controller.send).toHaveBeenCalledWith('loadPlayers', team, players);
-                });
-
-                it('should show an alert if the ajax call fails', function() {
-
-                    var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}}
-                    });
-
-                    spyOn($, 'ajax').and.callFake(function(rel, options) {
-                        options.error();
-                    });
-
-                    spyOn(window, 'alert').and.callThrough();
-
-                    Actions.selectTeam(controller, team);
-
-                    expect(window.alert).toHaveBeenCalled();
-                });
-            });
-
             describe('when the given team has players', function() {
 
                 it('should update pitchers and batters status', function() {
@@ -179,60 +142,181 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                     expect(controller.send).toHaveBeenCalledWith('updateBattersStatus');
                 });
             });
-        });
 
-        describe('loadPlayers', function() {
+            describe('when the given team has no players', function() {
 
-            var controller;
+                it('should retrieve the team players for the current season from the backend', function() {
 
-            beforeEach(function() {
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                    });
+                    var players = [{}, {}, {}];
 
-                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
-                controller.currentTeam = Ember.Object.create();
-            });
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
 
-            it('should add pitchers and batters to the given team', function() {
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
 
-                var team    = {pitchers: [], batters: []};
-                var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
+                    Actions.selectTeam(controller, team);
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
-
-                    if (player.player_id === 1) {
-                        team.pitchers.push(player);
-                    } else {
-                        team.batters.push(player);
-                    }
+                    expect($.ajax).toHaveBeenCalledWith('team-player-resource', jasmine.any(Object));
                 });
 
-                Actions.loadPlayers(controller, team, players);
+                it('should mark the team players for the current season as not being cut', function() {
 
-                expect(team.pitchers.length).toBe(1);
-                expect(team.batters. length).toBe(2);
-            });
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                    });
+                    var players = [{}, {}, {}];
 
-            it('should call utils loadPlayer for each player given', function() {
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        if (rel.match(/team-player-resource/)) { options.success(players); }
+                        else                                   { options.success([]);      }
+                    });
 
-                var team = {};
-                var players = [{},{},{},{},{}];
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
 
-                spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+                    Actions.selectTeam(controller, team);
 
-                Actions.loadPlayers(controller, team, players);
+                    expect(players[0].isCut).toBe(false);
+                    expect(players[1].isCut).toBe(false);
+                    expect(players[2].isCut).toBe(false);
+                });
 
-                expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
-            });
+                it('should retrieve the team players for the previous season from the backend', function() {
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                    });
+                    var players = [{}, {}, {}];
+                    Globals.season = 5;
 
-            it('should update pitchers, batters and team status', function() {
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
 
-                var team    = {};
-                var players = [];
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
 
-                Actions.loadPlayers(controller, team, players);
+                    Actions.selectTeam(controller, team);
 
-                expect(controller.send).toHaveBeenCalledWith('updatePitchersStatus');
-                expect(controller.send).toHaveBeenCalledWith('updateBattersStatus');
-                expect(controller.send).toHaveBeenCalledWith('updateTeamStatus');
+                    expect($.ajax).toHaveBeenCalledWith('team-resource/players?season=4', jasmine.any(Object));
+                });
+
+                it('should mark the team players for the previous season as being cut', function() {
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                    });
+                    var players = [{}, {}, {}];
+                    Globals.season = 5;
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        if (rel.match(/team-resource/)) { options.success(players); }
+                        else                            { options.success([]);      }
+                    });
+
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(players[0].isCut).toBe(true);
+                    expect(players[1].isCut).toBe(true);
+                    expect(players[2].isCut).toBe(true);
+                });
+
+                it('should merge the players from current and previous seasons', function() {
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                    });
+                    var plist1 = [{player_id: 1}];
+                    var plist2 = [{player_id: 2}];
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        if      (rel.match(/team-player-resource/)) { options.success(plist1); }
+                        else if (rel.match(/team-resource/)       ) { options.success(plist2); }
+                    });
+
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+                    spyOn(Utils, 'mergePlayerLists').and.callThrough();
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(Utils.mergePlayerLists).toHaveBeenCalledWith(plist1, plist2);
+                });
+
+                it('should add pitchers and batters to the given team', function() {
+
+                    var team    = Ember.Object.create().setProperties({
+                        pitchers: [], batters: [], _links: {players: {href: ""}, team: {href: ""}}
+                    });
+                    var players = [{player_id: 1},{player_id: 2},{player_id: 3}];
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
+
+                    spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
+                        if   (player.player_id === 1) { team.pitchers.push(player); }
+                        else                          { team.batters. push(player); }
+                    });
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(team.pitchers.length).toBe(1);
+                    expect(team.batters. length).toBe(2);
+                });
+
+                it('should call utils loadPlayer for each player given', function() {
+
+                    var team = Ember.Object.create().setProperties({
+                        pitchers: [], batters: [], _links: {players: {href: ""}, team: {href: ""}}
+                    });
+                    var players = [{},{},{},{},{}];
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
+
+                    spyOn(Utils, 'loadPlayer').and.callFake(function() {});
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
+                });
+
+                it('should update pitchers, batters and team status', function() {
+
+                    var team = Ember.Object.create().setProperties({
+                        pitchers: [], batters: [], _links: {players: {href: ""}, team: {href: ""}}
+                    });
+                    var players = [];
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(controller.send).toHaveBeenCalledWith('updatePitchersStatus');
+                    expect(controller.send).toHaveBeenCalledWith('updateBattersStatus');
+                    expect(controller.send).toHaveBeenCalledWith('updateTeamStatus');
+                });
+
+                it('should show an alert if the ajax call fails', function() {
+
+                    var team    = Ember.Object.create().setProperties({
+                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: ""}}
+                    });
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.error();
+                    });
+
+                    spyOn(window, 'alert').and.callThrough();
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(window.alert).toHaveBeenCalled();
+                });
             });
         });
 

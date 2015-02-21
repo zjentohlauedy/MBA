@@ -1,5 +1,67 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
+    var loadPlayerDetails = function(team, players, defer) {
+        var promises = [];
+
+        for (var i = 0; i < players.length; i++) {
+            promises.push( Utils.loadPlayer(players[i], team, Globals.season, true) );
+        }
+
+        $.when.apply(null, promises).done(function() {
+            defer.resolve();
+        });
+    };
+
+    var loadCurrentSeasonPlayers = function(team) {
+        var defer = $.Deferred();
+
+        $.ajax( team._links.players.href, {
+            success: function(players) {
+                defer.resolve(players);
+            },
+            error: function() {
+                defer.reject();
+            }
+        });
+
+        return defer.promise();
+    };
+
+    var loadPreviousSeasonPlayers = function(team) {
+        var defer = $.Deferred();
+
+        $.ajax( team._links.team.href + '/players?season=' + (Globals.season - 1), {
+            success: function(players) {
+                defer.resolve(players);
+            },
+            error: function() {
+                defer.reject();
+            }
+        });
+
+        return defer.promise();
+    };
+
+    var loadTeamPlayers = function(team) {
+        var defer = $.Deferred();
+
+        $.when( loadCurrentSeasonPlayers(team), loadPreviousSeasonPlayers(team) ).then(
+            function(players_current, players_previous) {
+                players_current. forEach(function(player) { player.isCut = false; });
+                players_previous.forEach(function(player) { player.isCut = true;  });
+
+                var players = Utils.mergePlayerLists(players_current, players_previous);
+
+                loadPlayerDetails(team, players, defer);
+            },
+            function() {
+                defer.reject();
+            }
+        );
+
+        return defer.promise();
+    };
+
     var RosterCutActions = {
         prepareData: function(controller, deferred) {
             $.ajax( Constants.TEAMS_URI + '?season=' + Globals.season, {
@@ -21,33 +83,22 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             controller.set( "currentTeam", team );
 
             if ( team.pitchers.length == 0 ) {
-                $.ajax( team._links.players.href, {
-                    success: function(players) {
-                        controller.send('loadPlayers', team, players );
+                $.when(loadTeamPlayers(team)).then(
+                    function() {
+                        controller.send("updatePitchersStatus");
+                        controller.send("updateBattersStatus");
+                        controller.send("updateTeamStatus");
                     },
-                    error: function() {
-                        alert("Error loading players!")
+                    function() {
+                        alert("Error loading team players!")
                     }
-                });
+                );
             }
             else
             {
                 controller.send("updatePitchersStatus");
                 controller.send("updateBattersStatus");
             }
-        },
-        loadPlayers: function(controller, team, players) {
-            var promises = [];
-
-            for (var i = 0; i < players.length; i++) {
-                promises.push( Utils.loadPlayer(players[i], team, Globals.season, true) );
-            }
-
-            $.when.apply(null, promises).done(function() {
-                controller.send("updatePitchersStatus");
-                controller.send("updateBattersStatus");
-                controller.send("updateTeamStatus");
-            });
         },
         toggleCutPitcher: function(controller, pitcher) {
             var url = controller.currentTeam._links.team.href + "/players/" + pitcher.player_id + "/season/" + Globals.season;
