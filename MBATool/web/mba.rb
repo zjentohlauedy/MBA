@@ -52,7 +52,9 @@ db = SQLite3::Database.new db_file
 db.results_as_hash  = true
 db.type_translation = true
 
-org_service         = OrgService.new( OrgRepository.new( db ), OrgDecorator.new( href_base_url ) )
+org_repository      = OrgRepository.new db
+org_decorator       = OrgDecorator.new href_base_url
+org_service         = OrgService.new( org_repository, org_decorator )
 team_repository     = TeamRepository.new db
 player_repository   = PlayerRepository.new db
 team_service        = TeamService.new( team_repository, TeamResponseMapper.new, TeamDecorator.new( href_base_url ) )
@@ -60,7 +62,7 @@ team_player_service = TeamPlayerService.new( TeamPlayerRepository.new( db ), Tea
 player_service      = PlayerService.new( player_repository, PlayerResponseMapper.new, PlayerDecorator.new( href_base_url ) )
 name_manager        = NameManager.new names_file
 player_generator    = PlayerGenerator.new db, name_manager
-season_service      = SeasonService.new db, player_repository, name_manager, player_generator
+season_service      = SeasonService.new db, org_repository, org_decorator, player_repository, name_manager, player_generator
 draft_generator     = DraftGenerator.new team_repository
 
 

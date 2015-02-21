@@ -2,15 +2,18 @@ require 'utils'
 
 class SeasonService
 
-  def initialize( db, player_repository, name_manager, player_generator )
+  def initialize( db, org_repository, org_decorator, player_repository, name_manager, player_generator )
     @db                = db
+    @org_repository    = org_repository
+    @org_decorator     = org_decorator
     @player_repository = player_repository
     @name_manager      = name_manager
     @player_generator  = player_generator
   end
 
   def start_new_season
-    current_season = get_current_season
+    organization   = @org_repository.get_org 1
+    current_season = organization[:season]
     next_season    = current_season + 1
 
     copy_team_players_for_new_season current_season, next_season
@@ -33,7 +36,11 @@ class SeasonService
 
     @name_manager.save_names
 
-    return { season: next_season }
+    organization[:season] = next_season
+
+    @org_repository.save_org organization[:organization_id], { season: next_season }
+
+    return @org_decorator.decorate_org organization
   end
 
   def copy_team_players_for_new_season( current, new )
@@ -47,11 +54,5 @@ class SeasonService
     @db.execute query, args
   end
 
-  def get_current_season
-    result = @db.get_first_row 'select max(season) season from team_players_t'
-
-    return result['season']
-  end
-
-  private :get_current_season, :copy_team_players_for_new_season
+  private :copy_team_players_for_new_season
 end

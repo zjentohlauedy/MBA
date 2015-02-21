@@ -2,6 +2,8 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'sqlite3'
+require 'org_repository'
+require 'org_decorator'
 require 'player_repository'
 require 'name_manager'
 require 'player_generator'
@@ -14,11 +16,24 @@ describe SeasonService do
     @db.results_as_hash  = true
     @db.type_translation = true
 
+    @or = double OrgRepository
+    @od = double OrgDecorator
     @pr = double PlayerRepository
     @nm = double NameManager
     @pg = double PlayerGenerator
 
-    @season_service = SeasonService.new @db, @pr, @nm, @pg
+    @season_service = SeasonService.new @db, @or, @od, @pr, @nm, @pg
+
+    allow( @nm ).to receive :load_names
+    allow( @nm ).to receive :save_names
+    allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
+    allow( @pg ).to receive( :generate_batter ).and_return Hash.new
+    allow( @pr ).to receive :save_pitcher
+    allow( @pr ).to receive :save_batter
+    allow( @pr ).to receive :save_player
+    allow( @or ).to receive( :get_org ).and_return( { organization_id: 1, season: 4 } )
+    allow( @or ).to receive :save_org
+    allow( @od ).to receive :decorate_org
 
     @db.transaction
   end
@@ -29,14 +44,6 @@ describe SeasonService do
 
   describe '#start_new_season' do
     it 'should copy team player records from the current season to the new season' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into division_teams_t values (1, 1)'
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
@@ -53,14 +60,6 @@ describe SeasonService do
     end
 
     it 'should not copy team player records from previous seasons' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into division_teams_t values (1, 1)'
       @db.execute 'insert into team_players_t values (1, 3, 7)'
       @db.execute 'insert into team_players_t values (1, 4, 1)'
@@ -80,14 +79,6 @@ describe SeasonService do
     end
 
     it 'should not copy team player records for allstar teams' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into division_teams_t values (1, 1)'
       @db.execute 'insert into team_players_t values (2, 4, 7)'
       @db.execute 'insert into team_players_t values (1, 4, 1)'
@@ -107,13 +98,6 @@ describe SeasonService do
     end
 
     it 'should load the player names' do
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
       expect( @nm ).to receive :load_names
@@ -122,13 +106,6 @@ describe SeasonService do
     end
 
     it 'should generate 32 pitchers' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
       expect( @pg ).to receive( :generate_pitcher ).with( 5 ).exactly( 32 ).times.and_return Hash.new
@@ -137,14 +114,6 @@ describe SeasonService do
     end
 
     it 'should generate 32 batters' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter  ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
       expect( @pg ).to receive( :generate_batter ).with( 5 ).exactly( 32 ).times
@@ -155,12 +124,7 @@ describe SeasonService do
     it 'should save 32 pitchers' do
       pitcher = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
 
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
       allow( @pg ).to receive( :generate_pitcher ).and_return pitcher
-      allow( @pg ).to receive( :generate_batter  ).and_return Hash.new
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
 
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
@@ -173,12 +137,7 @@ describe SeasonService do
     it 'should save 32 batters' do
       batter = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
 
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
       allow( @pg ).to receive( :generate_batter  ).and_return batter
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_player
 
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
@@ -189,13 +148,6 @@ describe SeasonService do
     end
 
     it 'should save the player names' do
-      allow( @nm ).to receive :load_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
-
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
       expect( @nm ).to receive :save_names
@@ -203,22 +155,34 @@ describe SeasonService do
       @season_service.start_new_season
     end
 
-    it 'should return a hash containing the new season' do
-      allow( @nm ).to receive :load_names
-      allow( @nm ).to receive :save_names
-      allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
-      allow( @pg ).to receive( :generate_batter ).and_return Hash.new
-      allow( @pr ).to receive :save_pitcher
-      allow( @pr ).to receive :save_batter
-      allow( @pr ).to receive :save_player
+    it 'should save the new season on the organization' do
+      expect( @or ).to receive( :save_org ).with(1, hash_including(:season => 5))
+
+      @season_service.start_new_season
+    end
+
+    it 'should return a hash containing the updated organization' do
+      decorated_org = { _links: {}}
 
       @db.execute 'insert into team_players_t values (1, 4, 1)'
+
+      expect( @od ).to receive( :decorate_org ).with(hash_including(:season => 5)).and_return decorated_org
+
+      result = @season_service.start_new_season
+
+      expect( result ).to be decorated_org
+    end
+
+    it 'should decorate the organization that is being returned' do
+      @db.execute 'insert into team_players_t values (1, 4, 1)'
+
+      expect( @od ).to receive( :decorate_org ).and_return({ _links: {}})
 
       result = @season_service.start_new_season
 
       expect( result          ).to_not be_nil
       expect( result          ).to     be_a   Hash
-      expect( result[:season] ).to     eq     5
+      expect( result[:_links] ).to_not be_nil
     end
   end
 end
