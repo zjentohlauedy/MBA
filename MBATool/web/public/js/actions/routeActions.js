@@ -1,9 +1,9 @@
-define(['objects/globals'], function(Globals) {
+define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
 
     var loadOrganization = function(org_id) {
         var deferred = $.Deferred();
 
-        $.ajax('/mba/resources/organizations/' + org_id, {
+        $.ajax(Constants.ORGANIZATIONS_URI + '/' + org_id, {
             success: function(org) {
                 deferred.resolve(org)
             },

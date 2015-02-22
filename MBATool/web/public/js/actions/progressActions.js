@@ -1,9 +1,9 @@
-define([], function() {
+define(['objects/constants'], function(Constants) {
 
     var updateOrganization = function(data) {
         var defer = $.Deferred();
 
-        $.ajax('/mba/resources/organizations/1', {
+        $.ajax(Constants.ORGANIZATIONS_URI + '/1', {
             type: 'POST',
             data: JSON.stringify(data),
             success: function(org) {
