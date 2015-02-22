@@ -8,7 +8,10 @@ define([], function() {
         ROSTER_CUT_TARGET_PITCHERS:  3,
         ROSTER_CUT_TARGET_BATTERS:   5,
 
+        PICKS_PER_ROUND:            32,
+
         STATUS_URI:           '/mba/status',
+        ORGANIZATIONS_URI:    '/mba/resources/organizations',
         TEAMS_URI:            '/mba/resources/teams',
         PLAYERS_URI:          '/mba/resources/players',
         ROOKIE_DRAFT_URI:     '/mba/resources/drafts/rookie/season',

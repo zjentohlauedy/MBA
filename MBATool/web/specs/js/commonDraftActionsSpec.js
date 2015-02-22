@@ -1,4 +1,4 @@
-define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Globals, Utils, Actions) {
+define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftActions'], function(Constants, Globals, Utils, Actions) {
 
     describe('CommonDraftActions', function() {
 
@@ -681,7 +681,7 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
             });
         });
 
-        describe('draftFreeAgent', function() {
+        describe('draftSelectedPlayer', function() {
 
             var controller;
 
@@ -781,6 +781,30 @@ define(['objects/globals', 'utils', 'actions/commonDraftActions'], function(Glob
                 Actions.draftSelectedPlayer(controller);
 
                 expect(controller.send).toHaveBeenCalledWith('showNextTeam');
+            });
+
+            it('should update the pick number', function() {
+                controller.availablePlayers.batters.push({player_id: 123, isSelected: true});
+                controller.pickNumber = 3;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(); });
+
+                Actions.draftSelectedPlayer(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('pickNumber', 4);
+            });
+
+            it('should update the draft round and reset the pick number if on last pick of round', function() {
+                controller.availablePlayers.batters.push({player_id: 123, isSelected: true});
+                controller.draftRound = 4;
+                controller.pickNumber = Constants.PICKS_PER_ROUND;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(); });
+
+                Actions.draftSelectedPlayer(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('draftRound', 5);
+                expect(controller.set).toHaveBeenCalledWith('pickNumber', 1);
             });
 
             it('should show an alert if the ajax call fails', function() {

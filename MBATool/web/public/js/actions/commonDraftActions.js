@@ -89,6 +89,13 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
                 availablePlayers.removeObject(player);
                 teamPlayers.addObject(player);
                 controller.send("showNextTeam");
+
+                if (controller.pickNumber < Constants.PICKS_PER_ROUND) {
+                    controller.set('pickNumber', controller.pickNumber + 1);
+                } else {
+                    controller.set('draftRound', controller.draftRound + 1);
+                    controller.set('pickNumber', 1);
+                }
             },
             error: function() {
                 alert("Error drafting player!");

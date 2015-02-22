@@ -5,6 +5,8 @@ define(['objects/constants', 'objects/globals', 'actions/commonDraftActions', 'a
         needs:                   "progress",
         team:                    {},
         draftOrder:              null,
+        draftRound:              1,
+        pickNumber:              1,
         availablePlayers:        Ember.Object.create().setProperties({
             pitchers:   [],
             batters:    []
