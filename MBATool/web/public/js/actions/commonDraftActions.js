@@ -80,28 +80,59 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         return defer.promise();
     }
 
-    var draftPlayer = function(controller, player, availablePlayers, teamPlayers) {
-        var url = controller.team._links.team.href + "/players/" + player.player_id + "/season/" + Globals.season;
+    var saveTeamPlayer = function(team, player) {
+        var defer = $.Deferred();
+        var url   = team._links.team.href + "/players/" + player.player_id + "/season/" + Globals.season;
 
         $.ajax( url, {
             type: 'POST',
-            success: function() {
+            success: function() { defer.resolve(); },
+            error:   function() { defer.reject();  }
+        });
+
+        return defer.promise();
+    };
+
+    var updateOrganization = function(data) {
+        var defer = $.Deferred();
+
+        $.ajax( Constants.ORGANIZATIONS_URI + '/1', {
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function() { defer.resolve(); },
+            error:   function() { defer.reject();  }
+        });
+
+        return defer.promise();
+    };
+
+    var draftPlayer = function(controller, player, availablePlayers, teamPlayers) {
+        var newRound;
+        var newPick;
+
+        if (controller.pickNumber < Constants.PICKS_PER_ROUND) {
+            newRound = controller.draftRound;
+            newPick  = controller.pickNumber + 1;
+        } else {
+            newRound = controller.draftRound + 1;
+            newPick  = 1;
+        }
+
+        $.when(saveTeamPlayer(controller.team, player), updateOrganization({draft_round: newRound, pick_number: newPick})).then(
+            function() {
                 availablePlayers.removeObject(player);
                 teamPlayers.addObject(player);
-                controller.send("showNextTeam");
 
-                if (controller.pickNumber < Constants.PICKS_PER_ROUND) {
-                    controller.set('pickNumber', controller.pickNumber + 1);
-                } else {
-                    controller.set('draftRound', controller.draftRound + 1);
-                    controller.set('pickNumber', 1);
-                }
+                controller.set('draftRound', newRound);
+                controller.set('pickNumber', newPick);
+
+                controller.send("showNextTeam");
             },
-            error: function() {
+            function() {
                 alert("Error drafting player!");
             }
-        });
-    }
+        );
+    };
 
     var CommonDraftActions = {
         prepareData: function(controller, deferred) {
@@ -110,7 +141,6 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
             $.when(draftPromise, playersPromise).then(function(draft) {
                 controller.set("draftOrder", draft);
-                controller.set("currentTeamIdx", 0);
 
                 var teamPromise = loadTeam(controller);
 
@@ -182,7 +212,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             if (player = controller.availablePlayers.pitchers.findBy("isSelected")) {
                 draftPlayer(controller, player, controller.availablePlayers.pitchers, controller.team.pitchers);
             }
-            else if (player = controller.availablePlayers.batters. findBy("isSelected")) {
+            else if (player = controller.availablePlayers.batters.findBy("isSelected")) {
                 draftPlayer(controller, player, controller.availablePlayers.batters, controller.team.batters);
             }
         },

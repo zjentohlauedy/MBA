@@ -19,8 +19,12 @@ define(['objects/constants'], function(Constants) {
 
     var ProgressActions = {
         nextStage: function(controller) {
+            var orgFields = { draft_round: 1, pick_number: 1 };
+
             if (controller.stage >= controller.stages.length) {
-                $.when(updateOrganization({stage: 0})).then(
+                orgFields.stage = 0;
+
+                $.when(updateOrganization(orgFields)).then(
                     function(org) {
                         controller.send('goToStage', 0);
                     },
@@ -33,7 +37,9 @@ define(['objects/constants'], function(Constants) {
             }
 
             if ((controller.stage + 1) < controller.stages.length) {
-                $.when(updateOrganization({stage: controller.stage + 1})).then(
+                orgFields.stage = controller.stage + 1;
+
+                $.when(updateOrganization(orgFields)).then(
                     function(org) {
                         controller.send('goToStage', controller.stage + 1);
                     },

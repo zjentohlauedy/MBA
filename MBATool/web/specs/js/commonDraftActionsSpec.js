@@ -10,6 +10,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
             beforeEach(function() {
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.currentTeamIdx = 0;
                 controller.set.and.callFake(function(field, value) {
                     controller[field] = value;
                 });
@@ -110,19 +111,6 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
                 Actions.prepareData(controller, deferred);
 
                 expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
-            });
-
-            it('should set the current team index to 0', function() {
-
-                spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    if (! rel.match(/teams/)) {
-                        options.success([]);
-                    }
-                });
-
-                Actions.prepareData(controller, deferred);
-
-                expect(controller.set).toHaveBeenCalledWith('currentTeamIdx', 0);
             });
 
             it('should retrieve the team from the team resource endpoint', function() {
@@ -707,8 +695,13 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
 
                     Actions.draftSelectedPlayer(controller);
 
-                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-resource/players/123/season/7');
-                    expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
+                    expect($.ajax).toHaveBeenCalledWith('team-resource/players/123/season/7', jasmine.any(Object));
+
+                    for (var idx = 0; idx < $.ajax.calls.count(); ++idx) {
+                        if ($.ajax.calls.argsFor(idx)[0] == 'team-resource/players/123/season/7') {
+                            expect($.ajax.calls.argsFor(idx)[1].type).toEqual('POST');
+                        }
+                    }
                 });
 
                 it('should remove the pitcher from the available players pitchers list', function() {
@@ -745,8 +738,13 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
 
                     Actions.draftSelectedPlayer(controller);
 
-                    expect($.ajax.calls.mostRecent().args[0]).toEqual('team-resource/players/123/season/7');
-                    expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
+                    expect($.ajax).toHaveBeenCalledWith('team-resource/players/123/season/7', jasmine.any(Object));
+
+                    for (var idx = 0; idx < $.ajax.calls.count(); ++idx) {
+                        if ($.ajax.calls.argsFor(idx)[0] == 'team-resource/players/123/season/7') {
+                            expect($.ajax.calls.argsFor(idx)[1].type).toEqual('POST');
+                        }
+                    }
                 });
 
                 it('should remove the batter from the available players batters list', function() {
@@ -795,6 +793,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
             });
 
             it('should update the draft round and reset the pick number if on last pick of round', function() {
+
                 controller.availablePlayers.batters.push({player_id: 123, isSelected: true});
                 controller.draftRound = 4;
                 controller.pickNumber = Constants.PICKS_PER_ROUND;
@@ -807,11 +806,51 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
                 expect(controller.set).toHaveBeenCalledWith('pickNumber', 1);
             });
 
-            it('should show an alert if the ajax call fails', function() {
+            it('should send an update to the organization resource with draft round and pick number', function() {
+
+                controller.availablePlayers.batters.push({player_id: 123, isSelected: true});
+                controller.draftRound = 4;
+                controller.pickNumber = Constants.PICKS_PER_ROUND;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(); });
+
+                controller.set.and.callFake(function(field, value) {
+                    controller[field] = value;
+                });
+
+                Actions.draftSelectedPlayer(controller);
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/organizations/1', jasmine.any(Object));
+
+                for (var idx = 0; idx < $.ajax.calls.count(); ++idx) {
+                    if ($.ajax.calls.argsFor(idx)[0] == '/mba/resources/organizations/1') {
+                        expect($.ajax.calls.argsFor(idx)[1].type).toEqual('POST');
+                        expect($.ajax.calls.argsFor(idx)[1].data).toEqual('{"draft_round":5,"pick_number":1}');
+                    }
+                }
+            });
+
+            it('should show an alert if the team player ajax call fails', function() {
 
                 controller.availablePlayers.pitchers.push({player_id: 123, isSelected: true});
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) { options.error(); });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.draftSelectedPlayer(controller);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+
+            it('should show an alert if the organization ajax call fails', function() {
+
+                controller.availablePlayers.pitchers.push({player_id: 123, isSelected: true});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel.match(/organizations/)) { options.error(); }
+                    else                            { options.success(); }
+                });
 
                 spyOn(window, 'alert').and.callThrough();
 

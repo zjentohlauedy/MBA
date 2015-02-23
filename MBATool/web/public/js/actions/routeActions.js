@@ -69,7 +69,15 @@ define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
                     if (org.stage === route.expectedStage) {
                         var defer = $.Deferred();
 
-                        route.controllerFor('rookie-draft').send('prepareData', defer);
+                        var rookieDraftController = route.controllerFor('rookie-draft');
+
+                        var currentTeamIdx = ((org.draft_round - 1) * Constants.PICKS_PER_ROUND) + (org.pick_number - 1);
+
+                        rookieDraftController.set('draftRound',     org.draft_round);
+                        rookieDraftController.set('pickNumber',     org.pick_number);
+                        rookieDraftController.set('currentTeamIdx', currentTeamIdx);
+
+                        rookieDraftController.send('prepareData', defer);
                     }
                     else {
                         route.controllerFor('progress').send('goToStage', org.stage);
@@ -88,7 +96,15 @@ define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
                     if (org.stage === route.expectedStage) {
                         var defer = $.Deferred();
 
-                        route.controllerFor('free-agents').send('prepareData', defer);
+                        var freeAgentsController = route.controllerFor('free-agents');
+
+                        var currentTeamIdx = ((org.draft_round - 1) * Constants.PICKS_PER_ROUND) + (org.pick_number - 1);
+
+                        freeAgentsController.set('draftRound',     org.draft_round);
+                        freeAgentsController.set('pickNumber',     org.pick_number);
+                        freeAgentsController.set('currentTeamIdx', currentTeamIdx);
+
+                        freeAgentsController.send('prepareData', defer);
                     }
                     else {
                         route.controllerFor('progress').send('goToStage', org.stage);

@@ -71,7 +71,7 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 };
             });
 
-            it('should update the organization resource with the new stage value', function() {
+            it('should update the organization resource with the new stage value and reset draft values', function() {
 
                 spyOn($, 'ajax').and.callFake(function() {});
 
@@ -80,7 +80,7 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 expect($.ajax).toHaveBeenCalled();
                 expect($.ajax.calls.mostRecent().args[0]).toEqual('/mba/resources/organizations/1');
                 expect($.ajax.calls.mostRecent().args[1].type).toEqual('POST');
-                expect($.ajax.calls.mostRecent().args[1].data).toEqual('{"stage":1}');
+                expect($.ajax.calls.mostRecent().args[1].data).toEqual('{"draft_round":1,"pick_number":1,"stage":1}');
             });
 
             it('should transition to the route of the new stage', function() {

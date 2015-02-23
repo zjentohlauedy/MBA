@@ -277,6 +277,19 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(Globals.season).toBe(5);
             });
 
+            it('should set the draft round, pick number and current team idx on the rookie draft controller', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 2, draft_round: 2, pick_number: 15});
+                });
+
+                Actions.rookieDraftRouteRedirect(route);
+
+                expect(rookieDraftController.set).toHaveBeenCalledWith('draftRound',      2);
+                expect(rookieDraftController.set).toHaveBeenCalledWith('pickNumber',     15);
+                expect(rookieDraftController.set).toHaveBeenCalledWith('currentTeamIdx', 46);
+            });
+
             it('should direct the rookie draft controller to prepare data', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
@@ -366,6 +379,19 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 Actions.freeAgentsRouteRedirect(route);
 
                 expect(Globals.season).toBe(5);
+            });
+
+            it('should set the draft round, pick number and current team idx on the rookie draft controller', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 3, draft_round: 7, pick_number: 24});
+                });
+
+                Actions.freeAgentsRouteRedirect(route);
+
+                expect(freeAgentsController.set).toHaveBeenCalledWith('draftRound',       7);
+                expect(freeAgentsController.set).toHaveBeenCalledWith('pickNumber',      24);
+                expect(freeAgentsController.set).toHaveBeenCalledWith('currentTeamIdx', 215);
             });
 
             it('should direct the rookie draft controller to prepare data', function() {
