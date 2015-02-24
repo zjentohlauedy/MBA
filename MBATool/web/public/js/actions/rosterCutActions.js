@@ -85,6 +85,8 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             if ( team.pitchers.length == 0 ) {
                 $.when(loadTeamPlayers(team)).then(
                     function() {
+                        controller.currentTeam.set('batters', Ember.copy(Utils.sortBattersByPosition(team.batters)));
+
                         controller.send("updatePitchersStatus");
                         controller.send("updateBattersStatus");
                         controller.send("updateTeamStatus");

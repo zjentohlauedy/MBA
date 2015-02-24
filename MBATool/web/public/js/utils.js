@@ -89,6 +89,23 @@ define(['ember'], function(Ember) {
 
             return resultList.sort(function(p1,p2) { return p1.player_id - p2.player_id; });
         },
+        sortBattersByPosition: function(batters) {
+            return batters.sort(function(p1, p2) {
+                var posMap = function(p) {
+                    if (p ===  'C') { return 0; }
+                    if (p === '1B') { return 1; }
+                    if (p === '2B') { return 2; }
+                    if (p === '3B') { return 3; }
+                    if (p === 'SS') { return 4; }
+                    if (p === 'LF') { return 5; }
+                    if (p === 'CF') { return 6; }
+                    if (p === 'RF') { return 7; }
+                    return 8;
+                };
+
+                return posMap(p1.primary_position) - posMap(p2.primary_position);
+            });
+        },
         loadPlayer: function(player, team, season, needStats) {
             var deferred = $.Deferred();
 

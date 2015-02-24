@@ -254,7 +254,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
                 expect(controller.send).toHaveBeenCalledWith('setDraftStatus');
             });
 
-            it('should add a team to the controller', function() {
+            it('should add the team to the controller', function() {
 
                 var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
                 Globals.season = 5;
@@ -274,6 +274,30 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
                 Actions.prepareData(controller, deferred);
 
                 expect(controller.set).toHaveBeenCalledWith('team', team);
+            });
+
+            it('should sort the batters on the team by position', function() {
+
+                var team = {team_id: 23, _links: {players: {href: '/mba/resources/teams/23/players'}}};
+                Globals.season = 5;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/23?season=5') {
+                        options.success(team);
+                    } else if (rel.match(/teams.*players/)) {
+                        options.success([]);
+                    } else if (rel.match(/draft/)) {
+                        options.success([23]);
+                    } else {
+                        options.success([]);
+                    }
+                });
+
+                spyOn(Utils, 'sortBattersByPosition').and.callThrough()
+
+                Actions.prepareData(controller, deferred);
+
+                expect(Utils.sortBattersByPosition).toHaveBeenCalledWith(team.batters);
             });
 
             it('should resolve the given promise when the work is complete', function() {

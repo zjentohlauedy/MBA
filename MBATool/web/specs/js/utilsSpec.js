@@ -249,6 +249,48 @@ define(['utils'], function(Utils) {
             });
         });
 
+        describe('sortBattersByPosition', function() {
+
+            it('should return an array with the same number of batters', function() {
+                var batters = [{},{},{},{},{}];
+
+                var result = Utils.sortBattersByPosition(batters);
+
+                expect(result.length).toBe(batters.length);
+            });
+
+            it('should order batters in baseball position order', function() {
+                var batters = [{player_id: 1, primary_position: 'LF'},
+                               {player_id: 2, primary_position: 'SS'},
+                               {player_id: 3, primary_position: 'RF'},
+                               {player_id: 4, primary_position: '1B'},
+                               {player_id: 5, primary_position:  'C'},
+                               {player_id: 6, primary_position: '2B'},
+                               {player_id: 7, primary_position: 'CF'},
+                               {player_id: 8, primary_position: '3B'}];
+
+                var result = Utils.sortBattersByPosition(batters);
+
+                expect(result[0].player_id).toBe(5);
+                expect(result[1].player_id).toBe(4);
+                expect(result[2].player_id).toBe(6);
+                expect(result[3].player_id).toBe(8);
+                expect(result[4].player_id).toBe(2);
+                expect(result[5].player_id).toBe(1);
+                expect(result[6].player_id).toBe(7);
+                expect(result[7].player_id).toBe(3);
+            });
+
+            it('should put undefined positions at the end', function() {
+                var batters = [{player_id: 1},{player_id: 2, primary_position: 'LF'}];
+
+                var result = Utils.sortBattersByPosition(batters);
+
+                expect(result[0].player_id).toBe(2);
+                expect(result[1].player_id).toBe(1);
+            });
+        });
+
         describe('loadPlayer', function() {
 
             it('should add a pitcher without stats to the given team pitcher list', function() {

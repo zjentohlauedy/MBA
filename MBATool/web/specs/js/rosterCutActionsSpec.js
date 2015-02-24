@@ -102,7 +102,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should mark the given team as selected', function() {
 
-                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}]});
+                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}], batters: []});
 
                 Actions.selectTeam(controller, team);
 
@@ -111,7 +111,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should mark the current team as not selected', function() {
 
-                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}]});
+                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}], batters: []});
                 var currentTeam = controller.currentTeam;
 
                 currentTeam.set('isSelected', true);
@@ -123,7 +123,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             it('should set the given team as the current team', function() {
 
-                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}]});
+                var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}], batters: []});
 
                 Actions.selectTeam(controller, team);
 
@@ -134,7 +134,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should update pitchers and batters status', function() {
 
-                    var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}]});
+                    var team = Ember.Object.create().setProperties({isSelected: false, pitchers: [{}], batters: []});
 
                     Actions.selectTeam(controller, team);
 
@@ -148,7 +148,8 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 it('should retrieve the team players for the current season from the backend', function() {
 
                     var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                        team_id: 13, isSelected: false, pitchers: [], batters: [],
+                        _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
                     });
                     var players = [{}, {}, {}];
 
@@ -166,7 +167,8 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                 it('should mark the team players for the current season as not being cut', function() {
 
                     var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                        team_id: 13, isSelected: false, pitchers: [], batters: [],
+                        _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
                     });
                     var players = [{}, {}, {}];
 
@@ -186,7 +188,8 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should retrieve the team players for the previous season from the backend', function() {
                     var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                        team_id: 13, isSelected: false, pitchers: [], batters: [],
+                        _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
                     });
                     var players = [{}, {}, {}];
                     Globals.season = 5;
@@ -204,7 +207,8 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should mark the team players for the previous season as being cut', function() {
                     var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                        team_id: 13, isSelected: false, pitchers: [], batters: [],
+                        _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
                     });
                     var players = [{}, {}, {}];
                     Globals.season = 5;
@@ -225,7 +229,8 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 it('should merge the players from current and previous seasons', function() {
                     var team    = Ember.Object.create().setProperties({
-                        team_id: 13, isSelected: false, pitchers: [], _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
+                        team_id: 13, isSelected: false, pitchers: [], batters: [],
+                        _links: {players: {href: "team-player-resource"}, team: {href: "team-resource"}}
                     });
                     var plist1 = [{player_id: 1}];
                     var plist2 = [{player_id: 2}];
@@ -281,6 +286,27 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
                     Actions.selectTeam(controller, team);
 
                     expect(Utils.loadPlayer.calls.count()).toEqual(players.length);
+                });
+
+                it('should sort the batters by position', function() {
+                    var team    = Ember.Object.create().setProperties({
+                        pitchers: [], batters: [], _links: {players: {href: ""}, team: {href: ""}}
+                    });
+                    var players = [{},{},{},{},{}];
+
+                    spyOn($, 'ajax').and.callFake(function(rel, options) {
+                        options.success(players);
+                    });
+
+                    spyOn(Utils, 'loadPlayer').and.callFake(function(player, team) {
+                        team.batters.push(player);
+                    });
+
+                    spyOn(Utils, 'sortBattersByPosition').and.callThrough();
+
+                    Actions.selectTeam(controller, team);
+
+                    expect(Utils.sortBattersByPosition).toHaveBeenCalledWith(team.batters);
                 });
 
                 it('should update pitchers, batters and team status', function() {
