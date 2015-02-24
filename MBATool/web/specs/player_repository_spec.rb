@@ -248,6 +248,29 @@ describe PlayerRepository do
       expect( result[1][:longevity       ] ).to eq 8
     end
 
+    it 'should not return players that have been drafted' do
+      @db.execute 'insert into players_t values (2, "Dave", "Bot", "DAY3V", "BAA4T", 2, 2, 1, 5,  8)'
+      @db.execute 'insert into players_t values (3, "Jim", "Poke", "JIH4M", "POW3K", 1, 3, 2, 5, 10)'
+      @db.execute 'insert into team_players_t values(1, 5, 3)'
+
+      result = @player_repository.get_players_by_rookie_season 5
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id       ] ).to eq 2
+      expect( result[0][:first_name      ] ).to eq 'Dave'
+      expect( result[0][:last_name       ] ).to eq 'Bot'
+      expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
+      expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
+      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:handedness      ] ).to eq 2
+      expect( result[0][:player_type     ] ).to eq 1
+      expect( result[0][:rookie_season   ] ).to eq 5
+      expect( result[0][:longevity       ] ).to eq 8
+    end
+
     it 'should return an empty array if there are no players for the given rookie season' do
       @db.execute 'insert into players_t values (1, "Jake", "Tom", "JAY3K", "TAA4M", 1, 1, 2, 5,  6)'
       @db.execute 'insert into players_t values (2, "Dave", "Bot", "DAY3V", "BAA4T", 2, 2, 1, 5,  8)'

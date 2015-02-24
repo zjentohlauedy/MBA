@@ -25,7 +25,7 @@ class PlayerRepository
   def get_players_by_rookie_season( season )
     args = { season: season }
 
-    query = 'select * from players_t where rookie_season = :season'
+    query = 'select * from players_t where rookie_season = :season and player_id not in (select player_id from team_players_t where season = :season)'
 
     return Utils::transform_hash @db.execute query, args
   end
