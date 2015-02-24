@@ -3,6 +3,7 @@ $: << "#{location}"
 
 require 'player_response_mapper'
 require 'utils'
+require 'player_types'
 
 describe PlayerResponseMapper do
   before :each do
@@ -11,8 +12,8 @@ describe PlayerResponseMapper do
 
   describe '#map_player_list' do
     it 'should return an array with the same number of elements as the given array' do
-      player_list = [{player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5},
-                     {player_id: 2, first_name: 'Firstname2', last_name: 'Lastname2', first_phoenetic: 'FN2', last_phoenetic: 'LN2', skin_tone: 2, handedness: 1, player_type: 1, rookie_season: 3}]
+      player_list = [{player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5},
+                     {player_id: 2, first_name: 'Firstname2', last_name: 'Lastname2', first_phoenetic: 'FN2', last_phoenetic: 'LN2', skin_tone: 2, handedness: 1, player_type: PlayerTypes::Pitcher, rookie_season: 3}]
 
       result = @player_response_mapper.map_player_list player_list
 
@@ -22,8 +23,8 @@ describe PlayerResponseMapper do
     end
 
     it 'should return players with only ID and name' do
-      player_list = [{player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5},
-                     {player_id: 2, first_name: 'Firstname2', last_name: 'Lastname2', first_phoenetic: 'FN2', last_phoenetic: 'LN2', skin_tone: 2, handedness: 1, player_type: 1, rookie_season: 3}]
+      player_list = [{player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5},
+                     {player_id: 2, first_name: 'Firstname2', last_name: 'Lastname2', first_phoenetic: 'FN2', last_phoenetic: 'LN2', skin_tone: 2, handedness: 1, player_type: PlayerTypes::Pitcher, rookie_season: 3}]
 
       result = @player_response_mapper.map_player_list player_list
 
@@ -54,7 +55,7 @@ describe PlayerResponseMapper do
 
   describe '#map_player' do
     it 'should return a mapped player hash' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -70,7 +71,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace first name and last name with a combined name field' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -82,7 +83,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should remove longevity from the hash' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -92,7 +93,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace skin tone with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -102,7 +103,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace handedness with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -112,7 +113,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace player type with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_player player
 
@@ -130,7 +131,7 @@ describe PlayerResponseMapper do
 
   describe '#map_pitcher' do
     it 'should return a mapped player hash with pitcher information' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -151,7 +152,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace first name and last name with a combined name field' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -164,7 +165,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should remove longevity from the hash' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -175,7 +176,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace skin tone with a user friendly value' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -186,7 +187,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace handedness with a user friendly value' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -197,7 +198,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace player type with a user friendly value' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       result = @player_response_mapper.map_pitcher player, pitcher
@@ -208,7 +209,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should adjust the pitcher ratings if the player has a season' do
-      player  = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       expect( Utils ).to receive( :adjust_rating  ).with 4, 7, 5, 7
@@ -228,7 +229,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should return nil if given pitcher is not a hash' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_pitcher player, Object.new
 
@@ -238,7 +239,7 @@ describe PlayerResponseMapper do
 
   describe '#map_batter' do
     it 'should return a mapped player hash with batter information' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -263,7 +264,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace first name and last name with a combined name field' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -276,7 +277,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should remove longevity from the hash' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -287,7 +288,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace skin tone with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -298,7 +299,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace handedness with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -309,7 +310,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace player type with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -320,7 +321,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should replace primary and secondary position with a user friendly value' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       result = @player_response_mapper.map_batter player, batter
@@ -332,7 +333,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should adjust the batter ratings if the player has a season' do
-      player = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 4, primary_position: 4, secondary_position: 6}
 
       expect( Utils ).to receive( :adjust_rating  ).with 6, 7, 5, 7
@@ -354,7 +355,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should return nil if given batter is not a hash' do
-      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: 2, rookie_season: 5, longevity: 7}
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: 3, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       result = @player_response_mapper.map_batter player, Object.new
 

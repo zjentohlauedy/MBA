@@ -4,6 +4,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'utils'
+require 'player_types'
 
 class PlayerResponseMapper
 
@@ -19,8 +20,8 @@ class PlayerResponseMapper
 
   def display_player_type( player_type )
     case player_type
-    when 1; return 'Pitcher'
-    when 2; return 'Batter'
+    when PlayerTypes::Pitcher; return 'Pitcher'
+    when PlayerTypes::Batter;  return 'Batter'
     end
   end
 

@@ -3,10 +3,9 @@
 location = File.dirname __FILE__
 $: << "#{location}"
 
-class PlayerGenerator
+require 'player_types'
 
-  PlayerTypePitcher = 1
-  PlayerTypeBatter  = 2
+class PlayerGenerator
 
   SkinToneLight = 1
   SkinToneDark  = 2
@@ -61,7 +60,7 @@ class PlayerGenerator
     pitcher[ :last_phoenetic  ] = ''
     pitcher[ :skin_tone       ] = pick_skin_tone
     pitcher[ :handedness      ] = pick_handedness
-    pitcher[ :player_type     ] = PlayerTypePitcher
+    pitcher[ :player_type     ] = PlayerTypes::Pitcher
     pitcher[ :rookie_season   ] = season
     pitcher[ :longevity       ] = roll
 
@@ -90,7 +89,7 @@ class PlayerGenerator
     batter[ :last_phoenetic  ] = ''
     batter[ :skin_tone       ] = pick_skin_tone
     batter[ :handedness      ] = pick_handedness true
-    batter[ :player_type     ] = PlayerTypeBatter
+    batter[ :player_type     ] = PlayerTypes::Batter
     batter[ :rookie_season   ] = season
     batter[ :longevity       ] = roll
 
