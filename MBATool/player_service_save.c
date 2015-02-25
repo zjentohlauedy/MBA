@@ -18,13 +18,13 @@ static int upsert_batter_stats( sqlite3 *db, const batter_stats_s *batter_stats 
      return rc;
 }
 
-static int upsert_batter( sqlite3 *db, const batter_s *batter )
+static int only_insert_batter( sqlite3 *db, const batter_s *batter )
 {
      int rc;
 
      if ( (rc = batters_t_create( db, batter )) == SQLITE_CONSTRAINT )
      {
-          return batters_t_update( db, batter );
+          return SQLITE_OK;
      }
 
      return rc;
@@ -42,13 +42,13 @@ static int upsert_pitcher_stats( sqlite3 *db, const pitcher_stats_s *pitcher_sta
      return rc;
 }
 
-static int upsert_pitcher( sqlite3 *db, const pitcher_s *pitcher )
+static int only_insert_pitcher( sqlite3 *db, const pitcher_s *pitcher )
 {
      int rc;
 
      if ( (rc = pitchers_t_create( db, pitcher )) == SQLITE_CONSTRAINT )
      {
-          return pitchers_t_update( db, pitcher );
+          return SQLITE_OK;
      }
 
      return rc;
@@ -60,7 +60,7 @@ static int upsert_player( sqlite3 *db, const player_s *player )
 
      if ( (rc = players_t_create( db, player )) == SQLITE_CONSTRAINT )
      {
-          return players_t_update( db, player );
+          return players_t_update_phoenetics( db, player );
      }
 
      return rc;
@@ -145,7 +145,7 @@ static int save_batter( sqlite3 *db, const batter_s *batter )
      TRY( save_batter_stats(     db, batter->stats     ) );
      TRY( save_batter_accolades( db, batter->accolades ) );
 
-     return upsert_batter( db, batter );
+     return only_insert_batter( db, batter );
 }
 
 static int save_pitcher( sqlite3 *db, const pitcher_s *pitcher )
@@ -157,7 +157,7 @@ static int save_pitcher( sqlite3 *db, const pitcher_s *pitcher )
      TRY( save_pitcher_stats(     db, pitcher->stats     ) );
      TRY( save_pitcher_accolades( db, pitcher->accolades ) );
 
-     return upsert_pitcher( db, pitcher );
+     return only_insert_pitcher( db, pitcher );
 }
 
 int save_player( sqlite3 *db, const player_s *player )

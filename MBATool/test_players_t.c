@@ -183,7 +183,7 @@ static char *players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId()
      return NULL;
 }
 
-static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
+static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayer()
 {
      player_s expected = { 0 };
 
@@ -220,6 +220,56 @@ static char *players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId()
      assertEqualsStr( expected.last_name,       actual->last_name      );
      assertEqualsStr( expected.first_phoenetic, actual->first_phoenetic );
      assertEqualsStr( expected.last_phoenetic,  actual->last_phoenetic  );
+     assertEqualsInt( expected.skin_tone,       actual->skin_tone      );
+     assertEqualsInt( expected.handedness,      actual->handedness     );
+     assertEqualsInt( expected.player_type,     actual->player_type    );
+     assertEqualsInt( expected.rookie_season,   actual->rookie_season  );
+     assertEqualsInt( expected.longevity,       actual->longevity      );
+
+     sqlite3_exec( db, "delete from players_t", NULL, NULL, NULL );
+
+     return NULL;
+}
+
+static char *players_t_update_phoenetics__ShouldModifyOnlyPhoeneticsOfMatchingRecord_GivenThePlayer()
+{
+     player_s expected = { 0 };
+     player_s modified = { 0 };
+
+     /**/    expected.player_id        = 1;
+     strcpy( expected.first_name,       "FirstName1" );
+     strcpy( expected.last_name,        "LastName1"  );
+     strcpy( expected.first_phoenetic,  "FirstPho1"  );
+     strcpy( expected.last_phoenetic,   "LastPho1"   );
+     /**/    expected.skin_tone        = st_Light;
+     /**/    expected.handedness       = hnd_Right;
+     /**/    expected.player_type      = pt_Pitcher;
+     /**/    expected.rookie_season    = 1;
+     /**/    expected.longevity        = 5;
+
+     insert_a_player( &expected );
+
+     modified = expected;
+
+     strcpy( modified.first_name,       "FirstName2" );
+     strcpy( modified.last_name,        "LastName2"  );
+     strcpy( modified.first_phoenetic,  "FirstPho2"  );
+     strcpy( modified.last_phoenetic,   "LastPho2"   );
+     /**/    modified.skin_tone        = st_Dark;
+     /**/    modified.handedness       = hnd_Left;
+     /**/    modified.player_type      = pt_Batter;
+     /**/    modified.rookie_season    = 4;
+     /**/    modified.longevity        = 2;
+
+     assertEquals( SQLITE_OK, players_t_update_phoenetics( db, &modified ) );
+
+     player_s *actual = get_a_player( expected.player_id );
+
+     assertEqualsInt( expected.player_id,       actual->player_id      );
+     assertEqualsStr( expected.first_name,      actual->first_name     );
+     assertEqualsStr( expected.last_name,       actual->last_name      );
+     assertEqualsStr( modified.first_phoenetic, actual->first_phoenetic );
+     assertEqualsStr( modified.last_phoenetic,  actual->last_phoenetic  );
      assertEqualsInt( expected.skin_tone,       actual->skin_tone      );
      assertEqualsInt( expected.handedness,      actual->handedness     );
      assertEqualsInt( expected.player_type,     actual->player_type    );
@@ -268,11 +318,12 @@ static void check_sqlite_error()
 
 static void run_all_tests()
 {
-     run_test( players_t_create__ShouldInsertRecordsInThePlayersTTable,       check_sqlite_error );
-     run_test( players_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists,    check_sqlite_error );
-     run_test( players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId, check_sqlite_error );
-     run_test( players_t_update__ShouldModifyMatchingRecord_GivenThePlayerId, check_sqlite_error );
-     run_test( players_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId, check_sqlite_error );
+     run_test( players_t_create__ShouldInsertRecordsInThePlayersTTable,                                check_sqlite_error );
+     run_test( players_t_create__ShouldGiveAnErrorIfPlayerIdAlreadyExists,                             check_sqlite_error );
+     run_test( players_t_read__ShouldRetrieveMatchingRecord_GivenThePlayerId,                          check_sqlite_error );
+     run_test( players_t_update__ShouldModifyMatchingRecord_GivenThePlayer,                            check_sqlite_error );
+     run_test( players_t_update_phoenetics__ShouldModifyOnlyPhoeneticsOfMatchingRecord_GivenThePlayer, check_sqlite_error );
+     run_test( players_t_delete__ShouldDeleteMatchingRecord_GivenThePlayerId,                          check_sqlite_error );
 }
 
 

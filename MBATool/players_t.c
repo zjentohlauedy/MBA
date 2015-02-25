@@ -71,6 +71,7 @@ int players_t_read( sqlite3 *db, player_s *player )
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ UPDATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+// Update All:
 static int players_t_update_bindings( sqlite3_stmt *statement, const void *data )
 {
      int rc;
@@ -110,6 +111,34 @@ int players_t_update( sqlite3 *db, const player_s *player )
           /**/               "WHERE  Player_Id = ?";
 
      return execute_update( db, query, players_t_update_bindings, player );
+}
+
+// Update Phoenetics:
+static int players_t_update_phoenetics_bindings( sqlite3_stmt *statement, const void *data )
+{
+     int rc;
+
+     const player_s *player = (player_s *)data;
+
+     BIND_TXT( statement, 1, player->first_phoenetic );
+     BIND_TXT( statement, 2, player->last_phoenetic  );
+
+     BIND_INT( statement, 3, player->player_id );
+
+     return SQLITE_OK;
+}
+
+
+int players_t_update_phoenetics( sqlite3 *db, const player_s *player )
+{
+     static char query[]   = "UPDATE Players_T "
+          /**/
+          /**/               "SET    First_Phoenetic = ?,"
+          /**/                      "Last_Phoenetic  = ? "
+          /**/
+          /**/               "WHERE  Player_Id = ?";
+
+     return execute_update( db, query, players_t_update_phoenetics_bindings, player );
 }
 
 /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */

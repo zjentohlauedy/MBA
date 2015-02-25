@@ -232,10 +232,11 @@ typedef struct
 } player_s;
 
 
-int players_t_create( sqlite3 *db, const player_s *player );
-int players_t_read(   sqlite3 *db,       player_s *player );
-int players_t_update( sqlite3 *db, const player_s *player );
-int players_t_delete( sqlite3 *db, const player_s *player );
+int players_t_create(            sqlite3 *db, const player_s *player );
+int players_t_read(              sqlite3 *db,       player_s *player );
+int players_t_update(            sqlite3 *db, const player_s *player );
+int players_t_update_phoenetics( sqlite3 *db, const player_s *player );
+int players_t_delete(            sqlite3 *db, const player_s *player );
 
 int player_accolades_t_create(         sqlite3 *db,                      const player_accolade_s *player_accolade  );
 int player_accolades_t_read_by_player( sqlite3 *db, const int player_id,       data_list_s       *player_accolades );
