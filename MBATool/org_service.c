@@ -3,6 +3,15 @@
 #include "org.h"
 
 
+static boolean_e teamInactive( const team_s *team )
+{
+     if ( team->stats == NULL ) return bl_False;
+
+     if ( (team->stats[0].wins + team->stats[0].losses) > 0 ) return bl_False;
+
+     return bl_True;
+}
+
 static void getTeamPlayers( sqlite3 *db, team_player_s *team_players )
 {
      for ( int i = 0; team_players[i].team_id > 0; ++i )
@@ -146,6 +155,8 @@ static int saveDivisionTeams( sqlite3 *db, const division_team_s *division_teams
 
      for ( int i = 0; division_teams[i].division_id > 0; ++i )
      {
+          if ( teamInactive( division_teams[i].team ) ) continue;
+
           if ( (rc = saveTeamPlayers( db, division_teams[i].team->players )) != SQLITE_OK ) return rc;
 
           if ( (rc = save_team( db, division_teams[i].team )) != SQLITE_OK ) return rc;

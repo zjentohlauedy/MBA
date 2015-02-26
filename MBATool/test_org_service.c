@@ -427,7 +427,7 @@ static char *saveOrg_ShouldSaveLeaguesToDatabase_GivenAOrgWithLeagues()
      return NULL;
 }
 
-static char *saveOrg_ShouldSaveTeamsToDatabase_GivenAOrgWithLeagueTeams()
+static char *saveOrg_ShouldSaveLeagueTeamsToDatabase_GivenAOrgWithLeagueTeams()
 {
      org_s         org                      = { 0 };
      org_league_s  org_leagues[2]           = { 0 };
@@ -833,6 +833,82 @@ static char *saveOrg_ShouldSavePlayersToDatabase_GivenAOrgWithDivisionTeamsWithP
      return NULL;
 }
 
+static char *saveOrg_ShouldNotSaveDivisionTeamsAndPlayersToDatabase_IfTeamsHaveNoGames()
+{
+     org_s             org                        = { 0 };
+     org_league_s      org_leagues[2]             = { 0 };
+     org_league_s      org_league_sentinel        = ORG_LEAGUE_SENTINEL;
+     league_s          league                     = { 0 };
+     league_division_s league_divisions[2]        = { 0 };
+     league_division_s league_division_sentinel   = LEAGUE_DIVISION_SENTINEL;
+     division_s        division                   = { 0 };
+     division_team_s   division_teams[2]          = { 0 };
+     division_team_s   division_team_sentinel     = DIVISION_TEAM_SENTINEL;
+     team_s            team                       = { 0 };
+     team_stats_s      team_stats[2]              = { 0 };
+     team_stats_s      team_stats_sentinel        = { 0 };
+     team_player_s     expected_team_players[3]   = { 0 };
+     team_player_s     team_player_sentinel       = TEAM_PLAYER_SENTINEL;
+     player_s          expected_player1           = { 0 };
+     player_s          expected_player2           = { 0 };
+
+     buildIntoLeague( &league, 1 );
+     buildIntoLeagueDivision( &league_divisions[0], 1, 1 );
+     buildIntoDivision( &division, 1 );
+     buildIntoDivisionTeam( &division_teams[0], 1, 1 );
+     buildIntoTeam( &team, 1 );
+     buildIntoTeamPlayer( &expected_team_players[0], 1, 1, 1 );
+     buildIntoTeamPlayer( &expected_team_players[1], 1, 1, 2 );
+     buildIntoPlayer( &expected_player1, 1 );
+     buildIntoPlayer( &expected_player2, 2 );
+
+     expected_team_players[0].player = &expected_player1;
+     expected_team_players[1].player = &expected_player2;
+     expected_team_players[2]        = team_player_sentinel;
+
+     team_stats[0].team_id = team.team_id;
+     team_stats[0].season  = 1;
+     team_stats[0].season_phase = sp_Regular;
+     team_stats[1] = team_stats_sentinel;
+
+     team.players = expected_team_players;
+     team.stats   = team_stats;
+
+     division_teams[0].team = &team;
+     division_teams[1]      = division_team_sentinel;
+
+     division.teams = division_teams;
+
+     league_divisions[0].division = &division;
+     league_divisions[1]          =  league_division_sentinel;
+
+     league.divisions = league_divisions;
+
+     org_leagues[0].league = &league;
+     org_leagues[1]        =  org_league_sentinel;
+
+     org.leagues = org_leagues;
+
+     assertEquals( SQLITE_OK, saveOrg( db, &org ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_NOTFOUND, team_players_t_read_by_team( db, team.team_id, &list ) );
+
+     team_s actual_team = { 0 };
+
+     actual_team.team_id = team.team_id;
+
+     assertEquals( SQLITE_NOTFOUND, teams_t_read( db, &actual_team ) );
+
+     assertEquals( SQLITE_OK, leagues_t_delete( db, &league ) );
+     assertEquals( SQLITE_OK, league_divisions_t_delete( db, &league_divisions[0] ) );
+     assertEquals( SQLITE_OK, divisions_t_delete( db, &division ) );
+     assertEquals( SQLITE_OK, division_teams_t_delete( db, &division_teams[0] ) );
+
+     return NULL;
+}
+
 static void check_sqlite_error()
 {
      if ( sqlite3_errcode( db ) != 0 )
@@ -851,11 +927,12 @@ static void run_all_tests()
      run_test( getOrg_ShouldRetrieveDivisionsWithTeamsAndPlayersFromDatabase_GivenASeason, check_sqlite_error );
 
      run_test( saveOrg_ShouldSaveLeaguesToDatabase_GivenAOrgWithLeagues,                  check_sqlite_error );
-     run_test( saveOrg_ShouldSaveTeamsToDatabase_GivenAOrgWithLeagueTeams,                check_sqlite_error );
+     run_test( saveOrg_ShouldSaveLeagueTeamsToDatabase_GivenAOrgWithLeagueTeams,          check_sqlite_error );
      run_test( saveOrg_ShouldSavePlayersToDatabase_GivenAOrgWithLeagueTeamPlayers,        check_sqlite_error );
      run_test( saveOrg_ShouldSaveDivisionsToDatabase_GivenAOrgWithDivisions,              check_sqlite_error );
      run_test( saveOrg_ShouldSaveDivisionTeamsToDatabase_GivenAOrgWithDivisionTeams,      check_sqlite_error );
      run_test( saveOrg_ShouldSavePlayersToDatabase_GivenAOrgWithDivisionTeamsWithPlayers, check_sqlite_error );
+     run_test( saveOrg_ShouldNotSaveDivisionTeamsAndPlayersToDatabase_IfTeamsHaveNoGames, check_sqlite_error );
 }
 
 int main( int argc, char *argv[] )
