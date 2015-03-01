@@ -6,6 +6,7 @@ $: << "#{location}"
 require 'utils'
 require 'phases'
 require 'player_types'
+require 'positions'
 require 'handedness'
 require 'skin_tones'
 
@@ -49,16 +50,16 @@ class PlayerResponseMapper
 
   def display_position( position )
     case position
-    when  1; return  "C"
-    when  2; return "1B"
-    when  3; return "2B"
-    when  4; return "3B"
-    when  5; return "SS"
-    when  6; return "LF"
-    when  7; return "CF"
-    when  8; return "RF"
-    when  9; return "IF"
-    when 10; return "OF"
+    when Positions::Catcher;       return  "C"
+    when Positions::FirstBaseman;  return "1B"
+    when Positions::SecondBaseman; return "2B"
+    when Positions::ThirdBaseman;  return "3B"
+    when Positions::ShortStop;     return "SS"
+    when Positions::LeftFielder;   return "LF"
+    when Positions::CenterFielder; return "CF"
+    when Positions::RightFielder;  return "RF"
+    when Positions::Infielder;     return "IF"
+    when Positions::Outfielder;    return "OF"
     end
 
     return "DH"

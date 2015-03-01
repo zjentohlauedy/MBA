@@ -445,7 +445,7 @@ describe PlayerRepository do
 
   describe '#get_batter_details' do
     it 'should return a hash containing batter information' do
-      @db.execute 'insert into batters_t values (1, 5, 3, 8, 7, 6, 4, 9, 2)'
+      @db.execute "insert into batters_t values (1, 5, 3, 9, 7, 6, 4, #{Positions::RightFielder}, #{Positions::FirstBaseman})"
 
       result = @player_repository.get_batter_details 1
 
@@ -454,12 +454,12 @@ describe PlayerRepository do
       expect( result[:player_id          ] ).to eq 1
       expect( result[:power              ] ).to eq 5
       expect( result[:hit_n_run          ] ).to eq 3
-      expect( result[:bunt               ] ).to eq 8
+      expect( result[:bunt               ] ).to eq 9
       expect( result[:running            ] ).to eq 7
       expect( result[:range              ] ).to eq 6
       expect( result[:arm                ] ).to eq 4
-      expect( result[:primary_position   ] ).to eq 9
-      expect( result[:secondary_position ] ).to eq 2
+      expect( result[:primary_position   ] ).to eq Positions::RightFielder
+      expect( result[:secondary_position ] ).to eq Positions::FirstBaseman
     end
 
     it 'return nil if the batter is not found' do
@@ -691,7 +691,7 @@ describe PlayerRepository do
 
   describe '#save_pitcher' do
     it 'should return an empty array on success' do
-      pitcher = {player_id: 1, speed: 5, control: 3, bunt: 8, fatigue: 7}
+      pitcher = {player_id: 1, speed: 5, control: 3, bunt: 9, fatigue: 7}
 
       result = @player_repository.save_pitcher pitcher
 
@@ -717,7 +717,7 @@ describe PlayerRepository do
     end
 
     it 'should raise an exception on failure' do
-      pitcher = {player_id: 1, speed: 5, control: 3, bunt: 8, fatigue: 7}
+      pitcher = {player_id: 1, speed: 5, control: 3, bunt: 9, fatigue: 7}
 
       @player_repository.save_pitcher pitcher
 
@@ -727,7 +727,7 @@ describe PlayerRepository do
 
   describe '#save_batter' do
     it 'should return an empty array on success' do
-      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 8, running: 7, range: 6, arm: 4, primary_position: 9, secondary_position: 2}
+      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 9, running: 7, range: 6, arm: 4, primary_position: Positions::RightFielder, secondary_position: Positions::FirstBaseman}
 
       result = @player_repository.save_batter batter
 
@@ -737,7 +737,7 @@ describe PlayerRepository do
     end
 
     it 'should insert a batters_t record' do
-      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 8, running: 7, range: 6, arm: 4, primary_position: 9, secondary_position: 2}
+      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 9, running: 7, range: 6, arm: 4, primary_position: Positions::RightFielder, secondary_position: Positions::FirstBaseman}
 
       @player_repository.save_batter batter
 
@@ -748,16 +748,16 @@ describe PlayerRepository do
       expect( result['Player_Id'         ] ).to     eq     1
       expect( result['Power'             ] ).to     eq     5
       expect( result['Hit_N_Run'         ] ).to     eq     3
-      expect( result['Bunt'              ] ).to     eq     8
+      expect( result['Bunt'              ] ).to     eq     9
       expect( result['Running'           ] ).to     eq     7
       expect( result['Range'             ] ).to     eq     6
       expect( result['Arm'               ] ).to     eq     4
-      expect( result['Primary_Position'  ] ).to     eq     9
-      expect( result['Secondary_Position'] ).to     eq     2
+      expect( result['Primary_Position'  ] ).to     eq     Positions::RightFielder
+      expect( result['Secondary_Position'] ).to     eq     Positions::FirstBaseman
     end
 
     it 'should raise an exception on failure' do
-      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 8, running: 7, range: 6, arm: 4, primary_position: 9, secondary_position: 2}
+      batter = {player_id: 1, power: 5, hit_n_run: 3, bunt: 9, running: 7, range: 6, arm: 4, primary_position: Positions::RightFielder, secondary_position: Positions::FirstBaseman}
 
       @player_repository.save_batter batter
 

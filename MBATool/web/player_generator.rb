@@ -7,13 +7,6 @@ require 'player_types'
 
 class PlayerGenerator
 
-  Catcher      =  1
-  FirstBaseman =  2
-  ThirdBaseman =  4
-  Infielder    =  9
-  RightFielder =  8
-  Outfielder   = 10
-
   def initialize( db, name_manager )
     @random       = Random.new
     @db           = db
@@ -135,12 +128,12 @@ class PlayerGenerator
     @secondary_pos[primary_position].each_with_index do |p,i|
       if (x -= p) <= 0
         case i
-        when 0; return Catcher
-        when 1; return FirstBaseman
-        when 2; return ThirdBaseman
-        when 3; return Infielder
-        when 4; return RightFielder
-        when 5; return Outfielder
+        when 0; return Positions::Catcher
+        when 1; return Positions::FirstBaseman
+        when 2; return Positions::ThirdBaseman
+        when 3; return Positions::Infielder
+        when 4; return Positions::RightFielder
+        when 5; return Positions::Outfielder
         end
       end
     end
