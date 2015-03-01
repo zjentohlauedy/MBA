@@ -123,7 +123,7 @@ describe SeasonService do
     end
 
     it 'should save 32 pitchers' do
-      pitcher = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
+      pitcher = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
 
       allow( @pg ).to receive( :generate_pitcher ).and_return pitcher
 
@@ -136,7 +136,7 @@ describe SeasonService do
     end
 
     it 'should save 32 batters' do
-      batter = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
+      batter = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7, details: {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}}
 
       allow( @pg ).to receive( :generate_batter  ).and_return batter
 

@@ -7,9 +7,6 @@ require 'player_types'
 
 class PlayerGenerator
 
-  SkinToneLight = 1
-  SkinToneDark  = 2
-
   Catcher      =  1
   FirstBaseman =  2
   ThirdBaseman =  4
@@ -113,7 +110,7 @@ class PlayerGenerator
   end
 
   def pick_skin_tone
-    return (@random.rand(100) > 66) ? SkinToneDark : SkinToneLight
+    return (@random.rand(100) > 66) ? SkinTones::Dark : SkinTones::Light
   end
 
   def pick_handedness( can_be_switch = false )

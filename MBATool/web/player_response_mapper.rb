@@ -7,6 +7,7 @@ require 'utils'
 require 'phases'
 require 'player_types'
 require 'handedness'
+require 'skin_tones'
 
 class PlayerResponseMapper
 
@@ -39,8 +40,8 @@ class PlayerResponseMapper
 
   def display_skin_tone( skin_tone )
     case skin_tone
-    when 1; return 'Light'
-    when 2; return 'Dark'
+    when SkinTones::Light; return 'Light'
+    when SkinTones::Dark;  return 'Dark'
     end
 
     return 'Unknown'

@@ -298,7 +298,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get the pitcher record from the database if the player type is pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @mapper ).to receive( :map_pitcher )
@@ -310,7 +310,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get the batter record from the database if the player type is batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @mapper ).to receive( :map_batter )
@@ -322,7 +322,7 @@ describe PlayerService do
     end
 
     it 'should call the response mapper with the player record from the repository if player type is not batter nor pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @deco ).to receive( :decorate_player )
@@ -333,7 +333,7 @@ describe PlayerService do
     end
 
     it 'should call the response mapper with the player and pitcher records from the repository if player type is pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       allow( @repo ).to receive( :get_player  ).and_return player
@@ -346,7 +346,7 @@ describe PlayerService do
     end
 
     it 'should call the response mapper with the player and batter records from the repository if player type is batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -359,7 +359,7 @@ describe PlayerService do
     end
 
     it 'should call the decorator with the mapped player record if player type is not batter nor pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Unknown', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -371,7 +371,7 @@ describe PlayerService do
     end
 
     it 'should call the decorator with the mapped player record if player type is pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -384,7 +384,7 @@ describe PlayerService do
     end
 
     it 'should call the decorator with the mapped player record if player type is batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 3, primary_position: 4, secondary_position: 6}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -397,7 +397,7 @@ describe PlayerService do
     end
 
     it 'should return the mapped, decorated database record if player type is not batter nor pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
       mapped_decorated_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Unknown', rookie_season: 5, longevity: 7, _links: {}}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -408,7 +408,7 @@ describe PlayerService do
     end
 
     it 'should return the mapped, decorated database record if player type is pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
       mapped_decorated_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7, _links: {}}
 
       allow( @repo ).to receive( :get_player  ).and_return player
@@ -420,7 +420,7 @@ describe PlayerService do
     end
 
     it 'should return the mapped, decorated database record if player type is batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       mapped_decorated_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7, _links: {}}
 
       allow( @repo ).to receive( :get_player  ).and_return player
@@ -432,7 +432,7 @@ describe PlayerService do
     end
 
     it 'should pass season and phase parameters to the decorator if player type is not batter nor pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::None, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Unknown', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -444,7 +444,7 @@ describe PlayerService do
     end
 
     it 'should pass season and phase parameters to the decorator if player type is pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Pitcher', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -457,7 +457,7 @@ describe PlayerService do
     end
 
     it 'should pass season and phase parameters to the decorator if player type is batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       mapped_player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 'Light', handedness: 'Switch', player_type: 'Batter', rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
@@ -508,7 +508,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get a pitcher stats record from the database if the player is a pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @mapper ).to receive( :map_pitcher_stats )
@@ -558,7 +558,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get many pitcher stats records from the database if the player is a pitcher' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Pitcher, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
 
@@ -631,7 +631,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get a batter stats record from the database if the player is a batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @mapper ).to receive( :map_batter_stats )
@@ -681,7 +681,7 @@ describe PlayerService do
     end
 
     it 'should call the repository to get many batter stats records from the database if the player is a batter' do
-      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: 1, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @mapper ).to receive( :map_batter_stats )

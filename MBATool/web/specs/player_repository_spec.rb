@@ -25,8 +25,8 @@ describe PlayerRepository do
     it 'should return an array containing player info for players on the given team' do
       @db.execute 'insert into team_players_t values (18, 5, 1)'
       @db.execute 'insert into team_players_t values (18, 5, 2)'
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
 
       result = @player_repository.get_players_by_team 18, 5
 
@@ -41,7 +41,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 3
@@ -54,7 +54,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Poke'
       expect( result[1][:first_phoenetic ] ).to eq 'JIH4M'
       expect( result[1][:last_phoenetic  ] ).to eq 'POW3K'
-      expect( result[1][:skin_tone       ] ).to eq 1
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[1][:handedness      ] ).to eq Handedness::Switch
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[1][:rookie_season   ] ).to eq 4
@@ -65,9 +65,9 @@ describe PlayerRepository do
       @db.execute 'insert into team_players_t values (18, 6, 3)'
       @db.execute 'insert into team_players_t values (18, 5, 1)'
       @db.execute 'insert into team_players_t values (19, 5, 2)'
-      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
 
       result = @player_repository.get_players_by_team 18, 5
 
@@ -82,7 +82,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 3
@@ -93,9 +93,9 @@ describe PlayerRepository do
       @db.execute 'insert into team_players_t values (18, 5, 1)'
       @db.execute 'insert into team_players_t values (18, 5, 3)'
       @db.execute 'insert into team_players_t values (18, 6, 2)'
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
-      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark}, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
 
       result = @player_repository.get_players_by_team 18
 
@@ -127,9 +127,9 @@ describe PlayerRepository do
 
   describe '#get_players' do
     it 'return an array of all players in the database' do
-      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
 
       result = @player_repository.get_players
 
@@ -142,7 +142,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Tom'
       expect( result[0][:first_phoenetic ] ).to eq 'JAY3K'
       expect( result[0][:last_phoenetic  ] ).to eq 'TAA4M'
-      expect( result[0][:skin_tone       ] ).to eq 1
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[0][:handedness      ] ).to eq Handedness::Right
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[0][:rookie_season   ] ).to eq 5
@@ -153,7 +153,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Bot'
       expect( result[1][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[1][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[1][:skin_tone       ] ).to eq 2
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[1][:handedness      ] ).to eq Handedness::Left
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[1][:rookie_season   ] ).to eq 3
@@ -164,7 +164,7 @@ describe PlayerRepository do
       expect( result[2][:last_name       ] ).to eq 'Poke'
       expect( result[2][:first_phoenetic ] ).to eq 'JIH4M'
       expect( result[2][:last_phoenetic  ] ).to eq 'POW3K'
-      expect( result[2][:skin_tone       ] ).to eq 1
+      expect( result[2][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[2][:handedness      ] ).to eq Handedness::Switch
       expect( result[2][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[2][:rookie_season   ] ).to eq 4
@@ -182,8 +182,8 @@ describe PlayerRepository do
 
   describe '#get_players_by_rookie_season' do
     it 'should return an array of players for the given rookie season' do
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 5, 10)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 5, 10)"
 
       result = @player_repository.get_players_by_rookie_season 5
 
@@ -196,7 +196,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 5
@@ -207,7 +207,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Poke'
       expect( result[1][:first_phoenetic ] ).to eq 'JIH4M'
       expect( result[1][:last_phoenetic  ] ).to eq 'POW3K'
-      expect( result[1][:skin_tone       ] ).to eq 1
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[1][:handedness      ] ).to eq Handedness::Switch
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[1][:rookie_season   ] ).to eq 5
@@ -215,9 +215,9 @@ describe PlayerRepository do
     end
 
     it 'should return only players for the given rookie season' do
-      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 6, 10)"
+      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 6, 10)"
 
       result = @player_repository.get_players_by_rookie_season 5
 
@@ -230,7 +230,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Tom'
       expect( result[0][:first_phoenetic ] ).to eq 'JAY3K'
       expect( result[0][:last_phoenetic  ] ).to eq 'TAA4M'
-      expect( result[0][:skin_tone       ] ).to eq 1
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[0][:handedness      ] ).to eq Handedness::Right
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[0][:rookie_season   ] ).to eq 5
@@ -241,7 +241,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Bot'
       expect( result[1][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[1][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[1][:skin_tone       ] ).to eq 2
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[1][:handedness      ] ).to eq Handedness::Left
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[1][:rookie_season   ] ).to eq 5
@@ -249,8 +249,8 @@ describe PlayerRepository do
     end
 
     it 'should not return players that have been drafted' do
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 5, 10)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 5, 10)"
       @db.execute 'insert into team_players_t values(1, 5, 3)'
 
       result = @player_repository.get_players_by_rookie_season 5
@@ -264,7 +264,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 5
@@ -272,9 +272,9 @@ describe PlayerRepository do
     end
 
     it 'should return an empty array if there are no players for the given rookie season' do
-      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter}, 6, 10)"
+      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark}, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 5,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter}, 6, 10)"
 
       result = @player_repository.get_players_by_rookie_season 4
 
@@ -286,8 +286,8 @@ describe PlayerRepository do
 
   describe '#get_free_agents_by_season' do
     it 'should return an array of free agents in the given season' do
-      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
 
       result = @player_repository.get_free_agents_by_season 2
 
@@ -300,7 +300,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 3
@@ -311,7 +311,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Poke'
       expect( result[1][:first_phoenetic ] ).to eq 'JIH4M'
       expect( result[1][:last_phoenetic  ] ).to eq 'POW3K'
-      expect( result[1][:skin_tone       ] ).to eq 1
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[1][:handedness      ] ).to eq Handedness::Switch
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[1][:rookie_season   ] ).to eq 4
@@ -321,9 +321,9 @@ describe PlayerRepository do
     it 'should return only free agents' do
       @db.execute 'insert into team_players_t values (18, 5, 1)'
       @db.execute 'insert into team_players_t values (18, 5, 2)'
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
-      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
 
       result = @player_repository.get_free_agents_by_season 5
 
@@ -336,7 +336,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Tom'
       expect( result[0][:first_phoenetic ] ).to eq 'JAY3K'
       expect( result[0][:last_phoenetic  ] ).to eq 'TAA4M'
-      expect( result[0][:skin_tone       ] ).to eq 1
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[0][:handedness      ] ).to eq Handedness::Right
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[0][:rookie_season   ] ).to eq 5
@@ -347,9 +347,9 @@ describe PlayerRepository do
       @db.execute 'insert into team_players_t values (18, 4, 1)'
       @db.execute 'insert into team_players_t values (18, 5, 2)'
       @db.execute 'insert into team_players_t values (18, 6, 3)'
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
-      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', 1, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter}, 5,  6)"
 
       result = @player_repository.get_free_agents_by_season 5
 
@@ -362,7 +362,7 @@ describe PlayerRepository do
       expect( result[0][:last_name       ] ).to eq 'Bot'
       expect( result[0][:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[0][:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[0][:skin_tone       ] ).to eq 2
+      expect( result[0][:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[0][:handedness      ] ).to eq Handedness::Left
       expect( result[0][:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[0][:rookie_season   ] ).to eq 3
@@ -373,7 +373,7 @@ describe PlayerRepository do
       expect( result[1][:last_name       ] ).to eq 'Tom'
       expect( result[1][:first_phoenetic ] ).to eq 'JAY3K'
       expect( result[1][:last_phoenetic  ] ).to eq 'TAA4M'
-      expect( result[1][:skin_tone       ] ).to eq 1
+      expect( result[1][:skin_tone       ] ).to eq SkinTones::Light
       expect( result[1][:handedness      ] ).to eq Handedness::Right
       expect( result[1][:player_type     ] ).to eq PlayerTypes::Batter
       expect( result[1][:rookie_season   ] ).to eq 5
@@ -383,8 +383,8 @@ describe PlayerRepository do
     it 'should return an empty array if there are no free agents' do
       @db.execute 'insert into team_players_t values (18, 5, 1)'
       @db.execute 'insert into team_players_t values (18, 5, 2)'
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
-      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', 1, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter}, 4, 10)"
 
       result = @player_repository.get_free_agents_by_season 5
 
@@ -396,7 +396,7 @@ describe PlayerRepository do
 
   describe '#get_player' do
     it 'should return a hash containing player information' do
-      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', 2, #{Handedness::Left}, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark}, #{Handedness::Left}, #{PlayerTypes::Pitcher}, 3,  8)"
 
       result = @player_repository.get_player 1
 
@@ -407,7 +407,7 @@ describe PlayerRepository do
       expect( result[:last_name       ] ).to eq 'Bot'
       expect( result[:first_phoenetic ] ).to eq 'DAY3V'
       expect( result[:last_phoenetic  ] ).to eq 'BAA4T'
-      expect( result[:skin_tone       ] ).to eq 2
+      expect( result[:skin_tone       ] ).to eq SkinTones::Dark
       expect( result[:handedness      ] ).to eq Handedness::Left
       expect( result[:player_type     ] ).to eq PlayerTypes::Pitcher
       expect( result[:rookie_season   ] ).to eq 3
@@ -650,7 +650,7 @@ describe PlayerRepository do
 
   describe '#save_player' do
     it 'should return an empty array on success' do
-      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: 2, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
+      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: SkinTones::Dark, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
 
       result = @player_repository.save_player player
 
@@ -660,7 +660,7 @@ describe PlayerRepository do
     end
 
     it 'should insert a players_t record' do
-      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: 2, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
+      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: SkinTones::Dark, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
 
       @player_repository.save_player player
 
@@ -673,7 +673,7 @@ describe PlayerRepository do
       expect( result['Last_Name'      ] ).to     eq     'Bot'
       expect( result['First_Phoenetic'] ).to     eq     'DAY3V'
       expect( result['Last_Phoenetic' ] ).to     eq     'BAA4T'
-      expect( result['Skin_Tone'      ] ).to     eq     2
+      expect( result['Skin_Tone'      ] ).to     eq     SkinTones::Dark
       expect( result['Handedness'     ] ).to     eq     Handedness::Left
       expect( result['Player_Type'    ] ).to     eq     PlayerTypes::Pitcher
       expect( result['Rookie_Season'  ] ).to     eq     3
@@ -681,7 +681,7 @@ describe PlayerRepository do
     end
 
     it 'should raise an exception on failure' do
-      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: 2, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
+      player = {player_id: 1, first_name: 'Dave', last_name: 'Bot', first_phoenetic: 'DAY3V', last_phoenetic: 'BAA4T', skin_tone: SkinTones::Dark, handedness: Handedness::Left, player_type: PlayerTypes::Pitcher, rookie_season: 3, longevity: 8}
 
       @player_repository.save_player player
 
