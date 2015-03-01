@@ -10,10 +10,6 @@ class PlayerGenerator
   SkinToneLight = 1
   SkinToneDark  = 2
 
-  RightHanded  = 1
-  LeftHanded   = 2
-  SwitchHitter = 3
-
   Catcher      =  1
   FirstBaseman =  2
   ThirdBaseman =  4
@@ -124,9 +120,9 @@ class PlayerGenerator
     if can_be_switch
       x = @random.rand(100)
 
-      if x > 95; return SwitchHitter end
+      if x > 95; return Handedness::Switch end
 
-      return (x > 61) ? LeftHanded : RightHanded
+      return (x > 61) ? Handedness::Left : Handedness::Right
     end
 
     return (@random.rand(100) > 66) ? LeftHanded : RightHanded

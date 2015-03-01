@@ -4,15 +4,17 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'utils'
+require 'phases'
 require 'player_types'
+require 'handedness'
 
 class PlayerResponseMapper
 
   def display_season_phase( season_phase )
     case season_phase
-    when 1; return 'Regular'
-    when 2; return 'Playoff'
-    when 3; return 'Allstar'
+    when Phases::RegularSeason; return 'Regular'
+    when Phases::Playoff;       return 'Playoff'
+    when Phases::Allstar;       return 'Allstar'
     end
 
     return 'Unknown'
@@ -27,9 +29,9 @@ class PlayerResponseMapper
 
   def display_handedness( handedness )
     case handedness
-    when 1; return 'R'
-    when 2; return 'L'
-    when 3; return 'S'
+    when Handedness::Right;  return 'R'
+    when Handedness::Left;   return 'L'
+    when Handedness::Switch; return 'S'
     end
 
     return 'X'
