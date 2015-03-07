@@ -4,6 +4,9 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'player_types'
+require 'positions'
+require 'handedness'
+require 'skin_tones'
 require 'internal_server_error'
 require 'resource_not_found_error'
 

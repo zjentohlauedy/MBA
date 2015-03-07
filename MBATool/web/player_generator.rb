@@ -4,6 +4,9 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'player_types'
+require 'positions'
+require 'handedness'
+require 'skin_tones'
 
 class PlayerGenerator
 
@@ -115,7 +118,7 @@ class PlayerGenerator
       return (x > 61) ? Handedness::Left : Handedness::Right
     end
 
-    return (@random.rand(100) > 66) ? LeftHanded : RightHanded
+    return (@random.rand(100) > 66) ? Handedness::Left : Handedness::Right
   end
 
   def pick_primary_position
