@@ -53,8 +53,9 @@ define(['ember'], function(Ember) {
 
             if (stats) {
                 avg      = (stats.at_bats == 0) ? 0 : stats.hits / stats.at_bats;
-                slugging = (stats.at_bats == 0) ? 0 : (stats.hits + (2 * stats.doubles) + (3 * stats.triples) + (4 *stats.home_runs)) / stats.at_bats;
-                oba      = (stats.at_bats == 0) ? 0 : (stats.hits + stats.walks) / stats.at_bats;
+                singles  = (stats.hits - (stats.doubles + stats.triples + stats.home_runs));
+                slugging = (stats.at_bats == 0) ? 0 : (singles + (2 * stats.doubles) + (3 * stats.triples) + (4 * stats.home_runs)) / stats.at_bats;
+                oba      = (stats.at_bats == 0) ? 0 : (stats.hits + stats.walks) / (stats.at_bats + stats.walks);
                 rpg      = (stats.games   == 0) ? 0 : (stats.runs + stats.runs_batted_in - stats.home_runs) / stats.games;
 
                 player.games    = stats.games;

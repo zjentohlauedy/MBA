@@ -181,20 +181,20 @@ define(['utils'], function(Utils) {
 
             it('should calculate the player slugging average given stats', function() {
                 var player = { power: 7, hit_n_run: 5, running: 6 };
-                var stats  = { hits: 100, at_bats: 400, doubles: 15, triples: 4, home_runs: 12 };
+                var stats  = { hits: 100, at_bats: 400, doubles: 16, triples: 4, home_runs: 12 };
 
                 Utils.decorateBatter(player, stats);
 
-                expect(player.slugging).toEqual('.475');
+                expect(player.slugging).toEqual('.400');
             });
 
             it('should calculate the player on base average given stats', function() {
                 var player = { power: 7, hit_n_run: 5, running: 6 };
-                var stats  = { hits: 100, at_bats: 400, walks: 30 };
+                var stats  = { hits: 75, at_bats: 375, walks: 25 };
 
                 Utils.decorateBatter(player, stats);
 
-                expect(player.oba).toEqual('.325');
+                expect(player.oba).toEqual('.250');
             });
 
             it('should calculate the player runs per game given stats', function() {
