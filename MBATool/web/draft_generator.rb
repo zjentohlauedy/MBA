@@ -50,6 +50,9 @@ class DraftGenerator
     playoff = @repository.get_division_teams_with_stats season, Phases::Playoff
 
     teams = regular.map do |team|
+      team[ :playoff_wins   ] = 0
+      team[ :playoff_losses ] = 0
+
       playoff.each do |t2|
         if t2[:team_id] == team[:team_id]
           team[ :playoff_wins   ] = t2[ :wins   ]
@@ -57,6 +60,7 @@ class DraftGenerator
           break;
         end
       end
+
       team
     end
 
