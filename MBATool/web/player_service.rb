@@ -63,7 +63,7 @@ class PlayerService
       raise InternalServerError.new "There was an error retrieving Pitcher with Player ID #{player[:player_id]}."
     end
 
-    player = @mapper.map_pitcher player, pitcher
+    player = @mapper.map_pitcher player, pitcher, season
 
     @decorator.decorate_player player, season, phase
   end
@@ -75,7 +75,7 @@ class PlayerService
       raise InternalServerError.new "There was an error retrieving Batter with Player ID #{player[:player_id]}."
     end
 
-    player = @mapper.map_batter player, batter
+    player = @mapper.map_batter player, batter, season
 
     @decorator.decorate_player player, season, phase
   end

@@ -65,20 +65,18 @@ class PlayerResponseMapper
     return "DH"
   end
 
-  def adjust_rating( rating, player )
+  def adjust_rating( rating, player, season )
     if player.nil? then return rating end
+    if season.nil? then return rating end
 
-    unless player.has_key? :season then return rating end
-
-    return Utils::adjust_rating rating, player[:season], player[:rookie_season], player[:longevity]
+    return Utils::adjust_rating rating, season.to_i, player[:rookie_season], player[:longevity]
   end
 
-  def adjust_fatigue( rating, player )
+  def adjust_fatigue( rating, player, season )
     if player.nil? then return rating end
+    if season.nil? then return rating end
 
-    unless player.has_key? :season then return rating end
-
-    return Utils::adjust_fatigue rating, player[:season], player[:rookie_season], player[:longevity]
+    return Utils::adjust_fatigue rating, season.to_i, player[:rookie_season], player[:longevity]
   end
 
   def combine_names( player )
@@ -119,32 +117,32 @@ class PlayerResponseMapper
     return player
   end
 
-  def map_pitcher( player, pitcher )
+  def map_pitcher( player, pitcher, season = nil )
     return nil unless player.is_a? Hash
     return nil unless pitcher.is_a? Hash
 
     pl = map_player player
 
-    pl[ :speed   ] = adjust_rating  pitcher[ :speed   ], player
-    pl[ :control ] = adjust_rating  pitcher[ :control ], player
-    pl[ :bunt    ] = adjust_rating  pitcher[ :bunt    ], player
-    pl[ :fatigue ] = adjust_fatigue pitcher[ :fatigue ], player
+    pl[ :speed   ] = adjust_rating  pitcher[ :speed   ], player, season
+    pl[ :control ] = adjust_rating  pitcher[ :control ], player, season
+    pl[ :bunt    ] = adjust_rating  pitcher[ :bunt    ], player, season
+    pl[ :fatigue ] = adjust_fatigue pitcher[ :fatigue ], player, season
 
     return pl
   end
 
-  def map_batter( player, batter )
+  def map_batter( player, batter, season = nil )
     return nil unless player.is_a? Hash
     return nil unless batter.is_a? Hash
 
     pl = map_player player
 
-    pl[:power    ] = adjust_rating batter[:power    ], player
-    pl[:hit_n_run] = adjust_rating batter[:hit_n_run], player
-    pl[:bunt     ] = adjust_rating batter[:bunt     ], player
-    pl[:running  ] = adjust_rating batter[:running  ], player
-    pl[:range    ] = adjust_rating batter[:range    ], player
-    pl[:arm      ] = adjust_rating batter[:arm      ], player
+    pl[:power    ] = adjust_rating batter[:power    ], player, season
+    pl[:hit_n_run] = adjust_rating batter[:hit_n_run], player, season
+    pl[:bunt     ] = adjust_rating batter[:bunt     ], player, season
+    pl[:running  ] = adjust_rating batter[:running  ], player, season
+    pl[:range    ] = adjust_rating batter[:range    ], player, season
+    pl[:arm      ] = adjust_rating batter[:arm      ], player, season
 
     pl[:primary_position  ] = display_position batter[:primary_position  ]
     pl[:secondary_position] = display_position batter[:secondary_position]

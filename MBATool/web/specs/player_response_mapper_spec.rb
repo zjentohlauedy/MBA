@@ -208,8 +208,8 @@ describe PlayerResponseMapper do
       expect( result[:player_type] ).to     eq     'Batter'
     end
 
-    it 'should adjust the pitcher ratings if the player has a season' do
-      player  = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+    it 'should adjust the pitcher ratings if given the season' do
+      player  = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       pitcher = {player_id: 1, speed: 4, control: 6, bunt: 2, fatigue: 7}
 
       expect( Utils ).to receive( :adjust_rating  ).with 4, 7, 5, 7
@@ -217,7 +217,7 @@ describe PlayerResponseMapper do
       expect( Utils ).to receive( :adjust_rating  ).with 2, 7, 5, 7
       expect( Utils ).to receive( :adjust_fatigue ).with 7, 7, 5, 7
 
-      result = @player_response_mapper.map_pitcher player, pitcher
+      result = @player_response_mapper.map_pitcher player, pitcher, 7
     end
 
     it 'should return nil if given player is not a hash' do
@@ -333,7 +333,7 @@ describe PlayerResponseMapper do
     end
 
     it 'should adjust the batter ratings if the player has a season' do
-      player = {team_id: 1, season: 7, player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
+      player = {player_id: 1, first_name: 'Firstname1', last_name: 'Lastname1', first_phoenetic: 'FN1', last_phoenetic: 'LN1', skin_tone: SkinTones::Light, handedness: Handedness::Switch, player_type: PlayerTypes::Batter, rookie_season: 5, longevity: 7}
       batter = {player_id: 1, power: 6, hit_n_run: 5, bunt: 3, running: 9, range: 7, arm: 4, primary_position: Positions::ThirdBaseman, secondary_position: Positions::LeftFielder}
 
       expect( Utils ).to receive( :adjust_rating  ).with 6, 7, 5, 7
@@ -343,7 +343,7 @@ describe PlayerResponseMapper do
       expect( Utils ).to receive( :adjust_rating  ).with 7, 7, 5, 7
       expect( Utils ).to receive( :adjust_rating  ).with 4, 7, 5, 7
 
-      result = @player_response_mapper.map_batter player, batter
+      result = @player_response_mapper.map_batter player, batter, 7
     end
 
     it 'should return nil if given player is not a hash' do
