@@ -231,6 +231,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
             var teamPromise = loadTeam(controller);
 
             $.when(teamPromise).then(function(team) {
+                Utils.sortBattersByPosition(team.batters);
                 controller.set('team', team);
                 controller.send('setDraftStatus');
             });

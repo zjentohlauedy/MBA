@@ -1076,6 +1076,27 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/commonDraftAct
                 expect(controller.set).toHaveBeenCalledWith('team', team);
             });
 
+            it('should sort the batters on the team by position', function() {
+
+                var team = {team_id: 23, _links: {players: {href: 'team-resource/players'}}};
+                controller.currentTeamIdx = 1;
+                Globals.season = 5;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    if (rel == '/mba/resources/teams/25?season=5') {
+                        options.success(team);
+                    } else {
+                        options.success([]);
+                    }
+                });
+
+                spyOn(Utils, 'sortBattersByPosition').and.callThrough()
+
+                Actions.showNextTeam(controller);
+
+                expect(Utils.sortBattersByPosition).toHaveBeenCalledWith(team.batters);
+            });
+
             it('should disable the draft and complete the stage if the end of the draft order is reached', function() {
 
                 controller.currentTeamIdx = 4;
