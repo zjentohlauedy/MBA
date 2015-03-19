@@ -17,6 +17,7 @@ temp.file*
 setgames
 TAGS
 Gemfile.lock
+.swp
 
 MBATool/LeagName_test.Dat
 MBATool/Players_test.S

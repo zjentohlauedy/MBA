@@ -1,15 +1,16 @@
 #!/bin/bash
 #
+SEASON_DIR=S04
 
-if [[ LEAGNAME.DAT -nt ~/Amiga/HD/MBA/S03/LeagName.Dat ||
-      PARKS.DAT    -nt ~/Amiga/HD/MBA/S03/parks.dat    ||
-      PLAYERS.DAT  -nt ~/Amiga/HD/MBA/S03/Players.S       ]];
+if [[ LEAGNAME.DAT -nt ~/Amiga/HD/MBA/$SEASON_DIR/LeagName.Dat ||
+      PARKS.DAT    -nt ~/Amiga/HD/MBA/$SEASON_DIR/parks.dat    ||
+      PLAYERS.DAT  -nt ~/Amiga/HD/MBA/$SEASON_DIR/Players.S       ]];
 then
     echo "WARNING: current files are newer than import files!";
     exit;
 fi
 
-soffice -env:UserInstallation=file://~/.libreoffice-alt --headless --convert-to csv --outdir ~/Amiga/HD/MBA ~/Amiga/HD/MBA/S03/schedule.ods
+soffice -env:UserInstallation=file://~/.libreoffice-alt --headless --convert-to csv --outdir ~/Amiga/HD/MBA ~/Amiga/HD/MBA/$SEASON_DIR/schedule.ods
 
 if [[ ~/Amiga/HD/MBA/setgames -nt ~/Amiga/HD/MBA/schedule.csv ]]
 then
@@ -25,9 +26,9 @@ source ~/Amiga/HD/MBA/setgames
 
 echo "Copying files..."
 
-~/Amiga/HD/MBA/ewbcopyleague ~/Amiga/HD/MBA/S03/LeagName.Dat LEAGNAME.DAT || exit
-cp ~/Amiga/HD/MBA/S03/parks.dat PARKS.DAT
-~/Amiga/HD/MBA/ewbamiga2dos ~/Amiga/HD/MBA/S03/Players.S PLAYERS.DAT || exit
+~/Amiga/HD/MBA/ewbcopyleague ~/Amiga/HD/MBA/$SEASON_DIR/LeagName.Dat LEAGNAME.DAT || exit
+cp ~/Amiga/HD/MBA/$SEASON_DIR/parks.dat PARKS.DAT
+~/Amiga/HD/MBA/ewbamiga2dos ~/Amiga/HD/MBA/$SEASON_DIR/Players.S PLAYERS.DAT || exit
 
 echo "Making Backups..."
 
