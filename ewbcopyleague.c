@@ -51,7 +51,7 @@ static struct {
      { /* Horizon   */ cl_Green,  cl_LtBlue, 0 },
      { /* Sharks    */ cl_LtBlue, cl_DkRed,  0 },
      { /* Flames    */ cl_Red,    cl_Gold,   0 },
-     { /* Techs     */ cl_DkRed,  cl_Red,    0 },
+     { /* Techs     */ cl_DkRed,  cl_Gold,   0 },
      { /* Quasars   */ cl_LtBlue, cl_Black,  0 }
 };
 
