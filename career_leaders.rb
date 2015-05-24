@@ -5,7 +5,7 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
-require 'ProgRunner'
+require 'sqlite3'
 
 
 class Stats
@@ -42,42 +42,45 @@ class Stats
   end
 
   def to_s
-    sprintf "%-2s %-20s %-15s #{@format}", @pos, @name, @team, get_sort_key
+    sprintf "%-2s %-20s #{@format}", @pos, @name, get_sort_key
   end
 
 end
 
 
 class Pitcher < Stats
-  attr_reader :name, :team, :wins, :losses, :era, :games, :saves, :innings
+  attr_reader :name, :wins, :losses, :era, :games, :saves, :innings
   attr_reader :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba
   attr_reader :inn_per_game, :whip, :so_per_9, :hr_per_9, :win_pct, :efficiency, :eff_per_9
 
-  def initialize( str, team )
-    fields = str.split(/ +/)
+  def initialize( pitcher )
+    adj_innings = pitcher[:stats][:innings] + (pitcher[:stats][:outs] / 3)
+    adj_outs    = pitcher[:stats][:outs] % 3
+    est_at_bats = (adj_innings * 3) + adj_outs + pitcher[:stats][:hits] + pitcher[:stats][:walks]
 
-    @name         = "#{fields[1]} #{fields[2]}"
-    @team         = team
-    @pos          = fields[ 0]
-    @wins         = fields[ 3].to_i
-    @losses       = fields[ 4].to_i
-    @era          = fields[ 5].to_f
-    @games        = fields[ 6].to_i
-    @saves        = fields[ 7].to_i
-    @innings      = fields[ 8].to_f
-    @hits         = fields[ 9].to_i
-    @earned_runs  = fields[10].to_i
-    @home_runs    = fields[11].to_i
-    @walks        = fields[12].to_i
-    @strike_outs  = fields[13].to_i
-    @vsba         = fields[14].to_f
-    @inn_per_game = fields[15].to_f
-    @whip         = fields[16].to_f
-    @so_per_9     = fields[17].to_f
-    @hr_per_9     = fields[18].to_f
+    f_innings = adj_innings.to_f + (adj_outs.to_f / 3.0)
+
+    @name         = "#{pitcher[:last_name]}, #{pitcher[:first_name]}"
+    @pos          = 'P'
+    @wins         = pitcher[:stats][:wins]
+    @losses       = pitcher[:stats][:losses]
+    @games        = pitcher[:stats][:games]
+    @saves        = pitcher[:stats][:saves]
+    @innings      = "#{adj_innings}.#{adj_outs}"
+    @hits         = pitcher[:stats][:hits]
+    @earned_runs  = pitcher[:stats][:earned_runs]
+    @home_runs    = pitcher[:stats][:home_runs]
+    @walks        = pitcher[:stats][:walks]
+    @strike_outs  = pitcher[:stats][:strike_outs]
+    @era          = (f_innings > 0) ? pitcher[:stats][:earned_runs].to_f / f_innings * 9.0 : 0
+    @vsba         = (est_at_bats > 0) ? pitcher[:stats][:hits].to_f / est_at_bats.to_f : 0
+    @inn_per_game = (pitcher[:stats][:games] > 0) ? f_innings / pitcher[:stats][:games].to_f : 0
+    @whip         = (f_innings > 0) ? (pitcher[:stats][:walks].to_f + pitcher[:stats][:hits].to_f) / f_innings : 0
+    @so_per_9     = (f_innings > 0) ? pitcher[:stats][:strike_outs].to_f / f_innings * 9.0 : 0
+    @hr_per_9     = (f_innings > 0) ? pitcher[:stats][:home_runs].to_f / f_innings * 9.0 : 0
     @win_pct      = (@wins + @losses) > 0 ? @wins.to_f / (@wins + @losses) : 0
-    @efficiency   = (@innings.to_i - @hits) + (@strike_outs - @hits)
-    @eff_per_9    = (@innings > 0) ? @efficiency.to_f / @innings.to_f * 9.0 : 0
+    @efficiency   = (adj_innings - @hits) + (@strike_outs - @hits)
+    @eff_per_9    = (f_innings > 0) ? @efficiency.to_f / f_innings * 9.0 : 0
   end
 
 end
@@ -87,29 +90,31 @@ class Batter < Stats
   attr_reader :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs
   attr_reader :steals, :errors, :slugging, :obp, :soa, :rpg
 
-  def initialize( str, team )
-    fields = str.split(/ +/)
+  def initialize( batter )
+    appearances = batter[:stats][:at_bats] + batter[:stats][:walks]
+    singles     = batter[:stats][:hits] - (batter[:stats][:doubles] + batter[:stats][:triples] + batter[:stats][:home_runs])
+    bases       = singles + (batter[:stats][:doubles] * 2) + (batter[:stats][:triples] * 3) + (batter[:stats][:home_runs] * 4)
+    production  = batter[:stats][:runs] + batter[:stats][:runs_batted_in] - batter[:stats][:home_runs]
 
-    @name        = "#{fields[1]} #{fields[2]}"
-    @team        = team
-    @pos         = fields[ 0]
-    @average     = fields[ 3].to_f
-    @games       = fields[ 4].to_i
-    @at_bats     = fields[ 5].to_i
-    @runs        = fields[ 6].to_i
-    @hits        = fields[ 7].to_i
-    @doubles     = fields[ 8].to_i
-    @triples     = fields[ 9].to_i
-    @home_runs   = fields[10].to_i
-    @rbi         = fields[11].to_i
-    @walks       = fields[12].to_i
-    @strike_outs = fields[13].to_i
-    @steals      = fields[14].to_i
-    @errors      = fields[15].to_i
-    @slugging    = fields[16].to_f
-    @obp         = fields[17].to_f
-    @soa         = fields[18].to_f
-    @rpg         = fields[19].to_f
+    @name        = "#{batter[:last_name]}, #{batter[:first_name]}"
+    @pos         = 'B'
+    @games       = batter[:stats][:games]
+    @at_bats     = batter[:stats][:at_bats]
+    @runs        = batter[:stats][:runs]
+    @hits        = batter[:stats][:hits]
+    @doubles     = batter[:stats][:doubles]
+    @triples     = batter[:stats][:triples]
+    @home_runs   = batter[:stats][:home_runs]
+    @rbi         = batter[:stats][:runs_batted_in]
+    @walks       = batter[:stats][:walks]
+    @strike_outs = batter[:stats][:strike_outs]
+    @steals      = batter[:stats][:steals]
+    @errors      = batter[:stats][:errors]
+    @average     = (batter[:stats][:at_bats] > 0) ? batter[:stats][:hits].to_f / batter[:stats][:at_bats].to_f : 0
+    @slugging    = (batter[:stats][:at_bats] > 0) ? bases.to_f / batter[:stats][:at_bats].to_f : 0
+    @obp         = (batter[:stats][:at_bats] > 0) ? (batter[:stats][:hits].to_f + batter[:stats][:walks].to_f) / appearances.to_f : 0
+    @soa         = (batter[:stats][:at_bats] > 0) ? batter[:stats][:strike_outs].to_f / batter[:stats][:at_bats].to_f : 0
+    @rpg         = (batter[:stats][:games] > 0) ? production / batter[:stats][:games].to_f : 0
   end
 
 end
@@ -118,11 +123,12 @@ end
 class StatRankings
   attr_reader :pitchers, :batters
 
-  def initialize( stats_prog )
-    @stats_prog = stats_prog
-    @pitchers   = Array.new
-    @batters    = Array.new
-    @collection = :pitchers
+  def initialize( pitchers, batters )
+    @pitchers_in = pitchers
+    @pitchers    = Array.new
+    @batters_in  = batters
+    @batters     = Array.new
+    @collection  = :pitchers
   end
 
   def get_collection
@@ -147,27 +153,12 @@ class StatRankings
     @pitchers   = Array.new
     @batters    = Array.new
 
-    @stats_prog.execute 'LeagName.Dat', 'Players.S', 'S'
+    @pitchers_in.each do |pitcher|
+      @pitchers.push( Pitcher.new pitcher )
+    end
 
-    if @stats_prog.success?
-      team = "No Team"
-
-      @stats_prog.get_output.split( "\n" ).each do |line|
-        next if line.length == 0
-
-        if line =~ /^[A-Za-z]+ +[0-9]+ +[-] +[0-9]+$/
-          team = line.match(/^[A-Za-z]+/)[0]
-          next
-        end
-
-        if line =~ /^P /
-          @pitchers.push(Pitcher.new line, team )
-        end
-
-        if line =~ /^[C123LRS][ BSF]/
-          @batters.push( Batter.new line, team )
-        end
-      end
+    @batters_in.each do |batter|
+      @batters.push( Batter.new batter )
     end
   end
 
@@ -180,11 +171,11 @@ class StatRankings
   end
 
   def filter_pitchers( pitchers )
-    pitchers.sort! { |a,b| b.innings <=> a.innings }
+    pitchers.sort! { |a,b| b.innings.to_f <=> a.innings.to_f }
 
-    max = pitchers[0].innings
+    max = pitchers[0].innings.to_f
 
-    return pitchers.select { |p| p.innings >= (max * 0.4) }
+    return pitchers.select { |p| p.innings.to_f >= (max * 0.4) }
   end
 
   def filter_batters( batters )
@@ -221,10 +212,6 @@ class StatRankings
 
 end
 
-
-
-rosters_prog = ProgRunner.new location, "print_rosters"
-
 categories = {
   'pitching'      => {  'label' => "Pitching Leaders",     'type' => :pitchers,
     'stats'       => [{ 'label' => "Wins",                 'stat' => :wins,         'format' => '%2d',    'direction' => :descending },
@@ -257,6 +244,67 @@ categories = {
 }
 
 
-sr = StatRankings.new rosters_prog
+@db = SQLite3::Database.new "#{location}/mba.db"
+
+@db.results_as_hash  = true
+@db.type_translation = true
+
+
+def transform_hash db_hash
+  result = []
+
+  db_hash.each do |element|
+    hash = {}
+
+    element.each do|key, value|
+      hash.store key.downcase.to_sym, value
+    end
+
+    result.push hash
+  end
+
+  return result
+end
+
+
+def get_pitchers
+  transform_hash @db.execute "select * from players_t where player_type = 1"
+end
+
+
+def get_pitcher_stats_by_player_id( player_id )
+  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(wins) wins, sum(losses) losses, sum(games) games, sum(saves) saves, sum(innings) innings, sum(outs) outs, sum(hits) hits, sum(earned_runs) earned_runs, sum(home_runs) home_runs, sum(walks) walks, sum(strike_outs) strike_outs from pitcher_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
+  result[0]
+end
+
+
+def get_batters
+  transform_hash @db.execute "select * from players_t where player_type = 2"
+end
+
+
+def get_batter_stats_by_player_id( player_id )
+  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(games) games, sum(at_bats) at_bats, sum(runs) runs, sum(hits) hits, sum(doubles) doubles, sum(triples) triples, sum(home_runs) home_runs, sum(runs_batted_in) runs_batted_in, sum(walks) walks, sum(strike_outs) strike_outs, sum(steals) steals, sum(errors) errors from batter_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
+  result[0]
+end
+
+
+pitchers = get_pitchers
+
+pitchers.each do |pitcher|
+  pitcher[:stats] = get_pitcher_stats_by_player_id pitcher[:player_id]
+end
+
+pitchers.reject! { |pitcher| pitcher[:stats].nil? }
+
+batters = get_batters
+
+batters.each do |batter|
+  batter[:stats] = get_batter_stats_by_player_id batter[:player_id]
+end
+
+batters.reject! { |batter| batter[:stats].nil? }
+
+sr = StatRankings.new pitchers, batters
 
 sr.process_categories categories
