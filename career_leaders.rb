@@ -6,6 +6,7 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'sqlite3'
+require 'positions'
 
 
 class Stats
@@ -97,7 +98,7 @@ class Batter < Stats
     production  = batter[:stats][:runs] + batter[:stats][:runs_batted_in] - batter[:stats][:home_runs]
 
     @name        = "#{batter[:last_name]}, #{batter[:first_name]}"
-    @pos         = 'B'
+    @pos         = Positions::string_value batter[:primary_position]
     @games       = batter[:stats][:games]
     @at_bats     = batter[:stats][:at_bats]
     @runs        = batter[:stats][:runs]
@@ -279,7 +280,7 @@ end
 
 
 def get_batters
-  transform_hash @db.execute "select * from players_t where player_type = 2"
+  transform_hash @db.execute "select p.*, b.primary_position from players_t p join batters_t b on p.player_id = b.player_id where player_type = 2"
 end
 
 
