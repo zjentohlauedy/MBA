@@ -51,7 +51,7 @@ end
 
 class Pitcher < Stats
   attr_reader :name, :wins, :losses, :era, :games, :saves, :innings
-  attr_reader :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba
+  attr_reader :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba, :win_pct2
   attr_reader :inn_per_game, :whip, :so_per_9, :hr_per_9, :win_pct, :efficiency, :eff_per_9
 
   def initialize( pitcher, stats )
@@ -82,6 +82,7 @@ class Pitcher < Stats
     @so_per_9     = (f_innings > 0) ? stats[:strike_outs].to_f / f_innings * 9.0 : 0
     @hr_per_9     = (f_innings > 0) ? stats[:home_runs].to_f / f_innings * 9.0 : 0
     @win_pct      = (@wins + @losses) > 0 ? @wins.to_f / (@wins + @losses) : 0
+    @win_pct2     = (@games > 0) ? @wins.to_f / @games : 0
     @efficiency   = (adj_innings - @hits) + (@strike_outs - @hits)
     @eff_per_9    = (f_innings > 0) ? @efficiency.to_f / f_innings * 9.0 : 0
   end
@@ -225,6 +226,7 @@ categories = {
   'pitching'      => {  'label' => "Pitching Leaders",     'type' => :pitchers,
     'stats'       => [{ 'label' => "Wins",                 'stat' => :wins,         'format' => '%2d',    'direction' => :descending },
                       { 'label' => "Win Percentage",       'stat' => :win_pct,      'format' => '%5.3f',  'direction' => :descending },
+                      { 'label' => "Win Percentage 2",     'stat' => :win_pct2,     'format' => '%5.3f',  'direction' => :descending },
                       { 'label' => "Earned Run Average",   'stat' => :era,          'format' => '%5.2f',  'direction' => :ascending  },
                       { 'label' => "vs. Batting Average",  'stat' => :vsba,         'format' => '%5.3f',  'direction' => :ascending  },
                       { 'label' => "Saves",                'stat' => :saves,        'format' => '%3d',    'direction' => :descending },
