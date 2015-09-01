@@ -129,7 +129,7 @@ puts "-              -   -     -              -   -     -              -   -    
 
 (0..7).each do |idx|
   (0..3).each do |div|
-    printf "%-12s %3d %3d     ", divisions[div][idx].team, divisions[div][idx].overall.wins, divisions[div][idx].overall.losses
+    printf "%-12s %3d %3d     ", TeamRecords::TeamLocations[divisions[div][idx].team], divisions[div][idx].overall.wins, divisions[div][idx].overall.losses
   end
 
   puts "\n"

@@ -11,6 +11,15 @@ class TeamRecords
     'Knights'   => 0, 'Expos'     => 1, 'Thunder'   => 2, 'Techs'     => 3,
     'Drizzle'   => 0, 'Dynamo'    => 1, 'Glory'     => 2, 'Quasars'   => 3 }
 
+  TeamLocations = {
+    'Sabres'    => 'Bordeaux',     'Scorpions' => 'Alexandria', 'Aces'      => 'Auckland',   'Eclipse'   => 'Guadalajara', 'Global' => 'Global',
+    'Portsmen'  => 'Buenos Aires', 'Lightning' => 'Barcelona',  'Cyclone'   => 'Brasilia',   'Legends'   => 'Los Angeles', 'World'  => 'World',
+    'Settlers'  => 'Freetown',     'Goblins'   => 'Chicago',    'Stormers'  => 'Cape Town',  'Waves'     => 'Maui',
+    'Kings'     => 'London',       'Photons'   => 'Frankfurt',  'Express'   => 'Cordoba',    'Horizon'   => 'Santiago',
+    'Voyagers'  => 'Miami',        'Dragons'   => 'Hong Kong',  'Warriors'  => 'Melbourne',  'Sharks'    => 'Shanghai',
+    'Rockets'   => 'Monrovia',     'Hammers'   => 'Houston',    'Wanderers' => 'Montevideo', 'Flames'    => 'Sydney',
+    'Knights'   => 'New York',     'Expos'     => 'Montreal',   'Thunder'   => 'Nairobi',    'Techs'     => 'Tokyo',
+    'Drizzle'   => 'Sao Paulo',    'Dynamo'    => 'Moscow',     'Glory'     => 'Perth',      'Quasars'   => 'Vancouver' }
 
   class Record
     attr_accessor :wins, :losses
