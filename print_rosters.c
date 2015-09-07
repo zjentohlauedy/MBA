@@ -55,8 +55,8 @@ static void printPitchingHeader( void )
      case ps_Ratings:   printf( "   Pitchers                ID H  S  C  F  B  L\n" ); break;
           //                     P  Bosanquet, Simon       123 L  4 10  9  8  8
      case ps_Potential:
-     case ps_Simulated: printf( "   Pitchers              W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G  WHIP  SO/9  HR/9  EFF\n" ); break;
-          //                     P  Alphin, Nick         12  5  3.64  24  0 173.1 187  70  27  34 232 0.000  7.21 0.973 12.07  6.93 +123
+     case ps_Simulated: printf( "   Pitchers              W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G  WHIP  SO/9  HR/9    EFF\n" ); break;
+          //                     P  Alphin, Nick         12  5  3.64  24  0 173.1 187  70  27  34 232 0.000  7.21 0.973 12.07  6.93 -12.34
      }
 }
 
@@ -189,7 +189,10 @@ static void printPitcherStats( const pitching_s *stats )
 
      printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->home_runs) / norm_inn * 9.0 : 0 );
 
-     printf( "%+4d", ((int)stats->innings - stats->hits) + (stats->strike_outs - stats->hits) );
+     int eff = ((int)stats->innings - stats->hits) + (stats->strike_outs - stats->hits);
+
+//     printf( "%+4d", ((int)stats->innings - stats->hits) + (stats->strike_outs - stats->hits) );
+     printf( "%+6.2f", (norm_inn > 0) ? ((float)eff) / norm_inn * 9.0 : 0 );
 }
 
 
