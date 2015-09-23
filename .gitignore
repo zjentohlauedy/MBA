@@ -44,6 +44,7 @@ print_rosters2
 print_team_totals
 rating_ratios
 readgames
+reset_injuries
 reset_records
 reset_team_colors
 rest_players

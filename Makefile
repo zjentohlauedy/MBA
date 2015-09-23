@@ -19,6 +19,7 @@ print_rosters \
 print_team_totals \
 rating_ratios \
 readgames \
+reset_injuries \
 reset_records \
 reset_team_colors \
 rest_players \
@@ -83,6 +84,9 @@ rating_ratios: rating_ratios.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 readgames: readgames.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+reset_injuries: reset_injuries.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 reset_records: reset_records.o ewbfiles.o
