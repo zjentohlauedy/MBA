@@ -1,5 +1,5 @@
 class TeamRecords
-  attr_reader :team, :overall, :division, :points_scored, :points_allowed, :opponents
+  attr_reader :team, :overall, :division, :league, :points_scored, :points_allowed, :opponents
 
   TeamDivisions = {
     'Sabres'    => 0, 'Scorpions' => 1, 'Aces'      => 2, 'Eclipse'   => 3, 'Global' => 4,
@@ -47,6 +47,7 @@ class TeamRecords
     @team     = team
     @overall  = Record.new
     @division = Record.new
+    @league   = Record.new
     @home     = Record.new
     @road     = Record.new
 
@@ -87,6 +88,10 @@ class TeamRecords
       @division.update score, opp_score
     end
 
+    if TeamRecords.in_league? game.home_team, game.road_team
+      @league.update score, opp_score
+    end
+
     if is_home
       @home.update score, opp_score
     else
@@ -104,7 +109,11 @@ class TeamRecords
   end
 
   def self.in_division?( home_team, road_team )
-    return (TeamDivisions[home_team] == TeamDivisions.fetch( road_team ))
+    return (TeamDivisions[home_team] == TeamDivisions[road_team])
+  end
+
+  def self.in_league?( home_team, road_team )
+    return (TeamDivisions[home_team] / 2) == (TeamDivisions[road_team] / 2)
   end
 
   def self.is_allstar?( team )
