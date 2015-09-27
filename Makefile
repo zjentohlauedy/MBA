@@ -8,6 +8,7 @@ check_games draft \
 clear_stats \
 ewbcopyleague \
 ewbfielding \
+extract_data \
 fixstats \
 games_played \
 gen_players \
@@ -51,6 +52,9 @@ ewbcopyleague: ewbcopyleague.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 ewbfielding: ewbfielding.o ewbfiles.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
+extract_data: extract_data.o ewbfiles.o convert_league.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 fixstats: fixstats.o ewbfiles.o
