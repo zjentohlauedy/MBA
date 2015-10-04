@@ -83,12 +83,13 @@ static void printHitter( const player_s *player )
 {
      const batter_s *b = &(player->data.batter);
 
-     printf( "{\"first_name\":\"%s\"", b->first_name );
+     printf( "{\"id\":%d", player->player_id );
+     printf( ",\"type\":\"batter\"" );
+     printf( ",\"first_name\":\"%s\"", b->first_name );
      printf( ",\"last_name\":\"%s\"", b->last_name );
      printf( ",\"primary_position\":%d", b->primary_pos );
      printf( ",\"secondary_position\":%d", b->secondary_pos );
      printf( ",\"handedness\":%d", player->hand );
-     printf( ",\"id\":%d", player->player_id );
 
      printf( ",\"ratings\":" );
 
@@ -100,11 +101,11 @@ static void printHitter( const player_s *player )
 
      printHitterStats( &(b->potential) );
 
-     printf( "\"simulated\":" );
+     printf( ",\"simulated\":" );
 
      printHitterStats( &(b->simulated) );
 
-     printf( "\"fielding\":" );
+     printf( ",\"fielding\":" );
 
      printHitterFielding( b );
 
@@ -158,11 +159,12 @@ static void printPitcher( const player_s *player )
 {
      const pitcher_s *p = &(player->data.pitcher);
 
-     printf( "{\"first_name\":\"%s\"", p->first_name );
+     printf( "{\"id\":%d", player->player_id );
+     printf( ",\"type\":\"pitcher\"" );
+     printf( ",\"first_name\":\"%s\"", p->first_name );
      printf( ",\"last_name\":\"%s\"", p->last_name );
      printf( ",\"position\":%d", p->primary_pos );
      printf( ",\"handedness\":%d", player->hand );
-     printf( ",\"id\":%d", player->player_id );
 
      printf( ",\"ratings\":" );
 
@@ -174,11 +176,11 @@ static void printPitcher( const player_s *player )
 
      printPitcherStats( &(p->potential) );
 
-     printf( "\"simulated\":" );
+     printf( ",\"simulated\":" );
 
      printPitcherStats( &(p->simulated) );
 
-     printf( "\"fielding\":" );
+     printf( ",\"fielding\":" );
 
      printPitcherFielding( p );
 
