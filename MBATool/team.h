@@ -8,6 +8,7 @@
 
 #define TEAM_PLAYER_SENTINEL         { -1, -1, -1, NULL }
 #define TEAM_STATS_SENTINEL          { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
+#define TEAM_VERSUS_STATS_SENTINEL   { -1, -1, sp_None, -1, -1, -1, -1, -1 }
 #define TEAM_PITCHING_STATS_SENTINEL { -1, -1, sp_None, -1, -1, -1, -1, { -1, -1 }, -1, -1, -1, -1, -1 }
 #define TEAM_BATTING_STATS_SENTINEL  { -1, -1, sp_None, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 #define TEAM_ACCOLADE_SENTINEL       { -1, -1, tacc_None }
@@ -133,6 +134,7 @@ typedef struct
      color_e                secondary_color;
      team_player_s         *players;
      team_stats_s          *stats;
+     team_versus_stats_s   *versus_stats;
      team_pitching_stats_s *pitching_stats;
      team_batting_stats_s  *batting_stats;
      team_accolade_s       *accolades;

@@ -10,6 +10,7 @@
 
 static team_player_s         team_player_sentinel         = TEAM_PLAYER_SENTINEL;
 static team_stats_s          team_stats_sentinel          = TEAM_STATS_SENTINEL;
+static team_versus_stats_s   team_versus_stats_sentinel   = TEAM_VERSUS_STATS_SENTINEL;
 static team_pitching_stats_s team_pitching_stats_sentinel = TEAM_PITCHING_STATS_SENTINEL;
 static team_batting_stats_s  team_batting_stats_sentinel  = TEAM_BATTING_STATS_SENTINEL;
 static team_accolade_s       team_accolade_sentinel       = TEAM_ACCOLADE_SENTINEL;
@@ -211,6 +212,46 @@ static char *get_team__ShouldReturnTheMatchingTeamWithStats_GivenATeamId()
      assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
      assertEquals( SQLITE_OK, team_stats_t_delete( db, &expected_stats1 ) );
      assertEquals( SQLITE_OK, team_stats_t_delete( db, &expected_stats2 ) );
+
+     return NULL;
+}
+
+static char *get_team__ShouldReturnTheMatchingTeamWithVersusStats_GivenATeamId()
+{
+     team_s               expected               = { 0 };
+     team_versus_stats_s *expected_versus_stats1 = buildTeamVersusStats( 1, 1, sp_Regular, 3 );
+     team_versus_stats_s *expected_versus_stats2 = buildTeamVersusStats( 1, 2, sp_Regular, 3 );
+
+     /**/    expected.team_id         = 1;
+     strcpy( expected.name,            "TeamName1" );
+     strcpy( expected.location,        "Location1" );
+     /**/    expected.primary_color   = cl_Blue;
+     /**/    expected.secondary_color = cl_Gold;
+
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
+
+     assertEquals( SQLITE_OK, team_versus_stats_t_create( db, expected_versus_stats1 ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_create( db, expected_versus_stats2 ) );
+
+     team_s *actual = get_team( db, expected.team_id );
+
+     assertNotNull( actual );
+
+     team_versus_stats_s *actual_versus_stats = actual->versus_stats;
+
+     assertNotNull( actual_versus_stats );
+
+     compareTeamVersusStats( expected_versus_stats1,      &actual_versus_stats[0] );
+     compareTeamVersusStats( expected_versus_stats2,      &actual_versus_stats[1] );
+     compareTeamVersusStats( &team_versus_stats_sentinel, &actual_versus_stats[2] );
+
+     assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_delete( db, expected_versus_stats1 ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_delete( db, expected_versus_stats2 ) );
+
+     free( expected_versus_stats1 );
+     free( expected_versus_stats2 );
+     free_team( actual );
 
      return NULL;
 }
@@ -708,6 +749,48 @@ static char *save_team__ShouldPersistTheTeamStatsInTheDatabase_GivenATeamWithTea
      assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
      assertEquals( SQLITE_OK, team_stats_t_delete( db, &expected_stats[0] ) );
      assertEquals( SQLITE_OK, team_stats_t_delete( db, &expected_stats[1] ) );
+
+     return NULL;
+}
+
+static char *save_team__ShouldPersistTheVersusStatsInTheDatabase_GivenATeamWithVersusStats()
+{
+     team_s              expected                 = { 0 };
+     team_versus_stats_s expected_versus_stats[3] = { 0 };
+
+     /**/    expected.team_id         = 1;
+     strcpy( expected.name,            "TeamName1" );
+     strcpy( expected.location,        "Location1" );
+     /**/    expected.primary_color   = cl_Blue;
+     /**/    expected.secondary_color = cl_Gold;
+
+     buildIntoTeamVersusStats( &expected_versus_stats[0], 1, 1, sp_Regular, 3 );
+     buildIntoTeamVersusStats( &expected_versus_stats[1], 1, 2, sp_Regular, 3 );
+
+     expected_versus_stats[2] = team_versus_stats_sentinel;
+
+     expected.versus_stats = expected_versus_stats;
+
+     assertEquals( SQLITE_OK, save_team( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_OK, team_versus_stats_t_read_by_team( db, expected.team_id, &list ) );
+
+     assertEquals( 2, list.count );
+
+     team_versus_stats_s *actual_versus_stats = list.data;
+
+     assertNotNull( actual_versus_stats );
+
+     compareTeamVersusStats( &expected_versus_stats[0], &actual_versus_stats[0] );
+     compareTeamVersusStats( &expected_versus_stats[1], &actual_versus_stats[1] );
+
+     free( actual_versus_stats );
+
+     assertEquals( SQLITE_OK, teams_t_delete( db, &expected ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_delete( db, &expected_versus_stats[0] ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_delete( db, &expected_versus_stats[1] ) );
 
      return NULL;
 }
@@ -1328,6 +1411,38 @@ static char *remove_team__ShouldRemoveTheTeamStatsFromTheDatabase_GivenATeamWith
      return NULL;
 }
 
+static char *remove_team__ShouldRemoveTheTeamVersusStatsFromTheDatabase_GivenATeamWithTeamVersusStats()
+{
+     team_s              expected                 = { 0 };
+     team_versus_stats_s expected_versus_stats[3] = { 0 };
+
+     /**/    expected.team_id         = 1;
+     strcpy( expected.name,            "TeamName1" );
+     strcpy( expected.location,        "Location1" );
+     /**/    expected.primary_color   = cl_Blue;
+     /**/    expected.secondary_color = cl_Gold;
+
+     assertEquals( SQLITE_OK, teams_t_create( db, &expected ) );
+
+     buildIntoTeamVersusStats( &expected_versus_stats[0], 1, 1, sp_Regular, 3 );
+     buildIntoTeamVersusStats( &expected_versus_stats[1], 1, 2, sp_Regular, 3 );
+
+     expected_versus_stats[2] = team_versus_stats_sentinel;
+
+     assertEquals( SQLITE_OK, team_versus_stats_t_create( db, &expected_versus_stats[0] ) );
+     assertEquals( SQLITE_OK, team_versus_stats_t_create( db, &expected_versus_stats[1] ) );
+
+     expected.versus_stats = expected_versus_stats;
+
+     assertEquals( SQLITE_OK, remove_team( db, &expected ) );
+
+     data_list_s list = { 0 };
+
+     assertEquals( SQLITE_NOTFOUND, team_versus_stats_t_read_by_team( db, expected.team_id, &list ) );
+
+     return NULL;
+}
+
 static char *remove_team__ShouldRemoveTheTeamPitchingStatsFromTheDatabase_GivenATeamWithTeamPitchingStats()
 {
      team_s                expected                   = { 0 };
@@ -1472,6 +1587,7 @@ static void run_all_tests()
      run_test( get_team__ShouldReturnTheMatchingTeamObject_GivenATeamId,            check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithPlayers_GivenATeamId,       check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithStats_GivenATeamId,         check_sqlite_error );
+     run_test( get_team__ShouldReturnTheMatchingTeamWithVersusStats_GivenATeamId,   check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithPitchingStats_GivenATeamId, check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithBattingStats_GivenATeamId,  check_sqlite_error );
      run_test( get_team__ShouldReturnTheMatchingTeamWithAccolades_GivenATeamId,     check_sqlite_error );
@@ -1484,6 +1600,7 @@ static void run_all_tests()
      run_test( save_team__ShouldPersistTheTeamInTheDatabase_GivenATeamObject,                     check_sqlite_error );
      run_test( save_team__ShouldPersistTheTeamPlayersInTheDatabase_GivenATeamWithTeamPlayers,     check_sqlite_error );
      run_test( save_team__ShouldPersistTheTeamStatsInTheDatabase_GivenATeamWithTeamStats,         check_sqlite_error );
+     run_test( save_team__ShouldPersistTheVersusStatsInTheDatabase_GivenATeamWithVersusStats,     check_sqlite_error );
      run_test( save_team__ShouldPersistThePitchingStatsInTheDatabase_GivenATeamWithPitchingStats, check_sqlite_error );
      run_test( save_team__ShouldPersistTheBattingStatsInTheDatabase_GivenATeamWithBattingStats,   check_sqlite_error );
      run_test( save_team__ShouldPersistTheAccoladesInTheDatabase_GivenATeamWithAccolades,         check_sqlite_error );
@@ -1493,6 +1610,7 @@ static void run_all_tests()
      run_test( remove_team__ShouldRemoveTheTeamFromTheDatabase_GivenATeamObject,                             check_sqlite_error );
      run_test( remove_team__ShouldRemoveTheTeamPlayersFromTheDatabase_GivenATeamWithTeamPlayers,             check_sqlite_error );
      run_test( remove_team__ShouldRemoveTheTeamStatsFromTheDatabase_GivenATeamWithTeamStats,                 check_sqlite_error );
+     run_test( remove_team__ShouldRemoveTheTeamVersusStatsFromTheDatabase_GivenATeamWithTeamVersusStats,     check_sqlite_error );
      run_test( remove_team__ShouldRemoveTheTeamPitchingStatsFromTheDatabase_GivenATeamWithTeamPitchingStats, check_sqlite_error );
      run_test( remove_team__ShouldRemoveTheTeamBattingStatsFromTheDatabase_GivenATeamWithTeamBattingStats,   check_sqlite_error );
      run_test( remove_team__ShouldRemoveTheAccoladesFromTheDatabase_GivenATeamWithAccolades,                 check_sqlite_error );

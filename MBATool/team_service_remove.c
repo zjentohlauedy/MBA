@@ -47,6 +47,20 @@ static int remove_team_pitching_stats( sqlite3 *db, const team_pitching_stats_s 
      return SQLITE_OK;
 }
 
+static int remove_team_versus_stats( sqlite3 *db, const team_versus_stats_s *team_versus_stats )
+{
+     int rc;
+
+     if ( team_versus_stats == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; team_versus_stats[i].team_id >= 0; ++i )
+     {
+          TRY( team_versus_stats_t_delete( db, &team_versus_stats[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
 static int remove_team_stats( sqlite3 *db, const team_stats_s *team_stats )
 {
      int rc;
@@ -81,6 +95,7 @@ int remove_team( sqlite3 *db, const team_s *team )
 
      TRY( remove_team_players(        db, team->players        ) );
      TRY( remove_team_stats(          db, team->stats          ) );
+     TRY( remove_team_versus_stats(   db, team->versus_stats   ) );
      TRY( remove_team_pitching_stats( db, team->pitching_stats ) );
      TRY( remove_team_batting_stats(  db, team->batting_stats  ) );
      TRY( remove_team_accolades(      db, team->accolades      ) );

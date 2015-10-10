@@ -29,6 +29,18 @@ static int upsert_team_pitching_stats( sqlite3 *db, const team_pitching_stats_s 
      return rc;
 }
 
+static int upsert_team_versus_stats( sqlite3 *db, const team_versus_stats_s *team_versus_stats )
+{
+     int rc;
+
+     if ( (rc = team_versus_stats_t_create( db, team_versus_stats )) == SQLITE_CONSTRAINT )
+     {
+          return team_versus_stats_t_update( db, team_versus_stats );
+     }
+
+     return rc;
+}
+
 static int upsert_team_stats( sqlite3 *db, const team_stats_s *team_stats )
 {
      int rc;
@@ -95,6 +107,20 @@ static int save_team_pitching_stats( sqlite3 *db, const team_pitching_stats_s *t
      return SQLITE_OK;
 }
 
+static int save_team_versus_stats( sqlite3 *db, const team_versus_stats_s *team_versus_stats )
+{
+     int rc;
+
+     if ( team_versus_stats == NULL ) return SQLITE_OK;
+
+     for ( int i = 0; team_versus_stats[i].team_id >= 0; ++i )
+     {
+          TRY( upsert_team_versus_stats( db, &team_versus_stats[i] ) );
+     }
+
+     return SQLITE_OK;
+}
+
 static int save_team_stats( sqlite3 *db, const team_stats_s *team_stats )
 {
      int rc;
@@ -129,6 +155,7 @@ int save_team( sqlite3 *db, const team_s *team )
 
      TRY( save_team_players(        db, team->players        ) );
      TRY( save_team_stats(          db, team->stats          ) );
+     TRY( save_team_versus_stats(   db, team->versus_stats ) );
      TRY( save_team_pitching_stats( db, team->pitching_stats ) );
      TRY( save_team_batting_stats(  db, team->batting_stats  ) );
      TRY( save_team_accolades(      db, team->accolades      ) );

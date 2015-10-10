@@ -58,6 +58,24 @@ static team_pitching_stats_s *get_team_pitching_stats( sqlite3 *db, const int te
      return list.data;
 }
 
+static team_versus_stats_s *get_team_versus_stats( sqlite3 *db, const int team_id )
+{
+     static team_versus_stats_s sentinel = TEAM_VERSUS_STATS_SENTINEL;
+
+     data_list_s list = { 0 };
+
+     if ( team_versus_stats_t_read_by_team( db, team_id, &list ) != SQLITE_OK ) return NULL;
+
+     if ( add_to_data_list( &list, &sentinel, sizeof(team_versus_stats_s), 50 ) < 0 )
+     {
+          free( list.data );
+
+          return NULL;
+     }
+
+     return list.data;
+}
+
 static team_stats_s *get_team_stats( sqlite3 *db, const int team_id )
 {
      static team_stats_s sentinel = TEAM_STATS_SENTINEL;
@@ -156,6 +174,7 @@ team_s *get_team( sqlite3 *db, const int team_id )
 
      team->players        = get_team_players(        db, team_id );
      team->stats          = get_team_stats(          db, team_id );
+     team->versus_stats   = get_team_versus_stats(   db, team_id );
      team->pitching_stats = get_team_pitching_stats( db, team_id );
      team->batting_stats  = get_team_batting_stats(  db, team_id );
      team->accolades      = get_team_accolades(      db, team_id );
