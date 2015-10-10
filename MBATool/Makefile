@@ -32,6 +32,7 @@ tests = \
    test_teams_t \
    test_team_players_t \
    test_team_stats_t \
+   test_team_versus_stats_t \
    test_team_pitching_stats_t \
    test_team_batting_stats_t \
    test_team_accolades_t \
@@ -141,6 +142,9 @@ test_team_players_t: test_team_players_t.o team_players_t.o sql_query.o data_lis
 test_team_stats_t: test_team_stats_t.o team_stats_t.o sql_query.o data_list.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+test_team_versus_stats_t: test_team_versus_stats_t.o team_versus_stats_t.o sql_query.o data_list.o libmbabuilders.a libmbacompares.a
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 test_team_pitching_stats_t: test_team_pitching_stats_t.o team_pitching_stats_t.o sql_query.o data_list.o libmbabuilders.a libmbacompares.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
@@ -247,6 +251,7 @@ MBADATA_OBJECTS = \
  team_pitching_stats_t.o \
  team_players_t.o \
  team_stats_t.o \
+ team_versus_stats_t.o \
  teams_t.o \
  player_service_get.o \
  player_service_save.o \
@@ -272,6 +277,7 @@ MBABUILDERS_OBJECTS = \
  build_team.o \
  build_team_pitching_stats.o \
  build_team_player.o \
+ build_team_versus_stats.o \
  build_player.o \
  build_pitcher.o \
  build_pitcher_stats.o \
@@ -289,6 +295,7 @@ MBACOMPARES_OBJECTS = \
  compare_pitcher_stats.o \
  compare_team_pitching_stats.o \
  compare_team_batting_stats.o \
+ compare_team_versus_stats.o \
  compare_filebatting_stats.o
 
 libmbacompares.a: $(MBACOMPARES_OBJECTS)

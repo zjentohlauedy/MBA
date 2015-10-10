@@ -28,6 +28,9 @@ void           buildIntoTeamPlayer( team_player_s *team_player, const int team_i
 team_pitching_stats_s *buildTeamPitchingStats(                                                 const int team_id, const int season, const season_phase_e season_phase );
 void                   buildIntoTeamPitchingStats( team_pitching_stats_s *team_pitching_stats, const int team_id, const int season, const season_phase_e season_phase );
 
+team_versus_stats_s *buildTeamVersusStats(                                             const int team_id, const int season, const season_phase_e season_phase, const int opponent );
+void                 buildIntoTeamVersusStats( team_versus_stats_s *team_versus_stats, const int team_id, const int season, const season_phase_e season_phase, const int opponent );
+
 player_s *buildPlayer(                       const int player_id );
 void      buildIntoPlayer( player_s *player, const int player_id );
 

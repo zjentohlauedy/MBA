@@ -141,6 +141,20 @@ CREATE TABLE Team_Stats_T
    PRIMARY KEY ( Team_Id, Season, Season_Phase )
 );
 
+CREATE TABLE Team_Versus_Stats_T
+(
+   Team_Id         INTEGER,
+   Season          INTEGER,
+   Season_Phase    INTEGER,
+   Opponent        INTEGER,
+   Wins            INTEGER,
+   Losses          INTEGER,
+   Runs_Scored     INTEGER,
+   Runs_Allowed    INTEGER,
+--
+   PRIMARY KEY ( Team_Id, Season, Season_Phase, Opponent )
+);
+
 CREATE TABLE Team_Pitching_Stats_T
 (
    Team_Id             INTEGER,

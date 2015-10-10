@@ -87,6 +87,19 @@ typedef struct
      int            team_id;
      int            season;
      season_phase_e season_phase;
+     int            opponent;
+     int            wins;
+     int            losses;
+     int            runs_scored;
+     int            runs_allowed;
+
+} team_versus_stats_s;
+
+typedef struct
+{
+     int            team_id;
+     int            season;
+     season_phase_e season_phase;
      int            wins;
      int            losses;
      int            home_wins;
@@ -154,6 +167,12 @@ int team_batting_stats_t_read(         sqlite3 *db,                          tea
 int team_batting_stats_t_read_by_team( sqlite3 *db, const int team_id,       data_list_s          *team_batting_stats );
 int team_batting_stats_t_update(       sqlite3 *db,                    const team_batting_stats_s *team_batting_stats );
 int team_batting_stats_t_delete(       sqlite3 *db,                    const team_batting_stats_s *team_batting_stats );
+
+int team_versus_stats_t_create(       sqlite3 *db,                    const team_versus_stats_s *team_versus_stats );
+int team_versus_stats_t_read(         sqlite3 *db,                          team_versus_stats_s *team_versus_stats );
+int team_versus_stats_t_read_by_team( sqlite3 *db, const int team_id,       data_list_s         *team_versus_stats );
+int team_versus_stats_t_update(       sqlite3 *db,                    const team_versus_stats_s *team_versus_stats );
+int team_versus_stats_t_delete(       sqlite3 *db,                    const team_versus_stats_s *team_versus_stats );
 
 int team_accolades_t_create(       sqlite3 *db,                    const team_accolade_s *team_accolade  );
 int team_accolades_t_read_by_team( sqlite3 *db, const int team_id,       data_list_s     *team_accolades );
