@@ -20,6 +20,11 @@ class PlayerGenerator
     @rating_pbs       = [ 0,   4, 72,  300, 1000, 4000, 2000,  500,  100,   16,   8 ]
     @rating_pbs_total = @rating_pbs.reduce(:+)
 
+    #                    0    1   2     3     4     5     6     7     8     9   10
+    #     percentage:    0  .05  .9  3.75  12.5    50    25  6.35  1.45     0    0
+    @power_pbs       = [ 0,   4, 72,  300, 1000, 4000, 2000,  508,  116,    0,   0 ]
+    @power_pbs_total = @power_pbs.reduce(:+)
+
     #                      0    1   2     3     4     5     6     7     8     9   10
     #      percentage:     0    0   0     0  1.25  12.5    50    25    10  0.95  0.3
     @fatigue_pbs       = [ 0,   0,  0,    0,  100, 1000, 4000, 2000,  800,   76,  24 ]
@@ -34,7 +39,7 @@ class PlayerGenerator
                       [    5,    0,    0,   75,    0,   20 ], # SS
                       [    5,    0,    0,   10,    0,   85 ], # LF
                       [    5,    0,    0,   20,    0,   75 ], # CF
-                      [   20,    0,    0,   10,    0,   70 ]]  # RF
+                      [   20,    0,    0,   10,    0,   70 ]] # RF
   end
 
   def generate_pitcher( season )
@@ -87,7 +92,7 @@ class PlayerGenerator
     details[ :player_id          ] = batter[ :player_id ]
     details[ :primary_position   ] = pick_primary_position
     details[ :secondary_position ] = pick_secondary_position details[ :primary_position ]
-    details[ :power              ] = roll
+    details[ :power              ] = roll_power
     details[ :hit_n_run          ] = roll
     details[ :bunt               ] = roll
     details[ :running            ] = roll
@@ -146,6 +151,16 @@ class PlayerGenerator
     x = @random.rand(@rating_pbs_total) + 1
 
     @rating_pbs.each_with_index do |p,i|
+      if (x -= p) <= 0
+        return i
+      end
+    end
+  end
+
+  def roll_power
+    x = @random.rand(@power_pbs_total) + 1
+
+    @power_pbs.each_with_index do |p,i|
       if (x -= p) <= 0
         return i
       end
