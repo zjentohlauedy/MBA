@@ -11,6 +11,14 @@
 static char *result;
 
 
+static team_versus_stats_s *findVersusStats( records_s *records, int team_id, int opponent )
+{
+     int team_idx = team_id - 1;
+     int opp_idx  = opponent - 1;
+
+     return &(records->versus[team_idx][opp_idx]);
+}
+
 static team_batting_stats_s *calcBattingStats( fileplayer_s *players_data, int team_id, int team_idx )
 {
      static team_batting_stats_s team_batting_stats = { 0 };
@@ -265,6 +273,53 @@ static char *convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgData
      return NULL;
 }
 
+static char *convertDivisionTeams_ShouldReturnTeamsWithVersusStats_GivenOrgDataAndDivisionId()
+{
+     org_data_s org_data = { 0 };
+
+     org_data.league_data  = buildFileLeagName();
+     org_data.parks_data   = buildFileParks();
+     org_data.players_data = buildFilePlayers();
+     org_data.records      = buildRecords( org_data.league_data, 3, sp_Playoff );
+     org_data.season       = 3;
+     org_data.season_phase = sp_Playoff;
+
+     fileleagname_s  *league_data    = org_data.league_data;
+     fileparks_s     *parks_data     = org_data.parks_data;
+     fileplayer_s    *players_data   = org_data.players_data;
+
+     division_team_s *division_teams = convertDivisionTeams( &org_data, 1, 0 );
+
+     assertNotNull( division_teams );
+
+     for ( int i = 0; i < TEAMS_PER_DIVISION; ++i )
+     {
+          assertNotNull( division_teams[i].team );
+
+          team_versus_stats_s *team_versus_stats = division_teams[i].team->versus_stats;
+
+          assertNotNull( team_versus_stats );
+
+          for ( int j = 0; j < (TOTAL_TEAMS - 1); ++j )
+          {
+               team_versus_stats_s *expected = findVersusStats( org_data.records, division_teams[i].team->team_id, team_versus_stats[j].opponent );
+
+               expected->season       = org_data.season;
+               expected->season_phase = org_data.season_phase;
+
+               compareTeamVersusStats(  expected, &team_versus_stats[j] );
+          }
+
+          team_versus_stats_s  sentinel = TEAM_VERSUS_STATS_SENTINEL;
+
+          compareTeamVersusStats( &sentinel, &team_versus_stats[TOTAL_TEAMS - 1] );
+     }
+
+     free_division_teams( division_teams );
+
+     return NULL;
+}
+
 static char *convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId()
 {
      org_data_s org_data = { 0 };
@@ -443,6 +498,7 @@ static void run_all_tests()
      run_test( convertDivisionTeams_ShouldReturnTeamsWithPlayers_GivenOrgDataAndDivisionId,           null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithPitchingStats_GivenOrgDataAndDivisionId,     null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithBattingStats_GivenOrgDataAndDivisionId,      null );
+     run_test( convertDivisionTeams_ShouldReturnTeamsWithVersusStats_GivenOrgDataAndDivisionId,       null );
      run_test( convertDivisionTeams_ShouldReturnTeamsWithStats_GivenOrgDataAndDivisionId,             null );
 
      run_test( convertLeagueTeams_ShouldReturnAListOfLeagueTeamRecords_GivenOrgDataAndLeagueId,  null );

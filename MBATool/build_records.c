@@ -6,15 +6,17 @@
 
 records_s *buildRecords( const fileleagname_s *league_data, const int season, const season_phase_e season_phase )
 {
-     static records_s        records;
-     static league_stats_s   leagues   [TOTAL_LEAGUES];
-     static division_stats_s divisions [TOTAL_DIVISIONS];
-     static team_stats_s     teams     [TOTAL_TEAMS];
+     static records_s           records;
+     static league_stats_s      leagues   [TOTAL_LEAGUES];
+     static division_stats_s    divisions [TOTAL_DIVISIONS];
+     static team_stats_s        teams     [TOTAL_TEAMS];
+     static team_versus_stats_s versus    [TOTAL_TEAMS][TOTAL_TEAMS];
 
 
      memset( leagues,   '\0', sizeof(leagues)   );
      memset( divisions, '\0', sizeof(divisions) );
      memset( teams,     '\0', sizeof(teams)     );
+     memset( versus,    '\0', sizeof(versus)    );
 
      for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
@@ -67,9 +69,29 @@ records_s *buildRecords( const fileleagname_s *league_data, const int season, co
           teams[i].runs_allowed    = rand() % 5000;
      }
 
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          for ( int j = 0; j < TOTAL_TEAMS; ++j )
+          {
+               versus[i][j].team_id      = byte2int( league_data->teams[i].team_id );
+               versus[i][j].season       = season;
+               versus[i][j].season_phase = season_phase;
+               versus[i][j].opponent     = byte2int( league_data->teams[j].team_id );
+               versus[i][j].wins         = 1 + rand() % 5;
+               versus[i][j].losses       = 1 + rand() % 5;
+               versus[i][j].runs_scored  = 1 + rand() % 25;
+               versus[i][j].runs_allowed = 1 + rand() % 25;
+          }
+     }
+
      records.leagues   = leagues;
      records.divisions = divisions;
      records.teams     = teams;
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          records.versus[i] = versus[i];
+     }
 
      return &records;
 }

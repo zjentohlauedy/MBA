@@ -63,9 +63,9 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
      records_s *records = NULL;
 
-     if ( (records = malloc( sizeof(records_s) )) == NULL ) return NULL;
+     if ( (records = calloc( 1, sizeof(records_s) )) == NULL ) return NULL;
 
-     if ( (records->leagues = malloc( sizeof(league_stats_s) * TOTAL_LEAGUES )) == NULL )
+     if ( (records->leagues = calloc( TOTAL_LEAGUES, sizeof(league_stats_s) )) == NULL )
      {
           sprintf( error_message, "Unable to allocate memory for league records" );
 
@@ -74,7 +74,7 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           return NULL;
      }
 
-     if ( (records->divisions = malloc( sizeof(division_stats_s) * TOTAL_DIVISIONS )) == NULL )
+     if ( (records->divisions = calloc( TOTAL_DIVISIONS, sizeof(division_stats_s) )) == NULL )
      {
           sprintf( error_message, "Unable to allocate memory for division records" );
 
@@ -83,7 +83,7 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           return NULL;
      }
 
-     if ( (records->teams = malloc( sizeof(team_stats_s) * TOTAL_TEAMS )) == NULL )
+     if ( (records->teams = calloc( TOTAL_TEAMS, sizeof(team_stats_s) )) == NULL )
      {
           sprintf( error_message, "Unable to allocate memory for team records" );
 
@@ -91,10 +91,6 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
 
           return NULL;
      }
-
-     memset( records->leagues,   '\0', sizeof(league_stats_s)   * TOTAL_LEAGUES   );
-     memset( records->divisions, '\0', sizeof(division_stats_s) * TOTAL_DIVISIONS );
-     memset( records->teams,     '\0', sizeof(team_stats_s)     * TOTAL_TEAMS     );
 
      for ( int i = 0; i < TOTAL_LEAGUES; ++i )
      {
@@ -126,6 +122,26 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
           records->teams[i].team_id      = byte2int( league_file->teams[i].team_id );
           records->teams[i].season       = season;
           records->teams[i].season_phase = season_phase;
+     }
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          if ( (records->versus[i] = calloc( TOTAL_TEAMS, sizeof(team_versus_stats_s) )) == NULL )
+          {
+               sprintf( error_message, "Unable to allocate memory for team versus records" );
+
+               freeRecords( records );
+
+               return NULL;
+          }
+
+          for ( int j = 0; j < TOTAL_TEAMS; ++j )
+          {
+               records->versus[i][j].team_id      = byte2int( league_file->teams[i].team_id );
+               records->versus[i][j].season       = season;
+               records->versus[i][j].season_phase = season_phase;
+               records->versus[i][j].opponent     = byte2int( league_file->teams[j].team_id );
+          }
      }
 
      for ( int i = 0; schedule->days[i].games != NULL; ++i )
@@ -171,6 +187,9 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
                     records->teams[road_idx].road_wins++;
                     records->teams[home_idx].home_losses++;
 
+                    records->versus[road_idx][home_idx].wins++;
+                    records->versus[home_idx][road_idx].losses++;
+
                     if ( teams[road_idx].division == teams[home_idx].division )
                     {
                          records->teams[road_idx].division_wins++;
@@ -213,6 +232,9 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
                     records->teams[home_idx].home_wins++;
                     records->teams[road_idx].road_losses++;
 
+                    records->versus[home_idx][road_idx].wins++;
+                    records->versus[road_idx][home_idx].losses++;
+
                     if ( teams[road_idx].division == teams[home_idx].division )
                     {
                          records->teams[home_idx].division_wins++;
@@ -254,6 +276,12 @@ records_s *calculateRecords( const schedule_s *schedule, const fileleagname_s *l
                records->teams[road_idx].runs_allowed += game->home.score;
                records->teams[home_idx].runs_allowed += game->road.score;
 
+               records->versus[road_idx][home_idx].runs_scored  += game->road.score;
+               records->versus[home_idx][road_idx].runs_scored  += game->home.score;
+
+               records->versus[road_idx][home_idx].runs_allowed += game->home.score;
+               records->versus[home_idx][road_idx].runs_allowed += game->road.score;
+
                if ( teams[road_idx].division != teams[home_idx].division )
                {
                     records->divisions[teams[road_idx].division].runs_scored += game->road.score;
@@ -282,6 +310,11 @@ void freeRecords( records_s *records )
      if ( records->leagues   != NULL ) free( records->leagues   );
      if ( records->divisions != NULL ) free( records->divisions );
      if ( records->teams     != NULL ) free( records->teams     );
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          if ( records->versus[i] != NULL ) free( records->versus[i] );
+     }
 
      free( records );
 }

@@ -61,6 +61,49 @@ static char *calculateRecords_ShouldReturnNullIfHomeTeamNotFound_GivenAScheduleA
      return NULL;
 }
 
+static char *calculateRecords_ShouldSetVersusRecords_GivenAScheduleAndLeagueFile()
+{
+     fileleagname_s *league_file = buildFileLeagName();
+     schedule_s     *schedule    = buildSchedule( league_file );
+
+     records_s *records = calculateRecords( schedule, league_file, 4, sp_Regular );
+
+     assertNotNull( records );
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          assertNotNull( records->versus[i] );
+
+          for ( int j = 0; j < TOTAL_TEAMS; ++j )
+          {
+               assertEquals( i + 1,      records->versus[i][j].team_id      );
+               assertEquals( 4,          records->versus[i][j].season       );
+               assertEquals( sp_Regular, records->versus[i][j].season_phase );
+               assertEquals( j + 1,      records->versus[i][j].opponent     );
+
+               if ( j != i )
+               {
+                    if ( records->versus[i][j].wins        + records->versus[i][j].losses == 0 )
+                    {
+                         printf( "i: %d, j: %d; ", i, j );
+                    }
+
+                    assertNonZero( records->versus[i][j].wins        + records->versus[i][j].losses       );
+                    assertNonZero( records->versus[i][j].runs_scored + records->versus[i][j].runs_allowed );
+               }
+               else
+               {
+                    assertEquals( 0, records->versus[i][j].wins         );
+                    assertEquals( 0, records->versus[i][j].losses       );
+                    assertEquals( 0, records->versus[i][j].runs_scored  );
+                    assertEquals( 0, records->versus[i][j].runs_allowed );
+               }
+          }
+     }
+
+     return NULL;
+}
+
 static char *calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile()
 {
      fileleagname_s *league_file = buildFileLeagName();
@@ -915,6 +958,9 @@ static void run_all_tests()
      run_test( calculateRecords_ShouldReturnNullIfScheduleIsEmpty_GivenAScheduleAndLeagueFile,  get_error_message );
      run_test( calculateRecords_ShouldReturnNullIfRoadTeamNotFound_GivenAScheduleAndLeagueFile, get_error_message );
      run_test( calculateRecords_ShouldReturnNullIfHomeTeamNotFound_GivenAScheduleAndLeagueFile, get_error_message );
+
+     // versus records
+     run_test( calculateRecords_ShouldSetVersusRecords_GivenAScheduleAndLeagueFile, get_error_message );
 
      // team records
      run_test( calculateRecords_ShouldSetTeamRecords_GivenAScheduleAndLeagueFile,              get_error_message );

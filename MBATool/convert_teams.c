@@ -126,6 +126,25 @@ static team_pitching_stats_s *convertPitchingStats( const team_player_s *players
      return list.data;
 }
 
+static team_versus_stats_s *convertVersusStats( const team_versus_stats_s *team_versus_stats )
+{
+     data_list_s         list              = { 0 };
+     team_versus_stats_s sentinel          = TEAM_VERSUS_STATS_SENTINEL;
+
+     for ( int i = 0; i < TOTAL_TEAMS; ++i )
+     {
+          if ( team_versus_stats[i].team_id == team_versus_stats[i].opponent ) continue;
+
+          if ( (team_versus_stats[i].wins + team_versus_stats[i].losses) == 0 ) continue;
+
+          if ( add_to_data_list( &list, &(team_versus_stats[i]), sizeof(team_versus_stats_s), 50 ) < 0 ) return NULL;
+     }
+
+     add_to_data_list( &list, &sentinel, sizeof(team_versus_stats_s), 5 );
+
+     return list.data;
+}
+
 static team_stats_s *convertTeamStats( const team_stats_s *team_stats )
 {
      data_list_s  list       = { 0 };
@@ -187,6 +206,13 @@ static data_list_s *convertTeams( const org_data_s *org_data,
           }
 
           if ( (teams[i]->batting_stats = convertBattingStats( teams[i]->players, team_id )) == NULL )
+          {
+               freeTeams( teams, TOTAL_TEAMS );
+
+               return NULL;
+          }
+
+          if ( (teams[i]->versus_stats = convertVersusStats( org_data->records->versus[team_idx] )) == NULL )
           {
                freeTeams( teams, TOTAL_TEAMS );
 

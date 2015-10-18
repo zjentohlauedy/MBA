@@ -10,9 +10,10 @@
 
 typedef struct
 {
-     league_stats_s   *leagues;
-     division_stats_s *divisions;
-     team_stats_s     *teams;
+     league_stats_s      *leagues;
+     division_stats_s    *divisions;
+     team_stats_s        *teams;
+     team_versus_stats_s *versus[TOTAL_TEAMS];
 
 } records_s;
 
