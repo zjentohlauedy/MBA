@@ -14,12 +14,6 @@ class DraftGenerator
   def compare_teams(a, b)
     if (a[:wins] <=> b[:wins]) != 0; return a[:wins] <=> b[:wins] end
 
-    if a[:division_id] == b[:division_id]
-      if (a[:division_wins] <=> b[:division_wins]) != 0
-        return a[:division_wins] <=> b[:division_wins]
-      end
-    end
-
     if ((a[:runs_scored] - a[:runs_allowed]) <=> (b[:runs_scored] - b[:runs_allowed])) != 0
       return (a[:runs_scored] - a[:runs_allowed]) <=> (b[:runs_scored] - b[:runs_allowed])
     end
@@ -27,22 +21,46 @@ class DraftGenerator
     return a[:runs_scored] <=> b[:runs_scored]
   end
 
-  def compare_teams_with_playoffs(a, b)
-    if (a[:playoff_wins] <=> b[:playoff_wins]) != 0; return a[:playoff_wins] <=> b[:playoff_wins] end
+  def adjust_for_head2head( teams )
+    workingset = teams.map.with_index { |t,i| {index: i, team_id: t[:team_id], season: t[:season], season_phase: t[:season_phase], wins: t[:wins]} }
 
-    if (a[:wins] <=> b[:wins]) != 0; return a[:wins] <=> b[:wins] end
+    swaps = []
 
-    if a[:division_id] == b[:division_id]
-      if (a[:division_wins] <=> b[:division_wins]) != 0
-        return a[:division_wins] <=> b[:division_wins]
+    workingset.each do |team|
+      subset = workingset.select { |t| t[:wins] == team[:wins] }
+
+      next if subset.length != 2
+
+      versus = @repository.get_team_versus_stats subset[0][:team_id], subset[0][:season], subset[0][:season_phase], subset[1][:team_id]
+
+      if versus[:wins] > versus[:losses]
+        swap = [subset[0][:index], subset[1][:index]]
+
+        unless swaps.include? swap
+          swaps.push swap
+        end
       end
     end
 
-    if ((a[:runs_scored] - a[:runs_allowed]) <=> (b[:runs_scored] - b[:runs_allowed])) != 0
-      return (a[:runs_scored] - a[:runs_allowed]) <=> (b[:runs_scored] - b[:runs_allowed])
+    swaps.each do |swap|
+      teams[swap[0]], teams[swap[1]] = teams[swap[1]], teams[swap[0]]
     end
+  end
 
-    return a[:runs_scored] <=> b[:runs_scored]
+  def adjust_for_playoffs( teams )
+    playoff_teams = teams.select { |t| t[:playoffs] && t[:playoffs][:division_losses] == 0 }
+    playoff_team_ids = playoff_teams.map { |t| t[:team_id] }
+
+    teams.reject! { |t| playoff_team_ids.include? t[:team_id] }
+
+    lcs_losers = playoff_teams.select { |t| t[:playoffs][:league_losses] == 4 }
+
+    ws_losers = playoff_teams.select { |t| (t[:playoffs][:losses] - t[:playoffs][:league_losses] - t[:playoffs][:division_losses]) == 5 }
+    ws_champs = playoff_teams.select { |t| (t[:playoffs][:wins]   - t[:playoffs][:league_wins]   - t[:playoffs][:division_wins])   == 5 }
+
+    teams.concat lcs_losers
+    teams.concat ws_losers
+    teams.concat ws_champs
   end
 
   def get_rookie_draft( season )
@@ -50,13 +68,10 @@ class DraftGenerator
     playoff = @repository.get_division_teams_with_stats season, Phases::Playoff
 
     teams = regular.map do |team|
-      team[ :playoff_wins   ] = 0
-      team[ :playoff_losses ] = 0
-
       playoff.each do |t2|
         if t2[:team_id] == team[:team_id]
-          team[ :playoff_wins   ] = t2[ :wins   ]
-          team[ :playoff_losses ] = t2[ :losses ]
+          team[ :playoffs ] = t2
+          team[ :playoffs ] = t2
           break;
         end
       end
@@ -64,7 +79,10 @@ class DraftGenerator
       team
     end
 
-    teams.sort! { |a, b| compare_teams_with_playoffs(a, b) }
+    teams.sort! { |a, b| compare_teams(a, b) }
+
+    adjust_for_head2head teams
+    adjust_for_playoffs  teams
 
     draft = teams.map { |team| team[:team_id] }
 
@@ -75,6 +93,8 @@ class DraftGenerator
     teams = @repository.get_division_teams_with_stats season, Phases::RegularSeason
 
     teams.sort! { |a, b| compare_teams(a, b) }
+
+    adjust_for_head2head teams
 
     draft = teams.map { |team| team[:team_id] }
 

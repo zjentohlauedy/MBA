@@ -29,6 +29,14 @@ class TeamRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_team_versus_stats( team_id, season, season_phase, opponent )
+    args = { team_id: team_id, season: season, season_phase: season_phase, opponent: opponent }
+
+    query = 'select * from team_versus_stats_t where team_id = :team_id and season = :season and season_phase = :season_phase and opponent = :opponent'
+
+    return Utils::transform_hash @db.get_first_row query, args
+  end
+
   def get_division_teams
     query = 'select * from division_teams_t dt join teams_t t on dt.team_id = t.team_id'
 
@@ -36,7 +44,7 @@ class TeamRepository
   end
 
   def get_division_teams_with_stats( season, phase )
-    args = { season: season, phase: phase}
+    args = { season: season, phase: phase }
 
     query = '''select * from division_teams_t dt
                           join teams_t           t on dt.team_id =  t.team_id
