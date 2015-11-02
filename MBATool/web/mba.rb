@@ -31,12 +31,18 @@ require 'player_generator'
 require 'season_service'
 
 
-if ARGV.length != 2
-  abort "Usage: #{__FILE__} <db file> <names file>\n"
+if ARGV.length != 1
+  abort "Usage: #{__FILE__} <organization base directory>\n"
 end
 
-db_file    = ARGV[0]
-names_file = ARGV[1]
+org_root = ARGV[0].gsub %r(/+$), ""
+
+unless Dir.exists? org_root
+  abort "Organization base directory does not exist: #{org_root}\n"
+end
+
+db_file    = "#{org_root}/mba.db"
+names_file = "#{org_root}/names.txt"
 
 set :show_exceptions, false
 
