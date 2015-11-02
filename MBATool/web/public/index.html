@@ -385,6 +385,12 @@
     </script>
     <script type="text/x-handlebars" data-template-name="export-season">
       <h1>Export The Season!</h1>
+      <div>
+        <button {{bind-attr class="exportReady:enabled:disabled"}} {{action "exportSeason" on="click"}}>Export Season {{season}}</button>
+      </div>
+      <div>
+        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
+      </div>
     </script>
     <script type="text/x-handlebars" data-template-name="import-season">
       <h1>Import The Season!</h1>

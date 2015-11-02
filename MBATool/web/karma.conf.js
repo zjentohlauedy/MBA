@@ -23,6 +23,7 @@ module.exports = function(config) {
 
         // list of files to exclude
         exclude: [
+            'public/js/libs/sprintf/test/test.js'
         ],
 
 

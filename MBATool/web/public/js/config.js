@@ -11,6 +11,7 @@ define({
         'App': 'application',
         'jquery': 'libs/jquery/dist/jquery',
         'handlebars': 'libs/handlebars/handlebars',
-        'ember': 'libs/ember/ember'
+        'ember': 'libs/ember/ember',
+        'sprintf': 'libs/sprintf/dist/sprintf.min'
     }
 });

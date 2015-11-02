@@ -32,7 +32,8 @@ require.config({
         'routing': 'public/js/routing',
         'ember': 'public/js/libs/ember/ember',
         'handlebars': 'public/js/libs/handlebars/handlebars',
-        'jquery': 'public/js/libs/jquery/dist/jquery'
+        'jquery': 'public/js/libs/jquery/dist/jquery',
+	'sprintf': 'public/js/libs/sprintf/dist/sprintf.min'
     },
 
     // dynamically load all test files

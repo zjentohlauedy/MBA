@@ -450,11 +450,14 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
 
                 route = jasmine.createSpyObj('route', ['controllerFor']);
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+                exportSeasonController = jasmine.createSpyObj('exportSeasonController', ['send', 'get', 'set']);
 
                 route.expectedStage = 4;
                 route.controllerFor.and.callFake(function(name) {
                     if (name == 'progress') {
                         return progressController;
+                    } else if (name == 'export-season') {
+                        return exportSeasonController;
                     }
                 });
             });

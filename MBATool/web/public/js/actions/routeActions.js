@@ -123,6 +123,10 @@ define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
                     if (org.stage !== route.expectedStage) {
                         route.controllerFor('progress').send('goToStage', org.stage);
                     }
+
+                    var exportSeasonController = route.controllerFor('export-season');
+
+                    exportSeasonController.send('setSeason');
                 },
                 function() {
                     alert('Error loading the organization!');
