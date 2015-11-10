@@ -772,39 +772,21 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
             var controller;
             var progressController;
-            //var rookieDraftController;
 
             beforeEach(function() {
 
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
-                //rookieDraftController = jasmine.createSpyObj('rookieDraftController', ['send', 'get', 'set']);
 
                 controller.get = function(name) {
                     if (name == 'controllers.progress') {
                         return progressController;
                     }
-/*
-                    else if (name == 'controllers.rookie-draft') {
-                        return rookieDraftController;
-                    }
-*/
+
                     return null;
                 }
             });
-/*
-            it('should direct the rookie draft controller to prepare data and pass it a deferred object', function() {
 
-                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
-                controller.stageComplete = true;
-
-                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
-
-                Actions.finishStage(controller);
-
-                expect(rookieDraftController.send).toHaveBeenCalledWith('prepareData', fakeDeferred);
-            });
-*/
             it('should direct the progress controller to move to the next stage when the rookie draft controller is finished preparing data', function() {
 
                 var fakeDeferred = {promise: function(){ return{then: function(callback){ callback(); }}; }};
@@ -816,19 +798,7 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
 
                 expect(progressController.send).toHaveBeenCalledWith('nextStage');
             });
-/*
-            it('should not direct the progress controller to move to the next stage if there is an error preparing data', function() {
 
-                var fakeDeferred = {promise: function(){ return{then: function(){}}; }};
-                controller.stageComplete = true;
-
-                spyOn($, 'Deferred').and.callFake(function() { return fakeDeferred; });
-
-                Actions.finishStage(controller);
-
-                expect(progressController.send).not.toHaveBeenCalled();
-            });
-*/
             it('should do nothing if the stage is not complete', function() {
 
                 controller.stageComplete = false;
