@@ -174,7 +174,7 @@ static void scheduleDivisionGames( game_s *gameday )
 
 
 
-void main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 {
      time_t  t = time( NULL );
 
@@ -295,4 +295,6 @@ void main( int argc, char *argv[] )
 
 	  printf( ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,\n" );
      }
+
+     return EXIT_SUCCESS;
 }

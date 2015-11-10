@@ -19,6 +19,8 @@ TAGS
 Gemfile.lock
 .swp
 
+MBATool/web/MBATest
+
 MBATool/LeagName_test.Dat
 MBATool/Players_test.S
 MBATool/parks_test.dat

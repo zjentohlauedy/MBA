@@ -195,6 +195,15 @@ post "#{actions_root}/start_season" do
   JSON.generate response
 end
 
+post "#{actions_root}/export_season" do
+  content_type 'application/json'
+
+  status = season_service.export_season org_root
+
+  response = { status: status }
+
+  JSON.generate response
+end
 
 error InternalServerError do
   status       500

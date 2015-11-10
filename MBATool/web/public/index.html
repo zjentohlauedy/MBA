@@ -386,6 +386,9 @@
     <script type="text/x-handlebars" data-template-name="export-season">
       <h1>Export The Season!</h1>
       <div>
+        Status: <span {{bind-attr class="success:success:none"}}>{{statusMessage}}</span>
+      </div>
+      <div>
         <button {{bind-attr class="exportReady:enabled:disabled"}} {{action "exportSeason" on="click"}}>Export Season {{season}}</button>
       </div>
       <div>

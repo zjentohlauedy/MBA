@@ -2,6 +2,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'sqlite3'
+require 'fileutils'
 require 'player_types'
 require 'org_repository'
 require 'org_decorator'
@@ -184,6 +185,89 @@ describe SeasonService do
       expect( result          ).to_not be_nil
       expect( result          ).to     be_a   Hash
       expect( result[:_links] ).to_not be_nil
+    end
+  end
+
+  describe '#export_season' do
+    before :each do
+      @test_dir = '/tmp/export_season'
+
+      Dir.mkdir @test_dir
+    end
+
+    after :each do
+      FileUtils.rm_rf @test_dir
+    end
+
+    it 'should return an appropriate success message' do
+      response = @season_service.export_season @test_dir
+
+      expect( response ).to be_a String
+      expect( response ).to match /[Ss]uccess/
+    end
+
+    it 'should create the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.directory? "#{@test_dir}/S04" ).to be_truthy
+    end
+
+    it 'should export the season into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists? "#{@test_dir}/S04/LeagName.Dat" ).to be_truthy
+      expect( File.exists? "#{@test_dir}/S04/Players.S"    ).to be_truthy
+    end
+
+    it 'should put the parks file into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists? "#{@test_dir}/S04/parks.dat" ).to be_truthy
+    end
+
+    it 'should put the import dos script into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists?     "#{@test_dir}/S04/import_dos.sh" ).to be_truthy
+      expect( File.executable? "#{@test_dir}/S04/import_dos.sh" ).to be_truthy
+    end
+
+    it 'should put the import amiga script in the base directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists?     "#{@test_dir}/import_amiga.sh" ).to be_truthy
+      expect( File.executable? "#{@test_dir}/import_amiga.sh" ).to be_truthy
+    end
+
+    it 'should put the pregame script into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists?     "#{@test_dir}/S04/pregame" ).to be_truthy
+      expect( File.executable? "#{@test_dir}/S04/pregame" ).to be_truthy
+    end
+
+    it 'should put the postgame script into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists?     "#{@test_dir}/S04/postgame" ).to be_truthy
+      expect( File.executable? "#{@test_dir}/S04/postgame" ).to be_truthy
+    end
+
+    it 'should put the schedule into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists? "#{@test_dir}/S04/schedule.csv" ).to be_truthy
+    end
+
+    it 'should put the TV games list into the season directory' do
+      @season_service.export_season @test_dir
+
+      expect( File.exists? "#{@test_dir}/S04/tv_games.txt" ).to be_truthy
+    end
+
+    it 'should be idempotent' do
+      @season_service.export_season @test_dir
+      @season_service.export_season @test_dir
     end
   end
 end
