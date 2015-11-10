@@ -19,6 +19,8 @@ TAGS
 Gemfile.lock
 .swp
 
+import_amiga.sh
+
 MBATool/web/MBATest
 
 MBATool/LeagName_test.Dat
