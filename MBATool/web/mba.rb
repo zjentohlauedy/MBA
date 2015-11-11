@@ -31,11 +31,12 @@ require 'player_generator'
 require 'season_service'
 
 
-if ARGV.length != 1
-  abort "Usage: #{__FILE__} <organization base directory>\n"
+if ARGV.length != 2
+  abort "Usage: #{__FILE__} <organization base directory> <DOS EWB install directory>\n"
 end
 
 org_root = ARGV[0].gsub %r(/+$), ""
+dos_root = ARGV[1].gsub %r(/+$), ""
 
 unless Dir.exists? org_root
   abort "Organization base directory does not exist: #{org_root}\n"
@@ -198,7 +199,7 @@ end
 post "#{actions_root}/export_season" do
   content_type 'application/json'
 
-  status = season_service.export_season org_root
+  status = season_service.export_season org_root, dos_root
 
   response = { status: status }
 

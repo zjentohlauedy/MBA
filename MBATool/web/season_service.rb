@@ -57,7 +57,7 @@ class SeasonService
     @db.execute query, args
   end
 
-  def export_season( base_path )
+  def export_season( base_path, dos_path )
     location = File.dirname __FILE__
 
     organization   = @org_repository.get_org 1
@@ -98,7 +98,12 @@ class SeasonService
 
     unless File.exists? "#{season_dir}/import_dos.sh"
       begin
-        FileUtils.cp "#{location}/files/import_dos.sh", "#{season_dir}/import_dos.sh"
+        template = File.read "#{location}/templates/import_dos.sh.erb"
+
+        result = ERB.new( template ).result binding
+
+        File.write "#{season_dir}/import_dos.sh", result
+        File.chmod 0755, "#{season_dir}/import_dos.sh"
       rescue Exception => e
         puts "Error creating DOS import script: #{e.message}"
         raise InternalServerError.new 'Error: cannot create DOS import script.'

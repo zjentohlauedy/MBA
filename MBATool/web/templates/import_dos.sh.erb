@@ -1,0 +1,33 @@
+#!/bin/bash
+#
+BASE_PATH=<%= base_path %>
+DOS_PATH=<%= dos_path %>
+
+if [[ LeagName.Dat -nt $DOS_PATH/LEAGNAME.DAT ||
+      parks.dat    -nt $DOS_PATH/PARKS.DAT    ||
+      Players.S    -nt $DOS_PATH/PLAYERS.DAT     ]];
+then
+    echo "WARNING: current files are newer than import files!";
+    exit;
+fi
+
+echo "Copying files..."
+
+$BASE_PATH/ewbdos2amiga $DOS_PATH/PLAYERS.DAT Players.S || exit
+cp $DOS_PATH/LEAGNAME.DAT LeagName.Dat
+cp $DOS_PATH/PARKS.DAT parks.dat
+
+echo "Creating Backups..."
+
+cp Players.S .Players.S.bak
+cp LeagName.Dat .LeagName.Dat.bak
+cp parks.dat .parks.dat.bak
+
+n_boxscores=$(ls -1 $DOS_PATH/D*G*.TXT 2>/dev/null | wc -l)
+if [[ $n_boxscores -gt 0 ]]
+then
+    echo "Copying Boxscores..."
+
+    cp $DOS_PATH/D*G*.TXT .
+    chmod 444 D*G*.TXT
+fi
