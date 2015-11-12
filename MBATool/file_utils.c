@@ -322,7 +322,7 @@ schedule_s *readScheduleCSV( const char *filename )
 {
      char buffer[999 + 1];
 
-     FILE *fp = fopen( filename, "r" );
+     FILE *fp;
 
      data_list_s day_list  = { 0 };
      data_list_s road_list = { 0 };
@@ -331,6 +331,13 @@ schedule_s *readScheduleCSV( const char *filename )
      boolean_e skip_next = bl_True;
 
      clearErrorMessage();
+
+     if ( (fp = fopen( filename, "r" )) == NULL )
+     {
+          sprintf( error_message, "Cannot open file <%s>: %s", filename, strerror(errno) );
+
+          return NULL;
+     }
 
      for ( int lineno = 1; fgets( buffer, sizeof(buffer), fp ) != NULL; ++lineno )
      {
