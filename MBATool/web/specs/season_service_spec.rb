@@ -188,7 +188,7 @@ describe SeasonService do
     end
   end
 
-  describe '#export_season' do
+  xdescribe '#export_season' do
     before :each do
       @test_dir = '/tmp/export_season'
       @dos_dir  = '/tmp/dosewb'
@@ -271,6 +271,67 @@ describe SeasonService do
     it 'should be idempotent' do
       @season_service.export_season @test_dir, @dos_dir
       @season_service.export_season @test_dir, @dos_dir
+    end
+  end
+
+  describe '#import_season' do
+    before :each do
+      @import_test_dir = "#{location}/files/import"
+
+      @import_db = SQLite3::Database.new "#{@import_test_dir}/mba.db"
+
+      @import_db.results_as_hash  = true
+      @import_db.type_translation = true
+    end
+
+    after :each do
+      @import_db.execute 'delete from batter_stats_t'
+      @import_db.execute 'delete from pitcher_stats_t'
+      @import_db.execute 'delete from team_stats_t'
+      @import_db.execute 'delete from team_versus_stats_t'
+      @import_db.execute 'delete from team_batting_stats_t'
+      @import_db.execute 'delete from team_pitching_stats_t'
+      @import_db.execute 'delete from division_stats_t'
+      @import_db.execute 'delete from league_stats_t'
+    end
+
+    it 'should import regular season stats' do
+      @season_service.import_season @import_test_dir
+
+      results = @import_db.execute 'select count(1) from batter_stats_t where season_phase = 1'
+
+      expect( results ).to_not be_nil
+      expect( results ).to     be_a   Array
+
+      expect( results.length ).to eq 1
+
+      expect( results[0]['count(1)'] ).to be > 0
+    end
+
+    it 'should import playoff stats' do
+      @season_service.import_season @import_test_dir
+
+      results = @import_db.execute 'select count(1) from batter_stats_t where season_phase = 2'
+
+      expect( results ).to_not be_nil
+      expect( results ).to     be_a   Array
+
+      expect( results.length ).to eq 1
+
+      expect( results[0]['count(1)'] ).to be > 0
+    end
+
+    it 'should import allstar stats' do
+      @season_service.import_season @import_test_dir
+
+      results = @import_db.execute 'select count(1) from batter_stats_t where season_phase = 3'
+
+      expect( results ).to_not be_nil
+      expect( results ).to     be_a   Array
+
+      expect( results.length ).to eq 1
+
+      expect( results[0]['count(1)'] ).to be > 0
     end
   end
 end

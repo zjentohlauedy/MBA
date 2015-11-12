@@ -191,5 +191,39 @@ class SeasonService
     return "Season #{season_name} was exported successfully!"
   end
 
+  def import_season( base_path )
+    location = File.dirname __FILE__
+
+    organization   = @org_repository.get_org 1
+    current_season = organization[:season]
+
+    season_name = sprintf 'S%02d', current_season
+
+    season_dir = "#{base_path}/#{season_name}"
+
+    import_prog = ProgRunner.new "#{location}/../", "import_season"
+
+    import_prog.execute "#{base_path}/mba.db", "#{season_dir}/RegularSeason", "#{season_dir}/schedule.csv", current_season.to_s, 'R'
+
+    if not import_prog.success?
+      puts "Error importing regular season: #{import_prog.get_output}"
+      raise InternalServerError.new "Error: cannot import regular season."
+    end
+
+    import_prog.execute "#{base_path}/mba.db", "#{season_dir}/Playoffs", "#{season_dir}/schedule.csv", current_season.to_s, 'P'
+
+    if not import_prog.success?
+      puts "Error importing regular season: #{import_prog.get_output}"
+      raise InternalServerError.new "Error: cannot import playoffs."
+    end
+
+    import_prog.execute "#{base_path}/mba.db", "#{season_dir}/Allstar", "#{season_dir}/schedule.csv", current_season.to_s, 'A'
+
+    if not import_prog.success?
+      puts "Error importing regular season: #{import_prog.get_output}"
+      raise InternalServerError.new "Error: cannot import allstars."
+    end
+  end
+
   private :copy_team_players_for_new_season
 end
