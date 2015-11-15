@@ -17,7 +17,8 @@ define([], function() {
         ROOKIE_DRAFT_URI:     '/mba/resources/drafts/rookie/season',
         FREE_AGENT_DRAFT_URI: '/mba/resources/drafts/free-agent/season',
         START_SEASON_URI:     '/mba/actions/start_season',
-        EXPORT_SEASON_URI:     '/mba/actions/export_season'
+        EXPORT_SEASON_URI:    '/mba/actions/export_season',
+        IMPORT_SEASON_URI:    '/mba/actions/import_season'
     };
 
     return Constants;

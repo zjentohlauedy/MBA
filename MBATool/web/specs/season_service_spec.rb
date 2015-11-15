@@ -188,7 +188,7 @@ describe SeasonService do
     end
   end
 
-  xdescribe '#export_season' do
+  describe '#export_season' do
     before :each do
       @test_dir = '/tmp/export_season'
       @dos_dir  = '/tmp/dosewb'

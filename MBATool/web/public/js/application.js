@@ -11,6 +11,7 @@ define([
     'controllers/rookieDraftController',
     'controllers/freeAgentsController',
     'controllers/exportSeasonController',
+    'controllers/importSeasonController',
     'ember'
 ], function(
     Router,
@@ -25,6 +26,7 @@ define([
     RookieDraftController,
     FreeAgentsController,
     ExportSeasonController,
+    ImportSeasonController,
     Ember) {
 
     var App = Ember.Application.create({
@@ -39,7 +41,8 @@ define([
         RosterCutController:    RosterCutController,
         RookieDraftController:  RookieDraftController,
         FreeAgentsController:   FreeAgentsController,
-        ExportSeasonController: ExportSeasonController
+        ExportSeasonController: ExportSeasonController,
+        ImportSeasonController: ImportSeasonController
     });
 
     return App;
