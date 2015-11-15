@@ -223,6 +223,8 @@ class SeasonService
       puts "Error importing regular season: #{import_prog.get_output}"
       raise InternalServerError.new "Error: cannot import allstars."
     end
+
+    return "Season #{season_name} was imported successfully!"
   end
 
   private :copy_team_players_for_new_season
