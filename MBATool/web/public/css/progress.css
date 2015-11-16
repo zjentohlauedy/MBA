@@ -56,8 +56,8 @@ ol.progress[data-progress-steps="4"] li { width: 24%; }
 ol.progress[data-progress-steps="5"] li { width: 19%; }
 ol.progress[data-progress-steps="6"] li { width: 16%; }
 ol.progress[data-progress-steps="7"] li { width: 14%; }
-ol.progress[data-progress-steps="8"] li { width: 12%; }
-ol.progress[data-progress-steps="9"] li { width: 11%; }
+ol.progress[data-progress-steps="8"] li { width: 12%; font-size: 0.8em; }
+ol.progress[data-progress-steps="9"] li { width: 11%; font-size: 0.6em; }
 
 ol.progress li.progress-done {
     color: yellowgreen;

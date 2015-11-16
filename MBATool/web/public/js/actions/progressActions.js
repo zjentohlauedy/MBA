@@ -21,7 +21,9 @@ define(['objects/constants'], function(Constants) {
         nextStage: function(controller) {
             var orgFields = { draft_round: 1, pick_number: 1 };
 
-            if (controller.stage >= controller.stages.length) {
+            var nextStage = controller.stage + 1;
+
+            if (controller.stage >= controller.stages.length || nextStage >= controller.stages.length) {
                 orgFields.stage = 0;
 
                 $.when(updateOrganization(orgFields)).then(
@@ -36,22 +38,16 @@ define(['objects/constants'], function(Constants) {
                 return;
             }
 
-            if ((controller.stage + 1) < controller.stages.length) {
-                orgFields.stage = controller.stage + 1;
+            orgFields.stage = nextStage;
 
-                $.when(updateOrganization(orgFields)).then(
-                    function(org) {
-                        controller.send('goToStage', controller.stage + 1);
-                    },
-                    function() {
-                        alert('Error updating organization');
-                    }
-                );
-
-                return;
-            }
-
-            controller.transitionToRoute("start-season");
+            $.when(updateOrganization(orgFields)).then(
+                function(org) {
+                    controller.send('goToStage', nextStage);
+                },
+                function() {
+                    alert('Error updating organization');
+                }
+            );
         },
         goToStage: function(controller, stage) {
             if ( stage < 0  ||  stage > controller.stages.length ) {
