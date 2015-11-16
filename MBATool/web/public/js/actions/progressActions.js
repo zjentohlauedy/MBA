@@ -51,7 +51,7 @@ define(['objects/constants'], function(Constants) {
                 return;
             }
 
-            controller.transitionToRoute("season-complete");
+            controller.transitionToRoute("start-season");
         },
         goToStage: function(controller, stage) {
             if ( stage < 0  ||  stage > controller.stages.length ) {

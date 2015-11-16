@@ -529,11 +529,14 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
 
                 route = jasmine.createSpyObj('route', ['controllerFor']);
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+                importSeasonController = jasmine.createSpyObj('importSeasonController', ['send', 'get', 'set']);
 
                 route.expectedStage = 5;
                 route.controllerFor.and.callFake(function(name) {
                     if (name == 'progress') {
                         return progressController;
+                    } else if (name == 'import-season') {
+                        return importSeasonController;
                     }
                 });
             });
@@ -591,6 +594,158 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 spyOn(window, 'alert').and.callThrough();
 
                 Actions.importSeasonRouteRedirect(route);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+        });
+
+        describe('accoladesRouteRedirect', function() {
+
+            var route;
+            var progressController;
+
+            beforeEach(function() {
+
+                route = jasmine.createSpyObj('route', ['controllerFor']);
+                progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+
+                route.expectedStage = 6;
+                route.controllerFor.and.callFake(function(name) {
+                    if (name == 'progress') {
+                        return progressController;
+                    }
+                });
+            });
+
+            it('should send a request to the organizations resource', function() {
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/organizations/1', jasmine.any(Object));
+            });
+
+            it('should set the global season to the season in the organization resource', function() {
+
+                Globals.season = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5});
+                });
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect(Globals.season).toBe(5);
+            });
+
+            it('should direct the progress controller to go to the stage in the organization resource', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 3});
+                });
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect(progressController.send).toHaveBeenCalledWith('goToStage', 3);
+            });
+
+            it('should not direct the progress controller to go to any stage if the organization stage is for accolades', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 6});
+                });
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect(progressController.send).not.toHaveBeenCalled();
+            });
+
+            it('should show an alert if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.error();
+                });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect(window.alert).toHaveBeenCalled();
+            });
+        });
+
+        describe('completeSeasonRouteRedirect', function() {
+
+            var route;
+            var progressController;
+
+            beforeEach(function() {
+
+                route = jasmine.createSpyObj('route', ['controllerFor']);
+                progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+
+                route.expectedStage = 7;
+                route.controllerFor.and.callFake(function(name) {
+                    if (name == 'progress') {
+                        return progressController;
+                    }
+                });
+            });
+
+            it('should send a request to the organizations resource', function() {
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.completeSeasonRouteRedirect(route);
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/organizations/1', jasmine.any(Object));
+            });
+
+            it('should set the global season to the season in the organization resource', function() {
+
+                Globals.season = 1;
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5});
+                });
+
+                Actions.completeSeasonRouteRedirect(route);
+
+                expect(Globals.season).toBe(5);
+            });
+
+            it('should direct the progress controller to go to the stage in the organization resource', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 3});
+                });
+
+                Actions.completeSeasonRouteRedirect(route);
+
+                expect(progressController.send).toHaveBeenCalledWith('goToStage', 3);
+            });
+
+            it('should not direct the progress controller to go to any stage if the organization stage is for complete season', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 7});
+                });
+
+                Actions.completeSeasonRouteRedirect(route);
+
+                expect(progressController.send).not.toHaveBeenCalled();
+            });
+
+            it('should show an alert if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.error();
+                });
+
+                spyOn(window, 'alert').and.callThrough();
+
+                Actions.completeSeasonRouteRedirect(route);
 
                 expect(window.alert).toHaveBeenCalled();
             });

@@ -5,6 +5,10 @@ define([
     'routing/rookieDraftRoute',
     'routing/freeAgentsRoute',
     'routing/exportSeasonRoute',
+    'routing/importSeasonRoute',
+    'routing/accoladesRoute',
+    'routing/completeSeasonRoute',
+
     'controllers/progressController',
     'controllers/startSeasonController',
     'controllers/rosterCutController',
@@ -12,6 +16,8 @@ define([
     'controllers/freeAgentsController',
     'controllers/exportSeasonController',
     'controllers/importSeasonController',
+    'controllers/accoladesController',
+    'controllers/completeSeasonController',
     'ember'
 ], function(
     Router,
@@ -20,6 +26,10 @@ define([
     RookieDraftRoute,
     FreeAgentsRoute,
     ExportSeasonRoute,
+    ImportSeasonRoute,
+    AccoladesRoute,
+    CompleteSeasonRoute,
+
     ProgressController,
     StartSeasonController,
     RosterCutController,
@@ -27,22 +37,30 @@ define([
     FreeAgentsController,
     ExportSeasonController,
     ImportSeasonController,
+    AccoladesController,
+    CompleteSeasonController,
     Ember) {
 
     var App = Ember.Application.create({
-        Router:                 Router,
-        IndexRoute:             IndexRoute,
-        RosterCutRoute:         RosterCutRoute,
-        RookieDraftRoute:       RookieDraftRoute,
-        FreeAgentsRoute:        FreeAgentsRoute,
-        ExportSeasonRoute:      ExportSeasonRoute,
-        ProgressController:     ProgressController,
-        StartSeasonController:  StartSeasonController,
-        RosterCutController:    RosterCutController,
-        RookieDraftController:  RookieDraftController,
-        FreeAgentsController:   FreeAgentsController,
-        ExportSeasonController: ExportSeasonController,
-        ImportSeasonController: ImportSeasonController
+        Router:                   Router,
+        IndexRoute:               IndexRoute,
+        RosterCutRoute:           RosterCutRoute,
+        RookieDraftRoute:         RookieDraftRoute,
+        FreeAgentsRoute:          FreeAgentsRoute,
+        ExportSeasonRoute:        ExportSeasonRoute,
+        ImportSeasonRoute:        ImportSeasonRoute,
+        AccoladesRoute:           AccoladesRoute,
+        CompleteSeasonRoute:      CompleteSeasonRoute,
+
+        ProgressController:       ProgressController,
+        StartSeasonController:    StartSeasonController,
+        RosterCutController:      RosterCutController,
+        RookieDraftController:    RookieDraftController,
+        FreeAgentsController:     FreeAgentsController,
+        ExportSeasonController:   ExportSeasonController,
+        ImportSeasonController:   ImportSeasonController,
+        AccoladesController:      AccoladesController,
+        CompleteSeasonController: CompleteSeasonController
     });
 
     return App;

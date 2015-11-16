@@ -407,8 +407,17 @@
         <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
       </div>
     </script>
-    <script type="text/x-handlebars" data-template-name="season-complete">
-      <h1>The Season Has Completed!</h1>
+    <script type="text/x-handlebars" data-template-name="accolades">
+      <h1>Present Accolades!</h1>
+      <div>
+        <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
+      </div>
+    </script>
+    <script type="text/x-handlebars" data-template-name="complete-season">
+      <h1>Complete the Season!</h1>
+      <div>
+        <button {{action "finishStage" on="click"}}>Complete Season</button>
+      </div>
     </script>
   </body>
 </html>

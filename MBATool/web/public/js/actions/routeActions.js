@@ -141,6 +141,38 @@ define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
                     if (org.stage !== route.expectedStage) {
                         route.controllerFor('progress').send('goToStage', org.stage);
                     }
+
+                    var importSeasonController = route.controllerFor('import-season');
+
+                    importSeasonController.send('setSeason');
+                },
+                function() {
+                    alert('Error loading the organization!');
+                }
+            );
+        },
+        accoladesRouteRedirect: function(route) {
+            $.when(loadOrganization(1)).then(
+                function(org) {
+                    Globals.season = org.season;
+
+                    if (org.stage !== route.expectedStage) {
+                        route.controllerFor('progress').send('goToStage', org.stage);
+                    }
+                },
+                function() {
+                    alert('Error loading the organization!');
+                }
+            );
+        },
+        completeSeasonRouteRedirect: function(route) {
+            $.when(loadOrganization(1)).then(
+                function(org) {
+                    Globals.season = org.season;
+
+                    if (org.stage !== route.expectedStage) {
+                        route.controllerFor('progress').send('goToStage', org.stage);
+                    }
                 },
                 function() {
                     alert('Error loading the organization!');

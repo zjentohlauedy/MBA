@@ -93,8 +93,6 @@ end
 post "#{resources_root}/organizations/:org_id/?" do
   content_type 'application/json'
 
-#  request.body.rewind
-
   JSON.generate org_service.save_org params[:org_id], JSON.parse( request.body.read )
 end
 
