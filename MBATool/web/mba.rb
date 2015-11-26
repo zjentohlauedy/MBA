@@ -7,6 +7,8 @@ require 'sinatra'
 require 'sqlite3'
 require 'json'
 
+require 'accolade_service'
+
 require 'org_decorator'
 require 'org_repository'
 require 'org_service'
@@ -59,6 +61,7 @@ db = SQLite3::Database.new db_file
 db.results_as_hash  = true
 db.type_translation = true
 
+accolade_service    = AccoladeService.new
 org_repository      = OrgRepository.new db
 org_decorator       = OrgDecorator.new href_base_url
 org_service         = OrgService.new( org_repository, org_decorator )
@@ -82,6 +85,12 @@ get "#{mba_root}/status/?" do
 
   status = { :status => 'OK', :version => '0.0.2' }
   JSON.generate status
+end
+
+get "#{resources_root}/accolades/?" do
+  content_type 'application/json'
+
+  JSON.generate accolade_service.get_accolades
 end
 
 get "#{resources_root}/organizations/:org_id/?" do
