@@ -411,7 +411,7 @@
       <h1>Present Accolades!</h1>
       {{#each accolade in accoladeList}}
       <div class="accolade-entry">
-        {{view "Ember.Select" value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.value" optionLabelPath="content.name" prompt="Please Select An Accolade"}}
+        {{view "Ember.Select" value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.id" optionLabelPath="content.name" prompt="Please Select An Accolade"}}
         {{input value=accolade.selectedPlayer}}
         <button class="remove" {{action "removeAccolade" accolade on="click"}}>Remove</button>
       </div>
