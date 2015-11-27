@@ -92,6 +92,36 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_player_accolades( player_id, season = nil )
+    args = { player_id: player_id }
+
+    query = 'select * from player_accolades_t where player_id = :player_id'
+
+    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_batter_accolades( player_id, season = nil )
+    args = { player_id: player_id }
+
+    query = 'select * from batter_accolades_t where player_id = :player_id'
+
+    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_pitcher_accolades( player_id, season = nil )
+    args = { player_id: player_id }
+
+    query = 'select * from pitcher_accolades_t where player_id = :player_id'
+
+    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def save_player( player )
     args = {}
 
