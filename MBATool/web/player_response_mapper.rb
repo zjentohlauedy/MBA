@@ -4,6 +4,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'utils'
+require 'accolades'
 require 'phases'
 require 'player_types'
 require 'positions'
@@ -11,6 +12,16 @@ require 'handedness'
 require 'skin_tones'
 
 class PlayerResponseMapper
+
+  def display_accolade( accolade_value, type )
+    Accolades::AccoladeList.each do |accolade|
+      if accolade[:type] == type and accolade[:value] == accolade_value
+        return accolade[:name]
+      end
+    end
+
+    raise InternalServerError.new "Invalid accolade of type #{type} with value #{accolade_value}."
+  end
 
   def display_season_phase( season_phase )
     case season_phase
@@ -164,5 +175,29 @@ class PlayerResponseMapper
     batter_stats[:season_phase] = display_season_phase batter_stats[:season_phase]
 
     return batter_stats
+  end
+
+  def map_player_accolade( player_accolade )
+    return nil unless player_accolade.is_a? Hash
+
+    player_accolade[:accolade] = display_accolade player_accolade[:accolade], 'player'
+
+    return player_accolade
+  end
+
+  def map_batter_accolade( batter_accolade )
+    return nil unless batter_accolade.is_a? Hash
+
+    batter_accolade[:accolade] = display_accolade batter_accolade[:accolade], 'batting'
+
+    return batter_accolade
+  end
+
+  def map_pitcher_accolade( pitcher_accolade )
+    return nil unless pitcher_accolade.is_a? Hash
+
+    pitcher_accolade[:accolade] = display_accolade pitcher_accolade[:accolade], 'pitching'
+
+    return pitcher_accolade
   end
 end

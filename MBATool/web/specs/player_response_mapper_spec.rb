@@ -4,6 +4,7 @@ $: << "#{location}"
 require 'player_response_mapper'
 require 'utils'
 require 'player_types'
+require 'internal_server_error'
 
 describe PlayerResponseMapper do
   before :each do
@@ -443,6 +444,114 @@ describe PlayerResponseMapper do
       result = @player_response_mapper.map_batter_stats Object.new
 
       expect( result ).to be_nil
+    end
+  end
+
+  describe '#map_player_accolade' do
+    it 'should return a mapped player accolade hash' do
+      player_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_player_accolade player_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:player_id] ).to_not be_nil
+      expect( result[:season   ] ).to_not be_nil
+      expect( result[:accolade ] ).to_not be_nil
+    end
+
+    it 'should replace accolade with a user friendly value' do
+      player_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_player_accolade player_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:accolade ] ).to     be_a   String
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @player_response_mapper.map_player_accolade Object.new
+
+      expect( result ).to be_nil
+    end
+
+    it 'should raise an internal server error if given invalid accolade' do
+      player_accolade = {player_id: 1, season: 1, accolade: 99}
+
+      expect { @player_response_mapper.map_player_accolade player_accolade }.to raise_error InternalServerError, 'Invalid accolade of type player with value 99.'
+    end
+  end
+
+  describe '#map_batter_accolade' do
+    it 'should return a mapped batter accolade hash' do
+      batter_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_batter_accolade batter_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:player_id] ).to_not be_nil
+      expect( result[:season   ] ).to_not be_nil
+      expect( result[:accolade ] ).to_not be_nil
+    end
+
+    it 'should replace accolade with a user friendly value' do
+      batter_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_batter_accolade batter_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:accolade ] ).to     be_a   String
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @player_response_mapper.map_batter_accolade Object.new
+
+      expect( result ).to be_nil
+    end
+
+    it 'should raise an internal server error if given invalid accolade' do
+      batter_accolade = {player_id: 1, season: 1, accolade: 99}
+
+      expect { @player_response_mapper.map_batter_accolade batter_accolade }.to raise_error InternalServerError, 'Invalid accolade of type batting with value 99.'
+    end
+  end
+
+  describe '#map_pitcher_accolade' do
+    it 'should return a mapped pitcher accolade hash' do
+      pitcher_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_pitcher_accolade pitcher_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:player_id] ).to_not be_nil
+      expect( result[:season   ] ).to_not be_nil
+      expect( result[:accolade ] ).to_not be_nil
+    end
+
+    it 'should replace accolade with a user friendly value' do
+      pitcher_accolade = {player_id: 1, season: 1, accolade: 4}
+
+      result = @player_response_mapper.map_pitcher_accolade pitcher_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:accolade ] ).to     be_a   String
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @player_response_mapper.map_pitcher_accolade Object.new
+
+      expect( result ).to be_nil
+    end
+
+    it 'should raise an internal server error if given invalid accolade' do
+      pitcher_accolade = {player_id: 1, season: 1, accolade: 99}
+
+      expect { @player_response_mapper.map_pitcher_accolade pitcher_accolade }.to raise_error InternalServerError, 'Invalid accolade of type pitching with value 99.'
     end
   end
 end
