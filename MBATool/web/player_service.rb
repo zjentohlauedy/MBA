@@ -167,5 +167,45 @@ class PlayerService
     return Array.new
   end
 
+  def get_player_accolades( player_id, season = nil )
+    player = @repository.get_player player_id
+
+    if player.nil?
+      raise ResourceNotFoundError.new "Player with Player ID #{player_id} cannot be located."
+    end
+
+    player_accolades = @repository.get_player_accolades player_id, season
+
+    results = []
+
+    player_accolades.each do |player_accolade|
+      mapped_player_accolade =  @mapper.map_player_accolade player_accolade
+
+      results.push @decorator.decorate_player_accolade mapped_player_accolade
+    end
+
+    if player[:player_type] == PlayerTypes::Pitcher
+      pitcher_accolades = @repository.get_pitcher_accolades player_id, season
+
+      pitcher_accolades.each do |pitcher_accolade|
+        mapped_pitcher_accolade = @mapper.map_pitcher_accolade pitcher_accolade
+
+        results.push @decorator.decorate_player_accolade mapped_pitcher_accolade
+      end
+    end
+
+    if player[:player_type] == PlayerTypes::Batter
+      batter_accolades = @repository.get_batter_accolades player_id, season
+
+      batter_accolades.each do |batter_accolade|
+        mapped_batter_accolade = @mapper.map_batter_accolade batter_accolade
+
+        results.push @decorator.decorate_player_accolade mapped_batter_accolade
+      end
+    end
+
+    return results
+  end
+
   private :process_player_list, :process_player, :process_pitcher, :process_batter, :get_pitcher_stats, :get_batter_stats
 end

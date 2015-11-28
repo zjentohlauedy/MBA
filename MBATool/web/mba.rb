@@ -173,6 +173,12 @@ get "#{resources_root}/players/:player_id/stats/?" do
   JSON.generate player_service.get_player_stats params[:player_id], params[:season], params[:phase]
 end
 
+get "#{resources_root}/players/:player_id/accolades/?" do
+  content_type 'application/json'
+
+  JSON.generate player_service.get_player_accolades params[:player_id], params[:season]
+end
+
 get "#{resources_root}/drafts/rookie/season/:season/?" do |season|
   content_type 'application/json'
 

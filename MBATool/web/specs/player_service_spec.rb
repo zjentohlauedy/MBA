@@ -824,4 +824,367 @@ describe PlayerService do
       expect( results.length ).to     eq     0
     end
   end
+
+  describe '#get_player_accolades' do
+    it 'should call the repository to get the player record from the database' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+
+      expect( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the repository to get player accolades records from the database' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the response mapper with each of the player accolades records from the repository' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] )
+      expect( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] )
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped player accolades list' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] )
+      expect( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] )
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the repository to get pitcher accolades records from the database if the player is a pitcher' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @mapper ).to receive( :map_pitcher_accolade )
+
+      expect( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the response mapper with each of the pitcher accolades records from the repository' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      pitcher_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return pitcher_accolades
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] )
+      expect( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] )
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped pitcher accolades list' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      pitcher_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return pitcher_accolades
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] ).and_return mapped_pitcher_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_pitcher_accolades[0]
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_pitcher_accolades[1]
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should return the mapped, decorated player and pitcher accolades list' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      pitcher_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] ).and_return decorated_player_accolades[1]
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return pitcher_accolades
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] ).and_return mapped_pitcher_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[0] ).and_return decorated_pitcher_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[1] ).and_return decorated_pitcher_accolades[1]
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     4
+
+      expect( results[0] ).to eq decorated_player_accolades[0]
+      expect( results[1] ).to eq decorated_player_accolades[1]
+      expect( results[2] ).to eq decorated_pitcher_accolades[0]
+      expect( results[3] ).to eq decorated_pitcher_accolades[1]
+    end
+
+    it 'should return all player and pitcher accolades if season is not given' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      pitcher_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] ).and_return decorated_player_accolades[1]
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return pitcher_accolades
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] ).and_return mapped_pitcher_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[0] ).and_return decorated_pitcher_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[1] ).and_return decorated_pitcher_accolades[1]
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     4
+    end
+
+    it 'should return only player and pitcher accolades for the given season' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      pitcher_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_pitcher_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, 3 ).and_return player_accolades[0..0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, 3 ).and_return pitcher_accolades[0..0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[0] ).and_return decorated_pitcher_accolades[0]
+
+      results = @player_service.get_player_accolades 1, 3
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     2
+    end
+
+    it 'should return an empty array if ther are no player or pitcher accolade records in the database' do
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_pitcher_accolades ).with( 1, nil ).and_return []
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     0
+    end
+
+    it 'should call the repository to get batter accolades records from the database if the player is a batter' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @mapper ).to receive( :map_batter_accolade )
+
+      expect( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return []
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the response mapper with each of the batter accolades records from the repository' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      batter_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return batter_accolades
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] )
+      expect( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] )
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped batter accolades list' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      batter_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return batter_accolades
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] ).and_return mapped_batter_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_batter_accolades[0]
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_batter_accolades[1]
+
+      @player_service.get_player_accolades 1
+    end
+
+    it 'should return the mapped, decorated player and batter accolades list' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      batter_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] ).and_return decorated_player_accolades[1]
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return batter_accolades
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] ).and_return mapped_batter_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[0] ).and_return decorated_batter_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[1] ).and_return decorated_batter_accolades[1]
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     4
+
+      expect( results[0] ).to eq decorated_player_accolades[0]
+      expect( results[1] ).to eq decorated_player_accolades[1]
+      expect( results[2] ).to eq decorated_batter_accolades[0]
+      expect( results[3] ).to eq decorated_batter_accolades[1]
+    end
+
+    it 'should return all player and batter accolades if season is not given' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      batter_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return player_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] ).and_return decorated_player_accolades[1]
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return batter_accolades
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] ).and_return mapped_batter_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[0] ).and_return decorated_batter_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[1] ).and_return decorated_batter_accolades[1]
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     4
+    end
+
+    it 'should return only player and batter accolades for the given season' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      player_accolades = [{player_id: 1, season: 3, accolade: 1},{player_id: 1, season: 4, accolade: 1}]
+      mapped_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade'},{player_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_player_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade', _links: {}},
+                                    {player_id: 1, season: 4, accolade: 'Some Accolade', _links: {}}]
+      batter_accolades = [{player_id: 1, season: 3, accolade: 2},{player_id: 1, season: 4, accolade: 2}]
+      mapped_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2'},{player_id: 1, season: 4, accolade: 'Some Accolade 2'}]
+      decorated_batter_accolades = [{player_id: 1, season: 3, accolade: 'Some Accolade 2', _links: {}},
+                                     {player_id: 1, season: 4, accolade: 'Some Accolade 2', _links: {}}]
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, 3 ).and_return player_accolades[0..0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, 3 ).and_return batter_accolades[0..0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[0] ).and_return decorated_batter_accolades[0]
+
+      results = @player_service.get_player_accolades 1, 3
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     2
+    end
+
+    it 'should return an empty array if ther are no player or batter accolade records in the database' do
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_player_accolades ).with( 1, nil ).and_return []
+      allow( @repo ).to receive( :get_batter_accolades ).with( 1, nil ).and_return []
+
+      results = @player_service.get_player_accolades 1
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     0
+    end
+
+    it 'should raise a resource not found error exception if the player record is not in the database' do
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return nil
+
+      expect { @player_service.get_player_accolades 1 }.to raise_error ResourceNotFoundError, 'Player with Player ID 1 cannot be located.'
+    end
+  end
 end
