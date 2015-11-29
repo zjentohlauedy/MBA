@@ -102,20 +102,36 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
-  def get_batter_accolades( player_id, season = nil )
-    args = { player_id: player_id }
+  def get_pitcher_accolade( player_id, season, accolade )
+    args = { player_id: player_id, season: season, accolade: accolade }
 
-    query = 'select * from batter_accolades_t where player_id = :player_id'
+    query = 'select * from pitcher_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
 
-    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
-
-    return Utils::transform_hash @db.execute query, args
+    return Utils::transform_hash @db.get_first_row query, args
   end
 
   def get_pitcher_accolades( player_id, season = nil )
     args = { player_id: player_id }
 
     query = 'select * from pitcher_accolades_t where player_id = :player_id'
+
+    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_batter_accolade( player_id, season, accolade )
+    args = { player_id: player_id, season: season, accolade: accolade }
+
+    query = 'select * from batter_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
+
+    return Utils::transform_hash @db.get_first_row query, args
+  end
+
+  def get_batter_accolades( player_id, season = nil )
+    args = { player_id: player_id }
+
+    query = 'select * from batter_accolades_t where player_id = :player_id'
 
     unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
 
@@ -173,4 +189,39 @@ class PlayerRepository
     @db.execute query, args
   end
 
+  def save_pitcher_accolade( pitcher_accolade )
+    result = nil
+    args   = {}
+
+    query = 'insert into pitcher_accolades_t values ( :player_id, :season, :accolade )'
+
+    args[ :player_id ] = pitcher_accolade[ :player_id ]
+    args[ :season    ] = pitcher_accolade[ :season    ]
+    args[ :accolade  ] = pitcher_accolade[ :accolade  ]
+
+    begin
+      result = @db.execute query, args
+    rescue SQLite3::ConstraintException
+    end
+
+    return result
+  end
+
+  def save_batter_accolade( batter_accolade )
+    result = nil
+    args   = {}
+
+    query = 'insert into batter_accolades_t values ( :player_id, :season, :accolade )'
+
+    args[ :player_id ] = batter_accolade[ :player_id ]
+    args[ :season    ] = batter_accolade[ :season    ]
+    args[ :accolade  ] = batter_accolade[ :accolade  ]
+
+    begin
+      result = @db.execute query, args
+    rescue SQLite3::ConstraintException
+    end
+
+    return result
+  end
 end
