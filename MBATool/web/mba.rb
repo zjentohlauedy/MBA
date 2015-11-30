@@ -179,6 +179,16 @@ get "#{resources_root}/players/:player_id/accolades/?" do
   JSON.generate player_service.get_player_accolades params[:player_id], params[:season]
 end
 
+post "#{resources_root}/players/:player_id/accolades/?" do
+  content_type 'application/json'
+
+  service_request = JSON.parse( request.body.read, {symbolize_names: true} )
+
+  service_request[:player_id] = params[:player_id]
+
+  JSON.generate player_service.save_player_accolade service_request
+end
+
 get "#{resources_root}/drafts/rookie/season/:season/?" do |season|
   content_type 'application/json'
 
@@ -225,6 +235,15 @@ post "#{actions_root}/import_season" do
   status = season_service.import_season org_root
 
   response = { status: status }
+
+  JSON.generate response
+end
+
+error BadRequestError do
+  status       400
+  content_type 'application/json'
+
+  response = {error: env['sinatra.error'].message}
 
   JSON.generate response
 end

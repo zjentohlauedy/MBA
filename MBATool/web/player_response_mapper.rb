@@ -13,14 +13,14 @@ require 'skin_tones'
 
 class PlayerResponseMapper
 
-  def display_accolade( accolade_value, type )
-    Accolades::AccoladeList.each do |accolade|
-      if accolade[:type] == type and accolade[:value] == accolade_value
-        return accolade[:name]
-      end
+  def display_accolade( type, value )
+    result = Accolades::get_accolade_name type, value
+
+    if result.nil?
+      raise InternalServerError.new "Invalid accolade of type #{type} with value #{value}."
     end
 
-    raise InternalServerError.new "Invalid accolade of type #{type} with value #{accolade_value}."
+    return result
   end
 
   def display_season_phase( season_phase )
@@ -180,7 +180,7 @@ class PlayerResponseMapper
   def map_player_accolade( player_accolade )
     return nil unless player_accolade.is_a? Hash
 
-    player_accolade[:accolade] = display_accolade player_accolade[:accolade], 'player'
+    player_accolade[:accolade] = display_accolade 'player', player_accolade[:accolade]
 
     return player_accolade
   end
@@ -188,7 +188,7 @@ class PlayerResponseMapper
   def map_batter_accolade( batter_accolade )
     return nil unless batter_accolade.is_a? Hash
 
-    batter_accolade[:accolade] = display_accolade batter_accolade[:accolade], 'batting'
+    batter_accolade[:accolade] = display_accolade 'batting', batter_accolade[:accolade]
 
     return batter_accolade
   end
@@ -196,7 +196,7 @@ class PlayerResponseMapper
   def map_pitcher_accolade( pitcher_accolade )
     return nil unless pitcher_accolade.is_a? Hash
 
-    pitcher_accolade[:accolade] = display_accolade pitcher_accolade[:accolade], 'pitching'
+    pitcher_accolade[:accolade] = display_accolade 'pitching', pitcher_accolade[:accolade]
 
     return pitcher_accolade
   end

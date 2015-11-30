@@ -139,4 +139,24 @@ module Accolades
     { name: "Most Strike Outs per Nine",         value: Accolades::Pitching::Most_Strike_Outs_per_Nine,    type: Accolades::Pitching::Type, automatic: true  },
     { name: "Best Home Runs per Nine",           value: Accolades::Pitching::Best_Home_Runs_per_Nine,      type: Accolades::Pitching::Type, automatic: true  },
     { name: "Best Efficiency",                   value: Accolades::Pitching::Best_Efficiency,              type: Accolades::Pitching::Type, automatic: true  } ]
+
+  def self.valid?( type, value )
+    AccoladeList.each do |accolade|
+      if accolade[:type] == type and accolade[:value] == value
+        return true
+      end
+    end
+
+    return false
+  end
+
+  def self.get_accolade_name( type, value )
+    Accolades::AccoladeList.each do |accolade|
+      if accolade[:type] == type and accolade[:value] == value
+        return accolade[:name]
+      end
+    end
+
+    return nil
+  end
 end

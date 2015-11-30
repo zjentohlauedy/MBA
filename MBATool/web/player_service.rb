@@ -3,10 +3,12 @@
 location = File.dirname __FILE__
 $: << "#{location}"
 
+require 'accolades'
 require 'player_types'
 require 'positions'
 require 'handedness'
 require 'skin_tones'
+require 'bad_request_error'
 require 'internal_server_error'
 require 'resource_not_found_error'
 
@@ -205,6 +207,44 @@ class PlayerService
     end
 
     return results
+  end
+
+  def save_player_accolade( request )
+    unless ['batting', 'pitching'].include? request[:type]
+      raise BadRequestError.new "Accolade type #{request[:type]} is not supported. Only batting and pitching accolade types are allowed."
+    end
+
+    unless Accolades::valid? request[:type], request[:accolade]
+      raise BadRequestError.new "Accolade with value #{request[:accolade]} is not a valid #{request[:type]} accolade."
+    end
+
+    player = @repository.get_player request[:player_id]
+
+    accolade = {}
+
+    accolade[ :player_id ] = request[ :player_id ]
+    accolade[ :season    ] = request[ :season    ]
+    accolade[ :accolade  ] = request[ :accolade  ]
+
+    if player[:player_type] == PlayerTypes::Pitcher
+      unless request[:type] == 'pitching'
+        raise BadRequestError.new "Request to create #{request[:type]} accolade failed because player with ID #{request[:player_id]} is a pitcher."
+      end
+
+      @repository.save_pitcher_accolade accolade
+
+      return @decorator.decorate_player_accolade( @repository.get_pitcher_accolade request[:player_id], request[:season], request[:accolade] )
+    end
+
+    if player[:player_type] == PlayerTypes::Batter
+      unless request[:type] == 'batting'
+        raise BadRequestError.new "Request to create #{request[:type]} accolade failed because player with ID #{request[:player_id]} is a batter."
+      end
+
+      @repository.save_batter_accolade accolade
+
+      return @decorator.decorate_player_accolade( @repository.get_batter_accolade request[:player_id], request[:season], request[:accolade] )
+    end
   end
 
   private :process_player_list, :process_player, :process_pitcher, :process_batter, :get_pitcher_stats, :get_batter_stats

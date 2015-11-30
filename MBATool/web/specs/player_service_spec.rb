@@ -1187,4 +1187,121 @@ describe PlayerService do
       expect { @player_service.get_player_accolades 1 }.to raise_error ResourceNotFoundError, 'Player with Player ID 1 cannot be located.'
     end
   end
+
+  describe '#save_player_accolade' do
+    it 'should call the repository to get the player record from the database' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_pitcher_accolade )
+      allow( @repo ).to receive( :save_pitcher_accolade )
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      @player_service.save_player_accolade request
+    end
+
+    it 'should call the repository to save the pitcher accolade record to the database if the player is a pitcher' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_pitcher_accolade )
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @repo ).to receive( :save_pitcher_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
+
+      @player_service.save_player_accolade request
+    end
+
+    it 'should return the newly created pitcher accolade record with decorations if the player is a pitcher' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      accolade = {player_id: 1, season: 2, accolade: 3}
+      decorated_accolade = {player_id: 1, season: 2, accolade: 3, _links:{}}
+
+      allow( @repo ).to receive( :get_player ).and_return player
+      allow( @repo ).to receive( :save_pitcher_accolade )
+
+      expect( @repo ).to receive( :get_pitcher_accolade ).with( 1, 2, 3).and_return accolade
+      expect( @deco ).to receive( :decorate_player_accolade ).with( accolade ).and_return decorated_accolade
+
+      result = @player_service.save_player_accolade request
+
+      expect( result ).to be decorated_accolade
+    end
+
+    it 'should throw a bad request exception if the pitcher accolade is invalid' do
+      request = {player_id: 1, season: 2, accolade: 99, type: 'pitching'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Accolade with value 99 is not a valid pitching accolade.'
+    end
+
+    it 'should throw a bad request exception if the pitching accolade type does not match the player type' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Request to create pitching accolade failed because player with ID 1 is a batter.'
+    end
+
+    it 'should call the repository to save the batter accolade record to the database if the player is a batter' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'batting'}
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo ).to receive( :get_batter_accolade )
+      allow( @deco ).to receive( :decorate_player_accolade )
+
+      expect( @repo ).to receive( :save_batter_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
+
+      @player_service.save_player_accolade request
+    end
+
+    it 'should return the newly created batter accolade record with decorations if the player is a batter' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'batting'}
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+      accolade = {player_id: 1, season: 2, accolade: 3}
+      decorated_accolade = {player_id: 1, season: 2, accolade: 3, _links: {}}
+
+      allow( @repo ).to receive( :get_player ).and_return player
+      allow( @repo ).to receive( :save_batter_accolade )
+
+      expect( @repo ).to receive( :get_batter_accolade ).with( 1, 2, 3).and_return accolade
+      expect( @deco ).to receive( :decorate_player_accolade ).with( accolade ).and_return decorated_accolade
+
+      result = @player_service.save_player_accolade request
+
+      expect( result ).to be decorated_accolade
+    end
+
+    it 'should throw a bad request exception if the batter accolade is invalid' do
+      request = {player_id: 1, season: 2, accolade: 99, type: 'batting'}
+      player = {player_id: 1, player_type: PlayerTypes::Batter}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Accolade with value 99 is not a valid batting accolade.'
+    end
+
+    it 'should throw a bad request exception if the batting accolade type does not match the player type' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'batting'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Request to create batting accolade failed because player with ID 1 is a pitcher.'
+    end
+
+    it 'should throw a bad request exception if the request accolade type is not batting or pitching' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'something-else'}
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Accolade type something-else is not supported. Only batting and pitching accolade types are allowed.'
+    end
+  end
 end
