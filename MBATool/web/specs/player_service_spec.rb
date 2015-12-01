@@ -1193,39 +1193,85 @@ describe PlayerService do
       request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
       player = {player_id: 1, player_type: PlayerTypes::Pitcher}
 
-      allow( @repo ).to receive( :get_pitcher_accolade )
-      allow( @repo ).to receive( :save_pitcher_accolade )
-      allow( @deco ).to receive( :decorate_player_accolade )
+      allow( @repo   ).to receive( :get_pitcher_accolade )
+      allow( @repo   ).to receive( :save_pitcher_accolade )
+      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :get_player ).with( 1 ).and_return player
 
       @player_service.save_player_accolade request
     end
 
+    it 'should call the repository to save the player accolade record to the database if the accolade is a player type' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'player'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo   ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo   ).to receive( :get_player_accolade )
+      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @deco   ).to receive( :decorate_player_accolade )
+
+      expect( @repo ).to receive( :save_player_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
+
+      @player_service.save_player_accolade request
+    end
+
+    it 'should return the newly created player accolade record mapped and decorated if the accolade is a player type' do
+      request = {player_id: 1, season: 2, accolade: 3, type: 'player'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+      accolade = {player_id: 1, season: 2, accolade: 3}
+      mapped_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade'}
+      decorated_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade', _links:{}}
+
+      allow( @repo ).to receive( :get_player ).and_return player
+      allow( @repo ).to receive( :save_player_accolade )
+
+      expect( @repo   ).to receive( :get_player_accolade ).with( 1, 2, 3).and_return accolade
+      expect( @mapper ).to receive( :map_player_accolade ).with( accolade ).and_return mapped_accolade
+      expect( @deco   ).to receive( :decorate_player_accolade ).with( mapped_accolade ).and_return decorated_accolade
+
+      result = @player_service.save_player_accolade request
+
+      expect( result ).to be decorated_accolade
+    end
+
+    it 'should throw a bad request exception if the player accolade is invalid' do
+      request = {player_id: 1, season: 2, accolade: 99, type: 'player'}
+      player = {player_id: 1, player_type: PlayerTypes::Pitcher}
+
+      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
+
+      expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Accolade with value 99 is not a valid player accolade.'
+    end
+
     it 'should call the repository to save the pitcher accolade record to the database if the player is a pitcher' do
       request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
       player = {player_id: 1, player_type: PlayerTypes::Pitcher}
 
-      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
-      allow( @repo ).to receive( :get_pitcher_accolade )
-      allow( @deco ).to receive( :decorate_player_accolade )
+      allow( @repo   ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo   ).to receive( :get_pitcher_accolade )
+      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :save_pitcher_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
 
       @player_service.save_player_accolade request
     end
 
-    it 'should return the newly created pitcher accolade record with decorations if the player is a pitcher' do
+    it 'should return the newly created pitcher accolade record mapped and decorated if the player is a pitcher' do
       request = {player_id: 1, season: 2, accolade: 3, type: 'pitching'}
       player = {player_id: 1, player_type: PlayerTypes::Pitcher}
       accolade = {player_id: 1, season: 2, accolade: 3}
-      decorated_accolade = {player_id: 1, season: 2, accolade: 3, _links:{}}
+      mapped_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade'}
+      decorated_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade', _links:{}}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @repo ).to receive( :save_pitcher_accolade )
 
-      expect( @repo ).to receive( :get_pitcher_accolade ).with( 1, 2, 3).and_return accolade
-      expect( @deco ).to receive( :decorate_player_accolade ).with( accolade ).and_return decorated_accolade
+      expect( @repo   ).to receive( :get_pitcher_accolade ).with( 1, 2, 3).and_return accolade
+      expect( @mapper ).to receive( :map_player_accolade ).with( accolade ).and_return mapped_accolade
+      expect( @deco   ).to receive( :decorate_player_accolade ).with( mapped_accolade ).and_return decorated_accolade
 
       result = @player_service.save_player_accolade request
 
@@ -1254,26 +1300,29 @@ describe PlayerService do
       request = {player_id: 1, season: 2, accolade: 3, type: 'batting'}
       player = {player_id: 1, player_type: PlayerTypes::Batter}
 
-      allow( @repo ).to receive( :get_player ).with( 1 ).and_return player
-      allow( @repo ).to receive( :get_batter_accolade )
-      allow( @deco ).to receive( :decorate_player_accolade )
+      allow( @repo   ).to receive( :get_player ).with( 1 ).and_return player
+      allow( @repo   ).to receive( :get_batter_accolade )
+      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :save_batter_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
 
       @player_service.save_player_accolade request
     end
 
-    it 'should return the newly created batter accolade record with decorations if the player is a batter' do
+    it 'should return the newly created batter accolade record mapped and decorated if the player is a batter' do
       request = {player_id: 1, season: 2, accolade: 3, type: 'batting'}
       player = {player_id: 1, player_type: PlayerTypes::Batter}
       accolade = {player_id: 1, season: 2, accolade: 3}
-      decorated_accolade = {player_id: 1, season: 2, accolade: 3, _links: {}}
+      mapped_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade'}
+      decorated_accolade = {player_id: 1, season: 2, accolade: 'Some Accolade', _links:{}}
 
       allow( @repo ).to receive( :get_player ).and_return player
       allow( @repo ).to receive( :save_batter_accolade )
 
-      expect( @repo ).to receive( :get_batter_accolade ).with( 1, 2, 3).and_return accolade
-      expect( @deco ).to receive( :decorate_player_accolade ).with( accolade ).and_return decorated_accolade
+      expect( @repo   ).to receive( :get_batter_accolade ).with( 1, 2, 3).and_return accolade
+      expect( @mapper ).to receive( :map_player_accolade ).with( accolade ).and_return mapped_accolade
+      expect( @deco   ).to receive( :decorate_player_accolade ).with( mapped_accolade ).and_return decorated_accolade
 
       result = @player_service.save_player_accolade request
 
@@ -1298,7 +1347,7 @@ describe PlayerService do
       expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Request to create batting accolade failed because player with ID 1 is a pitcher.'
     end
 
-    it 'should throw a bad request exception if the request accolade type is not batting or pitching' do
+    it 'should throw a bad request exception if the request accolade type is not player, pitching or batting' do
       request = {player_id: 1, season: 2, accolade: 3, type: 'something-else'}
 
       expect { @player_service.save_player_accolade request }.to raise_error BadRequestError, 'Accolade type something-else is not supported. Only batting and pitching accolade types are allowed.'

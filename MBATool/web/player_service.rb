@@ -210,7 +210,7 @@ class PlayerService
   end
 
   def save_player_accolade( request )
-    unless ['batting', 'pitching'].include? request[:type]
+    unless ['batting', 'pitching', 'player'].include? request[:type]
       raise BadRequestError.new "Accolade type #{request[:type]} is not supported. Only batting and pitching accolade types are allowed."
     end
 
@@ -226,6 +226,14 @@ class PlayerService
     accolade[ :season    ] = request[ :season    ]
     accolade[ :accolade  ] = request[ :accolade  ]
 
+    if request[:type] == 'player'
+      @repository.save_player_accolade accolade
+
+      saved_accolade = @repository.get_player_accolade request[:player_id], request[:season], request[:accolade]
+
+      return @decorator.decorate_player_accolade @mapper.map_player_accolade saved_accolade
+    end
+
     if player[:player_type] == PlayerTypes::Pitcher
       unless request[:type] == 'pitching'
         raise BadRequestError.new "Request to create #{request[:type]} accolade failed because player with ID #{request[:player_id]} is a pitcher."
@@ -233,7 +241,9 @@ class PlayerService
 
       @repository.save_pitcher_accolade accolade
 
-      return @decorator.decorate_player_accolade( @repository.get_pitcher_accolade request[:player_id], request[:season], request[:accolade] )
+      saved_accolade = @repository.get_pitcher_accolade request[:player_id], request[:season], request[:accolade]
+
+      return @decorator.decorate_player_accolade @mapper.map_player_accolade saved_accolade
     end
 
     if player[:player_type] == PlayerTypes::Batter
@@ -243,7 +253,9 @@ class PlayerService
 
       @repository.save_batter_accolade accolade
 
-      return @decorator.decorate_player_accolade( @repository.get_batter_accolade request[:player_id], request[:season], request[:accolade] )
+      saved_accolade = @repository.get_batter_accolade request[:player_id], request[:season], request[:accolade]
+
+      return @decorator.decorate_player_accolade @mapper.map_player_accolade saved_accolade
     end
   end
 

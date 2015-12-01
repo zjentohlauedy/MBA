@@ -102,6 +102,14 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_player_accolade( player_id, season, accolade )
+    args = { player_id: player_id, season: season, accolade: accolade }
+
+    query = 'select * from player_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
+
+    return Utils::transform_hash @db.get_first_row query, args
+  end
+
   def get_pitcher_accolade( player_id, season, accolade )
     args = { player_id: player_id, season: season, accolade: accolade }
 
@@ -187,6 +195,24 @@ class PlayerRepository
     args[ :arm                ] = batter[ :arm                ]
 
     @db.execute query, args
+  end
+
+  def save_player_accolade( player_accolade )
+    result = nil
+    args   = {}
+
+    query = 'insert into player_accolades_t values ( :player_id, :season, :accolade )'
+
+    args[ :player_id ] = player_accolade[ :player_id ]
+    args[ :season    ] = player_accolade[ :season    ]
+    args[ :accolade  ] = player_accolade[ :accolade  ]
+
+    begin
+      result = @db.execute query, args
+    rescue SQLite3::ConstraintException
+    end
+
+    return result
   end
 
   def save_pitcher_accolade( pitcher_accolade )

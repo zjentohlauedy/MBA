@@ -711,21 +711,41 @@ describe PlayerRepository do
     end
   end
 
-  describe '#get_pitcher_accolade' do
-    it 'should return a hash containing pitcher accolade information' do
-      @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Batting::Most_Doubles})"
+  describe '#get_player_accolade' do
+    it 'should return a hash containing player accolade information' do
+      @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::Division_Title})"
 
-      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Batting::Most_Doubles
+      result = @player_repository.get_player_accolade 1, 1, Accolades::Player::Division_Title
 
       expect( result             ).to_not be_nil
       expect( result             ).to     be_a    Hash
       expect( result[:player_id] ).to eq 1
       expect( result[:season   ] ).to eq 1
-      expect( result[:accolade ] ).to eq Accolades::Batting::Most_Doubles
+      expect( result[:accolade ] ).to eq Accolades::Player::Division_Title
+    end
+
+    it 'return nil if the player accolade is not found' do
+      result = @player_repository.get_player_accolade 1, 1, Accolades::Player::Division_Title
+
+      expect( result ).to be_nil
+    end
+  end
+
+  describe '#get_pitcher_accolade' do
+    it 'should return a hash containing pitcher accolade information' do
+      @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
+
+      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a    Hash
+      expect( result[:player_id] ).to eq 1
+      expect( result[:season   ] ).to eq 1
+      expect( result[:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
     end
 
     it 'return nil if the pitcher accolade is not found' do
-      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Batting::Most_Doubles
+      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
 
       expect( result ).to be_nil
     end
@@ -984,9 +1004,42 @@ describe PlayerRepository do
     end
   end
 
+  describe '#save_player_accolade' do
+    it 'should return an empty array on success' do
+      player_accolade = {player_id: 1, season: 3, accolade: Accolades::Player::Division_Title}
+
+      result = @player_repository.save_player_accolade player_accolade
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+
+    it 'should insert a player_accolades_t record' do
+      player_accolade = {player_id: 1, season: 3, accolade: Accolades::Player::Division_Title}
+
+      @player_repository.save_player_accolade player_accolade
+
+      result = @db.get_first_row "select * from player_accolades_t where player_id = 1 and season = 3 and accolade = #{Accolades::Player::Division_Title}"
+
+      expect( result              ).to_not be_nil
+      expect( result              ).to     be_a   Hash
+      expect( result['Player_Id'] ).to     eq     1
+      expect( result['Season'   ] ).to     eq     3
+      expect( result['Accolade' ] ).to     eq     Accolades::Player::Division_Title
+    end
+
+    it 'should be idempotent' do
+      player_accolade = {player_id: 1, season: 3, accolade: Accolades::Player::Division_Title}
+
+      @player_repository.save_player_accolade player_accolade
+      @player_repository.save_player_accolade player_accolade
+    end
+  end
+
   describe '#save_pitcher_accolade' do
     it 'should return an empty array on success' do
-      pitcher_accolade = {player_id: 1, season: 3, accolade: 8}
+      pitcher_accolade = {player_id: 1, season: 3, accolade: Accolades::Pitching::Most_Saves}
 
       result = @player_repository.save_pitcher_accolade pitcher_accolade
 
@@ -996,21 +1049,21 @@ describe PlayerRepository do
     end
 
     it 'should insert a pitcher_accolades_t record' do
-      pitcher_accolade = {player_id: 1, season: 3, accolade: 8}
+      pitcher_accolade = {player_id: 1, season: 3, accolade: Accolades::Pitching::Most_Saves}
 
       @player_repository.save_pitcher_accolade pitcher_accolade
 
-      result = @db.get_first_row 'select * from pitcher_accolades_t where player_id = 1 and season = 3 and accolade = 8'
+      result = @db.get_first_row "select * from pitcher_accolades_t where player_id = 1 and season = 3 and accolade = #{Accolades::Pitching::Most_Saves}"
 
       expect( result              ).to_not be_nil
       expect( result              ).to     be_a   Hash
       expect( result['Player_Id'] ).to     eq     1
       expect( result['Season'   ] ).to     eq     3
-      expect( result['Accolade' ] ).to     eq     8
+      expect( result['Accolade' ] ).to     eq     Accolades::Pitching::Most_Saves
     end
 
     it 'should be idempotent' do
-      pitcher_accolade = {player_id: 1, season: 3, accolade: 8}
+      pitcher_accolade = {player_id: 1, season: 3, accolade: Accolades::Pitching::Most_Saves}
 
       @player_repository.save_pitcher_accolade pitcher_accolade
       @player_repository.save_pitcher_accolade pitcher_accolade
@@ -1019,7 +1072,7 @@ describe PlayerRepository do
 
   describe '#save_batter_accolade' do
     it 'should return an empty array on success' do
-      batter_accolade = {player_id: 1, season: 3, accolade: 8}
+      batter_accolade = {player_id: 1, season: 3, accolade: Accolades::Batting::Most_Runs_Batted_In}
 
       result = @player_repository.save_batter_accolade batter_accolade
 
@@ -1029,21 +1082,21 @@ describe PlayerRepository do
     end
 
     it 'should insert a batter_accolades_t record' do
-      batter_accolade = {player_id: 1, season: 3, accolade: 8}
+      batter_accolade = {player_id: 1, season: 3, accolade: Accolades::Batting::Most_Runs_Batted_In}
 
       @player_repository.save_batter_accolade batter_accolade
 
-      result = @db.get_first_row 'select * from batter_accolades_t where player_id = 1 and season = 3 and accolade = 8'
+      result = @db.get_first_row "select * from batter_accolades_t where player_id = 1 and season = 3 and accolade = #{Accolades::Batting::Most_Runs_Batted_In}"
 
       expect( result              ).to_not be_nil
       expect( result              ).to     be_a   Hash
       expect( result['Player_Id'] ).to     eq     1
       expect( result['Season'   ] ).to     eq     3
-      expect( result['Accolade' ] ).to     eq     8
+      expect( result['Accolade' ] ).to     eq     Accolades::Batting::Most_Runs_Batted_In
     end
 
     it 'should be idempotent' do
-      batter_accolade = {player_id: 1, season: 3, accolade: 8}
+      batter_accolade = {player_id: 1, season: 3, accolade: Accolades::Batting::Most_Runs_Batted_In}
 
       @player_repository.save_batter_accolade batter_accolade
       @player_repository.save_batter_accolade batter_accolade
