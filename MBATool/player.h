@@ -13,12 +13,13 @@
 
 typedef enum
 {
-     acc_None           = 0,
-     acc_All_Star       = 1,
-     acc_World_Title    = 2,
-     acc_League_Title   = 3,
-     acc_Division_Title = 4,
-     acc_Best_Record    = 5
+     acc_None             = 0,
+     acc_All_Star         = 1,
+     acc_World_Title      = 2,
+     acc_League_Title     = 3,
+     acc_Division_Title   = 4,
+     acc_Best_Record      = 5,
+     acc_World_Series_MVP = 6
 
 } accolade_e;
 

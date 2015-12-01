@@ -26,11 +26,12 @@ module Accolades
   module Player
     Type = 'player'
 
-    All_Star       = 1
-    World_Title    = 2
-    League_Title   = 3
-    Division_Title = 4
-    Best_Record    = 5
+    All_Star         = 1
+    World_Title      = 2
+    League_Title     = 3
+    Division_Title   = 4
+    Best_Record      = 5
+    World_Series_MVP = 6
   end
 
   module Batting
@@ -99,6 +100,7 @@ module Accolades
     { name: "League Title",                      value: Accolades::Player::League_Title,                   type: Accolades::Player::Type,   automatic: true  },
     { name: "Division Title",                    value: Accolades::Player::Division_Title,                 type: Accolades::Player::Type,   automatic: true  },
     { name: "Best Record",                       value: Accolades::Player::Best_Record,                    type: Accolades::Player::Type,   automatic: true  },
+    { name: "World Series MVP",                  value: Accolades::Player::World_Series_MVP,               type: Accolades::Player::Type,   automatic: false },
 
     { name: "MBA Batter of the Year",            value: Accolades::Batting::Batter_of_the_Year,            type: Accolades::Batting::Type,  automatic: false },
     { name: "Global League Batter of the Year",  value: Accolades::Batting::Global_Batter_of_the_Year,     type: Accolades::Batting::Type,  automatic: false },
