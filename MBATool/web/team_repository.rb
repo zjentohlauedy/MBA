@@ -55,4 +55,30 @@ class TeamRepository
 
     return Utils::transform_hash @db.execute query, args
   end
+
+  def get_team_accolades( team_id, season = nil )
+    args = { team_id: team_id }
+
+    query = 'select * from team_accolades_t where team_id = :team_id'
+
+    unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def save_team_accolade( team_accolade )
+    result = nil
+    args   = {}
+
+    query = 'insert into team_accolades_t values ( :team_id, :season, :accolade )'
+
+    args[ :team_id  ] = team_accolade[ :team_id  ]
+    args[ :season   ] = team_accolade[ :season   ]
+    args[ :accolade ] = team_accolade[ :accolade ]
+
+    begin
+      result = @db.execute query, args
+    rescue SQLite3::ConstraintException
+    end
+  end
 end

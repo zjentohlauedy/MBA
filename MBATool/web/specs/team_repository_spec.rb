@@ -3,6 +3,7 @@ $: << "#{location}"
 
 require 'sqlite3'
 require 'team_repository'
+require 'accolades'
 require 'phases'
 
 describe TeamRepository do
@@ -260,6 +261,97 @@ describe TeamRepository do
       expect( result[2][:league_losses  ] ).to eq 2
       expect( result[2][:runs_scored    ] ).to eq 37
       expect( result[2][:runs_allowed   ] ).to eq 21
+    end
+  end
+
+  describe '#get_team_accolades' do
+    it 'should return an array containing team accolades information' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+
+      result = @team_repository.get_team_accolades 1, 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+    end
+
+    it 'should return only records matching given season' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+      @db.execute "insert into team_accolades_t values (1, 2, #{Accolades::Team::League_Title})"
+
+      result = @team_repository.get_team_accolades 1, 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+    end
+
+    it 'should return multiple seasons if not given a season' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+      @db.execute "insert into team_accolades_t values (1, 2, #{Accolades::Team::League_Title})"
+
+      result = @team_repository.get_team_accolades 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+
+      expect( result[1][:team_id ] ).to eq 1
+      expect( result[1][:season  ] ).to eq 2
+      expect( result[1][:accolade] ).to eq Accolades::Team::League_Title
+    end
+
+    it 'should return an empty array if no records are found' do
+      result = @team_repository.get_team_accolades 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+ end
+
+  describe '#save_team_accolade' do
+    it 'should return an empty array on success' do
+      team_accolade = {team_id: 1, season: 3, accolade: Accolades::Team::Division_Title}
+
+      result = @team_repository.save_team_accolade team_accolade
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+
+    it 'should insert a team_accolades_t record' do
+      team_accolade = {team_id: 1, season: 3, accolade: Accolades::Team::Division_Title}
+
+      @team_repository.save_team_accolade team_accolade
+
+      result = @db.get_first_row "select * from team_accolades_t where team_id = 1 and season = 3 and accolade = #{Accolades::Team::Division_Title}"
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result['Team_Id' ] ).to     eq     1
+      expect( result['Season'  ] ).to     eq     3
+      expect( result['Accolade'] ).to     eq     Accolades::Team::Division_Title
+    end
+
+    it 'should be idempotent' do
+      team_accolade = {team_id: 1, season: 3, accolade: Accolades::Team::Division_Title}
+
+      @team_repository.save_team_accolade team_accolade
+      @team_repository.save_team_accolade team_accolade
     end
   end
 end
