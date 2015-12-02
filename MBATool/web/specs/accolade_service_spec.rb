@@ -14,7 +14,7 @@ describe AccoladeService do
 
       expect( results        ).to_not be_nil
       expect( results        ).to     be_a   Array
-      expect( results.length ).to     eq     52
+      expect( results.length ).to     eq     53
 
       results.each do |entry|
         expect( entry[ :name      ] ).to_not be_nil
