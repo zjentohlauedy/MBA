@@ -654,7 +654,7 @@ describe PlayerRepository do
   end
 
   describe '#get_player_accolades' do
-    it 'should return a hash containing player accolades information' do
+    it 'should return an array containing player accolades information' do
       @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::League_Title})"
 
       result = @player_repository.get_player_accolades 1, 1
@@ -752,7 +752,7 @@ describe PlayerRepository do
   end
 
   describe '#get_pitcher_accolades' do
-    it 'should return a hash containing pitcher accolades information' do
+    it 'should return an array containing pitcher accolades information' do
       @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
 
       result = @player_repository.get_pitcher_accolades 1, 1
@@ -830,7 +830,7 @@ describe PlayerRepository do
   end
 
   describe '#get_batter_accolades' do
-    it 'should return a hash containing batter accolades information' do
+    it 'should return an array containing batter accolades information' do
       @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Most_Home_Runs})"
 
       result = @player_repository.get_batter_accolades 1, 1
