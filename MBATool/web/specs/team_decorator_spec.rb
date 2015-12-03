@@ -2,6 +2,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'team_decorator'
+require 'phases'
 
 describe TeamDecorator do
   before :each do
@@ -141,6 +142,28 @@ describe TeamDecorator do
       expect( result[:_links][:stats][:desc] ).to eq "Season 3 Regular Season statistics for this team"
     end
 
+    it 'should add an accolades link' do
+      team = {team_id: 1, name: 'Name1', location: 'Location1', primary_color: 5, secondary_color: 2}
+
+      result = @team_decorator.decorate_team team
+
+      accolades_link = result[:_links][:accolades]
+
+      expect( accolades_link        ).to_not be_nil
+      expect( accolades_link[:rel ] ).to     eq     'accolades'
+      expect( accolades_link[:href] ).to     eq     "#{@base_url}/teams/1/accolades"
+      expect( accolades_link[:desc] ).to     eq     "Accolades for this team"
+    end
+
+    it 'should append season parameter to accolades link if given a season' do
+      team = {team_id: 1, name: 'Name1', location: 'Location1', primary_color: 5, secondary_color: 2}
+
+      result = @team_decorator.decorate_team team, 3
+
+      expect( result[:_links][:accolades][:href] ).to eq "#{@base_url}/teams/1/accolades?season=3"
+      expect( result[:_links][:accolades][:desc] ).to eq "Season 3 accolades for this team"
+    end
+
     it 'should add a team link if given a season' do
       team = {team_id: 1, name: 'Name1', location: 'Location1', primary_color: 5, secondary_color: 2}
 
@@ -231,6 +254,73 @@ describe TeamDecorator do
       expect( stats_link[:rel ] ).to     eq     'stats'
       expect( stats_link[:href] ).to     eq     "#{@base_url}/teams/1/stats"
       expect( stats_link[:desc] ).to     eq     "All statistics for this team"
+    end
+
+    it 'should add an accolades link' do
+      team_stats = {team_id: 1, season: 1, season_phase: Phases::RegularSeason, wins: 79, losses: 73, home_wins: 40, home_losses: 36, road_wins: 39, road_losses: 37, division_wins: 28, division_losses: 28, league_wins: 44, league_losses: 43, runs_scored: 729, runs_allowed: 797}
+
+      result = @team_decorator.decorate_team_stats team_stats, Phases::RegularSeason
+
+      accolades_link = result[:_links][:accolades]
+
+      expect( accolades_link        ).to_not be_nil
+      expect( accolades_link[:rel ] ).to     eq     'accolades'
+      expect( accolades_link[:href] ).to     eq     "#{@base_url}/teams/1/accolades"
+      expect( accolades_link[:desc] ).to     eq     "All accolades for this team"
+    end
+  end
+
+  describe '#decorate_team_accolade' do
+    it 'should return the given team accolade hash with links added' do
+      team_accolade = {team_id: 1, season: 1, accolade: 'Some Accolade'}
+
+      result = @team_decorator.decorate_team_accolade team_accolade
+
+      expect( result            ).to_not be_nil
+      expect( result            ).to     be_a   Hash
+      expect( result[:team_id ] ).to_not be_nil
+      expect( result[:season  ] ).to_not be_nil
+      expect( result[:accolade] ).to_not be_nil
+      expect( result[:_links  ] ).to_not be_nil
+    end
+
+    it 'should add a team link' do
+      team_accolade = {team_id: 1, season: 1, accolade: 'Some Accolade'}
+
+      result = @team_decorator.decorate_team_accolade team_accolade
+
+      team_link = result[:_links][:team]
+
+      expect( team_link        ).to_not be_nil
+      expect( team_link[:rel ] ).to     eq     'team'
+      expect( team_link[:href] ).to     eq     "#{@base_url}/teams/1"
+      expect( team_link[:desc] ).to     eq     "Information about this team"
+    end
+
+    it 'should add a stats link' do
+      team_accolade = {team_id: 1, season: 1, accolade: 'Some Accolade'}
+
+      result = @team_decorator.decorate_team_accolade team_accolade
+
+      stats_link = result[:_links][:stats]
+
+      expect( stats_link        ).to_not be_nil
+      expect( stats_link[:rel ] ).to     eq     'stats'
+      expect( stats_link[:href] ).to     eq     "#{@base_url}/teams/1/stats"
+      expect( stats_link[:desc] ).to     eq     "All statistics for this team"
+    end
+
+    it 'should add an accolades link' do
+      team_accolade = {team_id: 1, season: 1, accolade: 'Some Accolade'}
+
+      result = @team_decorator.decorate_team_accolade team_accolade
+
+      accolades_link = result[:_links][:accolades]
+
+      expect( accolades_link        ).to_not be_nil
+      expect( accolades_link[:rel ] ).to     eq     'accolades'
+      expect( accolades_link[:href] ).to     eq     "#{@base_url}/teams/1/accolades"
+      expect( accolades_link[:desc] ).to     eq     "All accolades for this team"
     end
   end
 end

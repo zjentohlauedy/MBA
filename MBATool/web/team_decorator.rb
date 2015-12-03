@@ -34,6 +34,10 @@ class TeamDecorator
                        href: "#{@base_url}/teams/#{team[:team_id]}/stats",
                        desc: "Statistics for this team" }
 
+    _links[:accolades] = { rel: 'accolades',
+                           href: "#{@base_url}/teams/#{team[:team_id]}/accolades",
+                           desc: "Accolades for this team" }
+
     unless season.nil? and phase.nil?
       params = season.nil? ? "?phase=#{phase}" : "?season=#{season}" + (phase.nil? ? "" : "&phase=#{phase}")
 
@@ -44,6 +48,9 @@ class TeamDecorator
 
       _links[:stats][:href] += params
       _links[:stats][:desc]  = (season.nil? ? "" : "Season #{season} ") + (phase.nil? ? "" : "#{display_phase phase} ") + "statistics for this team"
+
+      _links[:accolades][:href] += season.nil? ? "" : "?season=#{season}"
+      _links[:accolades][:desc]  = (season.nil? ? "" : "Season #{season} ") + "accolades for this team"
 
       _links[:team] = { rel: 'team',
                         href: "#{@base_url}/teams/#{team[:team_id]}",
@@ -70,8 +77,32 @@ class TeamDecorator
                       href: "#{@base_url}/teams/#{team_stats[:team_id]}/stats",
                       desc: "All statistics for this team" }
 
+    _links[:accolades] = { rel: 'accolades',
+                           href: "#{@base_url}/teams/#{team_stats[:team_id]}/accolades",
+                           desc: "All accolades for this team" }
+
     team_stats[:_links] = _links
 
     return team_stats
+  end
+
+  def decorate_team_accolade( team_accolade )
+    _links = {}
+
+    _links[:team] = { rel:  'team',
+                      href: "#{@base_url}/teams/#{team_accolade[:team_id]}",
+                      desc: 'Information about this team' }
+
+    _links[:stats] = { rel:  'stats',
+                       href: "#{@base_url}/teams/#{team_accolade[:team_id]}/stats",
+                       desc: 'All statistics for this team' }
+
+    _links[:accolades] = { rel:  'accolades',
+                           href: "#{@base_url}/teams/#{team_accolade[:team_id]}/accolades",
+                           desc: 'All accolades for this team' }
+
+    team_accolade[:_links] = _links
+
+    return team_accolade
   end
 end
