@@ -2,6 +2,8 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'team_response_mapper'
+require 'phases'
+require 'internal_server_error'
 
 describe TeamResponseMapper do
   before :each do
@@ -90,6 +92,42 @@ describe TeamResponseMapper do
       result = @team_response_mapper.map_team_stats Object.new
 
       expect( result ).to be_nil
+    end
+  end
+
+  describe '#map_team_accolade' do
+    it 'should return a mapped team accolade hash' do
+      team_accolade = {team_id: 1, season: 1, accolade: 4}
+
+      result = @team_response_mapper.map_team_accolade team_accolade
+
+      expect( result            ).to_not be_nil
+      expect( result            ).to     be_a   Hash
+      expect( result[:team_id ] ).to_not be_nil
+      expect( result[:season  ] ).to_not be_nil
+      expect( result[:accolade] ).to_not be_nil
+    end
+
+    it 'should replace accolade with a user friendly value' do
+      team_accolade = {team_id: 1, season: 1, accolade: 4}
+
+      result = @team_response_mapper.map_team_accolade team_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:accolade ] ).to     be_a   String
+    end
+
+    it 'should return nil if not given a hash' do
+      result = @team_response_mapper.map_team_accolade Object.new
+
+      expect( result ).to be_nil
+    end
+
+    it 'should raise an internal server error if given invalid accolade' do
+      team_accolade = {team_id: 1, season: 1, accolade: 99}
+
+      expect { @team_response_mapper.map_team_accolade team_accolade }.to raise_error InternalServerError, 'Invalid accolade of type team with value 99.'
     end
   end
 end
