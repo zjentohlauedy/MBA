@@ -5,6 +5,7 @@ require 'team_decorator'
 require 'team_repository'
 require 'team_response_mapper'
 require 'team_service'
+require 'phases'
 
 describe TeamService do
   before :each do
@@ -236,6 +237,110 @@ describe TeamService do
         expect( entry[:season_phase] ).to_not be_nil
         expect( entry[:_links      ] ).to_not be_nil
       end
+    end
+  end
+
+  describe '#get_team_accolades' do
+    it 'should call the repository to get team accolades records from the database' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+
+      allow( @mapper ).to receive( :map_team_accolade )
+      allow( @deco ).to receive( :decorate_team_accolade )
+
+      expect( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return team_accolades
+
+      @team_service.get_team_accolades 1
+    end
+
+    it 'should call the response mapper with each of the team accolades records from the repository' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return team_accolades
+      allow( @deco ).to receive( :decorate_team_accolade )
+
+      expect( @mapper ).to receive( :map_team_accolade ).with( team_accolades[0] )
+      expect( @mapper ).to receive( :map_team_accolade ).with( team_accolades[1] )
+
+      @team_service.get_team_accolades 1
+    end
+
+    it 'should call the decorator with each team accolades record in the mapped team accolades list' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+      mapped_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade'},{team_id: 1, season: 4, accolade: 'Some Accolade'}]
+
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return team_accolades
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[0] ).and_return mapped_team_accolades[0]
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[1] ).and_return mapped_team_accolades[1]
+
+      expect( @deco ).to receive( :decorate_team_accolade ).with mapped_team_accolades[0]
+      expect( @deco ).to receive( :decorate_team_accolade ).with mapped_team_accolades[1]
+
+      @team_service.get_team_accolades 1
+    end
+
+    it 'should return the mapped, decorated team accolades list' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+      mapped_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade'},{team_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade', _links:{}},{team_id: 1, season: 4, accolade: 'Some Accolade', _links:{}}]
+
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return team_accolades
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[0] ).and_return mapped_team_accolades[0]
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[1] ).and_return mapped_team_accolades[1]
+      allow( @deco ).to receive( :decorate_team_accolade ).with( mapped_team_accolades[0] ).and_return decorated_team_accolades[0]
+      allow( @deco ).to receive( :decorate_team_accolade ).with( mapped_team_accolades[1] ).and_return decorated_team_accolades[1]
+
+      result = @team_service.get_team_accolades 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0] ).to eq decorated_team_accolades[0]
+      expect( result[1] ).to eq decorated_team_accolades[1]
+    end
+
+    it 'should return all team accolades if season is not given' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+      mapped_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade'},{team_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade', _links:{}},{team_id: 1, season: 4, accolade: 'Some Accolade', _links:{}}]
+
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return team_accolades
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[0] ).and_return mapped_team_accolades[0]
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[1] ).and_return mapped_team_accolades[1]
+      allow( @deco ).to receive( :decorate_team_accolade ).with( mapped_team_accolades[0] ).and_return decorated_team_accolades[0]
+      allow( @deco ).to receive( :decorate_team_accolade ).with( mapped_team_accolades[1] ).and_return decorated_team_accolades[1]
+
+      result = @team_service.get_team_accolades 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+    end
+
+    it 'should return only team accolades for the given season' do
+      team_accolades = [{team_id: 1, season: 3, accolade: 1},{team_id: 1, season: 4, accolade: 1}]
+      mapped_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade'},{team_id: 1, season: 4, accolade: 'Some Accolade'}]
+      decorated_team_accolades = [{team_id: 1, season: 3, accolade: 'Some Accolade', _links:{}},{team_id: 1, season: 4, accolade: 'Some Accolade', _links:{}}]
+
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, 3 ).and_return team_accolades[0..0]
+      allow( @mapper ).to receive( :map_team_accolade ).with( team_accolades[0] ).and_return mapped_team_accolades[0]
+      allow( @deco ).to receive( :decorate_team_accolade ).with( mapped_team_accolades[0] ).and_return decorated_team_accolades[0]
+
+      result = @team_service.get_team_accolades 1, 3
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+    end
+
+    it 'should return an empty array if ther are no team accolade records in the database' do
+      allow( @repo ).to receive( :get_team_accolades ).with( 1, nil ).and_return []
+
+      result = @team_service.get_team_accolades 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
     end
   end
 end

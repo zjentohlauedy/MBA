@@ -63,4 +63,16 @@ class TeamService
 
     return results
   end
+
+  def get_team_accolades( team_id, season = nil )
+    team_accolades = @repository.get_team_accolades team_id, season
+
+    results = []
+
+    team_accolades.each do |accolade|
+      results.push @decorator.decorate_team_accolade @mapper.map_team_accolade accolade
+    end
+
+    return results
+  end
 end
