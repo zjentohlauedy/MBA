@@ -123,6 +123,12 @@ get "#{resources_root}/teams/:team_id/stats/?" do
   JSON.generate team_service.get_team_stats params[:team_id], params[:season], params[:phase]
 end
 
+get "#{resources_root}/teams/:team_id/accolades/?" do
+  content_type 'application/json'
+
+  JSON.generate team_service.get_team_accolades params[:team_id], params[:season]
+end
+
 get "#{resources_root}/teams/:team_id/players/?" do
   content_type 'application/json'
 
