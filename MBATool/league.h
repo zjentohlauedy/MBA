@@ -14,9 +14,10 @@
 
 typedef enum
 {
-     lacc_None           = 0,
-     lacc_World_Title    = 1,
-     lacc_Best_Record    = 2
+     lacc_None              = 0,
+     lacc_World_Title       = 1,
+     lacc_Best_Record       = 2,
+     lacc_All_Star_Champion = 3
 
 } league_accolade_e;
 

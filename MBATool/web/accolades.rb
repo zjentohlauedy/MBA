@@ -2,8 +2,9 @@ module Accolades
   module League
     Type = 'league'
 
-    World_Title    = 1
-    Best_Record    = 2
+    World_Title       = 1
+    Best_Record       = 2
+    All_Star_Champion = 3
   end
 
   module Division
@@ -17,21 +18,23 @@ module Accolades
   module Team
     Type = 'team'
 
-    World_Title    = 1
-    League_Title   = 2
-    Division_Title = 3
-    Best_Record    = 4
+    World_Title       = 1
+    League_Title      = 2
+    Division_Title    = 3
+    Best_Record       = 4
+    All_Star_Champion = 5
   end
 
   module Player
     Type = 'player'
 
-    All_Star         = 1
-    World_Title      = 2
-    League_Title     = 3
-    Division_Title   = 4
-    Best_Record      = 5
-    World_Series_MVP = 6
+    All_Star          = 1
+    World_Title       = 2
+    League_Title      = 3
+    Division_Title    = 4
+    Best_Record       = 5
+    World_Series_MVP  = 6
+    All_Star_Champion = 7
   end
 
   module Batting

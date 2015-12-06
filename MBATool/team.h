@@ -29,11 +29,12 @@ typedef enum
 
 typedef enum
 {
-     tacc_None           = 0,
-     tacc_World_Title    = 1,
-     tacc_League_Title   = 2,
-     tacc_Division_Title = 3,
-     tacc_Best_Record    = 4
+     tacc_None              = 0,
+     tacc_World_Title       = 1,
+     tacc_League_Title      = 2,
+     tacc_Division_Title    = 3,
+     tacc_Best_Record       = 4,
+     tacc_All_Star_Champion = 5
 
 } team_accolade_e;
 
