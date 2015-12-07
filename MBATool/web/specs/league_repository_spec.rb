@@ -4,6 +4,7 @@ $: << "#{location}"
 require 'sqlite3'
 require 'league_repository'
 require 'accolades'
+require 'phases'
 
 describe LeagueRepository do
   before :each do
@@ -19,6 +20,113 @@ describe LeagueRepository do
 
   after :each do
     @db.rollback
+  end
+
+  describe '#get_league_stats_by_highest' do
+    it 'should return an array with at least one entry' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     be     >= 1
+    end
+
+    it 'should return the league stats record with the highest value of the given stat' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:league_id] ).to eq 2
+    end
+
+    it 'should return multiple records if there is a tie' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+    end
+
+    it 'should work for any given stat' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason}, 11, 11, 13, 12, 12, 10, 1, 1)"
+      @db.execute "insert into league_stats_t values (3, 1, #{Phases::RegularSeason}, 12, 13, 12, 11, 13, 12, 1, 1)"
+      @db.execute "insert into league_stats_t values (4, 1, #{Phases::RegularSeason}, 13, 12, 11, 10, 11, 11, 1, 1)"
+
+      expect( (@league_repository.get_league_stats_by_highest 'wins'       )[0][:league_id] ).to eq 4
+      expect( (@league_repository.get_league_stats_by_highest 'losses'     )[0][:league_id] ).to eq 3
+      expect( (@league_repository.get_league_stats_by_highest 'home_wins'  )[0][:league_id] ).to eq 2
+      expect( (@league_repository.get_league_stats_by_highest 'home_losses')[0][:league_id] ).to eq 1
+      expect( (@league_repository.get_league_stats_by_highest 'road_wins'  )[0][:league_id] ).to eq 3
+      expect( (@league_repository.get_league_stats_by_highest 'road_losses')[0][:league_id] ).to eq 1
+    end
+
+    it 'should only consider the given season' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (4, 2, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins', 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:league_id] ).to eq 2
+    end
+
+    it 'should only consider the given season and phase' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins', 1, Phases::Playoff
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:league_id] ).to eq 2
+    end
+
+    it 'should consider all records if no season or phase are given' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into league_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @league_repository.get_league_stats_by_highest 'wins'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:league_id] ).to eq 3
+    end
+
+    it 'should return an empty array if there are no qualifying stats records' do
+      result = @league_repository.get_league_stats_by_highest 'wins'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+
+    it 'should raise an error if an invalid stat is given' do
+      expect { @league_repository.get_league_stats_by_highest 'invalid' }.to raise_error SQLite3::SQLException
+    end
   end
 
   describe '#get_league_accolades' do
