@@ -185,7 +185,7 @@ describe LeagueRepository do
       expect( result        ).to     be_a   Array
       expect( result.length ).to     eq     0
     end
- end
+  end
 
   describe '#save_league_accolade' do
     it 'should return an empty array on success' do

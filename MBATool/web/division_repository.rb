@@ -6,6 +6,26 @@ class DivisionRepository
     @db = db
   end
 
+  def get_division_stats_by_highest( stat, season = nil, phase = nil )
+    args = {}
+
+    query = "select max(#{stat}) value from division_stats_t"
+
+    unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args[:value] = result['value']
+
+    query = "select * from division_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_division_accolades( division_id, season = nil )
     args = { division_id: division_id }
 
