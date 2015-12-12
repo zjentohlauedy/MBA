@@ -9,14 +9,14 @@ class LeagueRepository
   def get_league_stats_by_highest( stat, season = nil, phase = nil )
     args = {}
 
-    query = "select max(#{stat}) #{stat} from league_stats_t"
+    query = "select max(#{stat}) value from league_stats_t"
 
     unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
 
     result = @db.get_first_row query, args
 
-    args[:value] = result[stat]
+    args[:value] = result['value']
 
     query = "select * from league_stats_t where #{stat} = :value"
 

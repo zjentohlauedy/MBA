@@ -71,6 +71,14 @@ describe LeagueRepository do
       expect( (@league_repository.get_league_stats_by_highest 'road_losses')[0][:league_id] ).to eq 1
     end
 
+    it 'should work for a calculation of stats' do
+      @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10,  5, 10,  5, 10,  5, 1, 1)"
+      @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason},  5, 10,  5, 10,  5, 10, 1, 1)"
+
+      expect( (@league_repository.get_league_stats_by_highest 'wins + home_wins'    )[0][:league_id] ).to eq 1
+      expect( (@league_repository.get_league_stats_by_highest 'losses - road_wins'  )[0][:league_id] ).to eq 2
+    end
+
     it 'should only consider the given season' do
       @db.execute "insert into league_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1)"
       @db.execute "insert into league_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1)"
