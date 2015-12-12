@@ -56,6 +56,46 @@ class TeamRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_team_stats_by_highest( stat, season = nil, phase = nil )
+    args = {}
+
+    query = "select max(#{stat}) value from team_stats_t"
+
+    unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args[:value] = result['value']
+
+    query = "select * from team_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_team_stats_by_lowest( stat, season = nil, phase = nil )
+    args = {}
+
+    query = "select min(#{stat}) value from team_stats_t"
+
+    unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args[:value] = result['value']
+
+    query = "select * from team_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_team_accolades( team_id, season = nil )
     args = { team_id: team_id }
 
