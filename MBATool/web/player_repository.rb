@@ -77,6 +77,46 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_pitcher_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    query = "select max(#{stat}) value from pitcher_stats_t where #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args = {value: result['value']}
+
+    query = "select * from pitcher_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_pitcher_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    query = "select min(#{stat}) value from pitcher_stats_t where #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args = {value: result['value']}
+
+    query = "select * from pitcher_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_batter_stats( player_id, season = nil, phase = nil )
     args = { player_id: player_id}
 
@@ -88,6 +128,46 @@ class PlayerRepository
     unless season.nil? or phase.nil?
       return Utils::transform_hash @db.get_first_row query, args
     end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_batter_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    query = "select max(#{stat}) value from batter_stats_t where #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args = {value: result['value']}
+
+    query = "select * from batter_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_batter_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    query = "select min(#{stat}) value from batter_stats_t where #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    result = @db.get_first_row query, args
+
+    args = {value: result['value']}
+
+    query = "select * from batter_stats_t where #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
 
     return Utils::transform_hash @db.execute query, args
   end
