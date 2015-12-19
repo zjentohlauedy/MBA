@@ -35,6 +35,7 @@ module Accolades
     Best_Record       = 5
     World_Series_MVP  = 6
     All_Star_Champion = 7
+    All_Star_MVP      = 8
   end
 
   module Batting
@@ -88,6 +89,7 @@ module Accolades
   AccoladeList = [
     { name: "World Title",                       value: Accolades::League::World_Title,                    type: Accolades::League::Type,   automatic: true  },
     { name: "Best Record",                       value: Accolades::League::Best_Record,                    type: Accolades::League::Type,   automatic: true  },
+    { name: "All Star Champion",                 value: Accolades::League::All_Star_Champion,              type: Accolades::League::Type,   automatic: true  },
 
     { name: "World Title",                       value: Accolades::Division::World_Title,                  type: Accolades::Division::Type, automatic: true  },
     { name: "League Title",                      value: Accolades::Division::League_Title,                 type: Accolades::Division::Type, automatic: true  },
@@ -97,6 +99,7 @@ module Accolades
     { name: "League Title",                      value: Accolades::Team::League_Title,                     type: Accolades::Team::Type,     automatic: true  },
     { name: "Division Title",                    value: Accolades::Team::Division_Title,                   type: Accolades::Team::Type,     automatic: true  },
     { name: "Best Record",                       value: Accolades::Team::Best_Record,                      type: Accolades::Team::Type,     automatic: true  },
+    { name: "All Star Champion",                 value: Accolades::Team::All_Star_Champion,                type: Accolades::Team::Type,     automatic: true  },
 
     { name: "All Star",                          value: Accolades::Player::All_Star,                       type: Accolades::Player::Type,   automatic: true  },
     { name: "World Title",                       value: Accolades::Player::World_Title,                    type: Accolades::Player::Type,   automatic: true  },
