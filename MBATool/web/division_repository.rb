@@ -9,7 +9,7 @@ class DivisionRepository
   def get_division_stats_by_highest( stat, season = nil, phase = nil )
     args = {}
 
-    query = "select max(#{stat}) value from division_stats_t"
+    query = "select max(#{stat}) value from division_stats_v"
 
     unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -18,7 +18,7 @@ class DivisionRepository
 
     args[:value] = result['value']
 
-    query = "select * from division_stats_t where #{stat} = :value"
+    query = "select * from division_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end

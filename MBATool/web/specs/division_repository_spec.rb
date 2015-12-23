@@ -79,6 +79,12 @@ describe DivisionRepository do
       expect( (@division_repository.get_division_stats_by_highest 'losses - road_wins'  )[0][:division_id] ).to eq 2
     end
 
+    it 'should work for derived stats' do
+      @db.execute "insert into division_stats_t values (1, 1, #{Phases::RegularSeason}, 10,  5, 10,  5, 10,  5, 1, 1, 1, 1)"
+
+      expect( (@division_repository.get_division_stats_by_highest 'world_series_wins' )[0][:division_id] ).to eq 1
+    end
+
     it 'should only consider the given season' do
       @db.execute "insert into division_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
       @db.execute "insert into division_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1)"

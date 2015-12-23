@@ -620,6 +620,12 @@ describe PlayerRepository do
       expect( (@player_repository.get_pitcher_stats_by_highest 'losses - innings', 'innings', 0)[0][:player_id] ).to eq 2
     end
 
+    it 'should work for derived stats' do
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_pitcher_stats_by_highest 'earned_run_avg', 'innings', 0)[0][:player_id] ).to eq 1
+    end
+
     it 'should only consider the given season' do
       @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
       @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
@@ -748,6 +754,12 @@ describe PlayerRepository do
 
       expect( (@player_repository.get_pitcher_stats_by_lowest 'wins + games',     'innings', 0)[0][:player_id] ).to eq 2
       expect( (@player_repository.get_pitcher_stats_by_lowest 'losses - innings', 'innings', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should work for derived stats' do
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_pitcher_stats_by_lowest 'earned_run_avg', 'innings', 0)[0][:player_id] ).to eq 1
     end
 
     it 'should only consider the given season' do
@@ -970,6 +982,12 @@ describe PlayerRepository do
       expect( (@player_repository.get_batter_stats_by_highest 'at_bats - doubles', 'at_bats', 0)[0][:player_id] ).to eq 2
     end
 
+    it 'should work for derived stats' do
+      @db.execute "insert into batter_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_batter_stats_by_highest 'batting_average', 'at_bats', 0)[0][:player_id] ).to eq 1
+    end
+
     it 'should only consider the given season' do
       @db.execute "insert into batter_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
       @db.execute "insert into batter_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
@@ -1098,6 +1116,12 @@ describe PlayerRepository do
 
       expect( (@player_repository.get_batter_stats_by_lowest 'games + runs',      'at_bats', 0)[0][:player_id] ).to eq 2
       expect( (@player_repository.get_batter_stats_by_lowest 'at_bats - doubles', 'at_bats', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should work for derived stats' do
+      @db.execute "insert into batter_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_batter_stats_by_lowest 'batting_average', 'at_bats', 0)[0][:player_id] ).to eq 1
     end
 
     it 'should only consider the given season' do

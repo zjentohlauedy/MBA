@@ -50,6 +50,18 @@ CREATE TABLE Pitcher_Stats_T
    PRIMARY KEY ( Player_Id, Season, Season_Phase )
 );
 
+CREATE VIEW Pitcher_Stats_V AS SELECT *,
+  (CAST(Wins AS FLOAT) / (Wins + Losses)) Win_Loss_Ratio,
+  (CAST(Wins AS FLOAT) / Games) Win_Pct,
+  (CAST(Earned_Runs AS FLOAT) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) Earned_Run_Avg,
+  (CAST(Hits AS FLOAT) / ((Innings * 3) + Outs + Hits)) Vs_Batting_Avg,
+  (((CAST(Outs AS FLOAT) / 3) + Innings) / Games) Innings_Per_Game,
+  ((CAST(Walks AS FLOAT) + Hits) / ((CAST(Outs AS FLOAT) / 3) + Innings)) WHIP,
+  (CAST(Strike_Outs AS FLOAT) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) SO_Per_Nine,
+  (CAST(Home_Runs AS FLOAT) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) HR_Per_Nine,
+  (((((CAST(Outs AS FLOAT) / 3) + Innings) - Hits) + (Strike_Outs - Hits)) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) Efficiency
+  FROM Pitcher_Stats_T;
+
 CREATE TABLE Pitcher_Accolades_T
 (
    Player_Id           INTEGER,
@@ -92,6 +104,14 @@ CREATE TABLE Batter_Stats_T
 --
    PRIMARY KEY ( Player_Id, Season, Season_Phase )
 );
+
+CREATE VIEW Batter_Stats_V AS SELECT *,
+  (CAST(Hits AS FLOAT) / At_Bats) Batting_Average,
+  (((CAST(Hits AS FLOAT) - Doubles - Triples - Home_Runs) + (Doubles * 2) + (Triples * 3) + (Home_Runs * 4)) / At_Bats) Slugging_Average,
+  ((CAST(Hits AS FLOAT) + Walks) / (At_Bats + Walks)) On_Base_Pct,
+  (CAST(Strike_Outs AS FLOAT) / At_Bats) Strike_Out_Avg,
+  ((CAST(Runs AS FLOAT) + Runs_Batted_In - Home_Runs) / Games) Runs_Per_Game
+  FROM Batter_Stats_T;
 
 CREATE TABLE Batter_Accolades_T
 (
@@ -140,6 +160,8 @@ CREATE TABLE Team_Stats_T
 --
    PRIMARY KEY ( Team_Id, Season, Season_Phase )
 );
+
+CREATE VIEW Team_Stats_V AS SELECT *, (Wins - League_Wins) World_Series_Wins, (League_Wins - Division_Wins) LCS_Wins FROM Team_Stats_T;
 
 CREATE TABLE Team_Versus_Stats_T
 (
@@ -237,6 +259,8 @@ CREATE TABLE Division_Stats_T
 --
    PRIMARY KEY ( Division_Id, Season, Season_Phase )
 );
+
+CREATE VIEW Division_Stats_V AS SELECT *, (Wins - League_Wins) World_Series_Wins FROM Division_Stats_T;
 
 CREATE TABLE Division_Accolades_T
 (

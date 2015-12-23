@@ -80,7 +80,7 @@ class PlayerRepository
   def get_pitcher_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 
-    query = "select max(#{stat}) value from pitcher_stats_t where #{qualifying_stat} >= :qualifying_value"
+    query = "select max(#{stat}) value from pitcher_stats_v where #{qualifying_stat} >= :qualifying_value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -89,7 +89,7 @@ class PlayerRepository
 
     args = {value: result['value']}
 
-    query = "select * from pitcher_stats_t where #{stat} = :value"
+    query = "select * from pitcher_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -100,7 +100,7 @@ class PlayerRepository
   def get_pitcher_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 
-    query = "select min(#{stat}) value from pitcher_stats_t where #{qualifying_stat} >= :qualifying_value"
+    query = "select min(#{stat}) value from pitcher_stats_v where #{qualifying_stat} >= :qualifying_value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -109,7 +109,7 @@ class PlayerRepository
 
     args = {value: result['value']}
 
-    query = "select * from pitcher_stats_t where #{stat} = :value"
+    query = "select * from pitcher_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -135,7 +135,7 @@ class PlayerRepository
   def get_batter_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 
-    query = "select max(#{stat}) value from batter_stats_t where #{qualifying_stat} >= :qualifying_value"
+    query = "select max(#{stat}) value from batter_stats_v where #{qualifying_stat} >= :qualifying_value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -144,7 +144,7 @@ class PlayerRepository
 
     args = {value: result['value']}
 
-    query = "select * from batter_stats_t where #{stat} = :value"
+    query = "select * from batter_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -155,7 +155,7 @@ class PlayerRepository
   def get_batter_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 
-    query = "select min(#{stat}) value from batter_stats_t where #{qualifying_stat} >= :qualifying_value"
+    query = "select min(#{stat}) value from batter_stats_v where #{qualifying_stat} >= :qualifying_value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -164,7 +164,7 @@ class PlayerRepository
 
     args = {value: result['value']}
 
-    query = "select * from batter_stats_t where #{stat} = :value"
+    query = "select * from batter_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end

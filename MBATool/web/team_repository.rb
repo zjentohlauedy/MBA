@@ -59,7 +59,7 @@ class TeamRepository
   def get_team_stats_by_highest( stat, season = nil, phase = nil )
     args = {}
 
-    query = "select max(#{stat}) value from team_stats_t"
+    query = "select max(#{stat}) value from team_stats_v"
 
     unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -68,7 +68,7 @@ class TeamRepository
 
     args[:value] = result['value']
 
-    query = "select * from team_stats_t where #{stat} = :value"
+    query = "select * from team_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -79,7 +79,7 @@ class TeamRepository
   def get_team_stats_by_lowest( stat, season = nil, phase = nil )
     args = {}
 
-    query = "select min(#{stat}) value from team_stats_t"
+    query = "select min(#{stat}) value from team_stats_v"
 
     unless season.nil?; query = "#{query} where season     = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
@@ -88,7 +88,7 @@ class TeamRepository
 
     args[:value] = result['value']
 
-    query = "select * from team_stats_t where #{stat} = :value"
+    query = "select * from team_stats_v where #{stat} = :value"
 
     unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
     unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
