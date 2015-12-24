@@ -207,6 +207,9 @@ static void printTeam( const team_s *team )
 
           for ( int i = 0; i < PLAYERS_PER_TEAM; ++i )
           {
+               if ( team->players[i].type != pt_Pitcher &&
+                    team->players[i].type != pt_Hitter     ) continue;
+
                if ( i > 0 ) printf( "," );
 
                printPlayer( &(team->players[i]) );
