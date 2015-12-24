@@ -42,7 +42,7 @@ AccoladeLookups = [
   { accolade: Accolades::Batting::Most_Home_Runs,                method: :get_batter_stats_by_highest,   stat: 'home_runs',         phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Most_Runs,                     method: :get_batter_stats_by_highest,   stat: 'runs',              phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Most_Runs_Batted_In,           method: :get_batter_stats_by_highest,   stat: 'runs_batted_in',    phase: Phases::RegularSeason },
-  { accolade: Accolades::Batting::Most_Stolen_Bases,             method: :get_batter_stats_by_highest,   stat: 'stolen_bases',      phase: Phases::RegularSeason },
+  { accolade: Accolades::Batting::Most_Stolen_Bases,             method: :get_batter_stats_by_highest,   stat: 'steals',            phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Most_Walks,                    method: :get_batter_stats_by_highest,   stat: 'walks',             phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Best_Slugging_Average,         method: :get_batter_stats_by_highest,   stat: 'slugging_average',  phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Best_On_Base_Percentage,       method: :get_batter_stats_by_highest,   stat: 'on_base_pct',       phase: Phases::RegularSeason },
@@ -80,8 +80,8 @@ class AccoladeService
       Accolades::League::Type   => { repo: league_repository,   method: :save_league_accolade   },
       Accolades::Division::Type => { repo: division_repository, method: :save_division_accolade },
       Accolades::Team::Type     => { repo: team_repository,     method: :save_team_accolade     },
-      Accolades::Pitching::Type => { repo: player_repository,   method: :save_pitcher_accolade  },
-      Accolades::Batting::Type  => { repo: player_repository,   method: :save_batter_accolade   }
+      Accolades::Pitching::Type => { repo: player_repository,   method: :save_pitcher_accolade, filter: { field: 'innings', value: 0 } },
+      Accolades::Batting::Type  => { repo: player_repository,   method: :save_batter_accolade,  filter: { field: 'at_bats', value: 0 } }
     }
   end
 
@@ -101,10 +101,14 @@ class AccoladeService
 
       lookup               = AccoladeLookups[idx]
       repo                 = @repos[ accolade[:type] ][ :repo   ]
+      filter               = @repos[ accolade[:type] ][ :filter ]
       save_accolade_method = @repos[ accolade[:type] ][ :method ]
 
-
-      recipients = repo.send lookup[:method], lookup[:stat], org[:season], lookup[:phase]
+      unless filter.nil?
+        recipients = repo.send lookup[:method], lookup[:stat], filter[:field], filter[:value], org[:season], lookup[:phase]
+      else
+        recipients = repo.send lookup[:method], lookup[:stat], org[:season], lookup[:phase]
+      end
 
       recipients.each do |recipient|
         recipient[:accolade] = accolade[:value]

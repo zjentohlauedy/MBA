@@ -13,6 +13,10 @@ require 'org_decorator'
 require 'org_repository'
 require 'org_service'
 
+require 'league_repository'
+
+require 'division_repository'
+
 require 'team_decorator'
 require 'team_repository'
 require 'team_response_mapper'
@@ -61,7 +65,6 @@ db = SQLite3::Database.new db_file
 db.results_as_hash  = true
 db.type_translation = true
 
-accolade_service    = AccoladeService.new
 org_repository      = OrgRepository.new db
 org_decorator       = OrgDecorator.new href_base_url
 org_service         = OrgService.new( org_repository, org_decorator )
@@ -74,6 +77,7 @@ name_manager        = NameManager.new names_file
 player_generator    = PlayerGenerator.new db, name_manager
 season_service      = SeasonService.new db, org_repository, org_decorator, player_repository, name_manager, player_generator
 draft_generator     = DraftGenerator.new team_repository
+accolade_service    = AccoladeService.new org_repository, LeagueRepository.new( db ), DivisionRepository.new( db ), team_repository, player_repository
 
 
 get '/' do
@@ -241,6 +245,26 @@ post "#{actions_root}/import_season" do
   status = season_service.import_season org_root
 
   response = { status: status }
+
+  JSON.generate response
+end
+
+post "#{actions_root}/resolve_accolades" do
+  content_type 'application/json'
+
+  db.transaction
+
+  begin
+    accolade_service.resolve_accolades
+
+    response = {}
+
+    db.commit
+  rescue Exception => e
+    db.rollback
+
+    raise e
+  end
 
   JSON.generate response
 end
