@@ -37,6 +37,12 @@ class TeamRepository
     return Utils::transform_hash @db.get_first_row query, args
   end
 
+  def get_league_teams
+    query = 'select * from league_teams_t lt join teams_t t on lt.team_id = t.team_id'
+
+    return Utils::transform_hash @db.execute query
+  end
+
   def get_division_teams
     query = 'select * from division_teams_t dt join teams_t t on dt.team_id = t.team_id'
 
@@ -102,6 +108,14 @@ class TeamRepository
     query = 'select * from team_accolades_t where team_id = :team_id'
 
     unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_team_accolades_by_season( season )
+    args = { season: season }
+
+    query = 'select * from team_accolades_t where season = :season'
 
     return Utils::transform_hash @db.execute query, args
   end

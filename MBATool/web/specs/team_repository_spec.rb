@@ -44,6 +44,43 @@ describe TeamRepository do
     end
   end
 
+  describe '#get_league_teams' do
+    it 'should return an array containing all teams within any league' do
+      @db.execute 'insert into league_teams_t values (1, 1)'
+      @db.execute 'insert into league_teams_t values (2, 2)'
+      @db.execute 'insert into teams_t values (1, "Name1", "Location1", 0, 1)'
+      @db.execute 'insert into teams_t values (2, "Name2", "Location2", 5, 3)'
+
+      result = @team_repository.get_league_teams
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:league_id      ] ).to eq 1
+      expect( result[0][:team_id        ] ).to eq 1
+      expect( result[0][:name           ] ).to eq 'Name1'
+      expect( result[0][:location       ] ).to eq 'Location1'
+      expect( result[0][:primary_color  ] ).to eq 0
+      expect( result[0][:secondary_color] ).to eq 1
+
+      expect( result[1][:league_id      ] ).to eq 2
+      expect( result[1][:team_id        ] ).to eq 2
+      expect( result[1][:name           ] ).to eq 'Name2'
+      expect( result[1][:location       ] ).to eq 'Location2'
+      expect( result[1][:primary_color  ] ).to eq 5
+      expect( result[1][:secondary_color] ).to eq 3
+    end
+
+    it 'should return an empty array if there are no teams' do
+      result = @team_repository.get_league_teams
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+  end
+
   describe '#get_division_teams' do
     it 'should return an array containing all teams within any division' do
       @db.execute 'insert into division_teams_t values (1, 1)'
@@ -562,7 +599,65 @@ describe TeamRepository do
       expect( result        ).to     be_a   Array
       expect( result.length ).to     eq     0
     end
- end
+  end
+
+  describe '#get_team_accolades_by_season' do
+    it 'should return an array containing team accolades information' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+
+      result = @team_repository.get_team_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+    end
+
+    it 'should return only records matching given season' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+      @db.execute "insert into team_accolades_t values (1, 2, #{Accolades::Team::League_Title})"
+
+      result = @team_repository.get_team_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+    end
+
+    it 'should return records for all teams' do
+      @db.execute "insert into team_accolades_t values (1, 1, #{Accolades::Team::League_Title})"
+      @db.execute "insert into team_accolades_t values (2, 1, #{Accolades::Team::World_Title})"
+
+      result = @team_repository.get_team_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:team_id ] ).to eq 1
+      expect( result[0][:season  ] ).to eq 1
+      expect( result[0][:accolade] ).to eq Accolades::Team::League_Title
+
+      expect( result[1][:team_id ] ).to eq 2
+      expect( result[1][:season  ] ).to eq 1
+      expect( result[1][:accolade] ).to eq Accolades::Team::World_Title
+    end
+
+    it 'should return an empty array if no records are found' do
+      result = @team_repository.get_team_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+  end
 
   describe '#save_team_accolade' do
     it 'should return an empty array on success' do

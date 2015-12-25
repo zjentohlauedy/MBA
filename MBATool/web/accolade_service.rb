@@ -76,12 +76,13 @@ class AccoladeService
     @accolades = Accolades::AccoladeList
 
     @repos = {
-      'organization'            => { repo: org_repository,      method: nil                     },
-      Accolades::League::Type   => { repo: league_repository,   method: :save_league_accolade   },
-      Accolades::Division::Type => { repo: division_repository, method: :save_division_accolade },
-      Accolades::Team::Type     => { repo: team_repository,     method: :save_team_accolade     },
-      Accolades::Pitching::Type => { repo: player_repository,   method: :save_pitcher_accolade, filter: { field: 'innings', value: 185 } },
-      Accolades::Batting::Type  => { repo: player_repository,   method: :save_batter_accolade,  filter: { field: 'at_bats', value: 300 } }
+      'organization'            => { repo: org_repository,        method: nil                     },
+      Accolades::League::Type   => { repo: league_repository,     method: :save_league_accolade   },
+      Accolades::Division::Type => { repo: division_repository,   method: :save_division_accolade },
+      Accolades::Team::Type     => { repo: team_repository,       method: :save_team_accolade     },
+      Accolades::Player::Type   => { repo: player_repository,     method: nil                     },
+      Accolades::Pitching::Type => { repo: player_repository,     method: :save_pitcher_accolade, filter: { field: 'innings', value: 185 } },
+      Accolades::Batting::Type  => { repo: player_repository,     method: :save_batter_accolade,  filter: { field: 'at_bats', value: 300 } }
     }
   end
 
@@ -116,6 +117,49 @@ class AccoladeService
         recipient[:accolade] = accolade[:value]
 
         repo.send save_accolade_method, recipient
+      end
+    end
+
+    resolve_player_accolades org[:season]
+  end
+
+  def resolve_player_accolades( season )
+    team_accolades = @repos[Accolades::Team::Type][:repo].get_team_accolades_by_season season
+
+    team_accolades.each do |team_accolade|
+      players = @repos[Accolades::Player::Type][:repo].get_players_by_team team_accolade[:team_id], season
+
+      puts "Team Accolade: #{team_accolade}"
+      puts "Players Found: #{players.length}"
+
+      players.each do |player|
+        player_accolade = { player_id: player[:player_id], season: season }
+
+        case team_accolade[:accolade]
+        when Accolades::Team::World_Title;       player_accolade[:accolade] = Accolades::Player::World_Title
+        when Accolades::Team::League_Title;      player_accolade[:accolade] = Accolades::Player::League_Title
+        when Accolades::Team::Division_Title;    player_accolade[:accolade] = Accolades::Player::Division_Title
+        when Accolades::Team::Best_Record;       player_accolade[:accolade] = Accolades::Player::Best_Record
+        when Accolades::Team::All_Star_Champion; player_accolade[:accolade] = Accolades::Player::All_Star_Champion
+        else
+          raise InternalServerError.new "Unknown team accolade: #{team_accolade[:value]}."
+        end
+
+        puts "Saving player accolade: #{player_accolade}"
+
+        @repos[Accolades::Player::Type][:repo].save_player_accolade player_accolade
+      end
+    end
+
+    all_star_teams = @repos[Accolades::Team::Type][:repo].get_league_teams
+
+    all_star_teams.each do |team|
+      players = @repos[Accolades::Player::Type][:repo].get_players_by_team team[:team_id], season
+
+      players.each do |player|
+        player_accolade = { player_id: player[:player_id], season: season, accolade: Accolades::Player::All_Star }
+
+        @repos[Accolades::Player::Type][:repo].save_player_accolade player_accolade
       end
     end
   end

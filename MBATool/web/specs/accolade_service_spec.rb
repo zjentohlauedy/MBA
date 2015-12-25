@@ -22,11 +22,14 @@ describe AccoladeService do
     allow( @lr ).to receive( :get_league_stats_by_highest   ).and_return( [] )
     allow( @dr ).to receive( :get_division_stats_by_highest ).and_return( [] )
     allow( @tr ).to receive( :get_team_stats_by_highest     ).and_return( [] )
+    allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [] )
     allow( @tr ).to receive( :get_team_stats_by_lowest      ).and_return( [] )
+    allow( @tr ).to receive( :get_league_teams              ).and_return( [] )
     allow( @pr ).to receive( :get_pitcher_stats_by_highest  ).and_return( [] )
     allow( @pr ).to receive( :get_pitcher_stats_by_lowest   ).and_return( [] )
     allow( @pr ).to receive( :get_batter_stats_by_highest   ).and_return( [] )
     allow( @pr ).to receive( :get_batter_stats_by_lowest    ).and_return( [] )
+    allow( @pr ).to receive( :get_players_by_team           ).and_return( [] )
 
     @accolade_service = AccoladeService.new @or, @lr, @dr, @tr, @pr
   end
@@ -107,6 +110,62 @@ describe AccoladeService do
       expect( @tr ).to receive( :save_team_accolade ).with( hash_including :team_id => 1, :season => 4, :accolade => Accolades::Team::Division_Title    )
       expect( @tr ).to receive( :save_team_accolade ).with( hash_including :team_id => 1, :season => 4, :accolade => Accolades::Team::Best_Record       )
       expect( @tr ).to receive( :save_team_accolade ).with( hash_including :team_id => 1, :season => 4, :accolade => Accolades::Team::All_Star_Champion )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for world title' do
+      allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [{team_id: 1, season: 4, accolade: Accolades::Team::World_Title}] )
+      allow( @pr ).to receive( :get_players_by_team ).and_return( [{team_id: 1, player_id: 1}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::World_Title )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for league title' do
+      allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [{team_id: 1, season: 4, accolade: Accolades::Team::League_Title}] )
+      allow( @pr ).to receive( :get_players_by_team ).and_return( [{team_id: 1, player_id: 1}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::League_Title )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for division title' do
+      allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [{team_id: 1, season: 4, accolade: Accolades::Team::Division_Title}] )
+      allow( @pr ).to receive( :get_players_by_team ).and_return( [{team_id: 1, player_id: 1}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::Division_Title )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for best record' do
+      allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [{team_id: 1, season: 4, accolade: Accolades::Team::Best_Record}] )
+      allow( @pr ).to receive( :get_players_by_team ).and_return( [{team_id: 1, player_id: 1}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::Best_Record )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for all star champion' do
+      allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [{team_id: 1, season: 4, accolade: Accolades::Team::All_Star_Champion}] )
+      allow( @pr ).to receive( :get_players_by_team ).and_return( [{team_id: 1, player_id: 1}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::All_Star_Champion )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create player accolades for all star' do
+      allow( @tr ).to receive( :get_league_teams ).and_return( [{league_id: 1, team_id: 33},{league_id: 2, team_id: 34}] )
+      allow( @pr ).to receive( :get_players_by_team ).with( 33, 4 ).and_return( [{team_id: 33, player_id: 1}] )
+      allow( @pr ).to receive( :get_players_by_team ).with( 34, 4 ).and_return( [{team_id: 34, player_id: 2}] )
+
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Player::All_Star )
+      expect( @pr ).to receive( :save_player_accolade ).with( hash_including :player_id => 2, :season => 4, :accolade => Accolades::Player::All_Star )
 
       @accolade_service.resolve_accolades
     end
