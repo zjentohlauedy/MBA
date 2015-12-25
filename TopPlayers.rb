@@ -10,10 +10,14 @@ class Stats
   end
 
   def <=>( other )
+    if get_sort_key == other.get_sort_key
+      return @name <=> other.name
+    end
+
     if @direction == :ascending
-      get_sort_key <=> other.get_sort_key
+      return get_sort_key <=> other.get_sort_key
     else
-      other.get_sort_key <=> get_sort_key
+      return other.get_sort_key <=> get_sort_key
     end
   end
 
