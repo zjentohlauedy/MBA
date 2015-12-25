@@ -112,8 +112,14 @@ describe AccoladeService do
     end
 
     it 'should call the player repository to get the highest or lowest values for all the pitcher accolades for the current season' do
-      expect( @pr ).to receive( :get_pitcher_stats_by_highest ).with( anything, 'innings', anything, 4, anything ).and_return( [] ).at_least :once
-      expect( @pr ).to receive( :get_pitcher_stats_by_lowest  ).with( anything, 'innings', anything, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_pitcher_stats_by_highest ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_pitcher_stats_by_lowest  ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should set the filter value to zero for most saves pitching accolade' do
+      expect( @pr ).to receive( :get_pitcher_stats_by_highest  ).with( 'saves', 'innings', 0, 4, Phases::RegularSeason ).and_return( [] ).at_least :once
 
       @accolade_service.resolve_accolades
     end
@@ -139,8 +145,8 @@ describe AccoladeService do
     end
 
     it 'should call the player repository to get the highest or lowest values for all the batter accolades for the current season' do
-      expect( @pr ).to receive( :get_batter_stats_by_highest ).with( anything, 'at_bats', anything, 4, anything ).and_return( [] ).at_least :once
-      expect( @pr ).to receive( :get_batter_stats_by_lowest  ).with( anything, 'at_bats', anything, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_batter_stats_by_highest ).with( anything, 'at_bats', 300, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_batter_stats_by_lowest  ).with( anything, 'at_bats', 300, 4, anything ).and_return( [] ).at_least :once
 
       @accolade_service.resolve_accolades
     end

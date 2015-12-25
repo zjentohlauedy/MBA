@@ -80,8 +80,8 @@ class AccoladeService
       Accolades::League::Type   => { repo: league_repository,   method: :save_league_accolade   },
       Accolades::Division::Type => { repo: division_repository, method: :save_division_accolade },
       Accolades::Team::Type     => { repo: team_repository,     method: :save_team_accolade     },
-      Accolades::Pitching::Type => { repo: player_repository,   method: :save_pitcher_accolade, filter: { field: 'innings', value: 0 } },
-      Accolades::Batting::Type  => { repo: player_repository,   method: :save_batter_accolade,  filter: { field: 'at_bats', value: 0 } }
+      Accolades::Pitching::Type => { repo: player_repository,   method: :save_pitcher_accolade, filter: { field: 'innings', value: 185 } },
+      Accolades::Batting::Type  => { repo: player_repository,   method: :save_batter_accolade,  filter: { field: 'at_bats', value: 300 } }
     }
   end
 
@@ -105,7 +105,9 @@ class AccoladeService
       save_accolade_method = @repos[ accolade[:type] ][ :method ]
 
       unless filter.nil?
-        recipients = repo.send lookup[:method], lookup[:stat], filter[:field], filter[:value], org[:season], lookup[:phase]
+        value = (accolade[:value] == Accolades::Pitching::Most_Saves) ? 0 : filter[:value]
+
+        recipients = repo.send lookup[:method], lookup[:stat], filter[:field], value, org[:season], lookup[:phase]
       else
         recipients = repo.send lookup[:method], lookup[:stat], org[:season], lookup[:phase]
       end
