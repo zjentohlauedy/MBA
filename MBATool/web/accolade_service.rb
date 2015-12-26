@@ -28,6 +28,8 @@ AccoladeLookups = [
   { accolade: Accolades::Player::Division_Title,                  },
   { accolade: Accolades::Player::Best_Record,                     },
   { accolade: Accolades::Player::World_Series_MVP,                },
+  { accolade: Accolades::Player::All_Star_Champion,               },
+  { accolade: Accolades::Player::All_Star_MVP,                    },
 
   { accolade: Accolades::Batting::Batter_of_the_Year,             },
   { accolade: Accolades::Batting::Global_Batter_of_the_Year,      },
@@ -129,9 +131,6 @@ class AccoladeService
     team_accolades.each do |team_accolade|
       players = @repos[Accolades::Player::Type][:repo].get_players_by_team team_accolade[:team_id], season
 
-      puts "Team Accolade: #{team_accolade}"
-      puts "Players Found: #{players.length}"
-
       players.each do |player|
         player_accolade = { player_id: player[:player_id], season: season }
 
@@ -144,8 +143,6 @@ class AccoladeService
         else
           raise InternalServerError.new "Unknown team accolade: #{team_accolade[:value]}."
         end
-
-        puts "Saving player accolade: #{player_accolade}"
 
         @repos[Accolades::Player::Type][:repo].save_player_accolade player_accolade
       end

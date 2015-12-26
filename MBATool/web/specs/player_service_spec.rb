@@ -825,6 +825,186 @@ describe PlayerService do
     end
   end
 
+  describe '#get_player_accolades_by_season' do
+    it 'should call the repository to get player accolades records from the database' do
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+
+      expect( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the response mapper with each of the player accolades records from the repository' do
+      player_accolades = [{player_id: 1, season: 1, accolade: Accolades::Player::World_Title},{player_id: 2, season: 1, accolade: Accolades::Player::League_Title}]
+
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return player_accolades
+      allow( @deco ).to receive :decorate_player_accolade
+
+      expect( @mapper ).to receive( :map_player_accolade ).with player_accolades[0]
+      expect( @mapper ).to receive( :map_player_accolade ).with player_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped player accolades list' do
+      player_accolades = [{player_id: 1, season: 1, accolade: Accolades::Player::World_Title},{player_id: 2, season: 1, accolade: Accolades::Player::League_Title}]
+      mapped_player_accolades = [{player_id: 1, season: 1, accolade: "World Title"},{player_id: 2, season: 1, accolade: "League Title"}]
+
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return player_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_player_accolades[0]
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_player_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the repository to get pitcher accolades records from the database' do
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+
+      expect( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the response mapper with each of the pitcher accolades records from the repository' do
+      pitcher_accolades = [{player_id: 1, season: 1, accolade: Accolades::Pitching::Most_Wins},{player_id: 1, season: 1, accolade: Accolades::Pitching::Most_Saves}]
+
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return pitcher_accolades
+      allow( @deco ).to receive :decorate_player_accolade
+
+      expect( @mapper ).to receive( :map_pitcher_accolade ).with pitcher_accolades[0]
+      expect( @mapper ).to receive( :map_pitcher_accolade ).with pitcher_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped pitcher accolades list' do
+      pitcher_accolades = [{player_id: 1, season: 1, accolade: Accolades::Pitching::Most_Wins},{player_id: 1, season: 1, accolade: Accolades::Pitching::Most_Saves}]
+      mapped_pitcher_accolades = [{player_id: 1, season: 1, accolade: "Most Wins"},{player_id: 1, season: 1, accolade: "Most Saves"}]
+
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return pitcher_accolades
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] ).and_return mapped_pitcher_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_pitcher_accolades[0]
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_pitcher_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the repository to get batter accolades records from the database' do
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+
+      expect( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the response mapper with each of the batter accolades records from the repository' do
+      batter_accolades = [{player_id: 1, season: 1, accolade: Accolades::Batting::Most_Doubles},{player_id: 1, season: 1, accolade: Accolades::Batting::Most_Triples}]
+
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return batter_accolades
+      allow( @deco ).to receive :decorate_player_accolade
+
+      expect( @mapper ).to receive( :map_batter_accolade ).with batter_accolades[0]
+      expect( @mapper ).to receive( :map_batter_accolade ).with batter_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should call the decorator with each player accolades record in the mapped batter accolades list' do
+      batter_accolades = [{player_id: 1, season: 1, accolade: Accolades::Batting::Most_Doubles},{player_id: 1, season: 1, accolade: Accolades::Batting::Most_Triples}]
+      mapped_batter_accolades = [{player_id: 1, season: 1, accolade: "Most Doubles"},{player_id: 1, season: 1, accolade: "Most Triples"}]
+
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return batter_accolades
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] ).and_return mapped_batter_accolades[1]
+
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_batter_accolades[0]
+      expect( @deco ).to receive( :decorate_player_accolade ).with mapped_batter_accolades[1]
+
+      @player_service.get_player_accolades_by_season 1
+    end
+
+    it 'should return the mapped and decorated accolades list' do
+      player_accolades = [{player_id: 1, season: 1, accolade: Accolades::Player::World_Title}]
+      mapped_player_accolades = [{player_id: 1, season: 1, accolade: "World Title"}]
+      decorated_player_accolades = [{player_id: 1, season: 1, accolade: "World Title", _links: {}}]
+      pitcher_accolades = [{player_id: 2, season: 1, accolade: Accolades::Pitching::Most_Wins}]
+      mapped_pitcher_accolades = [{player_id: 2, season: 1, accolade: "Most Wins"}]
+      decorated_pitcher_accolades = [{player_id: 2, season: 1, accolade: "Most Wins", _links: {}}]
+      batter_accolades = [{player_id: 3, season: 1, accolade: Accolades::Batting::Most_Doubles}]
+      mapped_batter_accolades = [{player_id: 3, season: 1, accolade: "Most Doubles"}]
+      decorated_batter_accolades = [{player_id: 3, season: 1, accolade: "Most Doubles", _links: {}}]
+
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return player_accolades
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return pitcher_accolades
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return batter_accolades
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[0] ).and_return mapped_player_accolades[0]
+      allow( @mapper ).to receive( :map_player_accolade ).with( player_accolades[1] ).and_return mapped_player_accolades[1]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[0] ).and_return mapped_pitcher_accolades[0]
+      allow( @mapper ).to receive( :map_pitcher_accolade ).with( pitcher_accolades[1] ).and_return mapped_pitcher_accolades[1]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[0] ).and_return mapped_batter_accolades[0]
+      allow( @mapper ).to receive( :map_batter_accolade ).with( batter_accolades[1] ).and_return mapped_batter_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[0] ).and_return decorated_player_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_player_accolades[1] ).and_return decorated_player_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[0] ).and_return decorated_pitcher_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_pitcher_accolades[1] ).and_return decorated_pitcher_accolades[1]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[0] ).and_return decorated_batter_accolades[0]
+      allow( @deco ).to receive( :decorate_player_accolade ).with( mapped_batter_accolades[1] ).and_return decorated_batter_accolades[1]
+
+      result = @player_service.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     3
+
+      expect( result[0][:player_id] ).to     eq     1
+      expect( result[0][:season]    ).to     eq     1
+      expect( result[0][:accolade]  ).to     eq     "World Title"
+      expect( result[0][:_links]    ).to_not be_nil
+
+      expect( result[1][:player_id] ).to     eq     2
+      expect( result[1][:season]    ).to     eq     1
+      expect( result[1][:accolade]  ).to     eq     "Most Wins"
+      expect( result[1][:_links]    ).to_not be_nil
+
+      expect( result[2][:player_id] ).to     eq     3
+      expect( result[2][:season]    ).to     eq     1
+      expect( result[2][:accolade]  ).to     eq     "Most Doubles"
+      expect( result[2][:_links]    ).to_not be_nil
+    end
+
+    it 'should return an empty array if ther are no player, pitcher or batter accolade records in the database' do
+      allow( @repo ).to receive( :get_player_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_pitcher_accolades_by_season ).with( 1 ).and_return( [] )
+      allow( @repo ).to receive( :get_batter_accolades_by_season ).with( 1 ).and_return( [] )
+
+      result = @player_service.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+  end
+
   describe '#get_player_accolades' do
     it 'should call the repository to get the player record from the database' do
       player = {player_id: 1, player_type: PlayerTypes::Pitcher}

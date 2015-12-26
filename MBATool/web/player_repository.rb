@@ -172,6 +172,14 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_player_accolades_by_season( season )
+    args = { season: season }
+
+    query = 'select * from player_accolades_t where season = :season'
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_player_accolades( player_id, season = nil )
     args = { player_id: player_id }
 
@@ -190,12 +198,12 @@ class PlayerRepository
     return Utils::transform_hash @db.get_first_row query, args
   end
 
-  def get_pitcher_accolade( player_id, season, accolade )
-    args = { player_id: player_id, season: season, accolade: accolade }
+  def get_pitcher_accolades_by_season( season )
+    args = { season: season }
 
-    query = 'select * from pitcher_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
+    query = 'select * from pitcher_accolades_t where season = :season'
 
-    return Utils::transform_hash @db.get_first_row query, args
+    return Utils::transform_hash @db.execute query, args
   end
 
   def get_pitcher_accolades( player_id, season = nil )
@@ -208,12 +216,20 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
-  def get_batter_accolade( player_id, season, accolade )
+  def get_pitcher_accolade( player_id, season, accolade )
     args = { player_id: player_id, season: season, accolade: accolade }
 
-    query = 'select * from batter_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
+    query = 'select * from pitcher_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
 
     return Utils::transform_hash @db.get_first_row query, args
+  end
+
+  def get_batter_accolades_by_season( season )
+    args = { season: season }
+
+    query = 'select * from batter_accolades_t where season = :season'
+
+    return Utils::transform_hash @db.execute query, args
   end
 
   def get_batter_accolades( player_id, season = nil )
@@ -224,6 +240,14 @@ class PlayerRepository
     unless season.nil?; query = "#{query} and season = :season"; args[:season] = season end
 
     return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_batter_accolade( player_id, season, accolade )
+    args = { player_id: player_id, season: season, accolade: accolade }
+
+    query = 'select * from batter_accolades_t where player_id = :player_id and season = :season and accolade = :accolade'
+
+    return Utils::transform_hash @db.get_first_row query, args
   end
 
   def save_player( player )

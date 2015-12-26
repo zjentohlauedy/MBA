@@ -169,6 +169,30 @@ class PlayerService
     return Array.new
   end
 
+  def get_player_accolades_by_season( season )
+    result = []
+
+    player_accolades = @repository.get_player_accolades_by_season season
+
+    player_accolades.each do |player_accolade|
+      result.push @decorator.decorate_player_accolade @mapper.map_player_accolade player_accolade
+    end
+
+    pitcher_accolades = @repository.get_pitcher_accolades_by_season season
+
+    pitcher_accolades.each do |pitcher_accolade|
+      result.push @decorator.decorate_player_accolade @mapper.map_pitcher_accolade pitcher_accolade
+    end
+
+    batter_accolades = @repository.get_batter_accolades_by_season season
+
+    batter_accolades.each do |batter_accolade|
+      result.push @decorator.decorate_player_accolade @mapper.map_batter_accolade batter_accolade
+    end
+
+    return result
+  end
+
   def get_player_accolades( player_id, season = nil )
     player = @repository.get_player player_id
 

@@ -257,7 +257,9 @@ post "#{actions_root}/resolve_accolades" do
   begin
     accolade_service.resolve_accolades
 
-    response = {}
+    org = org_service.get_org 1
+
+    response = player_service.get_player_accolades_by_season org[:season]
 
     db.commit
   rescue Exception => e

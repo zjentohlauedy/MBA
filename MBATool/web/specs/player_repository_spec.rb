@@ -1197,6 +1197,64 @@ describe PlayerRepository do
     end
   end
 
+  describe '#get_player_accolades_by_season' do
+    it 'should return an array containing player accolades information' do
+      @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::League_Title})"
+
+      result = @player_repository.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Player::League_Title
+    end
+
+    it 'should return only records matching given season' do
+      @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::League_Title})"
+      @db.execute "insert into player_accolades_t values (1, 2, #{Accolades::Player::World_Title})"
+
+      result = @player_repository.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Player::League_Title
+    end
+
+    it 'should return records for multiple players' do
+      @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::League_Title})"
+      @db.execute "insert into player_accolades_t values (2, 1, #{Accolades::Player::World_Title})"
+
+      result = @player_repository.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Player::League_Title
+
+      expect( result[1][:player_id] ).to eq 2
+      expect( result[1][:season   ] ).to eq 1
+      expect( result[1][:accolade ] ).to eq Accolades::Player::World_Title
+    end
+
+    it 'should return an empty array if no records are found' do
+      result = @player_repository.get_player_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+  end
+
   describe '#get_player_accolades' do
     it 'should return an array containing player accolades information' do
       @db.execute "insert into player_accolades_t values (1, 1, #{Accolades::Player::League_Title})"
@@ -1275,23 +1333,61 @@ describe PlayerRepository do
     end
   end
 
-  describe '#get_pitcher_accolade' do
-    it 'should return a hash containing pitcher accolade information' do
+  describe '#get_pitcher_accolades_by_season' do
+    it 'should return an array containing pitcher accolades information' do
       @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
 
-      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
+      result = @player_repository.get_pitcher_accolades_by_season 1
 
-      expect( result             ).to_not be_nil
-      expect( result             ).to     be_a    Hash
-      expect( result[:player_id] ).to eq 1
-      expect( result[:season   ] ).to eq 1
-      expect( result[:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
     end
 
-    it 'return nil if the pitcher accolade is not found' do
-      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
+    it 'should return only records matching given season' do
+      @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
+      @db.execute "insert into pitcher_accolades_t values (1, 2, #{Accolades::Pitching::Most_Wins})"
 
-      expect( result ).to be_nil
+      result = @player_repository.get_pitcher_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
+    end
+
+    it 'should return records for multiple players' do
+      @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
+      @db.execute "insert into pitcher_accolades_t values (2, 1, #{Accolades::Pitching::Most_Wins})"
+
+      result = @player_repository.get_pitcher_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
+
+      expect( result[1][:player_id] ).to eq 2
+      expect( result[1][:season   ] ).to eq 1
+      expect( result[1][:accolade ] ).to eq Accolades::Pitching::Most_Wins
+    end
+
+    it 'should return an empty array if no records are found' do
+      result = @player_repository.get_pitcher_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
     end
   end
 
@@ -1353,23 +1449,81 @@ describe PlayerRepository do
     end
   end
 
-  describe '#get_batter_accolade' do
-    it 'should return a hash containing batter accolade information' do
-      @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Most_Doubles})"
+  describe '#get_pitcher_accolade' do
+    it 'should return a hash containing pitcher accolade information' do
+      @db.execute "insert into pitcher_accolades_t values (1, 1, #{Accolades::Pitching::Best_Earned_Run_Average})"
 
-      result = @player_repository.get_batter_accolade 1, 1, Accolades::Batting::Most_Doubles
+      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
 
       expect( result             ).to_not be_nil
       expect( result             ).to     be_a    Hash
       expect( result[:player_id] ).to eq 1
       expect( result[:season   ] ).to eq 1
-      expect( result[:accolade ] ).to eq Accolades::Batting::Most_Doubles
+      expect( result[:accolade ] ).to eq Accolades::Pitching::Best_Earned_Run_Average
     end
 
-    it 'return nil if the batter accolade is not found' do
-      result = @player_repository.get_batter_accolade 1, 1, Accolades::Batting::Most_Doubles
+    it 'return nil if the pitcher accolade is not found' do
+      result = @player_repository.get_pitcher_accolade 1, 1, Accolades::Pitching::Best_Earned_Run_Average
 
       expect( result ).to be_nil
+    end
+  end
+
+  describe '#get_batter_accolades_by_season' do
+    it 'should return an array containing batter accolades information' do
+      @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Best_Batting_Average})"
+
+      result = @player_repository.get_batter_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Batting::Best_Batting_Average
+    end
+
+    it 'should return only records matching given season' do
+      @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Best_Batting_Average})"
+      @db.execute "insert into batter_accolades_t values (1, 2, #{Accolades::Batting::Most_Home_Runs})"
+
+      result = @player_repository.get_batter_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Batting::Best_Batting_Average
+    end
+
+    it 'should return records for multiple players' do
+      @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Best_Batting_Average})"
+      @db.execute "insert into batter_accolades_t values (2, 1, #{Accolades::Batting::Most_Home_Runs})"
+
+      result = @player_repository.get_batter_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:player_id] ).to eq 1
+      expect( result[0][:season   ] ).to eq 1
+      expect( result[0][:accolade ] ).to eq Accolades::Batting::Best_Batting_Average
+
+      expect( result[1][:player_id] ).to eq 2
+      expect( result[1][:season   ] ).to eq 1
+      expect( result[1][:accolade ] ).to eq Accolades::Batting::Most_Home_Runs
+    end
+
+    it 'should return an empty array if no records are found' do
+      result = @player_repository.get_batter_accolades_by_season 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
     end
   end
 
@@ -1428,6 +1582,26 @@ describe PlayerRepository do
       expect( result        ).to_not be_nil
       expect( result        ).to     be_a   Array
       expect( result.length ).to     eq     0
+    end
+  end
+
+  describe '#get_batter_accolade' do
+    it 'should return a hash containing batter accolade information' do
+      @db.execute "insert into batter_accolades_t values (1, 1, #{Accolades::Batting::Most_Doubles})"
+
+      result = @player_repository.get_batter_accolade 1, 1, Accolades::Batting::Most_Doubles
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a    Hash
+      expect( result[:player_id] ).to eq 1
+      expect( result[:season   ] ).to eq 1
+      expect( result[:accolade ] ).to eq Accolades::Batting::Most_Doubles
+    end
+
+    it 'return nil if the batter accolade is not found' do
+      result = @player_repository.get_batter_accolade 1, 1, Accolades::Batting::Most_Doubles
+
+      expect( result ).to be_nil
     end
   end
 

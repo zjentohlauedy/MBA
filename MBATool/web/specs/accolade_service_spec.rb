@@ -2,6 +2,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'phases'
+require 'accolades'
 require 'accolade_service'
 require 'org_repository'
 require 'league_repository'
@@ -40,7 +41,7 @@ describe AccoladeService do
 
       expect( results        ).to_not be_nil
       expect( results        ).to     be_a   Array
-      expect( results.length ).to     eq     55
+      expect( results.length ).to     eq     Accolades::AccoladeList.length
 
       results.each do |entry|
         expect( entry[ :name      ] ).to_not be_nil

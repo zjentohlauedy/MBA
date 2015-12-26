@@ -107,6 +107,8 @@ module Accolades
     { name: "Division Title",                    value: Accolades::Player::Division_Title,                 type: Accolades::Player::Type,   automatic: true  },
     { name: "Best Record",                       value: Accolades::Player::Best_Record,                    type: Accolades::Player::Type,   automatic: true  },
     { name: "World Series MVP",                  value: Accolades::Player::World_Series_MVP,               type: Accolades::Player::Type,   automatic: false },
+    { name: "All Star Champion",                 value: Accolades::Player::All_Star_Champion,              type: Accolades::Player::Type,   automatic: true  },
+    { name: "All Star MVP",                      value: Accolades::Player::All_Star_MVP,                   type: Accolades::Player::Type,   automatic: false },
 
     { name: "MBA Batter of the Year",            value: Accolades::Batting::Batter_of_the_Year,            type: Accolades::Batting::Type,  automatic: false },
     { name: "Global League Batter of the Year",  value: Accolades::Batting::Global_Batter_of_the_Year,     type: Accolades::Batting::Type,  automatic: false },
