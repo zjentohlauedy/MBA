@@ -312,7 +312,7 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(progressController.send).toHaveBeenCalledWith('goToStage', 3);
             });
 
-            it('should not direct the roster cut controller to prepare data if the stage is not rookie draft', function() {
+            it('should not direct the rookie draft controller to prepare data if the stage is not rookie draft', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     options.success({season: 5, stage: 3});
@@ -381,7 +381,7 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(Globals.season).toBe(5);
             });
 
-            it('should set the draft round, pick number and current team idx on the rookie draft controller', function() {
+            it('should set the draft round, pick number and current team idx on the free agents controller', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     options.success({season: 5, stage: 3, draft_round: 7, pick_number: 24});
@@ -394,7 +394,7 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(freeAgentsController.set).toHaveBeenCalledWith('currentTeamIdx', 215);
             });
 
-            it('should direct the rookie draft controller to prepare data', function() {
+            it('should direct the free agents controller to prepare data', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     options.success({season: 5, stage: 3});
@@ -416,7 +416,7 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(progressController.send).toHaveBeenCalledWith('goToStage', 1);
             });
 
-            it('should not direct the roster cut controller to prepare data if the stage is not free agents', function() {
+            it('should not direct the free agents controller to prepare data if the stage is not free agents', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     options.success({season: 5, stage: 1});
@@ -608,11 +608,15 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
 
                 route = jasmine.createSpyObj('route', ['controllerFor']);
                 progressController = jasmine.createSpyObj('progressController', ['send', 'get', 'set']);
+                accoladesController = jasmine.createSpyObj('accoladesController', ['send', 'get', 'set']);
 
                 route.expectedStage = 6;
                 route.controllerFor.and.callFake(function(name) {
                     if (name == 'progress') {
                         return progressController;
+                    }
+                    else if (name == 'accolades') {
+                        return accoladesController;
                     }
                 });
             });
@@ -639,7 +643,18 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(Globals.season).toBe(5);
             });
 
-            it('should direct the progress controller to go to the stage in the organization resource', function() {
+            it('should direct the accolades controller to prepare data', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success({season: 5, stage: 6});
+                });
+
+                Actions.accoladesRouteRedirect(route);
+
+                expect(accoladesController.send).toHaveBeenCalledWith('prepareData', jasmine.any(Object));
+            });
+
+            it('should direct the progress controller to go to the stage in the organization resource if the stage is not accolades', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     options.success({season: 5, stage: 3});
@@ -650,15 +665,15 @@ define(['objects/globals', 'actions/routeActions'], function(Globals, Actions) {
                 expect(progressController.send).toHaveBeenCalledWith('goToStage', 3);
             });
 
-            it('should not direct the progress controller to go to any stage if the organization stage is for accolades', function() {
+            it('should not direct the accolades controller to prepare data if the organization stage is for accolades', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
-                    options.success({season: 5, stage: 6});
+                    options.success({season: 5, stage: 3});
                 });
 
                 Actions.accoladesRouteRedirect(route);
 
-                expect(progressController.send).not.toHaveBeenCalled();
+                expect(accoladesController.send).not.toHaveBeenCalledWith('prepareData', jasmine.any(Object));
             });
 
             it('should show an alert if the ajax call fails', function() {

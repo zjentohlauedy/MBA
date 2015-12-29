@@ -156,7 +156,11 @@ define(['objects/constants', 'objects/globals'], function(Constants, Globals) {
                 function(org) {
                     Globals.season = org.season;
 
-                    if (org.stage !== route.expectedStage) {
+                    if (org.stage === route.expectedStage) {
+                        var defer = $.Deferred();
+
+                        route.controllerFor('accolades').send('prepareData', defer);
+                    } else {
                         route.controllerFor('progress').send('goToStage', org.stage);
                     }
                 },

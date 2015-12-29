@@ -92,13 +92,15 @@ define(['objects/progress', 'actions/progressActions'], function(Progress, Actio
                 expect(controller.transitionToRoute).toHaveBeenCalledWith(controller.stages[controller.stage].route);
             });
 
-            it('should transition to complete season route if new stage is the last', function() {
+            it('should transition to start season route if new stage is the last', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
 
                 controller.stage = controller.stages.length - 1;
 
                 Actions.nextStage(controller);
 
-                expect(controller.transitionToRoute).toHaveBeenCalledWith('complete-season');
+                expect(controller.transitionToRoute).toHaveBeenCalledWith('start-season');
             });
 
             it('should show an alert if the ajax call fails', function() {
