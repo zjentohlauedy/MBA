@@ -2,10 +2,11 @@ define(['actions/accoladesActions', 'ember'], function(Actions, Ember) {
 
     var AccoladesController = Ember.ObjectController.extend({
         needs:              "progress",
-        pageReady:          false,
-        stageComplete:      true,
+        canSave:            true,
+        stageComplete:      false,
         availableAccolades: [],
         accoladeList:       [ { selectedAccolade: null, selectedPlayer: null } ],
+        errorMessages:      [],
         actions: {
             addAccolade: function() {
                 var accolade = { selectedAccolade: null, selectedPlayer: null };
@@ -16,7 +17,8 @@ define(['actions/accoladesActions', 'ember'], function(Actions, Ember) {
                 this.accoladeList.removeObject( accolade );
             },
             prepareData: function(deferred) { Actions.prepareData( this, deferred ); },
-            saveAccolades: function() { alert("Accolades saved!"); },
+            saveAccolades: function() { Actions.saveAccolades( this ); },
+            resolveAccolades: function() { alert('resolving accolades!'); },
             finishStage: function() { Actions.finishStage( this ); }
         }
     });

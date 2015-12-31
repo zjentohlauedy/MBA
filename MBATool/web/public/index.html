@@ -409,6 +409,13 @@
     </script>
     <script type="text/x-handlebars" data-template-name="accolades">
       <h1>Present Accolades!</h1>
+      <div class="error-messages">
+        <ul>
+        {{#each message in errorMessages}}
+        <li>{{message}}</li>
+        {{/each}}
+        </ul>
+      </div>
       {{#each accolade in accoladeList}}
       <div class="accolade-entry">
         {{view "Ember.Select" value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.id" optionLabelPath="content.name" prompt="Please Select An Accolade"}}
@@ -420,7 +427,7 @@
         <button class="enabled" {{action "addAccolade" on="click"}}>Add</button>
       </div>
       <div>
-        <button {{bind-attr class="pageReady:enabled:disabled"}} {{action "saveAccolades" on="click"}}>Save Accolades</button>
+        <button {{bind-attr class="canSave:enabled:disabled"}} {{action "saveAccolades" on="click"}}>Save Accolades</button>
       </div>
       <div>
         <button {{bind-attr class="stageComplete:enabled:disabled"}} {{action "finishStage" on="click"}}>Next</button>
