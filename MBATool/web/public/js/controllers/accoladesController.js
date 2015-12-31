@@ -18,7 +18,8 @@ define(['actions/accoladesActions', 'ember'], function(Actions, Ember) {
             },
             prepareData: function(deferred) { Actions.prepareData( this, deferred ); },
             saveAccolades: function() { Actions.saveAccolades( this ); },
-            resolveAccolades: function() { alert('resolving accolades!'); },
+            resolveAccolades: function() { Actions.resolveAccolades( this ); },
+            displayAccolades: function() { alert('displaying accolades!'); },
             finishStage: function() { Actions.finishStage( this ); }
         }
     });

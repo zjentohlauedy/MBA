@@ -273,6 +273,86 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
             });
         });
 
+        describe('resolveAccolades', function() {
+
+            var controller;
+
+            beforeEach(function() {
+                controller               = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.errorMessages = jasmine.createSpyObj('errorMessages', ['addObject', 'clear']);
+            });
+
+            it('should post to the resolve accolades action endpoint', function() {
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.resolveAccolades(controller);
+
+                expect($.ajax).toHaveBeenCalled();
+
+                expect($.ajax.calls.argsFor(0)[0]     ).toEqual('/mba/actions/resolve_accolades');
+                expect($.ajax.calls.argsFor(0)[1].type).toEqual('POST');
+            });
+
+            it('should call the display accolades controller method with the response from the action endpoint', function() {
+
+                var response = [{},{},{}];
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(response); });
+
+                Actions.resolveAccolades(controller);
+
+                expect(controller.send).toHaveBeenCalledWith('displayAccolades', response);
+            });
+
+            it('should not call the display accolades method if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '{"error":"some error message"}'}); });
+
+                Actions.resolveAccolades(controller);
+
+                expect(controller.send).not.toHaveBeenCalled();
+            });
+
+            it('should add message to the error messages on the controller if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '{"error":"some error message"}'}); });
+
+                Actions.resolveAccolades(controller);
+
+                expect(controller.errorMessages.addObject).toHaveBeenCalledWith("some error message");
+            });
+
+            it('should add unknown error message to the error messages if the error response is not json', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+
+                Actions.resolveAccolades(controller);
+
+                expect(controller.errorMessages.addObject).toHaveBeenCalledWith("Unknown error, check console log.");
+            });
+
+            it('should log actual response if the error response is not json', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+                spyOn(console, 'error').and.callFake(function() {});
+
+                Actions.resolveAccolades(controller);
+
+                expect(console.error).toHaveBeenCalled();
+                expect(console.error.calls.mostRecent().args[0]).toMatch('<html></html>');
+            });
+
+            it('should re-enable the save button if the ajax call fails', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '{"error":"some error message"}'}); });
+
+                Actions.resolveAccolades(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', true);
+            });
+        });
+
         describe('finishStage', function() {
 
             var controller;

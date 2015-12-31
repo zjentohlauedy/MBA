@@ -78,6 +78,28 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
                 controller.set('canSave', true);
             });
         },
+        resolveAccolades: function(controller) {
+            $.ajax(Constants.RESOLVE_ACCOLADES_URI, {
+                type: 'POST',
+                success: function(accolades) {
+                    controller.send('displayAccolades', accolades);
+                },
+                error: function(response) {
+                    var message = null;
+
+                    try {
+                        message = JSON.parse(response.responseText).error;
+                    }
+                    catch (e) {
+                        console.error("Error response: " + response.responseText);
+                        message = "Unknown error, check console log.";
+                    }
+
+                    controller.errorMessages.addObject(message);
+                    controller.set('canSave', true);
+                }
+            });
+        },
         finishStage: function(controller) {
             if (controller.stageComplete) {
                 controller.get("controllers.progress").send('nextStage');
