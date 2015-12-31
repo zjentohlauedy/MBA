@@ -4,7 +4,13 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
         prepareData: function(controller, deferred) {
             $.ajax( '/mba/resources/accolades', {
                 success: function(accolades) {
-                    controller.set('availableAccolades', accolades.filter(function(element) { return ! element.automatic }));
+                    filteredAccolades = accolades.filter(function(element) { return ! element.automatic });
+
+                    for (var i = 0; i < filteredAccolades.length; ++i) {
+                        filteredAccolades[i].id = i + 1;
+                    }
+
+                    controller.set('availableAccolades', filteredAccolades);
                     deferred.resolve();
                 },
                 error: function() {

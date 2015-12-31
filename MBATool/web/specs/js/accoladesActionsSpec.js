@@ -47,6 +47,21 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 expect(controller.set.calls.mostRecent().args[1].length).toEqual(1);
             });
 
+            it('should assign a unique id to each of the accolades', function() {
+
+                var accolades = [{automatic: false},{automatic: false},{automatic: false}];
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success(accolades);
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(controller.set.calls.mostRecent().args[1][0].id).toEqual(1);
+                expect(controller.set.calls.mostRecent().args[1][1].id).toEqual(2);
+                expect(controller.set.calls.mostRecent().args[1][2].id).toEqual(3);
+            });
+
             it('should resolve the given promise when the work is complete', function() {
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
