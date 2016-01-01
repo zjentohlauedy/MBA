@@ -100,6 +100,65 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
                 }
             });
         },
+        displayAccolades: function(controller, accolades) {
+            var players  = {};
+            var promises = [];
+
+            accolades.forEach(function(accolade) {
+                if ( ! players[accolade.player_id] ) {
+                    var deferred = $.Deferred();
+
+                    players[accolade.player_id] = {};
+
+                    $.ajax(Constants.PLAYERS_URI + '/' + accolade.player_id, {
+                        success: function(player) {
+                            player.accolades = [];
+
+                            players[player.player_id] = player;
+
+                            deferred.resolve();
+                        },
+                        error: function(response) {
+                            var message = null;
+
+                            try {
+                                message = JSON.parse(response.responseText).error;
+                            }
+                            catch (e) {
+                                console.error("Error response: " + response.responseText);
+                                message = "Unknown error, check console log.";
+                            }
+
+                            controller.errorMessages.addObject(message);
+
+                            deferred.reject();
+                        }
+                    });
+
+                    promises.push(deferred.promise());
+                }
+            });
+
+            $.when.apply(null, promises).then(function() {
+                accolades.forEach(function(accolade) {
+                    player = players[accolade.player_id];
+
+                    player.accolades.push(accolade.accolade);
+                });
+
+                $.map(players, function(player) { return player; }).sort(function(object, other) {
+                    if (other.accolades.length !== object.accolades.length) {
+                        return other.accolades.length - object.accolades.length;
+                    }
+
+                    return object.name.localeCompare(other.name);
+                }).forEach(function(player) {
+                    controller.playerAccolades.addObject(player);
+                });
+            }, function() {
+                controller.set('canSave', true);
+            });
+        },
         finishStage: function(controller) {
             if (controller.stageComplete) {
                 controller.get("controllers.progress").send('nextStage');

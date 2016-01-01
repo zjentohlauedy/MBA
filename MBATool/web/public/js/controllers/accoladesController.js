@@ -5,6 +5,7 @@ define(['actions/accoladesActions', 'ember'], function(Actions, Ember) {
         canSave:            true,
         stageComplete:      false,
         availableAccolades: [],
+        playerAccolades:    [],
         accoladeList:       [ { selectedAccolade: null, selectedPlayer: null } ],
         errorMessages:      [],
         actions: {
@@ -19,7 +20,7 @@ define(['actions/accoladesActions', 'ember'], function(Actions, Ember) {
             prepareData: function(deferred) { Actions.prepareData( this, deferred ); },
             saveAccolades: function() { Actions.saveAccolades( this ); },
             resolveAccolades: function() { Actions.resolveAccolades( this ); },
-            displayAccolades: function() { alert('displaying accolades!'); },
+            displayAccolades: function(accolades) { Actions.displayAccolades( this, accolades ); },
             finishStage: function() { Actions.finishStage( this ); }
         }
     });

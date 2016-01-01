@@ -424,6 +424,16 @@
       </div>
       {{/each}}
       <div>
+        {{#each player in playerAccolades}}
+        <p>{{player.name}}</p>
+        <ul>
+          {{#each accolade in player.accolades}}
+          <li>{{accolade}}</li>
+          {{/each}}
+        </ul>
+        {{/each}}
+      </div>
+      <div>
         <button class="enabled" {{action "addAccolade" on="click"}}>Add</button>
       </div>
       <div>

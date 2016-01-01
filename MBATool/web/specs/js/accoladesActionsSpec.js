@@ -353,6 +353,244 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
             });
         });
 
+        describe('displayAccolades', function() {
+
+            var controller;
+
+            beforeEach(function() {
+                controller                 = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.playerAccolades = jasmine.createSpyObj('playerAccolades', ['addObject', 'clear']);
+                controller.errorMessages   = jasmine.createSpyObj('errorMessages', ['addObject', 'clear']);
+            });
+
+            it('should add entries to the player accolades property on the controller based on the input', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Division Title', _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success({player_id: rel.substring(23,24), name: ''}); });
+
+                controller.playerAccolades = [];
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.length).toEqual(3);
+            });
+
+            it('should add one entry per unique player from the input', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Division Title', _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success({player_id: rel.substring(23,24)}); });
+
+                controller.playerAccolades = [];
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.length).toEqual(2);
+            });
+
+            it('should send a request to the players endpoint for the players in the input objects', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Division Title', _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect($.ajax).toHaveBeenCalled();
+
+                expect($.ajax.calls.count()).toEqual(3);
+
+                expect($.ajax.calls.argsFor(0)[0]).toEqual('/mba/resources/players/1');
+                expect($.ajax.calls.argsFor(1)[0]).toEqual('/mba/resources/players/2');
+                expect($.ajax.calls.argsFor(2)[0]).toEqual('/mba/resources/players/3');
+            });
+
+            it('should send only one request per unique player from the input', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Division Title', _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function() {});
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect($.ajax).toHaveBeenCalled();
+
+                expect($.ajax.calls.count()).toEqual(2);
+
+                expect($.ajax.calls.argsFor(0)[0]).toEqual('/mba/resources/players/1');
+                expect($.ajax.calls.argsFor(1)[0]).toEqual('/mba/resources/players/2');
+            });
+
+            it('should add the response from the request to the player accolades on the controller', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+                var player    =  {player_id: 1, name: 'Firstname Lastname'};
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(player); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).toHaveBeenCalledWith(player);
+            });
+
+            it('should decorate the endpoint response with an accolades array containing the accolade from the input', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+                var player    =  {player_id: 1, name: 'Firstname Lastname'};
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(player); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).toHaveBeenCalled();
+
+                expect(controller.playerAccolades.addObject.calls.mostRecent().args[0].accolades).toEqual(['All Star']);
+            });
+
+            it('should add multiple accolades to the array if there are multiple entries for that player in the input', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',  _links: {}},
+                                 {player_id: 1, season: 3, accolade: 'Most Runs', _links: {}}]
+                var player    =  {player_id: 1, name: 'Firstname Lastname'};
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(player); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).toHaveBeenCalled();
+
+                expect(controller.playerAccolades.addObject.calls.count()).toEqual(1);
+
+                expect(controller.playerAccolades.addObject.calls.mostRecent().args[0].accolades).toEqual(['All Star', 'Most Runs']);
+            });
+
+            it('should add entries to the player accolades property in descending order from most accolades to least', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Most Runs',      _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'World Title',    _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success({player_id: parseInt(rel.substring(23,24), 10)}); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).toHaveBeenCalled();
+
+                expect(controller.playerAccolades.addObject.calls.count()).toEqual(3);
+
+                expect(controller.playerAccolades.addObject.calls.argsFor(0)[0].player_id).toEqual(3);
+                expect(controller.playerAccolades.addObject.calls.argsFor(1)[0].player_id).toEqual(2);
+                expect(controller.playerAccolades.addObject.calls.argsFor(2)[0].player_id).toEqual(1);
+            });
+
+            it('should add entries with the same number of accolades in order of player name ascending', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    var player_id = parseInt(rel.substring(23,24), 10);
+                    options.success({
+                        player_id:  player_id,
+                        name:      (player_id == 1) ? 'George Zeller' : (player_id == 2) ? 'Thomas Zeller' : 'Andy Aaron',
+                    });
+                });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).toHaveBeenCalled();
+
+                expect(controller.playerAccolades.addObject.calls.count()).toEqual(3);
+
+                expect(controller.playerAccolades.addObject.calls.argsFor(0)[0].player_id).toEqual(3);
+                expect(controller.playerAccolades.addObject.calls.argsFor(1)[0].player_id).toEqual(1);
+                expect(controller.playerAccolades.addObject.calls.argsFor(2)[0].player_id).toEqual(2);
+            });
+
+            it('should not add entries to the player accolades property if any requests fail', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Most Runs',      _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'World Title',    _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+
+                    if ( rel == '/mba/resources/players/2' ) {
+                        options.error({responseText: '{"error":"some error message"}'});
+                    }
+                    else {
+                        options.success({player_id: parseInt(rel.substring(23,24), 10)});
+                    }
+                });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.playerAccolades.addObject).not.toHaveBeenCalled();
+            });
+
+            it('should add messages to the error messages on the controller if any requests fail', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '{"error":"some error message"}'}); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.errorMessages.addObject).toHaveBeenCalledWith("some error message");
+            });
+
+            it('should add unknown error message to the error messages if the error response is not json', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.errorMessages.addObject).toHaveBeenCalledWith("Unknown error, check console log.");
+            });
+
+            it('should log actual response on error if the response is not json', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+                spyOn(console, 'error').and.callFake(function() { });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(console.error).toHaveBeenCalled();
+                expect(console.error.calls.mostRecent().args[0]).toMatch('<html></html>');
+            });
+
+            it('should re-enable the save button if the any requests fail', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', true);
+            });
+        });
+
         describe('finishStage', function() {
 
             var controller;
