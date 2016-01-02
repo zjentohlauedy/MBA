@@ -105,6 +105,9 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
             beforeEach(function() {
                 controller               = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
                 controller.errorMessages = jasmine.createSpyObj('errorMessages', ['addObject', 'clear']);
+
+                controller.availableAccolades = [{id: 1, value: 2, type: 'one'},{id: 2, value: 7, type: 'two'}]
+                controller.accoladeList       = [{selectedAccolade: 1, selectedPlayer: 5},{selectedAccolade: 2, selectedPlayer: 4}];
             });
 
             it('should disable the save button', function() {
@@ -140,8 +143,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [{id: 1, value: 2, type: 'one'},{id: 2, value: 7, type: 'two'}]
-                controller.accoladeList       = [{selectedAccolade: 1, selectedPlayer: 5},{selectedAccolade: 2, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function() {});
 
@@ -164,8 +165,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) { options.success() });
 
@@ -178,8 +177,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (options.data.player_id == 5)
@@ -197,8 +194,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (options.data.player_id == 5)
@@ -216,8 +211,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (options.data.player_id == 5)
@@ -235,8 +228,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (options.data.player_id == 5)
@@ -257,8 +248,6 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
 
                 Globals.season                = 3;
                 controller.canSave            = true;
-                controller.availableAccolades = [];
-                controller.accoladeList       = [{selectedAccolade: 2, selectedPlayer: 5},{selectedAccolade: 7, selectedPlayer: 4}];
 
                 spyOn($, 'ajax').and.callFake(function(rel, options) {
                     if (options.data.player_id == 5)
@@ -520,6 +509,21 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 expect(controller.playerAccolades.addObject.calls.argsFor(2)[0].player_id).toEqual(2);
             });
 
+            it('should mark the stage as complete', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
+                                 {player_id: 2, season: 3, accolade: 'Division Title', _links: {}},
+                                 {player_id: 3, season: 3, accolade: 'Most Home Runs', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success({player_id: rel.substring(23,24), name: ''}); });
+
+                controller.playerAccolades = [];
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.set).toHaveBeenCalledWith('stageComplete', true);
+            });
+
             it('should not add entries to the player accolades property if any requests fail', function() {
 
                 var accolades = [{player_id: 1, season: 3, accolade: 'All Star',       _links: {}},
@@ -579,7 +583,7 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 expect(console.error.calls.mostRecent().args[0]).toMatch('<html></html>');
             });
 
-            it('should re-enable the save button if the any requests fail', function() {
+            it('should re-enable the save button if any requests fail', function() {
 
                 var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
 
@@ -588,6 +592,17 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 Actions.displayAccolades(controller, accolades);
 
                 expect(controller.set).toHaveBeenCalledWith('canSave', true);
+            });
+
+            it('should not mark the stage as complete if any requests fail', function() {
+
+                var accolades = [{player_id: 1, season: 3, accolade: 'All Star', _links: {}}]
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '{"error":"some error message"}'}); });
+
+                Actions.displayAccolades(controller, accolades);
+
+                expect(controller.set).not.toHaveBeenCalledWith('stageComplete', true);
             });
         });
 
