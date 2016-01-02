@@ -40,6 +40,12 @@ class PlayerService
     process_player_list player_list, season, phase
   end
 
+  def search_players( criteria )
+    player_list = @repository.search_players criteria[:last_name_prefix], criteria[:first_name_prefix], criteria[:max_players]
+
+    process_player_list player_list, nil, nil
+  end
+
   def get_rookies( season, phase = nil )
     player_list = @repository.get_players_by_rookie_season season
 

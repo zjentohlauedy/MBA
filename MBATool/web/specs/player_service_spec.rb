@@ -155,6 +155,74 @@ describe PlayerService do
     end
   end
 
+  describe '#search_players' do
+    it 'should call the repository to get the player records from the database' do
+      criteria = { last_name_prefix: 'to', first_name_prefix: 'jo', max_players: 6 }
+
+      allow( @mapper ).to receive( :map_player_list ).and_return []
+
+      expect( @repo ).to receive( :search_players ).with( 'to', 'jo', 6 ).and_return []
+
+      @player_service.search_players criteria
+    end
+
+    it 'should pass nil to the repository if criteria are missing' do
+      criteria = {}
+
+      allow( @mapper ).to receive( :map_player_list ).and_return []
+
+      expect( @repo ).to receive( :search_players ).with( nil, nil, nil ).and_return []
+
+      @player_service.search_players criteria
+    end
+
+    it 'should call the response mapper with the player list from the repository' do
+      player_list = [{player_id: 1, last_name: 'Player1'},{player_id: 2, last_name: 'Player2'},{player_id: 3, last_name: 'Player3'}]
+      criteria    = { last_name_prefix: 'pla' }
+
+      allow( @repo ).to receive( :search_players ).and_return player_list
+
+      expect( @mapper ).to receive( :map_player_list ).with( player_list ).and_return Array.new
+
+      @player_service.search_players criteria
+    end
+
+    it 'should call the decorator with each player in the mapped player list' do
+      mapped_player_list = [{player_id: 1, name: 'Player1'},{player_id: 2, name: 'Player2'},{player_id: 3, name: 'Player3'}]
+      criteria           = { last_name_prefix: 'pla' }
+
+      allow( @repo ).to receive( :search_players )
+      allow( @mapper ).to receive( :map_player_list ).and_return mapped_player_list
+
+      expect( @deco ).to receive( :decorate_player ).with mapped_player_list[0], nil, nil
+      expect( @deco ).to receive( :decorate_player ).with mapped_player_list[1], nil, nil
+      expect( @deco ).to receive( :decorate_player ).with mapped_player_list[2], nil, nil
+
+      @player_service.search_players criteria
+    end
+
+    it 'should return the mapped, decorated player list' do
+      mapped_player_list = [{player_id: 1, name: 'Player1'},{player_id: 2, name: 'Player2'},{player_id: 3, name: 'Player3'}]
+      criteria           = { last_name_prefix: 'pla' }
+
+      allow( @repo ).to receive( :search_players )
+      allow( @mapper ).to receive( :map_player_list ).and_return mapped_player_list
+      allow( @deco ).to receive( :decorate_player ) { |t| t[:_links] = {} }
+
+      results = @player_service.search_players criteria
+
+      expect( results        ).to_not be_nil
+      expect( results        ).to     be_a   Array
+      expect( results.length ).to     eq     3
+
+      results.each do |entry|
+        expect( entry[:player_id] ).to_not be_nil
+        expect( entry[:name     ] ).to_not be_nil
+        expect( entry[:_links   ] ).to_not be_nil
+      end
+    end
+  end
+
   describe '#get_rookies' do
     it 'should call the repository to get the player records from the database' do
       allow( @mapper ).to receive( :map_player_list ).and_return Array.new
