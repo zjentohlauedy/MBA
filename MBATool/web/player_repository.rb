@@ -38,6 +38,21 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def search_players( last_name_prefix, first_name_prefix, limit = nil )
+    args = {}
+
+    if limit.nil? or limit > 100 or limit < 1; limit = 100 end
+
+    query = 'select * from players_t where 1'
+
+    unless last_name_prefix.nil?;  query = "#{query} and last_name  like :last_name_prefix";  args[:last_name_prefix]  = "#{last_name_prefix}%"  end
+    unless first_name_prefix.nil?; query = "#{query} and first_name like :first_name_prefix"; args[:first_name_prefix] = "#{first_name_prefix}%" end
+
+    query = "#{query} order by last_name, first_name limit :limit"; args[:limit] = limit
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_player( player_id )
     args = { player_id: player_id}
 

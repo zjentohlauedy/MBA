@@ -474,6 +474,164 @@ describe PlayerRepository do
     end
   end
 
+  describe '#search_players' do
+    it 'should return an array of players from the database' do
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+
+      result = @player_repository.search_players nil, nil
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     3
+
+      expect( result[0][:player_id       ] ).to eq 1
+      expect( result[0][:first_name      ] ).to eq 'Dave'
+      expect( result[0][:last_name       ] ).to eq 'Bot'
+
+      expect( result[1][:player_id       ] ).to eq 2
+      expect( result[1][:first_name      ] ).to eq 'Jim'
+      expect( result[1][:last_name       ] ).to eq 'Poke'
+
+      expect( result[2][:player_id       ] ).to eq 3
+      expect( result[2][:first_name      ] ).to eq 'Jake'
+      expect( result[2][:last_name       ] ).to eq 'Tom'
+    end
+
+    it 'should return only players matching the given last name prefix if not given first name prefix' do
+      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M',   #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T',   #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Jim', 'Tori', 'JIH4M', 'TOH3REY', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+
+      result = @player_repository.search_players 'to', nil
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:player_id       ] ).to eq 1
+      expect( result[0][:first_name      ] ).to eq 'Jake'
+      expect( result[0][:last_name       ] ).to eq 'Tom'
+
+      expect( result[1][:player_id       ] ).to eq 3
+      expect( result[1][:first_name      ] ).to eq 'Jim'
+      expect( result[1][:last_name       ] ).to eq 'Tori'
+    end
+
+    it 'should return only players matching the given first name prefix if not given last name prefix' do
+      @db.execute "insert into players_t values (1, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Dan', 'Poke', 'DAH3N', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+
+      result = @player_repository.search_players nil, 'da'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+
+      expect( result[0][:player_id       ] ).to eq 2
+      expect( result[0][:first_name      ] ).to eq 'Dave'
+      expect( result[0][:last_name       ] ).to eq 'Bot'
+
+      expect( result[1][:player_id       ] ).to eq 3
+      expect( result[1][:first_name      ] ).to eq 'Dan'
+      expect( result[1][:last_name       ] ).to eq 'Poke'
+    end
+
+    it 'should return only players matching the given first and last name prefixes if given both' do
+      @db.execute "insert into players_t values (1, 'Jeff', 'Jones', 'JEH3F', 'JOW3NZ', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'John', 'Jones', 'JAA3N', 'JOW3NZ', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Joe',  'Jones', 'JOW3',  'JOW3NZ', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+
+      result = @player_repository.search_players 'jones', 'joh'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id       ] ).to eq 2
+      expect( result[0][:first_name      ] ).to eq 'John'
+      expect( result[0][:last_name       ] ).to eq 'Jones'
+    end
+
+    it 'should return players sorted by last name then first name' do
+      @db.execute "insert into players_t values (1, 'Dave', 'Jones', 'DAY3V', 'JOW3NZ',   #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (2, 'Mike', 'Jonas', 'MAY3K', 'JOW3NAES', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (3, 'Art',  'Jones', 'AH3RT', 'JOW3NZ',   #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+
+      result = @player_repository.search_players 'jon', nil
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     3
+
+      expect( result[0][:player_id       ] ).to eq 2
+      expect( result[0][:first_name      ] ).to eq 'Mike'
+      expect( result[0][:last_name       ] ).to eq 'Jonas'
+
+      expect( result[1][:player_id       ] ).to eq 3
+      expect( result[1][:first_name      ] ).to eq 'Art'
+      expect( result[1][:last_name       ] ).to eq 'Jones'
+
+      expect( result[2][:player_id       ] ).to eq 1
+      expect( result[2][:first_name      ] ).to eq 'Dave'
+      expect( result[2][:last_name       ] ).to eq 'Jones'
+    end
+
+    it 'should return at most the number of players given as max if given a max player value' do
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (4, 'Mike', 'Van', 'MAY3K', 'VAH4N', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (5, 'Art', 'Webb', 'AH3RT', 'WEH4B', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+
+      result = @player_repository.search_players nil, nil, 3
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     3
+    end
+
+    it 'should return no more than 100 players if given max is greater than 100' do
+      (1..120).each do |id|
+        @db.execute "insert into players_t values (#{id}, 'A', 'A', '', '', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 1,  1)"
+      end
+
+      result = @player_repository.search_players nil, nil, 120
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     100
+    end
+
+    it 'should treat a given max players of less than 1 as not no max given' do
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (4, 'Mike', 'Van', 'MAY3K', 'VAH4N', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+      @db.execute "insert into players_t values (5, 'Art', 'Webb', 'AH3RT', 'WEH4B', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+
+      result = @player_repository.search_players nil, nil, 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     5
+    end
+
+    it 'should return an empty array if no matching players are found' do
+      @db.execute "insert into players_t values (1, 'Dave', 'Bot', 'DAY3V', 'BAA4T', #{SkinTones::Dark }, #{Handedness::Left  }, #{PlayerTypes::Pitcher}, 3,  8)"
+      @db.execute "insert into players_t values (2, 'Jim', 'Poke', 'JIH4M', 'POW3K', #{SkinTones::Light}, #{Handedness::Switch}, #{PlayerTypes::Batter }, 4, 10)"
+      @db.execute "insert into players_t values (3, 'Jake', 'Tom', 'JAY3K', 'TAA4M', #{SkinTones::Light}, #{Handedness::Right }, #{PlayerTypes::Batter }, 5,  6)"
+
+      result = @player_repository.search_players 'walker', 'mike'
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+  end
+
   describe '#get_pitcher_stats' do
     it 'should return a hash containing pitcher stats information' do
       @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 22, 13, 37, 5, 303, 1, 309, 150, 64, 100, 205)"
