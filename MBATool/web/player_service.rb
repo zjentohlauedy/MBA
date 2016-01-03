@@ -41,7 +41,9 @@ class PlayerService
   end
 
   def search_players( criteria )
-    player_list = @repository.search_players criteria[:last_name_prefix], criteria[:first_name_prefix], criteria[:max_players]
+    limit = criteria[:max_players] && criteria[:max_players].to_i
+
+    player_list = @repository.search_players criteria[:last_name_prefix], criteria[:first_name_prefix], limit
 
     process_player_list player_list, nil, nil
   end

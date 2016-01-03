@@ -171,6 +171,12 @@ get "#{resources_root}/players/?" do
   JSON.generate player_service.get_players params[:season], params[:phase]
 end
 
+get "#{resources_root}/players/search" do
+  content_type 'application/json'
+
+  JSON.generate player_service.search_players params
+end
+
 get "#{resources_root}/players/:player_id/?" do
   content_type 'application/json'
 

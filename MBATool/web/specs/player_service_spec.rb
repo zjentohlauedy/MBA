@@ -166,6 +166,16 @@ describe PlayerService do
       @player_service.search_players criteria
     end
 
+    it 'should convert the max players to an integer before passing it to the repository' do
+      criteria = { last_name_prefix: 'to', first_name_prefix: 'jo', max_players: '6' }
+
+      allow( @mapper ).to receive( :map_player_list ).and_return []
+
+      expect( @repo ).to receive( :search_players ).with( 'to', 'jo', 6 ).and_return []
+
+      @player_service.search_players criteria
+    end
+
     it 'should pass nil to the repository if criteria are missing' do
       criteria = {}
 
