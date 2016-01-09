@@ -18,6 +18,8 @@ define([
     'controllers/importSeasonController',
     'controllers/accoladesController',
     'controllers/completeSeasonController',
+
+    'components/playerSelectorComponent',
     'ember'
 ], function(
     Router,
@@ -39,6 +41,7 @@ define([
     ImportSeasonController,
     AccoladesController,
     CompleteSeasonController,
+    PlayerSelectorComponent,
     Ember) {
 
     var App = Ember.Application.create({
@@ -60,7 +63,8 @@ define([
         ExportSeasonController:   ExportSeasonController,
         ImportSeasonController:   ImportSeasonController,
         AccoladesController:      AccoladesController,
-        CompleteSeasonController: CompleteSeasonController
+        CompleteSeasonController: CompleteSeasonController,
+        PlayerSelectorComponent:  PlayerSelectorComponent
     });
 
     return App;
