@@ -42,6 +42,10 @@ div.accolade-entry {
 //    margin: 1em 0em 1em 0em;
 }
 
+div.player-picker {
+    display: inline-block;
+}
+
 ol.progress {
     margin: 0;
     padding: 0px 0px 10px 0px;
@@ -161,9 +165,7 @@ button.disabled {
     margin: 1em;
 }
 
-button.remove {
-//    display: block;
-//    float: left;
+button.enabledRemove {
     font-family: Helvetica, Arial, sans-serif;
     font-weight: bold;
     font-size: 138.5%;
@@ -176,6 +178,21 @@ button.remove {
                                      #9BCB2A 2%,
                                      #5DA331 97%,
                                      #659635 100%);
+    text-shadow: -1px -1px 2px #777777;
+    color: #ffffff;
+    border-radius: 10px;
+    margin: 1em;
+}
+
+button.disabledRemove {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 138.5%;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    border: 1px solid #666666;
+    background-color: #CCCCCC;
     text-shadow: -1px -1px 2px #777777;
     color: #ffffff;
     border-radius: 10px;
@@ -218,7 +235,7 @@ ul.teamlist {
     font-weight: bold;
     font-size: 138.5%;
     padding: 10px;
-    border: 1px solid #659635;
+    border: 1px solid rgb(101, 150, 53);
     border-radius: 10px;
     text-shadow: -1px -1px 2px #777777;
     color: #ffffff;
@@ -239,7 +256,7 @@ ul.teamlist {
     font-weight: bold;
     font-size: 138.5%;
     padding: 10px;
-    border: 1px solid #659635;
+    border: 1px solid rgb(101, 150, 53);
     border-radius: 10px;
 }
 
@@ -263,6 +280,36 @@ ul.teamlist li.is-error {
 ul.teamlist li:hover {
     background-color: #DDDDDD;
 }
+
+ul.autocomplete {
+    position: absolute;
+    border: 1px solid rgb(101, 150, 53);
+    width: 180px;
+    background-color: white;
+    margin: 0px;
+    padding: 1em;
+    list-style-type: none;
+    border-radius: 10px;
+    font-family: Helvetica,Arial,sans-serif;
+    font-weight: bold;
+    font-size: 138.5%;
+}
+
+ul.autocomplete li.notfound {
+    font-style: italic;
+    color: lightgrey;
+}
+
+ul.autocomplete li.notfound:hover {
+    background-color: white;
+    cursor: default;
+}
+
+ul.autocomplete li:hover {
+    background-color: lightgrey;
+    cursor: default;
+}
+
 
 table.pretty {
     border: 1px solid;

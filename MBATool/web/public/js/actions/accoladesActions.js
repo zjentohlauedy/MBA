@@ -93,6 +93,15 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
         return deferred.promise();
     }
 
+    var newAccoladeSelection = {
+        selectedAccolade: null,
+        userInput:        null,
+        selectedPlayer:   null,
+        matchingPlayers:  [],
+        showAutocomplete: false,
+        canRemove:        false
+    };
+
     var AccoladesActions = {
         prepareData: function(controller, deferred) {
             $.ajax( '/mba/resources/accolades', {
@@ -102,6 +111,10 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
                     assignAccoladeIds(filteredAccolades);
 
                     controller.set('availableAccolades', filteredAccolades);
+
+                    controller.accoladeList.clear();
+                    controller.accoladeList.addObject(Ember.Object.create(newAccoladeSelection));
+
                     deferred.resolve();
                 },
                 error: function() {
@@ -109,6 +122,74 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
                     deferred.reject();
                 }
             });
+        },
+        addAccolade: function(controller){
+            controller.accoladeList.addObject(Ember.Object.create(newAccoladeSelection));
+
+            controller.accoladeList.forEach(function(accolade) {
+                accolade.set('canRemove', true);
+            });
+        },
+        removeAccolade: function(controller, accolade) {
+            if (accolade.canRemove) {
+                controller.accoladeList.removeObject(accolade);
+
+                if (controller.accoladeList.length === 1) {
+                    controller.accoladeList[0].set('canRemove', false);
+                }
+            }
+        },
+        searchPlayers: function(accolade, value) {
+            if (!value || value.trim() === '') return;
+
+            var names = value.split(',').map(function(name) { return name.trim(); });
+            var uri = Constants.PLAYERS_URI + '/search';
+            var qualifier = '?';
+
+            if (!names[0] && !names[1]) return;
+
+            if (names[0]) {
+                uri += qualifier + 'last_name_prefix=' + names[0].trim();
+                qualifier = '&';
+            }
+
+            if (names[1]) {
+                uri += qualifier + 'first_name_prefix=' + names[1].trim();
+                qualifier = '&';
+            }
+
+            $.ajax(uri + qualifier + 'max_players=10', {
+                success: function(players) {
+                    if (players.length > 0) {
+                        accolade.matchingPlayers.clear();
+                        accolade.matchingPlayers.addObjects(players);
+                    }
+                    else {
+                        accolade.matchingPlayers.clear();
+                        accolade.matchingPlayers.addObject({name: 'No Players Found'});
+                    }
+
+                    accolade.set('showAutocomplete', true);
+                },
+                error: function(response) {
+                    try {
+                        console.log("Error searching players: " + JSON.parse(response.responseText).error);
+                    }
+                    catch (e) {
+                        console.error("Error searching players: " + response.responseText);
+                    }
+                }
+            });
+        },
+        selectPlayer: function(accolade, player) {
+            accolade.set('showAutocomplete', false );
+
+            if (player.player_id) {
+                accolade.set('selectedPlayer', player.player_id);
+                accolade.set('userInput',      player.name     );
+
+                accolade.matchingPlayers.clear();
+            }
         },
         saveAccolades: function(controller) {
             if (! controller.canSave) return;

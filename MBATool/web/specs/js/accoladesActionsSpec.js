@@ -10,6 +10,8 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
             beforeEach(function() {
                 controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
 
+                controller.accoladeList = jasmine.createSpyObj('errorMessages', ['addObject', 'clear']);
+
                 deferred = jasmine.createSpyObj('deferred', ['resolve','reject']);
             });
 
@@ -32,6 +34,36 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 Actions.prepareData(controller, deferred);
 
                 expect(controller.set).toHaveBeenCalledWith('availableAccolades', accolades);
+            });
+
+            it('should clear the accolade list', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success([]);
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(controller.accoladeList.clear).toHaveBeenCalled();
+            });
+
+            it('should add a single entry to the accolade list', function() {
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) {
+                    options.success([]);
+                });
+
+                Actions.prepareData(controller, deferred);
+
+                expect(controller.accoladeList.addObject.calls.count()).toEqual(1);
+                expect(controller.accoladeList.addObject).toHaveBeenCalledWith(jasmine.objectContaining({
+                    selectedAccolade: null,
+                    userInput:        null,
+                    selectedPlayer:   null,
+                    matchingPlayers:  [],
+                    showAutocomplete: false,
+                    canRemove:        false
+                }));
             });
 
             it('should filter out the automatic accolades before setting the available accolades', function() {
@@ -95,6 +127,342 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 Actions.prepareData(controller, deferred);
 
                 expect(window.alert).toHaveBeenCalled();
+            });
+        });
+
+        describe('addAccolade', function() {
+
+            var controller;
+
+            beforeEach(function() {
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+
+                controller.accoladeList = [];
+            });
+
+            it('should add a new object to the accolade list', function() {
+
+                spyOn(controller.accoladeList, 'addObject').and.callThrough();
+
+                Actions.addAccolade(controller);
+
+                expect(controller.accoladeList.addObject).toHaveBeenCalledWith(jasmine.objectContaining({
+                    selectedAccolade: null,
+                    userInput:        null,
+                    selectedPlayer:   null,
+                    matchingPlayers:  [],
+                    showAutocomplete: false
+                }));
+            });
+
+            it('should set can remove to true on all of the accolade list entries', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({
+                    selectedAccolade: null,
+                    userInput:        null,
+                    selectedPlayer:   null,
+                    matchingPlayers:  [],
+                    showAutocomplete: false,
+                    canRemove:        false
+                }));
+
+                Actions.addAccolade(controller);
+
+                expect(controller.accoladeList.length).toEqual(2);
+
+                controller.accoladeList.forEach(function(entry) {
+                    expect(entry.canRemove).toBe(true);
+                });
+            });
+        });
+
+        describe('removeAccolade', function() {
+
+            var controller;
+
+            beforeEach(function() {
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+
+                controller.accoladeList = [];
+            });
+
+            it('should remove the given accolade from the accolade list', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:2,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:3,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[1]);
+
+                expect(controller.accoladeList.length).toEqual(2);
+                expect(controller.accoladeList[0].selectedAccolade).toEqual(1);
+                expect(controller.accoladeList[1].selectedAccolade).toEqual(3);
+            });
+
+            it('should not remove the accolade if the can remove flag on it is false', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:false}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[0]);
+
+                expect(controller.accoladeList.length).toEqual(1);
+            });
+
+            it('should set the can remove flag to false on the only remaining accolade', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:2,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[1]);
+
+                expect(controller.accoladeList.length).toEqual(1);
+                expect(controller.accoladeList[0].selectedAccolade).toEqual(1);
+                expect(controller.accoladeList[0].canRemove).toBe(false);
+            });
+
+            it('should not change the can remove flag if more than one accolade remains', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:2,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:3,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[1]);
+
+                expect(controller.accoladeList.length).toEqual(2);
+                expect(controller.accoladeList[0].canRemove).toBe(true);
+                expect(controller.accoladeList[1].canRemove).toBe(true);
+            });
+        });
+
+        describe('searchPlayers', function() {
+
+            it('should call the player search endpoint with the given value as last name', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, 'foo');
+
+                expect($.ajax).toHaveBeenCalled();
+                expect($.ajax.calls.mostRecent().args[0]).toMatch('/mba/resources/players/search\\?last_name_prefix=foo');
+            });
+
+            it('should set the first name search parameter to anything after a comma in the given value', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, 'foo,bar');
+
+                expect($.ajax).toHaveBeenCalled();
+                expect($.ajax.calls.mostRecent().args[0]).toMatch('/mba/resources/players/search\\?last_name_prefix=foo&first_name_prefix=bar');
+            });
+
+            it('should request to have only 10 players returned', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, 'foo');
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/players/search?last_name_prefix=foo&max_players=10', jasmine.any(Object));
+            });
+
+            it('should trim whitespace around the last name parameter', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, '   foo   ,bar');
+
+                expect($.ajax).toHaveBeenCalled();
+                expect($.ajax.calls.mostRecent().args[0]).toMatch('/mba/resources/players/search\\?last_name_prefix=foo&first_name_prefix=bar');
+            });
+
+            it('should trim whitespace around the first name parameter', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, 'foo, bar   ');
+
+                expect($.ajax).toHaveBeenCalled();
+                expect($.ajax.calls.mostRecent().args[0]).toMatch('/mba/resources/players/search\\?last_name_prefix=foo&first_name_prefix=bar');
+            });
+
+            it('should set the matching players on the accolade to the response from the player search', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: [{},{}]});
+                var players  = [{},{},{},{}];
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success(players); });
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(accolade.matchingPlayers.length).toEqual(players.length);
+            });
+
+            it('should display the autocomplete popup', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: false, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success([]); });
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(accolade.showAutocomplete).toBe(true);
+            });
+
+            it('should not call the player search endpoint if the given value is empty', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, null);
+                Actions.searchPlayers(accolade, '');
+                Actions.searchPlayers(accolade, '     ');
+
+                expect($.ajax).not.toHaveBeenCalled();
+            });
+
+            it('should not pass the last name parameter if the last name portion of the given value is empty', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, ' ,bar');
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/players/search?first_name_prefix=bar&max_players=10', jasmine.any(Object));
+            });
+
+            it('should not pass the first name parameter if the first name portion of the given value is empty', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, 'foo, ');
+
+                expect($.ajax).toHaveBeenCalledWith('/mba/resources/players/search?last_name_prefix=foo&max_players=10', jasmine.any(Object));
+            });
+
+            it('should not call the player search endpoint if both first and last name parameters are empty', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function() { });
+
+                Actions.searchPlayers(accolade, ' , ');
+
+                expect($.ajax).not.toHaveBeenCalled();
+            });
+
+            it('should add a "No Players Found" entry to matching players if the player search response is empty', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: false, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.success([]); });
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(accolade.matchingPlayers.length).toEqual(1);
+                expect(accolade.matchingPlayers[0].name).toEqual('No Players Found');
+            });
+
+            it('should not update matching players if the player search response returns an error', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: false, matchingPlayers: [{},{}]});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(accolade.matchingPlayers.length).toEqual(2);
+            });
+
+            it('should not display the autocomplete if the player search response returns an error', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: false, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(accolade.showAutocomplete).toEqual(false);
+            });
+
+            it('should log a console error if the player search response returns an error', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: false, matchingPlayers: []});
+
+                spyOn($, 'ajax').and.callFake(function(rel, options) { options.error({responseText: '<html></html>'}); });
+                spyOn(console, 'error').and.callFake(function() {});
+
+                Actions.searchPlayers(accolade, 'foo, bar');
+
+                expect(console.error).toHaveBeenCalled();
+                expect(console.error.calls.mostRecent().args[0]).toMatch('<html></html>');
+            });
+        });
+
+        describe('selectPlayer', function() {
+
+            it('should update the accolade with the id of the given player', function() {
+
+                var accolade = Ember.Object.create({selectedPlayer: null, matchingPlayers: []});
+                var player   = {player_id: 14};
+
+                Actions.selectPlayer(accolade, player);
+
+                expect(accolade.selectedPlayer).toEqual(player.player_id);
+            });
+
+            it('should update the input value with the name of the selected player', function() {
+
+                var accolade = Ember.Object.create({userInput: null, matchingPlayers: []});
+                var player   = {player_id: 14, name: 'Julius Caesar'};
+
+                Actions.selectPlayer(accolade, player);
+
+                expect(accolade.userInput).toEqual(player.name);
+            });
+
+            it('should clear the matching players list on the accolade', function() {
+
+                var accolade = Ember.Object.create({matchingPlayers: [{},{},{},{}]});
+                var player   = {player_id: 14};
+
+                Actions.selectPlayer(accolade, player);
+
+                expect(accolade.matchingPlayers.length).toEqual(0);
+            });
+
+            it('should hide the autocomplete popup', function() {
+
+                var accolade = Ember.Object.create({showAutocomplete: true, matchingPlayers: []});
+                var player   = {};
+
+                Actions.selectPlayer(accolade, player);
+
+                expect(accolade.showAutocomplete).toBe(false);
+            });
+
+            it('should not update the input value or selected player if the player id of the selected player is null', function() {
+
+                var accolade = Ember.Object.create({selectedPlayer: 24, userInput: 'foobar', matchingPlayers: []});
+                var player   = {player_id: null};
+
+                Actions.selectPlayer(accolade, player);
+
+                expect(accolade.selectedPlayer).toEqual(24);
+                expect(accolade.userInput).toEqual('foobar');
             });
         });
 

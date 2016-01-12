@@ -419,8 +419,17 @@
       {{#each accolade in accoladeList}}
       <div class="accolade-entry">
         {{view "Ember.Select" value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.id" optionLabelPath="content.name" prompt="Please Select An Accolade"}}
-        {{input value=accolade.selectedPlayer}}
-        <button class="remove" {{action "removeAccolade" accolade on="click"}}>Remove</button>
+        <div class="player-picker">
+        {{player-selector value=accolade.userInput instance=accolade action="searchPlayers"}}
+        {{#if accolade.showAutocomplete}}
+        <ul class="autocomplete">
+          {{#each player in accolade.matchingPlayers}}
+          <li {{bind-attr class="player.player_id::notfound"}} {{action "selectPlayer" accolade player on="click"}}>{{player.name}}</li>
+          {{/each}}
+        </ul>
+        {{/if}}
+        </div>
+        <button {{bind-attr class="accolade.canRemove:enabledRemove:disabledRemove"}} {{action "removeAccolade" accolade on="click"}}>Remove</button>
       </div>
       {{/each}}
       <div>
