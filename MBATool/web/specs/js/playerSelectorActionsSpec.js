@@ -2,6 +2,33 @@ define(['actions/playerSelectorActions'], function(Actions) {
 
     describe('playerSelectorActions', function() {
 
+        describe('change', function() {
+
+            var component;
+
+            beforeEach(function() {
+                component = jasmine.createSpyObj('component', ['sendAction', 'get']);
+
+                component.get.and.callFake(function(name) { return function() {}; });
+            });
+
+            it('should send the action from the checkstate attribute', function() {
+
+                Actions.change(component);
+
+                expect(component.sendAction).toHaveBeenCalledWith('checkstate');
+            });
+
+            it('should not send the action if the checkstate attribute is not set', function() {
+
+                component.get.and.callFake(function(name) { return null; });
+
+                Actions.change(component);
+
+                expect(component.sendAction).not.toHaveBeenCalled();
+            });
+        });
+
         describe('keyUp', function() {
 
             var component;

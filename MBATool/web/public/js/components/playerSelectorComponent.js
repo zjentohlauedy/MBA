@@ -5,7 +5,8 @@ define(['actions/playerSelectorActions', 'ember'], function(Actions, Ember) {
         attributeBindings: ['instance'],
         lastValue:           null,
 
-        keyUp: function(event) { Actions.keyUp(this, event); }
+        keyUp:  function(event) { Actions.keyUp( this, event); },
+        change: function(event) { Actions.change(this       ); }
     });
 
     return PlayerSelectorComponent;
