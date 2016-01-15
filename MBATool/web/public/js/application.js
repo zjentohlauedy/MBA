@@ -20,6 +20,7 @@ define([
     'controllers/completeSeasonController',
 
     'components/playerSelectorComponent',
+    'components/accoladeSelectorComponent',
     'ember'
 ], function(
     Router,
@@ -41,30 +42,34 @@ define([
     ImportSeasonController,
     AccoladesController,
     CompleteSeasonController,
+
     PlayerSelectorComponent,
+    AccoladeSelectorComponent,
     Ember) {
 
     var App = Ember.Application.create({
-        Router:                   Router,
-        IndexRoute:               IndexRoute,
-        RosterCutRoute:           RosterCutRoute,
-        RookieDraftRoute:         RookieDraftRoute,
-        FreeAgentsRoute:          FreeAgentsRoute,
-        ExportSeasonRoute:        ExportSeasonRoute,
-        ImportSeasonRoute:        ImportSeasonRoute,
-        AccoladesRoute:           AccoladesRoute,
-        CompleteSeasonRoute:      CompleteSeasonRoute,
+        Router:                    Router,
+        IndexRoute:                IndexRoute,
+        RosterCutRoute:            RosterCutRoute,
+        RookieDraftRoute:          RookieDraftRoute,
+        FreeAgentsRoute:           FreeAgentsRoute,
+        ExportSeasonRoute:         ExportSeasonRoute,
+        ImportSeasonRoute:         ImportSeasonRoute,
+        AccoladesRoute:            AccoladesRoute,
+        CompleteSeasonRoute:       CompleteSeasonRoute,
 
-        ProgressController:       ProgressController,
-        StartSeasonController:    StartSeasonController,
-        RosterCutController:      RosterCutController,
-        RookieDraftController:    RookieDraftController,
-        FreeAgentsController:     FreeAgentsController,
-        ExportSeasonController:   ExportSeasonController,
-        ImportSeasonController:   ImportSeasonController,
-        AccoladesController:      AccoladesController,
-        CompleteSeasonController: CompleteSeasonController,
-        PlayerSelectorComponent:  PlayerSelectorComponent
+        ProgressController:        ProgressController,
+        StartSeasonController:     StartSeasonController,
+        RosterCutController:       RosterCutController,
+        RookieDraftController:     RookieDraftController,
+        FreeAgentsController:      FreeAgentsController,
+        ExportSeasonController:    ExportSeasonController,
+        ImportSeasonController:    ImportSeasonController,
+        AccoladesController:       AccoladesController,
+        CompleteSeasonController:  CompleteSeasonController,
+
+        PlayerSelectorComponent:   PlayerSelectorComponent,
+        AccoladeSelectorComponent: AccoladeSelectorComponent
     });
 
     return App;
