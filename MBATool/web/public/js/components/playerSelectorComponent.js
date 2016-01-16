@@ -6,7 +6,7 @@ define(['actions/playerSelectorActions', 'ember'], function(Actions, Ember) {
         lastValue:           null,
 
         keyUp:  function(event) { Actions.keyUp( this, event); },
-        change: function(event) { Actions.change(this       ); }
+        change: function(event) { Ember.run.debounce(Actions, 'change', this, 100); }
     });
 
     return PlayerSelectorComponent;

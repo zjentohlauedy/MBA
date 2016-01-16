@@ -4,10 +4,10 @@ define(['ember'], function(Ember) {
 
         change: function(component) {
 
-            var checkstate = component.get('checkstate');
+            var changeAction = component.get('changeAction');
 
-            if (checkstate) {
-                component.get('controller').send(checkstate);
+            if (changeAction) {
+                component.get('controller').send(changeAction);
             }
         }
     };

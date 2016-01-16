@@ -15,26 +15,26 @@ define(['actions/accoladeSelectorActions'], function(Actions) {
                     if (name == 'controller') {
                         return controller;
                     }
-                    else if (name == 'checkstate') {
-                        return 'checkstate-method';
+                    else if (name == 'changeAction') {
+                        return 'changeAction-method';
                     }
                 });
             });
 
-            it('should send the method referenced in the checkstate attribute to the controller', function() {
+            it('should send the method referenced in the changeAction attribute to the controller', function() {
 
                 Actions.change(component);
 
-                expect(controller.send).toHaveBeenCalledWith('checkstate-method');
+                expect(controller.send).toHaveBeenCalledWith('changeAction-method');
             });
 
-            it('should not send anything to the controller method if checkstate is not set', function() {
+            it('should not send anything to the controller method if changeAction is not set', function() {
 
                 component.get.and.callFake(function(name) {
                     if (name == 'controller') {
                         return controller;
                     }
-                    else if (name == 'checkstate') {
+                    else if (name == 'changeAction') {
                         return null;
                     }
                 });

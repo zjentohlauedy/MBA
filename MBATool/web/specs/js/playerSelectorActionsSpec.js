@@ -12,14 +12,14 @@ define(['actions/playerSelectorActions'], function(Actions) {
                 component.get.and.callFake(function(name) { return function() {}; });
             });
 
-            it('should send the action from the checkstate attribute', function() {
+            it('should send the action from the changeAction attribute', function() {
 
                 Actions.change(component);
 
-                expect(component.sendAction).toHaveBeenCalledWith('checkstate');
+                expect(component.sendAction).toHaveBeenCalledWith('changeAction');
             });
 
-            it('should not send the action if the checkstate attribute is not set', function() {
+            it('should not send the action if the changeAction attribute is not set', function() {
 
                 component.get.and.callFake(function(name) { return null; });
 

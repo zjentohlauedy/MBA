@@ -93,6 +93,43 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
         return deferred.promise();
     }
 
+    function accoladeSelectionsAreValid(controller) {
+        for (var i = 0; i < controller.accoladeList.length; ++i) {
+            var accolade = controller.accoladeList[i];
+
+            if (!accolade.selectedAccolade ||
+                !accolade.selectedPlayer      ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function isAccoladeSelected(controller, id) {
+        for (var i = 0; i < controller.accoladeList.length; ++i) {
+            var accolade = controller.accoladeList[i];
+
+            if (accolade.selectedAccolade === id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function allAccoladesHaveBeenSelected(controller) {
+        for (var i = 0; i < controller.availableAccolades.length; ++i) {
+            var available = controller.availableAccolades[i];
+
+            if (!isAccoladeSelected(controller, available.id)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     var newAccoladeSelection = {
         selectedAccolade: null,
         userInput:        null,
@@ -129,6 +166,8 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
             controller.accoladeList.forEach(function(accolade) {
                 accolade.set('canRemove', true);
             });
+
+            controller.set('canSave', false);
         },
         removeAccolade: function(controller, accolade) {
             if (accolade.canRemove) {
@@ -137,6 +176,8 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
                 if (controller.accoladeList.length === 1) {
                     controller.accoladeList[0].set('canRemove', false);
                 }
+
+                controller.send('updateSaveStatus');
             }
         },
         searchPlayers: function(accolade, value) {
@@ -244,6 +285,15 @@ define(['objects/constants', 'objects/globals', 'sprintf'], function(Constants, 
             }, function error() {
                 controller.set('canSave', true);
             });
+        },
+        updateSaveStatus: function(controller) {
+            if (accoladeSelectionsAreValid(controller)  &&  allAccoladesHaveBeenSelected(controller)) {
+                controller.set('canSave', true);
+
+                return;
+            }
+
+            controller.set('canSave', false);
         },
         finishStage: function(controller) {
             if (controller.stageComplete) {

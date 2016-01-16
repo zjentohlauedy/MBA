@@ -174,6 +174,13 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                     expect(entry.canRemove).toBe(true);
                 });
             });
+
+            it('should set can save to false on the controller', function() {
+
+                Actions.addAccolade(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
+            });
         });
 
         describe('removeAccolade', function() {
@@ -199,6 +206,17 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 expect(controller.accoladeList[1].selectedAccolade).toEqual(3);
             });
 
+            it('should direct the controller to update save status', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:2,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:3,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:true}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[1]);
+
+                expect(controller.send).toHaveBeenCalledWith('updateSaveStatus');
+            });
+
             it('should not remove the accolade if the can remove flag on it is false', function() {
 
                 controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:false}));
@@ -206,6 +224,15 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 Actions.removeAccolade(controller, controller.accoladeList[0]);
 
                 expect(controller.accoladeList.length).toEqual(1);
+            });
+
+            it('should not direct the controller to update save status if the accolade was not removed', function() {
+
+                controller.accoladeList.addObject(Ember.Object.create({selectedAccolade:1,userInput:null,selectedPlayer:null,matchingPlayers:[],showAutocomplete:false,canRemove:false}));
+
+                Actions.removeAccolade(controller, controller.accoladeList[0]);
+
+                expect(controller.send).not.toHaveBeenCalled();
             });
 
             it('should set the can remove flag to false on the only remaining accolade', function() {
@@ -971,6 +998,72 @@ define(['objects/globals', 'actions/accoladesActions'], function(Globals, Action
                 Actions.displayAccolades(controller, accolades);
 
                 expect(controller.set).not.toHaveBeenCalledWith('stageComplete', true);
+            });
+        });
+
+        describe('updateSaveStatus', function() {
+
+            var controller;
+
+            beforeEach(function() {
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+            });
+
+            it('should set can save on the controller to true when all accolades selections are valid', function() {
+
+                controller.availableAccolades = [];
+                controller.accoladeList = [{selectedAccolade: 1, selectedPlayer: 1}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', true);
+            });
+
+            it('should set can save on the controller to false if any accolade selections are incomplete', function() {
+
+                controller.accoladeList = [{selectedAccolade: null, selectedPlayer: null}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
+            });
+
+            it('should set can save on the controller to false if any accolade selections missing a selected accolade', function() {
+
+                controller.accoladeList = [{selectedAccolade: null, selectedPlayer: 123}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
+            });
+
+            it('should set can save on the controller to false if any accolade selections missing a selected player', function() {
+
+                controller.accoladeList = [{selectedAccolade: 5, selectedPlayer: null}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
+            });
+
+            it('should set can save on the controller to false if any available accolades have not been selected', function() {
+
+                controller.availableAccolades = [{id: 1, value: 4, name: 'some accolade'},{id: 2, value: 6, name: 'another accolade'}];
+                controller.accoladeList = [{selectedAccolade: 1, selectedPlayer: 23}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
+            });
+
+            it('should set can save on the controller to false if any available accolades have not been selected even if an accolade is selected more than once', function() {
+
+                controller.availableAccolades = [{id: 1, value: 4, name: 'some accolade'},{id: 2, value: 6, name: 'another accolade'}];
+                controller.accoladeList = [{selectedAccolade: 1, selectedPlayer: 23},{selectedAccolade: 1, selectedPlayer: 45}];
+
+                Actions.updateSaveStatus(controller);
+
+                expect(controller.set).toHaveBeenCalledWith('canSave', false);
             });
         });
 

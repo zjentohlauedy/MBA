@@ -4,8 +4,8 @@ define(['ember'], function(Ember) {
 
         change: function(component) {
 
-            if (component.get('checkstate')) {
-                component.sendAction('checkstate');
+            if (component.get('changeAction')) {
+                component.sendAction('changeAction');
             }
         },
         keyUp: function(component, event) {

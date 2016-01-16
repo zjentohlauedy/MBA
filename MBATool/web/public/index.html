@@ -418,9 +418,9 @@
       </div>
       {{#each accolade in accoladeList}}
       <div class="accolade-entry">
-        {{view "Ember.Select" value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.id" optionLabelPath="content.name" prompt="Please Select An Accolade"}}
+        {{view AccoladeSelectorComponent value=accolade.selectedAccolade content=availableAccolades optionValuePath="content.id" optionLabelPath="content.name" prompt="Please Select An Accolade" changeAction="updateSaveStatus"}}
         <div class="player-picker">
-        {{player-selector value=accolade.userInput instance=accolade action="searchPlayers"}}
+        {{player-selector value=accolade.userInput instance=accolade action="searchPlayers" changeAction="updateSaveStatus"}}
         {{#if accolade.showAutocomplete}}
         <ul class="autocomplete">
           {{#each player in accolade.matchingPlayers}}
