@@ -20,7 +20,8 @@ typedef enum
      acc_Division_Title    = 4,
      acc_Best_Record       = 5,
      acc_World_Series_MVP  = 6,
-     acc_All_Star_Champion = 7
+     acc_All_Star_Champion = 7,
+     acc_All_Star_MVP      = 8
 
 } accolade_e;
 
@@ -45,7 +46,8 @@ typedef enum
      bacc_Best_Slugging_Average       = 16,
      bacc_Best_On_Base_Percentage     = 17,
      bacc_Best_Strike_Out_Average     = 18,
-     bacc_Best_Runs_per_Game          = 19
+     bacc_Best_Runs_per_Game          = 19,
+     bacc_Batting_Rookie_of_the_Year  = 20
 
 } batting_accolade_e;
 
@@ -70,7 +72,8 @@ typedef enum
      pacc_Best_Walks_Hits_Per_Inning   = 16,
      pacc_Most_Strike_Outs_per_Nine    = 17,
      pacc_Best_Home_Runs_per_Nine      = 18,
-     pacc_Best_Efficiency              = 19
+     pacc_Best_Efficiency              = 19,
+     pacc_Pitching_Rookie_of_the_Year  = 20
 
 } pitching_accolade_e;
 

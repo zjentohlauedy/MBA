@@ -60,6 +60,7 @@ module Accolades
     Best_On_Base_Percentage     = 17
     Best_Strike_Out_Average     = 18
     Best_Runs_per_Game          = 19
+    Batting_Rookie_of_the_Year  = 20
   end
 
   module Pitching
@@ -84,6 +85,7 @@ module Accolades
     Most_Strike_Outs_per_Nine    = 17
     Best_Home_Runs_per_Nine      = 18
     Best_Efficiency              = 19
+    Pitching_Rookie_of_the_Year  = 20
   end
 
   AccoladeList = [
@@ -129,6 +131,7 @@ module Accolades
     { name: "Best On Base Percentage",           value: Accolades::Batting::Best_On_Base_Percentage,       type: Accolades::Batting::Type,  automatic: true  },
     { name: "Best Strike Out Average",           value: Accolades::Batting::Best_Strike_Out_Average,       type: Accolades::Batting::Type,  automatic: true  },
     { name: "Best Runs per Game",                value: Accolades::Batting::Best_Runs_per_Game,            type: Accolades::Batting::Type,  automatic: true  },
+    { name: "Batting Rookie of the Year",        value: Accolades::Batting::Batting_Rookie_of_the_Year,    type: Accolades::Batting::Type,  automatic: false },
 
     { name: "MBA Pitcher of the Year",           value: Accolades::Pitching::Pitcher_of_the_Year,          type: Accolades::Pitching::Type, automatic: false },
     { name: "Global League Pitcher of the Year", value: Accolades::Pitching::Global_Pitcher_of_the_Year,   type: Accolades::Pitching::Type, automatic: false },
@@ -148,7 +151,8 @@ module Accolades
     { name: "Best Walks Hits Per Inning",        value: Accolades::Pitching::Best_Walks_Hits_Per_Inning,   type: Accolades::Pitching::Type, automatic: true  },
     { name: "Most Strike Outs per Nine",         value: Accolades::Pitching::Most_Strike_Outs_per_Nine,    type: Accolades::Pitching::Type, automatic: true  },
     { name: "Best Home Runs per Nine",           value: Accolades::Pitching::Best_Home_Runs_per_Nine,      type: Accolades::Pitching::Type, automatic: true  },
-    { name: "Best Efficiency",                   value: Accolades::Pitching::Best_Efficiency,              type: Accolades::Pitching::Type, automatic: true  } ]
+    { name: "Best Efficiency",                   value: Accolades::Pitching::Best_Efficiency,              type: Accolades::Pitching::Type, automatic: true  },
+    { name: "Pitching Rookie of the Year",       value: Accolades::Pitching::Pitching_Rookie_of_the_Year,  type: Accolades::Pitching::Type, automatic: false } ]
 
   def self.valid?( type, value )
     AccoladeList.each do |accolade|

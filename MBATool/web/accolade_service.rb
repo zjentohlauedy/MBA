@@ -50,6 +50,7 @@ AccoladeLookups = [
   { accolade: Accolades::Batting::Best_On_Base_Percentage,       method: :get_batter_stats_by_highest,   stat: 'on_base_pct',       phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Best_Strike_Out_Average,       method: :get_batter_stats_by_lowest,    stat: 'strike_out_avg',    phase: Phases::RegularSeason },
   { accolade: Accolades::Batting::Best_Runs_per_Game,            method: :get_batter_stats_by_highest,   stat: 'runs_per_game',     phase: Phases::RegularSeason },
+  { accolade: Accolades::Batting::Batting_Rookie_of_the_Year      },
 
   { accolade: Accolades::Pitching::Pitcher_of_the_Year,           },
   { accolade: Accolades::Pitching::Global_Pitcher_of_the_Year,    },
@@ -69,7 +70,8 @@ AccoladeLookups = [
   { accolade: Accolades::Pitching::Best_Walks_Hits_Per_Inning,   method: :get_pitcher_stats_by_lowest,   stat: 'whip',              phase: Phases::RegularSeason },
   { accolade: Accolades::Pitching::Most_Strike_Outs_per_Nine,    method: :get_pitcher_stats_by_highest,  stat: 'so_per_nine',       phase: Phases::RegularSeason },
   { accolade: Accolades::Pitching::Best_Home_Runs_per_Nine,      method: :get_pitcher_stats_by_lowest,   stat: 'hr_per_nine',       phase: Phases::RegularSeason },
-  { accolade: Accolades::Pitching::Best_Efficiency,              method: :get_pitcher_stats_by_highest,  stat: 'efficiency',        phase: Phases::RegularSeason } ]
+  { accolade: Accolades::Pitching::Best_Efficiency,              method: :get_pitcher_stats_by_highest,  stat: 'efficiency',        phase: Phases::RegularSeason },
+  { accolade: Accolades::Pitching::Pitching_Rookie_of_the_Year    } ]
 
 
 class AccoladeService
