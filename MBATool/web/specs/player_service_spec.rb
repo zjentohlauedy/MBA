@@ -1454,6 +1454,7 @@ describe PlayerService do
       allow( @repo   ).to receive( :get_pitcher_accolade )
       allow( @repo   ).to receive( :save_pitcher_accolade )
       allow( @mapper ).to receive( :map_player_accolade )
+      allow( @mapper ).to receive( :map_pitcher_accolade )
       allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :get_player ).with( 1 ).and_return player
@@ -1509,7 +1510,7 @@ describe PlayerService do
 
       allow( @repo   ).to receive( :get_player ).with( 1 ).and_return player
       allow( @repo   ).to receive( :get_pitcher_accolade )
-      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @mapper ).to receive( :map_pitcher_accolade )
       allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :save_pitcher_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
@@ -1528,7 +1529,7 @@ describe PlayerService do
       allow( @repo ).to receive( :save_pitcher_accolade )
 
       expect( @repo   ).to receive( :get_pitcher_accolade ).with( 1, 2, 3).and_return accolade
-      expect( @mapper ).to receive( :map_player_accolade ).with( accolade ).and_return mapped_accolade
+      expect( @mapper ).to receive( :map_pitcher_accolade ).with( accolade ).and_return mapped_accolade
       expect( @deco   ).to receive( :decorate_player_accolade ).with( mapped_accolade ).and_return decorated_accolade
 
       result = @player_service.save_player_accolade request
@@ -1560,7 +1561,7 @@ describe PlayerService do
 
       allow( @repo   ).to receive( :get_player ).with( 1 ).and_return player
       allow( @repo   ).to receive( :get_batter_accolade )
-      allow( @mapper ).to receive( :map_player_accolade )
+      allow( @mapper ).to receive( :map_batter_accolade )
       allow( @deco   ).to receive( :decorate_player_accolade )
 
       expect( @repo ).to receive( :save_batter_accolade ).with( {player_id: 1, season: 2, accolade: 3} )
@@ -1579,7 +1580,7 @@ describe PlayerService do
       allow( @repo ).to receive( :save_batter_accolade )
 
       expect( @repo   ).to receive( :get_batter_accolade ).with( 1, 2, 3).and_return accolade
-      expect( @mapper ).to receive( :map_player_accolade ).with( accolade ).and_return mapped_accolade
+      expect( @mapper ).to receive( :map_batter_accolade ).with( accolade ).and_return mapped_accolade
       expect( @deco   ).to receive( :decorate_player_accolade ).with( mapped_accolade ).and_return decorated_accolade
 
       result = @player_service.save_player_accolade request

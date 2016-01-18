@@ -275,7 +275,7 @@ class PlayerService
 
       saved_accolade = @repository.get_pitcher_accolade request[:player_id], request[:season], request[:accolade]
 
-      return @decorator.decorate_player_accolade @mapper.map_player_accolade saved_accolade
+      return @decorator.decorate_player_accolade @mapper.map_pitcher_accolade saved_accolade
     end
 
     if player[:player_type] == PlayerTypes::Batter
@@ -287,7 +287,7 @@ class PlayerService
 
       saved_accolade = @repository.get_batter_accolade request[:player_id], request[:season], request[:accolade]
 
-      return @decorator.decorate_player_accolade @mapper.map_player_accolade saved_accolade
+      return @decorator.decorate_player_accolade @mapper.map_batter_accolade saved_accolade
     end
   end
 
