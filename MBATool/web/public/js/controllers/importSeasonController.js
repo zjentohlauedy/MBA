@@ -7,7 +7,7 @@ define(['actions/importSeasonActions', 'ember'], function(Actions, Ember) {
         error:         false,
         statusMessage: 'Not Imported.',
         importReady:   true,
-        stageComplete: true,
+        stageComplete: false,
         actions: {
             setSeason:    function() { Actions.setSeason(    this ); },
             importSeason: function() { Actions.importSeason( this ); },

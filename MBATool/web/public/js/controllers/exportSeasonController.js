@@ -7,7 +7,7 @@ define(['actions/exportSeasonActions', 'ember'], function(Actions, Ember) {
         error:         false,
         statusMessage: 'Not Exported.',
         exportReady:   true,
-        stageComplete: true,
+        stageComplete: false,
         actions: {
             setSeason:    function() { Actions.setSeason(    this ); },
             exportSeason: function() { Actions.exportSeason( this ); },
