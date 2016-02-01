@@ -60,13 +60,21 @@ define(['utils'], function(Utils) {
                 expect(player.rating).toEqual(17);
             });
 
-            it('should calculate the pitcher record given stats', function() {
+            it('should copy base stats to the player given stats', function() {
                 var player = { speed: 5, control: 4, fatigue: 8 };
-                var stats  = { wins: 21, losses: 13 };
+                var stats  = { wins: 21, losses: 13, games: 22, saves: 12, hits: 33, earned_runs: 10, home_runs: 5, walks: 11, strike_outs: 9 };
 
                 Utils.decoratePitcher(player, stats);
 
-                expect(player.record).toEqual('21 - 13');
+                expect(player.wins       ).toEqual(stats.wins       );
+                expect(player.losses     ).toEqual(stats.losses     );
+                expect(player.games      ).toEqual(stats.games      );
+                expect(player.saves      ).toEqual(stats.saves      );
+                expect(player.hits       ).toEqual(stats.hits       );
+                expect(player.earned_runs).toEqual(stats.earned_runs);
+                expect(player.home_runs  ).toEqual(stats.home_runs  );
+                expect(player.walks      ).toEqual(stats.walks      );
+                expect(player.strike_outs).toEqual(stats.strike_outs);
             });
 
             it('should calculate the innings pitched given stats', function() {
@@ -123,13 +131,22 @@ define(['utils'], function(Utils) {
                 expect(player.sop9).toEqual('4.75');
             });
 
-            it('should calculate the pitcher efficiency given stats', function() {
+            it('should calculate the pitcher home runs per 9 innings given stats', function() {
                 var player = { speed: 5, control: 4, fatigue: 8 };
-                var stats  = { innings: 72, hits: 64, strike_outs: 85 };
+                var stats  = { innings: 72, outs: 0, home_runs: 38 };
 
                 Utils.decoratePitcher(player, stats);
 
-                expect(player.eff).toEqual('+29');
+                expect(player.hrp9).toEqual('4.75');
+            });
+
+            it('should calculate the pitcher efficiency given stats', function() {
+                var player = { speed: 5, control: 4, fatigue: 8 };
+                var stats  = { innings: 72, outs: 0, hits: 60, strike_outs: 86 };
+
+                Utils.decoratePitcher(player, stats);
+
+                expect(player.eff).toEqual('+4.75');
             });
         });
 
@@ -159,15 +176,24 @@ define(['utils'], function(Utils) {
                 expect(player.rating).toEqual(18);
             });
 
-            it('should copy games, home_runs and steals stats to the player given stats', function() {
+            it('should copy base stats to the player given stats', function() {
                 var player = { power: 7, hit_n_run: 5, running: 6 };
-                var stats  = { games: 149, home_runs: 48, steals: 27 };
+                var stats  = { games: 149, at_bats: 516, runs: 101, hits: 214, doubles: 26, triples: 9, home_runs: 48, runs_batted_in: 112, walks: 49, strike_outs: 109, steals: 27, errors: 4 };
 
                 Utils.decorateBatter(player, stats);
 
-                expect(player.games).toEqual(149);
-                expect(player.homers).toEqual(48);
-                expect(player.steals).toEqual(27);
+                expect(player.games         ).toEqual(stats.games         );
+                expect(player.at_bats       ).toEqual(stats.at_bats       );
+                expect(player.runs          ).toEqual(stats.runs          );
+                expect(player.hits          ).toEqual(stats.hits          );
+                expect(player.doubles       ).toEqual(stats.doubles       );
+                expect(player.triples       ).toEqual(stats.triples       );
+                expect(player.home_runs     ).toEqual(stats.home_runs     );
+                expect(player.runs_batted_in).toEqual(stats.runs_batted_in);
+                expect(player.walks         ).toEqual(stats.walks         );
+                expect(player.strike_outs   ).toEqual(stats.strike_outs   );
+                expect(player.steals        ).toEqual(stats.steals        );
+                expect(player.errors        ).toEqual(stats.errors        );
             });
 
             it('should calculate the player batting average given stats', function() {
@@ -195,6 +221,15 @@ define(['utils'], function(Utils) {
                 Utils.decorateBatter(player, stats);
 
                 expect(player.oba).toEqual('.250');
+            });
+
+            it('should calculate the player strike out average given stats', function() {
+                var player = { power: 7, hit_n_run: 5, running: 6 };
+                var stats  = { at_bats: 400, strike_outs: 100 };
+
+                Utils.decorateBatter(player, stats);
+
+                expect(player.soa).toEqual('.250');
             });
 
             it('should calculate the player runs per game given stats', function() {

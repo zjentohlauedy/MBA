@@ -31,16 +31,26 @@ define(['ember'], function(Ember) {
                 ipg     = (stats.games == 0) ? 0 : innings / stats.games;
                 whip    = (innings == 0) ? 0 : (stats.walks + stats.hits) / innings;
                 sop9    = (innings == 0) ? 0 : stats.strike_outs / (innings / 9);
-                eff     = (stats.innings - stats.hits) + (stats.strike_outs - stats.hits);
+                hrp9    = (innings == 0) ? 0 : stats.home_runs / (innings / 9);
+                eff     = (innings == 0) ? 0 : ((stats.innings - stats.hits) + (stats.strike_outs - stats.hits)) / (innings / 9);
 
-                player.record  = stats.wins + " - " + stats.losses;
-                player.innings = innings.toFixed(1);
-                player.era     = era.toFixed(2);
-                player.vsba    = vsba.toFixed(3).replace(/^0\./,".");
-                player.ipg     = ipg.toFixed(2);
-                player.whip    = whip.toFixed(3);
-                player.sop9    = sop9.toFixed(2);
-                player.eff     = (eff > 0) ? "+" + eff : eff;
+                player.wins        = stats.wins;
+                player.losses      = stats.losses;
+                player.era         = era.toFixed(2);
+                player.games       = stats.games;
+                player.saves       = stats.saves;
+                player.innings     = innings.toFixed(1);
+                player.hits        = stats.hits;
+                player.earned_runs = stats.earned_runs;
+                player.home_runs   = stats.home_runs;
+                player.walks       = stats.walks;
+                player.strike_outs = stats.strike_outs;
+                player.vsba        = vsba.toFixed(3).replace(/^0\./,".");
+                player.ipg         = ipg.toFixed(2);
+                player.whip        = whip.toFixed(3);
+                player.sop9        = sop9.toFixed(2);
+                player.hrp9        = hrp9.toFixed(2);
+                player.eff         = (eff > 0) ? "+" + eff.toFixed(2) : eff.toFixed(2);
             }
 
             return Ember.Object.create().setProperties(player);
@@ -56,15 +66,26 @@ define(['ember'], function(Ember) {
                 singles  = (stats.hits - (stats.doubles + stats.triples + stats.home_runs));
                 slugging = (stats.at_bats == 0) ? 0 : (singles + (2 * stats.doubles) + (3 * stats.triples) + (4 * stats.home_runs)) / stats.at_bats;
                 oba      = (stats.at_bats == 0) ? 0 : (stats.hits + stats.walks) / (stats.at_bats + stats.walks);
+                soa      = (stats.at_bats == 0) ? 0 : stats.strike_outs / stats.at_bats;
                 rpg      = (stats.games   == 0) ? 0 : (stats.runs + stats.runs_batted_in - stats.home_runs) / stats.games;
 
-                player.games    = stats.games;
-                player.avg      = avg.toFixed(3).replace(/^0\./,".");
-                player.homers   = stats.home_runs;
-                player.steals   = stats.steals;
-                player.slugging = slugging.toFixed(3).replace(/^0\./,".");
-                player.oba      = oba.toFixed(3).replace(/^0\./,".");
-                player.rpg      = rpg.toFixed(2);
+                player.games          = stats.games;
+                player.at_bats        = stats.at_bats;
+                player.runs           = stats.runs;
+                player.hits           = stats.hits;
+                player.doubles        = stats.doubles;
+                player.triples        = stats.triples;
+                player.home_runs      = stats.home_runs;
+                player.runs_batted_in = stats.runs_batted_in;
+                player.walks          = stats.walks;
+                player.strike_outs    = stats.strike_outs;
+                player.errors         = stats.errors;
+                player.steals         = stats.steals;
+                player.avg            = avg.toFixed(3).replace(/^0\./,".");
+                player.slugging       = slugging.toFixed(3).replace(/^0\./,".");
+                player.oba            = oba.toFixed(3).replace(/^0\./,".");
+                player.soa            = soa.toFixed(3).replace(/^0\./,".");
+                player.rpg            = rpg.toFixed(2);
             }
 
             return Ember.Object.create().setProperties(player);
