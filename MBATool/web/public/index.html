@@ -34,64 +34,104 @@
         {{#each team in teams}}<li {{bind-attr class="team.isSelected team.isError team.isComplete"}} {{action "selectTeam" team on="click"}}>{{team.name}}</li>{{/each}}
       </ul>
       <div class="container">
-      <table class="left pretty">
+      <table class="stats">
         <caption {{bind-attr class="pitchers.isComplete pitchers.isError"}}>Pitchers</caption>
+        <!-- Pitchers              W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G  WHIP  SO/9  HR/9    EFF -->
         <thead>
           <tr>
-            <th class="pname1" >Name</th>
-            <th class="record" >Record</th>
-            <th class="innings">Innings</th>
-            <th class="era"    >ERA</th>
-            <th class="vsba"   >Vs.BA</th>
-            <th class="innpg"  >INN/G</th>
-            <th class="whip"   >WHIP</th>
-            <th class="sop9"   >SO/9</th>
-            <th class="eff"    >EFF</th>
+            <th class="name"   >Name</th>
+            <th class="integer">W</th>
+            <th class="integer">L</th>
+            <th class="float"  >ERA</th>
+            <th class="integer">G</th>
+            <th class="integer">SV</th>
+            <th class="float"  >INN</th>
+            <th class="integer">H</th>
+            <th class="integer">ER</th>
+            <th class="integer">HR</th>
+            <th class="integer">BB</th>
+            <th class="integer">SO</th>
+            <th class="float"  >Vs.BA</th>
+            <th class="float"  >INN/G</th>
+            <th class="float"  >WHIP</th>
+            <th class="float"  >SO/9</th>
+            <th class="float"  >HR/9</th>
+            <th class="float"  >EFF</th>
           </tr>
         </thead>
         <tbody>
           {{#each pitcher in currentTeam.pitchers}}
           <tr {{bind-attr class="pitcher.isCut:removed"}} {{action "toggleCutPitcher" pitcher on="click"}}>
-            <td class="pname1" >{{pitcher.name}}</td>
-            <td class="record" >{{pitcher.record}}</td>
-            <td class="innings">{{pitcher.innings}}</td>
-            <td class="era"    >{{pitcher.era}}</td>
-            <td class="vsba"   >{{pitcher.vsba}}</td>
-            <td class="innpg"  >{{pitcher.ipg}}</td>
-            <td class="whip"   >{{pitcher.whip}}</td>
-            <td class="sop9"   >{{pitcher.sop9}}</td>
-            <td class="eff"    >{{pitcher.eff}}</td>
+            <td class="name"   >{{pitcher.name}}</td>
+            <td class="integer">{{pitcher.wins}}</td>
+            <td class="integer">{{pitcher.losses}}</td>
+            <td class="float"  >{{pitcher.era}}</td>
+            <td class="integer">{{pitcher.games}}</td>
+            <td class="integer">{{pitcher.saves}}</td>
+            <td class="float"  >{{pitcher.innings}}</td>
+            <td class="integer">{{pitcher.hits}}</td>
+            <td class="integer">{{pitcher.earned_runs}}</td>
+            <td class="integer">{{pitcher.home_runs}}</td>
+            <td class="integer">{{pitcher.walks}}</td>
+            <td class="integer">{{pitcher.strike_outs}}</td>
+            <td class="float"  >{{pitcher.vsba}}</td>
+            <td class="float"  >{{pitcher.ipg}}</td>
+            <td class="float"  >{{pitcher.whip}}</td>
+            <td class="float"  >{{pitcher.sop9}}</td>
+            <td class="float"  >{{pitcher.hrp9}}</td>
+            <td class="float"  >{{pitcher.eff}}</td>
           </tr>
           {{/each}}
         </tbody>
       </table>
-      <table class="right pretty">
+      <table class="stats">
         <caption {{bind-attr class="batters.isComplete batters.isError"}}>Batters</caption>
+        <!-- Batters                 BA   G  AB   R   H  2B  3B  HR RBI  BB  SO  SB  E    SA   OBA   SOA  RPG -->
         <thead>
           <tr>
-            <th class="bname1">Name</th>
-            <th class="pos"   >POS</th>
-            <th class="games" >Games</th>
-            <th class="ba"    >BA</th>
-            <th class="hr"    >HR</th>
-            <th class="sb"    >SB</th>
-            <th class="sa"    >SA</th>
-            <th class="oba"   >OBA</th>
-            <th class="rpg"   >RPG</th>
+            <th class="name"   >Name</th>
+            <th class="position">POS</th>
+            <th class="float"  >BA</th>
+            <th class="integer">G</th>
+            <th class="integer">AB</th>
+            <th class="integer">R</th>
+            <th class="integer">H</th>
+            <th class="integer">2B</th>
+            <th class="integer">3B</th>
+            <th class="integer">HR</th>
+            <th class="integer">RBI</th>
+            <th class="integer">BB</th>
+            <th class="integer">SO</th>
+            <th class="integer">SB</th>
+            <th class="integer">E</th>
+            <th class="float"  >SA</th>
+            <th class="float"  >OBA</th>
+            <th class="float"  >SOA</th>
+            <th class="float"  >RPG</th>
           </tr>
         </thead>
         <tbody>
           {{#each batter in currentTeam.batters}}
           <tr {{bind-attr class="batter.isCut:removed"}} {{action "toggleCutBatter" batter on="click"}}>
-            <td class="bname1">{{batter.name}}</td>
-            <td class="pos"   >{{batter.primary_position}}</td>
-            <td class="games" >{{batter.games}}</td>
-            <td class="ba"    >{{batter.avg}}</td>
-            <td class="hr"    >{{batter.homers}}</td>
-            <td class="sb"    >{{batter.steals}}</td>
-            <td class="sa"    >{{batter.slugging}}</td>
-            <td class="oba"   >{{batter.oba}}</td>
-            <td class="rpg"   >{{batter.rpg}}</td>
+            <td class="name"   >{{batter.name}}</td>
+            <td class="position">{{batter.primary_position}}</td>
+            <td class="float"  >{{batter.avg}}</td>
+            <td class="integer">{{batter.games}}</td>
+            <td class="integer">{{batter.at_bats}}</td>
+            <td class="integer">{{batter.runs}}</td>
+            <td class="integer">{{batter.hits}}</td>
+            <td class="integer">{{batter.doubles}}</td>
+            <td class="integer">{{batter.triples}}</td>
+            <td class="integer">{{batter.home_runs}}</td>
+            <td class="integer">{{batter.runs_batted_in}}</td>
+            <td class="integer">{{batter.walks}}</td>
+            <td class="integer">{{batter.strike_outs}}</td>
+            <td class="integer">{{batter.steals}}</td>
+            <td class="integer">{{batter.errors}}</td>
+            <td class="float"  >{{batter.slugging}}</td>
+            <td class="float"  >{{batter.oba}}</td>
+            <td class="float"  >{{batter.soa}}</td>
+            <td class="float"  >{{batter.rpg}}</td>
           </tr>
           {{/each}}
         </tbody>

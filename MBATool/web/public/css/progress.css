@@ -39,7 +39,7 @@ div.spacer {
 }
 
 div.accolade-entry {
-//    margin: 1em 0em 1em 0em;
+/*    margin: 1em 0em 1em 0em; */
 }
 
 div.player-picker {
@@ -225,7 +225,7 @@ ul.teamlist {
     margin-right: auto;
     margin-top: 0px;
     list-style-type: none;
-    columns: 4;
+/*    columns: 4; */
     -webkit-columns: 4;
     -moz-columns: 4;
 }
@@ -244,7 +244,7 @@ ul.teamlist {
     background-image: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    appearance: none;
+/*    appearance: none; */
 }
 
 .accolade-entry select:focus {
@@ -369,26 +369,6 @@ table.pretty tbody tr:hover {
 }
 
 
-table.pretty th.pname1,  td.pname1  { width: 10.2em; text-align: left;   }
-table.pretty th.record,  td.record  { width:  4.2em; text-align: center; }
-table.pretty th.innings, td.innings { width:  4.4em; text-align: right;  }
-table.pretty th.era,     td.era     { width:  2.8em; text-align: right;  }
-table.pretty th.vsba,    td.vsba    { width:  3.4em; text-align: right;  }
-table.pretty th.innpg,   td.innpg   { width:  3.3em; text-align: right;  }
-table.pretty th.whip,    td.whip    { width:  3.7em; text-align: right;  }
-table.pretty th.sop9,    td.sop9    { width:  3.3em; text-align: right;  }
-table.pretty th.eff,     td.eff     { width:  2.9em; text-align: right;  }
-
-table.pretty th.bname1, td.bname1 { width:  15.6em; text-align: left;   }
-table.pretty th.pos,    td.pos    { width:   2.5em; text-align: left;   }
-table.pretty th.games,  td.games  { width:   4.1em; text-align: right;  }
-table.pretty th.ba,     td.ba     { width:   2.9em; text-align: right;  }
-table.pretty th.hr,     td.hr     { width:   2.2em; text-align: right;  }
-table.pretty th.sb,     td.sb     { width:   2.2em; text-align: right;  }
-table.pretty th.sa,     td.sa     { width:   2.9em; text-align: right;  }
-table.pretty th.oba,    td.oba    { width:   2.9em; text-align: right;  }
-table.pretty th.rpg,    td.rpg    { width:   2.9em; text-align: right;  }
-
 table.pretty th.pname2,  td.pname2  { width: 17.7em; }
 table.pretty th.throws,  td.throws  { width:  4.5em; }
 table.pretty th.speed,   td.speed   { width:  3.9em; }
@@ -406,6 +386,73 @@ table.pretty th.run,    td.run    { width:   2.3em; }
 table.pretty th.range,  td.range  { width:   2.3em; }
 table.pretty th.arm,    td.arm    { width:   2.3em; }
 
+
+table.stats {
+    border: 1px solid;
+    width: 100%;
+}
+
+table.stats caption {
+    background-color: #CCCCCC;
+    border: 1px solid;
+    padding: 0.5em;
+    text-align: left;
+}
+
+table.stats caption.is-complete {
+    background-color: #77CC77;
+}
+
+table.stats caption.is-error {
+    background-color: #CC7777;
+}
+
+table.stats thead {
+    text-align: left;
+    display: block;
+    width: 100%;
+}
+
+table.stats th {
+    border-bottom: 1px solid;
+}
+
+table.stats tbody {
+    height: 23em;
+    display: block;
+    overflow: auto;
+}
+
+table.stats tbody.tall {
+    height: 52em;
+}
+
+table.stats tbody tr.removed {
+    font-weight: lighter;
+    text-decoration: line-through;
+}
+
+table.stats tbody tr.is-selected {
+    outline: thin solid black;
+}
+
+table.stats tbody tr:nth-child(even) {
+    background-color: #EEEEEE;
+}
+
+table.stats tbody tr:hover {
+    background-color: #DDDDDD;
+}
+
+
+table.stats th.name     { width: 16.0em; text-align: left;   }
+table.stats td.name     { width: 16.0em; text-align: left;   }
+table.stats th.position { width:  3.0em; text-align: right;  }
+table.stats td.position { width:  3.0em; text-align: right;  }
+table.stats th.float    { width:  4.2em; text-align: right;  }
+table.stats td.float    { width:  4.2em; text-align: right;  }
+table.stats th.integer  { width:  3.0em; text-align: right;  }
+table.stats td.integer  { width:  3.0em; text-align: right;  }
 
 span.heading {
     font-weight: bold;
