@@ -444,6 +444,10 @@ table.stats tbody tr:hover {
     background-color: #DDDDDD;
 }
 
+table.stats thead th:hover {
+    cursor: pointer;
+}
+
 
 table.stats th.name     { width: 16.0em; text-align: left;   }
 table.stats td.name     { width: 16.0em; text-align: left;   }

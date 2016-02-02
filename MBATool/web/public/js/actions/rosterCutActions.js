@@ -1,6 +1,6 @@
 define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Globals, Utils) {
 
-    var loadPlayerDetails = function(team, players, defer) {
+    function loadPlayerDetails(team, players, defer) {
         var promises = [];
 
         for (var i = 0; i < players.length; i++) {
@@ -12,7 +12,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         });
     };
 
-    var loadCurrentSeasonPlayers = function(team) {
+    function loadCurrentSeasonPlayers(team) {
         var defer = $.Deferred();
 
         $.ajax( team._links.players.href, {
@@ -27,7 +27,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         return defer.promise();
     };
 
-    var loadPreviousSeasonPlayers = function(team) {
+    function loadPreviousSeasonPlayers(team) {
         var defer = $.Deferred();
 
         $.ajax( team._links.team.href + '/players?season=' + (Globals.season - 1), {
@@ -42,7 +42,7 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
         return defer.promise();
     };
 
-    var loadTeamPlayers = function(team) {
+    function loadTeamPlayers(team) {
         var defer = $.Deferred();
 
         $.when( loadCurrentSeasonPlayers(team), loadPreviousSeasonPlayers(team) ).then(
@@ -61,6 +61,30 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
         return defer.promise();
     };
+
+    function sortPlayersByField(players, field) {
+        if (field == "primary_position") {
+            return Utils.sortBattersByPosition(players);
+        }
+
+        return players.sort(function(a, b) {
+            if (field === "name") {
+                return a[field].localeCompare(b[field]);
+            }
+
+            return a[field] - b[field];
+        });
+    }
+
+    function sortCutPlayersToTheEnd(players) {
+        players.sort(function(a, b) {
+            if (a.isCut === b.isCut) { return 0; }
+
+            if (a.isCut) { return 1; }
+
+            return -1;
+        });
+    }
 
     var RosterCutActions = {
         prepareData: function(controller, deferred) {
@@ -162,6 +186,38 @@ define(['objects/constants', 'objects/globals', 'utils'], function(Constants, Gl
 
             if   (count > 0) controller.set("stageComplete", false);
             else             controller.set("stageComplete", true );
+        },
+        sortPitchers: function(controller, field) {
+            var pitchers = controller.currentTeam.pitchers;
+
+            if (field === controller.currentTeam.currentPitcherSortField) {
+                pitchers.reverse();
+            }
+            else {
+                controller.currentTeam.set("currentPitcherSortField", field);
+
+                sortPlayersByField(pitchers, field);
+            }
+
+            sortCutPlayersToTheEnd(pitchers);
+
+            controller.currentTeam.pitchers.replace(0, pitchers.length, pitchers);
+        },
+        sortBatters: function(controller, field) {
+            var batters = controller.currentTeam.batters;
+
+            if (field === controller.currentTeam.currentBatterSortField) {
+                batters.reverse();
+            }
+            else {
+                controller.currentTeam.set("currentBatterSortField", field);
+
+                sortPlayersByField(batters, field);
+            }
+
+            sortCutPlayersToTheEnd(batters);
+
+            controller.currentTeam.batters.replace(0, batters.length, batters);
         },
         finishStage: function(controller) {
             if (controller.stageComplete) {

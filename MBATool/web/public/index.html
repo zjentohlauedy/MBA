@@ -39,24 +39,24 @@
         <!-- Pitchers              W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G  WHIP  SO/9  HR/9    EFF -->
         <thead>
           <tr>
-            <th class="name"   >Name</th>
-            <th class="integer">W</th>
-            <th class="integer">L</th>
-            <th class="float"  >ERA</th>
-            <th class="integer">G</th>
-            <th class="integer">SV</th>
-            <th class="float"  >INN</th>
-            <th class="integer">H</th>
-            <th class="integer">ER</th>
-            <th class="integer">HR</th>
-            <th class="integer">BB</th>
-            <th class="integer">SO</th>
-            <th class="float"  >Vs.BA</th>
-            <th class="float"  >INN/G</th>
-            <th class="float"  >WHIP</th>
-            <th class="float"  >SO/9</th>
-            <th class="float"  >HR/9</th>
-            <th class="float"  >EFF</th>
+            <th class="name"    {{action "sortPitchers" "name"        on="click"}}>Name</th>
+            <th class="integer" {{action "sortPitchers" "wins"        on="click"}}>W</th>
+            <th class="integer" {{action "sortPitchers" "losses"      on="click"}}>L</th>
+            <th class="float"   {{action "sortPitchers" "era"         on="click"}}>ERA</th>
+            <th class="integer" {{action "sortPitchers" "games"       on="click"}}>G</th>
+            <th class="integer" {{action "sortPitchers" "saves"       on="click"}}>SV</th>
+            <th class="float"   {{action "sortPitchers" "innings"     on="click"}}>INN</th>
+            <th class="integer" {{action "sortPitchers" "hits"        on="click"}}>H</th>
+            <th class="integer" {{action "sortPitchers" "earned_runs" on="click"}}>ER</th>
+            <th class="integer" {{action "sortPitchers" "home_runs"   on="click"}}>HR</th>
+            <th class="integer" {{action "sortPitchers" "walks"       on="click"}}>BB</th>
+            <th class="integer" {{action "sortPitchers" "strike_outs" on="click"}}>SO</th>
+            <th class="float"   {{action "sortPitchers" "vsba"        on="click"}}>Vs.BA</th>
+            <th class="float"   {{action "sortPitchers" "ipg"         on="click"}}>INN/G</th>
+            <th class="float"   {{action "sortPitchers" "whip"        on="click"}}>WHIP</th>
+            <th class="float"   {{action "sortPitchers" "sop9"        on="click"}}>SO/9</th>
+            <th class="float"   {{action "sortPitchers" "hrp9"        on="click"}}>HR/9</th>
+            <th class="float"   {{action "sortPitchers" "eff"         on="click"}}>EFF</th>
           </tr>
         </thead>
         <tbody>
@@ -89,49 +89,49 @@
         <!-- Batters                 BA   G  AB   R   H  2B  3B  HR RBI  BB  SO  SB  E    SA   OBA   SOA  RPG -->
         <thead>
           <tr>
-            <th class="name"   >Name</th>
-            <th class="position">POS</th>
-            <th class="float"  >BA</th>
-            <th class="integer">G</th>
-            <th class="integer">AB</th>
-            <th class="integer">R</th>
-            <th class="integer">H</th>
-            <th class="integer">2B</th>
-            <th class="integer">3B</th>
-            <th class="integer">HR</th>
-            <th class="integer">RBI</th>
-            <th class="integer">BB</th>
-            <th class="integer">SO</th>
-            <th class="integer">SB</th>
-            <th class="integer">E</th>
-            <th class="float"  >SA</th>
-            <th class="float"  >OBA</th>
-            <th class="float"  >SOA</th>
-            <th class="float"  >RPG</th>
+            <th class="name"     {{action "sortBatters" "name"             on="click"}}>Name</th>
+            <th class="position" {{action "sortBatters" "primary_position" on="click"}}>POS</th>
+            <th class="float"    {{action "sortBatters" "avg"              on="click"}}>BA</th>
+            <th class="integer"  {{action "sortBatters" "games"            on="click"}}>G</th>
+            <th class="integer"  {{action "sortBatters" "at_bats"          on="click"}}>AB</th>
+            <th class="integer"  {{action "sortBatters" "runs"             on="click"}}>R</th>
+            <th class="integer"  {{action "sortBatters" "hits"             on="click"}}>H</th>
+            <th class="integer"  {{action "sortBatters" "doubles"          on="click"}}>2B</th>
+            <th class="integer"  {{action "sortBatters" "triples"          on="click"}}>3B</th>
+            <th class="integer"  {{action "sortBatters" "home_runs"        on="click"}}>HR</th>
+            <th class="integer"  {{action "sortBatters" "runs_batted_in"   on="click"}}>RBI</th>
+            <th class="integer"  {{action "sortBatters" "walks"            on="click"}}>BB</th>
+            <th class="integer"  {{action "sortBatters" "strike_outs"      on="click"}}>SO</th>
+            <th class="integer"  {{action "sortBatters" "steals"           on="click"}}>SB</th>
+            <th class="integer"  {{action "sortBatters" "errors"           on="click"}}>E</th>
+            <th class="float"    {{action "sortBatters" "slugging"         on="click"}}>SA</th>
+            <th class="float"    {{action "sortBatters" "oba"              on="click"}}>OBA</th>
+            <th class="float"    {{action "sortBatters" "soa"              on="click"}}>SOA</th>
+            <th class="float"    {{action "sortBatters" "rpg"              on="click"}}>RPG</th>
           </tr>
         </thead>
         <tbody>
           {{#each batter in currentTeam.batters}}
           <tr {{bind-attr class="batter.isCut:removed"}} {{action "toggleCutBatter" batter on="click"}}>
-            <td class="name"   >{{batter.name}}</td>
+            <td class="name"    >{{batter.name}}</td>
             <td class="position">{{batter.primary_position}}</td>
-            <td class="float"  >{{batter.avg}}</td>
-            <td class="integer">{{batter.games}}</td>
-            <td class="integer">{{batter.at_bats}}</td>
-            <td class="integer">{{batter.runs}}</td>
-            <td class="integer">{{batter.hits}}</td>
-            <td class="integer">{{batter.doubles}}</td>
-            <td class="integer">{{batter.triples}}</td>
-            <td class="integer">{{batter.home_runs}}</td>
-            <td class="integer">{{batter.runs_batted_in}}</td>
-            <td class="integer">{{batter.walks}}</td>
-            <td class="integer">{{batter.strike_outs}}</td>
-            <td class="integer">{{batter.steals}}</td>
-            <td class="integer">{{batter.errors}}</td>
-            <td class="float"  >{{batter.slugging}}</td>
-            <td class="float"  >{{batter.oba}}</td>
-            <td class="float"  >{{batter.soa}}</td>
-            <td class="float"  >{{batter.rpg}}</td>
+            <td class="float"   >{{batter.avg}}</td>
+            <td class="integer" >{{batter.games}}</td>
+            <td class="integer" >{{batter.at_bats}}</td>
+            <td class="integer" >{{batter.runs}}</td>
+            <td class="integer" >{{batter.hits}}</td>
+            <td class="integer" >{{batter.doubles}}</td>
+            <td class="integer" >{{batter.triples}}</td>
+            <td class="integer" >{{batter.home_runs}}</td>
+            <td class="integer" >{{batter.runs_batted_in}}</td>
+            <td class="integer" >{{batter.walks}}</td>
+            <td class="integer" >{{batter.strike_outs}}</td>
+            <td class="integer" >{{batter.steals}}</td>
+            <td class="integer" >{{batter.errors}}</td>
+            <td class="float"   >{{batter.slugging}}</td>
+            <td class="float"   >{{batter.oba}}</td>
+            <td class="float"   >{{batter.soa}}</td>
+            <td class="float"   >{{batter.rpg}}</td>
           </tr>
           {{/each}}
         </tbody>

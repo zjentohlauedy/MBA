@@ -4,11 +4,8 @@ define(['actions/rosterCutActions', 'ember'], function(Actions, Ember) {
         needs:          ["progress", "rookie-draft"],
         teams:          [],
         currentTeam:    Ember.Object.create(),
-        rookies:        Ember.Object.create().setProperties({
-            draftOrder: [],
-            pitchers:   [],
-            batters:    []
-        }),
+        currentPitcherSortField: "",
+        currentBatterSortField:  "",
         pitchers: {
             isComplete: false,
             isError:    false
@@ -28,6 +25,8 @@ define(['actions/rosterCutActions', 'ember'], function(Actions, Ember) {
             updateBattersStatus:  function()              { Actions.updateBattersStatus(this);        },
             updateTeamStatus:     function()              { Actions.updateTeamStatus(this);           },
             updateStatus:         function()              { Actions.updateStatus(this);               },
+            sortPitchers:         function(field)         { Actions.sortPitchers(this, field);        },
+            sortBatters:          function(field)         { Actions.sortBatters(this, field);         },
             finishStage:          function()              { Actions.finishStage(this);                }
         }
     });

@@ -768,6 +768,189 @@ define(['objects/constants', 'objects/globals', 'utils', 'actions/rosterCutActio
             });
         });
 
+        describe('sortPitchers', function() {
+
+            var controller;
+
+            beforeEach(function() {
+
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.currentTeam = Ember.Object.create({ pitchers: [
+                    {player_id: 1, name: 'Joe', field1: 5, field2: 1, averageField: '12.62', isCut: false},
+                    {player_id: 2, name: 'Bob', field1: 4, field2: 1, averageField: '2.27',  isCut: false},
+                    {player_id: 3, name: 'Ian', field1: 6, field2: 1, averageField: '4.33',  isCut: false}
+                ] });
+            });
+
+            it('should sort the pitchers by the given field', function() {
+
+                Actions.sortPitchers(controller, 'field1');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(1);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(3);
+            });
+
+            it('should set the given field as the current pitcher sort field on the current team', function() {
+
+                spyOn(controller.currentTeam, 'set').and.callThrough();
+
+                Actions.sortPitchers(controller, 'field2');
+
+                expect(controller.currentTeam.set).toHaveBeenCalledWith('currentPitcherSortField', 'field2');
+            });
+
+            it('should reverse the order if the given field is the same as the current sort field', function() {
+
+                controller.currentTeam.currentPitcherSortField = 'field1';
+
+                Actions.sortPitchers(controller, 'field1');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(3);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(1);
+            });
+
+            it('should sort numerical strings as if they were numbers', function() {
+
+                Actions.sortPitchers(controller, 'averageField');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(3);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(1);
+            });
+
+            it('should sort names as alphanumeric strings', function() {
+
+                Actions.sortPitchers(controller, 'name');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(3);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(1);
+            });
+
+            it('should sort cut players to the bottom', function() {
+
+                controller.currentTeam.pitchers.addObject({player_id: 4, name: 'Aaa', field1: 5, field2: 1, averageField: '12.62', isCut: true});
+
+                Actions.sortPitchers(controller, 'name');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(3);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(1);
+                expect(controller.currentTeam.pitchers[3].player_id).toBe(4);
+            });
+
+            it('should leave cut players at the bottom when reversing', function() {
+
+                controller.currentTeam.pitchers.addObject({player_id: 4, name: 'Aaa', field1: 5, field2: 1, averageField: '12.62', isCut: true});
+                controller.currentTeam.currentPitcherSortField = 'field1';
+
+                Actions.sortPitchers(controller, 'field1');
+
+                expect(controller.currentTeam.pitchers[0].player_id).toBe(3);
+                expect(controller.currentTeam.pitchers[1].player_id).toBe(2);
+                expect(controller.currentTeam.pitchers[2].player_id).toBe(1);
+                expect(controller.currentTeam.pitchers[3].player_id).toBe(4);
+            });
+        });
+
+        describe('sortBatters', function() {
+
+            var controller;
+
+            beforeEach(function() {
+
+                controller = jasmine.createSpyObj('controller', ['send', 'get', 'set']);
+                controller.currentTeam = Ember.Object.create({ batters: [
+                    {player_id: 1, name: 'Joe', primary_position: 'CF', field1: 5, field2: 1, averageField: '12.62'},
+                    {player_id: 2, name: 'Bob', primary_position: '1B', field1: 4, field2: 1, averageField: '2.27'},
+                    {player_id: 3, name: 'Ian', primary_position: 'C',  field1: 6, field2: 1, averageField: '4.33'}
+                ] });
+            });
+
+            it('should sort the batters by the given field', function() {
+
+                Actions.sortBatters(controller, 'field1');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(2);
+                expect(controller.currentTeam.batters[1].player_id).toBe(1);
+                expect(controller.currentTeam.batters[2].player_id).toBe(3);
+            });
+
+            it('should set the given field as the current batter sort field', function() {
+
+                spyOn(controller.currentTeam, 'set').and.callThrough();
+
+                Actions.sortBatters(controller, 'field2');
+
+                expect(controller.currentTeam.set).toHaveBeenCalledWith('currentBatterSortField', 'field2');
+            });
+
+            it('should reverse the order if the given field is the same as the current sort field', function() {
+
+                controller.currentTeam.currentBatterSortField = 'field1';
+
+                Actions.sortBatters(controller, 'field1');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(3);
+                expect(controller.currentTeam.batters[1].player_id).toBe(2);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+            });
+
+            it('should sort numerical strings as if they were numbers', function() {
+
+                Actions.sortBatters(controller, 'averageField');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(2);
+                expect(controller.currentTeam.batters[1].player_id).toBe(3);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+            });
+
+            it('should sort names as alphanumeric strings', function() {
+
+                Actions.sortBatters(controller, 'name');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(2);
+                expect(controller.currentTeam.batters[1].player_id).toBe(3);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+            });
+
+            it('should sort positions in the correct order', function() {
+
+                Actions.sortBatters(controller, 'primary_position');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(3);
+                expect(controller.currentTeam.batters[1].player_id).toBe(2);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+            });
+
+            it('should sort cut players to the bottom', function() {
+
+                controller.currentTeam.batters.addObject({player_id: 4, name: 'Aaa', field1: 5, field2: 1, averageField: '12.62', isCut: true});
+
+                Actions.sortBatters(controller, 'name');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(2);
+                expect(controller.currentTeam.batters[1].player_id).toBe(3);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+                expect(controller.currentTeam.batters[3].player_id).toBe(4);
+            });
+
+            it('should leave cut players at the bottom when reversing', function() {
+
+                controller.currentTeam.batters.addObject({player_id: 4, name: 'Aaa', field1: 5, field2: 1, averageField: '12.62', isCut: true});
+                controller.currentTeam.currentBatterSortField = 'field1';
+
+                Actions.sortBatters(controller, 'field1');
+
+                expect(controller.currentTeam.batters[0].player_id).toBe(3);
+                expect(controller.currentTeam.batters[1].player_id).toBe(2);
+                expect(controller.currentTeam.batters[2].player_id).toBe(1);
+                expect(controller.currentTeam.batters[3].player_id).toBe(4);
+            });
+        });
+
         describe('finishStage', function() {
 
             var controller;
