@@ -6,7 +6,6 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'sqlite3'
-require 'positions'
 require 'TopPlayers'
 
 

@@ -1,4 +1,4 @@
-require 'positions'
+require_relative 'MBATool/web/positions'
 
 class Stats
   include Comparable
