@@ -178,6 +178,8 @@ class StatRankings
       league[:divisions].each do |division|
         division[:teams].each do |team|
           team[:players].each do |player|
+            next if  player[:stats][@style].nil?
+
             if player[:type] == type
               @players.push( object.new team[:name], player, @style )
             end
