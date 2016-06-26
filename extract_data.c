@@ -87,6 +87,7 @@ static void printHitter( const player_s *player )
      printf( ",\"type\":\"batter\"" );
      printf( ",\"first_name\":\"%s\"", b->first_name );
      printf( ",\"last_name\":\"%s\"", b->last_name );
+     printf( ",\"rookie_season\":\"%d\"", (b->year - 2000));
      printf( ",\"primary_position\":%d", b->primary_pos );
      printf( ",\"secondary_position\":%d", b->secondary_pos );
      printf( ",\"handedness\":%d", player->hand );
@@ -163,6 +164,7 @@ static void printPitcher( const player_s *player )
      printf( ",\"type\":\"pitcher\"" );
      printf( ",\"first_name\":\"%s\"", p->first_name );
      printf( ",\"last_name\":\"%s\"", p->last_name );
+     printf( ",\"rookie_season\":\"%d\"", (p->year - 2000));
      printf( ",\"position\":%d", p->primary_pos );
      printf( ",\"handedness\":%d", player->hand );
 
