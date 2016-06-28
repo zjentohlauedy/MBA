@@ -10,98 +10,10 @@
 #include "league.h"
 
 
-typedef enum
-{
-     ps_Fielding,
-     ps_Potential,
-     ps_Simulated
+#define MAX_REST 4
 
-} printstyle_e;
 
-static printstyle_e  print_style;
 static boolean_e  print_pitcher_rest;
-
-
-static char *displayAvg( const double avg )
-{
-     static char buffer[5 + 1];
-
-     sprintf( buffer, "%5.3f", avg );
-
-     if ( buffer[0] == '0' ) buffer[0] = ' ';
-
-     return buffer;
-}
-
-
-static void printPitchingHeader( void )
-{
-     if ( print_style == ps_Fielding )
-     {
-          printf( "   Pitchers              S  C  F  B     FA\n" );
-          //       P  Pitcher, Average      5  5  5  5   .987
-     }
-     else
-     {
-          printf( "   Pitchers              S  C  F  B   W  L   ERA   G SV   INN   H  ER  HR  BB  SO  VSBA INN/G   H/9  BB/9  SO/9  HR/9\n" );
-          //       P  Alphin, Nick          8  9  7  6  12  5  3.64  24  0 173.1 187  70  27  34 232 0.000  7.21  9.73  1.40 12.07  6.93
-     }
-}
-
-
-static void printHittingHeader( void )
-{
-     if ( print_style == ps_Fielding )
-     {
-          printf( "   Batters               P  H  B  S  R  A   G   PO   AS  E    FA  POS2   FA2\n" );
-          //       C  Batter, Average       5  5  5 10  5  5 123  600   75  9  .987   P   1.000
-     }
-     else
-     {
-          printf( "   Batters               P  H  B  S  R  A    BA   G  AB   R   H  2B  3B  HR RBI  BB  SO  SB  E    SA   OBA   SOA  RPG\n" );
-          //       CF Base, Darryl         10  5  4  3  4  3 0.345  96 374  84 129  23   7  46 109  29 129   0  0 0.813 0.392 0.000 0.00
-     }
-}
-
-
-static void printHitterFielding( const fielding_s *fielding, const position_e secondary_pos )
-{
-     int total = fielding->put_outs + fielding->assists + fielding->errors;
-
-     printf( "%4d %4d %2d ", fielding->put_outs, fielding->assists, fielding->errors );
-     printf( "%s ", displayAvg( (total > 0) ? ((float)(fielding->put_outs + fielding->assists)) / ((float)total) : 0 ) );
-     printf( "  %-2s  ", positionName( secondary_pos ) );
-     printf( "%s", displayAvg( fielding->secondary_avg ) );
-}
-
-
-static void printHitterStats( const hitting_s *stats )
-{
-     printf( "%s ", displayAvg( (stats->at_bats > 0) ? ((float)stats->hits) / ((float)stats->at_bats) : 0 ) );
-
-     printf( "%3d ", stats->games );
-
-     printf( "%3d %3d %3d ", stats->at_bats, stats->runs, stats->hits );
-
-     printf( "%3d %3d %3d ", stats->doubles, stats->triples, stats->home_runs );
-
-     printf( "%3d %3d %3d ", stats->rbi, stats->walks, stats->strike_outs );
-
-     printf( "%3d %2d ", stats->stolen_bases, stats->errors );
-
-     int singles  = stats->hits - (stats->doubles + stats->triples + stats->home_runs);
-     int slugging = singles + (2 * stats->doubles) + (3 * stats->triples) + (4 * stats->home_runs);
-
-     printf( "%s ", displayAvg( (stats->at_bats > 0) ? ((float)slugging) / ((float)stats->at_bats) : 0 ) );
-
-     printf( "%s ", displayAvg( ((stats->at_bats + stats->walks) > 0) ? (float)(stats->hits + stats->walks) / (float)(stats->at_bats + stats->walks) : 0 ) );
-
-     printf( "%s ", displayAvg( (stats->at_bats > 0) ? ((float)stats->strike_outs) / ((float)stats->at_bats) : 0 ) );
-
-     int run_prod = stats->runs + stats->rbi - stats->home_runs;
-
-     printf( "%4.2f", (stats->games > 0) ? ((float)run_prod) / ((float)stats->games) : 0 );
-}
 
 
 static void printHitter( const player_s *player )
@@ -122,43 +34,6 @@ static void printHitter( const player_s *player )
 }
 
 
-static void printPitcherFielding( const pitcher_s *pitcher )
-{
-     printf( "%s", displayAvg( pitcher->fielding_avg ) );
-}
-
-
-static void printPitcherStats( const pitching_s *stats )
-{
-     printf( "%2d %2d ", stats->wins, stats->losses );
-
-     float norm_inn  = ((int)stats->innings);
-     /**/  norm_inn += (stats->innings - norm_inn) / 3.0;
-
-     printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->earned_runs) / norm_inn * 9.0 : 0 );
-
-     printf( "%3d ", stats->games );
-
-     printf( "%2d ", stats->saves );
-
-     printf( "%5.1f ", stats->innings );
-
-     printf( "%3d %3d %3d %3d %3d ", stats->hits, stats->earned_runs, stats->home_runs, stats->walks, stats->strike_outs );
-
-     printf( "%s ", displayAvg( (stats->at_bats > 0) ? ((float)stats->hits) / ((float)stats->at_bats) : 0 ) );
-
-     printf( "%5.2f ", (stats->games > 0) ? norm_inn / ((float)stats->games) : 0 );
-
-     printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->hits) / norm_inn * 9.0 : 0 );
-
-     printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->walks) / norm_inn * 9.0 : 0 );
-
-     printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->strike_outs) / norm_inn * 9.0 : 0 );
-
-     printf( "%5.2f", (norm_inn > 0) ? ((float)stats->home_runs) / norm_inn * 9.0 : 0 );
-}
-
-
 static void printPitcher( const player_s *player )
 {
      char name_buf[ 42 + 1 ];
@@ -171,7 +46,14 @@ static void printPitcher( const player_s *player )
              positionName( p->primary_pos ),
              /**/          name_buf       );
 
-     printf( "%2d Games", player->injury_days );
+     if ( print_pitcher_rest == bl_True )
+     {
+          printf( "%2d Games", player->injury_days );
+     }
+     else
+     {
+          printf( "%2d Games", player->injury_days - MAX_REST );
+     }
 
      printf( "\n" );
 }
@@ -208,7 +90,7 @@ static void printInjuries( const league_s *leagues )
 
                          if ( print_pitcher_rest == bl_False   &&
                               pl->type           == pt_Pitcher &&
-                              pl->injury_days    <= 4             ) continue;
+                              pl->injury_days    <= MAX_REST      ) continue;
 
                          if ( printTeam )
                          {
