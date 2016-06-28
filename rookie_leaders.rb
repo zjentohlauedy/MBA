@@ -17,8 +17,8 @@ elsif ARGV.size > 1
   path   = ARGV[0] || '.'
   season = ARGV[1]
 else
-  path   = '.'
-  season = '0'
+  puts "Usage: #{$PROGRAM_NAME} [path] <season>"
+  exit
 end
 
 extract_data = ProgRunner.new location, "extract_data"
