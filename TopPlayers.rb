@@ -177,6 +177,8 @@ class StatRankings
     @org[:leagues].each do |league|
       league[:divisions].each do |division|
         division[:teams].each do |team|
+          next if team[:players].nil?
+
           team[:players].each do |player|
             next if  player[:stats][@style].nil?
 

@@ -94,6 +94,11 @@ def enrich_batter( batter )
 end
 
 
+if ARGV.length > 0
+  chosen_team = ARGV[0]
+end
+
+
 org = get_organization 1
 
 org[:leagues] = get_leagues_by_org org
@@ -105,6 +110,8 @@ org[:leagues].each do |league|
     division[:teams] = get_teams_by_division division
 
     division[:teams].each do |team|
+      next if chosen_team and team[:name].downcase != chosen_team.downcase
+
       team[:players] = get_players_by_team team
 
       team[:players].each do |player|
