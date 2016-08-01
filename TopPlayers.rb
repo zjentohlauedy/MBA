@@ -152,10 +152,11 @@ end
 class StatRankings
   attr_reader :pitchers, :batters
 
-  def initialize( org, style=:simulated )
-    @org     = org
-    @style   = style
-    @players = Array.new
+  def initialize( org, style=:simulated, absolute=false )
+    @org      = org
+    @style    = style
+    @absolute = absolute
+    @players  = Array.new
   end
 
   def process_categories( categories )
@@ -202,6 +203,10 @@ class StatRankings
   end
 
   def filter_pitchers( pitchers )
+    if @absolute
+      return pitchers.select { |p| p.innings.to_f >= 185.0 }
+    end
+
     pitchers.sort! { |a,b| b.innings.to_f <=> a.innings.to_f }
 
     max = pitchers[0].innings.to_f
@@ -210,6 +215,10 @@ class StatRankings
   end
 
   def filter_batters( batters )
+    if @absolute
+      return batters.select { |b| b.at_bats >= 300 }
+    end
+
     batters.sort! { |a,b| b.at_bats <=> a.at_bats }
 
     max = batters[0].at_bats
