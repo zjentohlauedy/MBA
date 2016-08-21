@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <math.h>
 #include "ewbfiles.h"
 #include "league.h"
 
@@ -124,7 +125,7 @@ static void printPitcherFielding( const pitcher_s *pitcher )
 static void printPitcherStats( const pitching_s *stats )
 {
      const int innings  = (int)stats->innings;
-     const int outs = (int)((stats->innings - innings) * 10.0);
+     const int outs = (int)rintf((stats->innings - innings) * 10.0);
 
 
      printf( "{\"wins\":%d", stats->wins );
