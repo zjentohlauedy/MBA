@@ -41,6 +41,7 @@ fixstats
 games_played
 gen_players
 injuries
+list_players
 lottery
 print_colors
 print_parks

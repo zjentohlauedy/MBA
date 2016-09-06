@@ -13,6 +13,7 @@ fixstats \
 games_played \
 gen_players \
 injuries \
+list_players \
 lottery \
 print_colors \
 print_parks \
@@ -72,6 +73,9 @@ injuries: injuries.o ewbfiles.o convert_league.o
 lottery: lottery.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
+list_players: list_players.o ewbfiles.o convert_league.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
+
 print_colors: print_colors.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
@@ -127,7 +131,7 @@ updateewbstats: updateewbstats.o ewbfiles.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 lottery.o: lottery.c
-	$(CC) $(CFLAGS) -D_BSD_SOURCE -c $<
+	$(CC) $(CFLAGS) -D_DEFAULT_SOURCE -c $<
 
 %.o: %.c ewbfiles.h league.h
 	$(CC) $(CFLAGS) -c $<
