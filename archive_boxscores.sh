@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #
+BASE_PATH=/home/zjentohlauedy/Amiga/HD/MBA
 FILE_MATCHER="D[0-9][0-9][0-9]G[0-9][0-9].TXT"
 BOXSCORES=($FILE_MATCHER)
 
@@ -15,6 +16,9 @@ then
     echo "No boxscore files. Nothing to do here."
     exit
 fi
+
+echo "Checking boxscores for achievements..."
+$BASE_PATH/find_achievements.rb $FILE_MATCHER
 
 GAMEDAY=$((10#${BOXSCORES[0]:1:3}))
 
