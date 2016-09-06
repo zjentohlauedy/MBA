@@ -120,7 +120,7 @@ static void copyPlayer( player_s *player, const fileplayer_s *fileplayer )
 
           float norm_inn  = ((int)stats->innings);
           /**/  norm_inn += (stats->innings - norm_inn) / 0.3;
-          int   est_ab    = (int)(norm_inn * 3.0) + stats->hits + stats->walks;
+          int   est_ab    = (int)(norm_inn * 3.0) + stats->hits;
 
           stats->at_bats = est_ab;
 
