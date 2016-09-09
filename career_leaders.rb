@@ -8,6 +8,8 @@ $: << "#{location}"
 require 'sqlite3'
 require 'TopPlayers'
 
+require_relative 'MBATool/web/utils'
+
 
 @db = SQLite3::Database.new "#{location}/mba.db"
 
@@ -15,71 +17,54 @@ require 'TopPlayers'
 @db.type_translation = true
 
 
-def transform_hash db_hash
-  result = []
-
-  db_hash.each do |element|
-    hash = {}
-
-    element.each do|key, value|
-      hash.store key.downcase.to_sym, value
-    end
-
-    result.push hash
-  end
-
-  return result
-end
-
-
 def get_organization( organization_id )
-  result = transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
+  result = Utils::transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
   result[0]
 end
 
 def get_team_by_name( name )
-  transform_hash @db.execute( "select * from teams_t where name = :name collate nocase", { name: name } )
+  Utils::transform_hash @db.execute( "select * from teams_t where name = :name collate nocase", { name: name } )
 end
 
 def get_players
-  transform_hash @db.execute "select * from players_t"
+  Utils::transform_hash @db.execute "select * from players_t"
 end
 
 def get_players_for_team( team_id )
-  transform_hash @db.execute "select * from players_t where player_id in (select distinct player_id from team_players_t where team_id = #{team_id})"
+  Utils::transform_hash @db.execute "select * from players_t where player_id in (select distinct player_id from team_players_t where team_id = #{team_id})"
 end
 
 def get_team_player_seasons( team_id, player_id )
-  transform_hash @db.execute "select season from team_players_t where team_id = #{team_id} and player_id = #{player_id}"
+  Utils::transform_hash @db.execute "select season from team_players_t where team_id = #{team_id} and player_id = #{player_id}"
 end
 
 def get_pitcher_by_player_id( player_id )
-  result = transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_batter_by_player_id( player_id )
-  result = transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_pitcher_stats_by_player_id( player_id )
-  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(wins) wins, sum(losses) losses, sum(games) games, sum(saves) saves, sum(innings) innings, sum(outs) outs, sum(hits) hits, sum(earned_runs) earned_runs, sum(home_runs) home_runs, sum(walks) walks, sum(strike_outs) strike_outs from pitcher_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
+  result = Utils::transform_hash @db.execute "select player_id, count(1) seasons, sum(wins) wins, sum(losses) losses, sum(games) games, sum(saves) saves, sum(innings) innings, sum(outs) outs, sum(hits) hits, sum(earned_runs) earned_runs, sum(home_runs) home_runs, sum(walks) walks, sum(strike_outs) strike_outs from pitcher_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
   result[0]
 end
 
 def get_pitcher_stats_by_player_id_and_season( player_id, seasons )
-  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(wins) wins, sum(losses) losses, sum(games) games, sum(saves) saves, sum(innings) innings, sum(outs) outs, sum(hits) hits, sum(earned_runs) earned_runs, sum(home_runs) home_runs, sum(walks) walks, sum(strike_outs) strike_outs from pitcher_stats_t where player_id = #{player_id} and season in #{seasons.to_s.gsub('[','(').gsub(']',')')} and season_phase = 1 group by player_id"
+  result = Utils::transform_hash @db.execute "select player_id, count(1) seasons, sum(wins) wins, sum(losses) losses, sum(games) games, sum(saves) saves, sum(innings) innings, sum(outs) outs, sum(hits) hits, sum(earned_runs) earned_runs, sum(home_runs) home_runs, sum(walks) walks, sum(strike_outs) strike_outs from pitcher_stats_t where player_id = #{player_id} and season in #{seasons.to_s.gsub('[','(').gsub(']',')')} and season_phase = 1 group by player_id"
   result[0]
 end
 
 def get_batter_stats_by_player_id( player_id )
-  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(games) games, sum(at_bats) at_bats, sum(runs) runs, sum(hits) hits, sum(doubles) doubles, sum(triples) triples, sum(home_runs) home_runs, sum(runs_batted_in) runs_batted_in, sum(walks) walks, sum(strike_outs) strike_outs, sum(steals) steals, sum(errors) errors from batter_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
+  result = Utils::transform_hash @db.execute "select player_id, count(1) seasons, sum(games) games, sum(at_bats) at_bats, sum(runs) runs, sum(hits) hits, sum(doubles) doubles, sum(triples) triples, sum(home_runs) home_runs, sum(runs_batted_in) runs_batted_in, sum(walks) walks, sum(strike_outs) strike_outs, sum(steals) steals, sum(errors) errors from batter_stats_t where player_id = #{player_id} and season_phase = 1 group by player_id"
   result[0]
 end
 
 def get_batter_stats_by_player_id_and_season( player_id, seasons )
-  result = transform_hash @db.execute "select player_id, count(1) seasons, sum(games) games, sum(at_bats) at_bats, sum(runs) runs, sum(hits) hits, sum(doubles) doubles, sum(triples) triples, sum(home_runs) home_runs, sum(runs_batted_in) runs_batted_in, sum(walks) walks, sum(strike_outs) strike_outs, sum(steals) steals, sum(errors) errors from batter_stats_t where player_id = #{player_id} and season in #{seasons.to_s.gsub('[','(').gsub(']',')')} and season_phase = 1 group by player_id"
+  result = Utils::transform_hash @db.execute "select player_id, count(1) seasons, sum(games) games, sum(at_bats) at_bats, sum(runs) runs, sum(hits) hits, sum(doubles) doubles, sum(triples) triples, sum(home_runs) home_runs, sum(runs_batted_in) runs_batted_in, sum(walks) walks, sum(strike_outs) strike_outs, sum(steals) steals, sum(errors) errors from batter_stats_t where player_id = #{player_id} and season in #{seasons.to_s.gsub('[','(').gsub(']',')')} and season_phase = 1 group by player_id"
   result[0]
 end
 

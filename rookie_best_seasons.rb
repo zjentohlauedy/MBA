@@ -8,6 +8,8 @@ $: << "#{location}"
 require 'sqlite3'
 require 'TopPlayers'
 
+require_relative 'MBATool/web/utils'
+
 
 @db = SQLite3::Database.new "#{location}/mba.db"
 
@@ -15,61 +17,44 @@ require 'TopPlayers'
 @db.type_translation = true
 
 
-def transform_hash db_hash
-  result = []
-
-  db_hash.each do |element|
-    hash = {}
-
-    element.each do|key, value|
-      hash.store key.downcase.to_sym, value
-    end
-
-    result.push hash
-  end
-
-  return result
-end
-
-
 def get_organization( organization_id )
-  result = transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
+  result = Utils::transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
   result[0]
 end
 
 def get_leagues_by_org( organization )
-  transform_hash @db.execute "select l.* from organization_leagues_t ol join leagues_t l on ol.league_id = l.league_id where ol.organization_id = #{organization[:organization_id]}"
+  Utils::transform_hash @db.execute "select l.* from organization_leagues_t ol join leagues_t l on ol.league_id = l.league_id where ol.organization_id = #{organization[:organization_id]}"
 end
 
 def get_divisions_by_league( league )
-  transform_hash @db.execute "select d.* from league_divisions_t ld join divisions_t d on ld.division_id = d.division_id where ld.league_id = #{league[:league_id]}"
+  Utils::transform_hash @db.execute "select d.* from league_divisions_t ld join divisions_t d on ld.division_id = d.division_id where ld.league_id = #{league[:league_id]}"
 end
 
 def get_teams_by_division( division )
-  transform_hash @db.execute "select t.* from division_teams_t dt join teams_t t on dt.team_id = t.team_id where dt.division_id = #{division[:division_id]}"
+  Utils::transform_hash @db.execute "select t.* from division_teams_t dt join teams_t t on dt.team_id = t.team_id where dt.division_id = #{division[:division_id]}"
 end
 
 def get_players_by_team( team )
-  transform_hash @db.execute "select p.*, tp.season from team_players_t tp join players_t p on tp.player_id = p.player_id where tp.team_id = #{team[:team_id]} and p.rookie_season = tp.season"
+  Utils::transform_hash @db.execute "select p.*, tp.season from team_players_t tp join players_t p on tp.player_id = p.player_id where tp.team_id = #{team[:team_id]} and p.rookie_season = tp.season"
 end
 
 def get_pitcher_by_player_id( player_id )
-  result = transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_batter_by_player_id( player_id )
-  result = transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_pitcher_stats_by_player_id_and_season( player_id, season )
-  result = transform_hash @db.execute "select * from pitcher_stats_t where player_id = #{player_id} and season = #{season} and season_phase = 1"
+  result = Utils::transform_hash @db.execute "select * from pitcher_stats_t where player_id = #{player_id} and season = #{season} and season_phase = 1"
   result[0]
 end
 
 def get_batter_stats_by_player_id_and_season( player_id, season )
-  result = transform_hash @db.execute "select * from batter_stats_t where player_id = #{player_id}  and season = #{season} and season_phase = 1"
+  result = Utils::transform_hash @db.execute "select * from batter_stats_t where player_id = #{player_id}  and season = #{season} and season_phase = 1"
   result[0]
 end
 

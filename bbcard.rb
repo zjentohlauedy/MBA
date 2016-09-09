@@ -10,6 +10,7 @@ require 'sqlite3'
 
 require_relative 'MBATool/web/positions'
 require_relative 'MBATool/web/phases'
+require_relative 'MBATool/web/utils'
 
 
 if ARGV.length == 0
@@ -22,24 +23,6 @@ end
 
 @db.results_as_hash  = true
 @db.type_translation = true
-
-
-
-def transform_hash db_hash
-  result = []
-
-  db_hash.each do |element|
-    hash = {}
-
-    element.each do|key, value|
-      hash.store key.downcase.to_sym, value
-    end
-
-    result.push hash
-  end
-
-  return result
-end
 
 
 def calc_era( stat )
@@ -55,7 +38,7 @@ def calc_avg( stat )
 end
 
 def get_organization( organization_id )
-  result = transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
+  result = Utils::transform_hash @db.execute "select * from organizations_t where organization_id = #{organization_id}"
   result[0]
 end
 
@@ -63,7 +46,7 @@ def get_player( player_id )
   args = { player_id: player_id }
   query = "select * from players_t where player_id = :player_id"
 
-  result = transform_hash @db.execute query, args
+  result = Utils::transform_hash @db.execute query, args
   result[0]
 end
 
@@ -71,30 +54,30 @@ def get_current_team( player_id, season )
   args = { player_id: player_id, season: season }
   query = "select * from team_players_t tp join teams_t t on tp.team_id = t.team_id where tp.player_id = :player_id and tp.season = :season"
 
-  result = transform_hash @db.execute query, args
+  result = Utils::transform_hash @db.execute query, args
   result[0]
 end
 
 def get_pitcher_details( player_id )
-  result = transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from pitchers_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_batter_details( player_id )
-  result = transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
+  result = Utils::transform_hash @db.execute "select * from batters_t where player_id = #{player_id}"
   result[0]
 end
 
 def get_pitcher_stats( player_id, phase = Phases::RegularSeason )
   query = "select * from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season join teams_t t on tp.team_id = t.team_id where ps.player_id = #{player_id} and ps.season_phase = #{phase} and tp.team_id <= 32 order by ps.season"
 
-  result = transform_hash @db.execute query
+  result = Utils::transform_hash @db.execute query
 end
 
 def get_batter_stats( player_id, phase = Phases::RegularSeason )
   query = "select * from batter_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season join teams_t t on tp.team_id = t.team_id where ps.player_id = #{player_id} and ps.season_phase = #{phase} and tp.team_id <= 32 order by ps.season"
 
-  result = transform_hash @db.execute query
+  result = Utils::transform_hash @db.execute query
 end
 
 def print_pitcher_stats( pitcher, type )
