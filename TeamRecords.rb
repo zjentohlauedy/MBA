@@ -1,5 +1,5 @@
 class TeamRecords
-  attr_reader :team, :overall, :division, :league, :points_scored, :points_allowed, :opponents
+  attr_reader :team, :overall, :division, :league, :home, :road, :points_scored, :points_allowed, :opponents
 
   TeamDivisions = {
     'Sabres'    => 0, 'Scorpions' => 1, 'Aces'      => 2, 'Eclipse'   => 3, 'Global' => 4,
