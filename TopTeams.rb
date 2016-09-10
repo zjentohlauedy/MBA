@@ -48,7 +48,7 @@ class Stats
     if @season.nil?
       sprintf "%-20s %-15s #{@format}", @name, @team, sort_key
     else
-      sprintf "%-20s S%02d  %-15s #{@format}", @name, @season, @team, sort_key
+      sprintf "%-20s %-15s S%02d  #{@format}", @name, @team, @season, sort_key
     end
   end
 
@@ -74,7 +74,7 @@ class TieMessage
   end
 
   def to_s
-    sprintf "   %-35s #{@padding} #{@format}", "#{@count} Players Tied At", @value
+    sprintf "   %-32s #{@padding} #{@format}", "#{@count} Teams Tied At", @value
   end
 end
 
@@ -83,8 +83,9 @@ class Records < Stats
   attr_reader :name, :wins, :home_wins, :road_wins, :division_wins, :league_wins, :runs_scored, :runs_allowed
 
   def initialize( team )
-    @name = team[:location]
-    @team = team[:name]
+    @name            = team[:location]
+    @team            = team[:name]
+    @season          = team[:stats][:season         ]
     @wins            = team[:stats][:wins           ]
     @losses          = team[:stats][:losses         ]
     @home_wins       = team[:stats][:home_wins      ]
@@ -245,23 +246,23 @@ class StatRankings
     return top_teams
   end
 
-  def summarize_ties( players, format, max=20 )
-    if players.length > max
-      tied = players.select { |p| p.get_sort_key == players[-1].get_sort_key }
+  def summarize_ties( teams, format, max=20 )
+    if teams.length > max
+      tied = teams.select { |p| p.get_sort_key == teams[-1].get_sort_key }
 
-      players = players.reject { |p| tied.include? p }
+      teams = teams.reject { |p| tied.include? p }
 
-      players.push TieMessage.new tied.length, tied[-1].get_sort_key, format, tied[-1].has_season? ? "     " : ""
+      teams.push TieMessage.new tied.length, tied[-1].get_sort_key, format, tied[-1].has_season? ? "     " : ""
     end
 
-    return players
+    return teams
   end
 
   def print_top_teams( stat, dir=:ascending, format='%d' )
-    @teams.each do |player|
-      player.set_sort_key stat
-      player.set_direction dir
-      player.set_format format
+    @teams.each do |team|
+      team.set_sort_key stat
+      team.set_direction dir
+      team.set_format format
     end
 
     @teams.sort!
