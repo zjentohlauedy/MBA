@@ -11,7 +11,11 @@ class Stats
 
   def <=>( other )
     if get_sort_key == other.get_sort_key
-      return @name <=> other.name
+      if @season == other.season
+        return @name <=> other.name
+      end
+
+      return @season <=> other.season
     end
 
     if @direction == :ascending
@@ -80,7 +84,7 @@ end
 
 
 class Pitcher < Stats
-  attr_reader :name, :wins, :losses, :era, :games, :saves, :innings
+  attr_reader :name, :wins, :losses, :era, :games, :saves, :innings, :season
   attr_reader :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba, :win_pct
   attr_reader :inn_per_game, :whip, :so_per_9, :hr_per_9, :wl_ratio, :efficiency, :eff_per_9
 
@@ -125,7 +129,7 @@ end
 class Batter < Stats
   attr_reader :name, :team, :pos, :average, :games, :at_bats, :runs, :hits
   attr_reader :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs
-  attr_reader :steals, :errors, :slugging, :obp, :soa, :rpg
+  attr_reader :steals, :errors, :slugging, :obp, :soa, :rpg, :season
 
   def initialize( team, batter, style=:simulated )
     @name        = "#{batter[:last_name]}, #{batter[:first_name]}"
