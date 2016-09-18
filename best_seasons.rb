@@ -110,6 +110,6 @@ org[:leagues].each do |league|
   end
 end
 
-sr = StatRankings.new org
+sr = StatRankings.new org, :simulated, true
 
 sr.process_categories @categories
