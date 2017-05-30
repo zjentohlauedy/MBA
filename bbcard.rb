@@ -112,6 +112,22 @@ def get_best_pitcher_stats_overall()
   return result[0]
 end
 
+def get_best_pitcher_stats_by_team( team_id )
+  query = "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id}"
+  result = Utils::transform_hash @db.execute query
+
+  query2  = "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
+  result2 = Utils::transform_hash @db.execute query2
+
+  query3  = "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id}"
+  result3 = Utils::transform_hash @db.execute query3
+
+  result[0][:era] = result2[0]
+  result[0][:ip]  = result3[0]
+
+  return result[0]
+end
+
 def get_best_pitcher_stats_by_season( season )
   query = "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t where season = #{season}"
   result = Utils::transform_hash @db.execute query
@@ -120,6 +136,22 @@ def get_best_pitcher_stats_by_season( season )
   result2 = Utils::transform_hash @db.execute query2
 
   query3  = "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t where season = #{season}"
+  result3 = Utils::transform_hash @db.execute query3
+
+  result[0][:era] = result2[0]
+  result[0][:ip]  = result3[0]
+
+  return result[0]
+end
+
+def get_best_pitcher_stats_by_team_and_season( team_id, season )
+  query = "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season}"
+  result = Utils::transform_hash @db.execute query
+
+  query2  = "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result2 = Utils::transform_hash @db.execute query2
+
+  query3  = "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season}"
   result3 = Utils::transform_hash @db.execute query3
 
   result[0][:era] = result2[0]
@@ -140,6 +172,18 @@ def get_best_batter_stats_overall()
   return result[0]
 end
 
+def get_best_batter_stats_by_team( team_id )
+  query = "select max(at_bats) at_bats, max(runs) runs, max(hits) hits, max(doubles) doubles, max(triples) triples, max(home_runs) home_runs, max(runs_batted_in) runs_batted_in, max(steals) steals, max(walks) walks from batter_stats_t bs join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season where tp.team_id = #{team_id}"
+  result = Utils::transform_hash @db.execute query
+
+  query2  = "select at_bats, hits, max(cast(hits as float) / at_bats) avg from batter_stats_t bs join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season where tp.team_id = #{team_id} and at_bats >= 300"
+  result2 = Utils::transform_hash @db.execute query2
+
+  result[0][:average] = result2[0]
+
+  return result[0]
+end
+
 def get_best_batter_stats_by_season( season )
   query = "select max(at_bats) at_bats, max(runs) runs, max(hits) hits, max(doubles) doubles, max(triples) triples, max(home_runs) home_runs, max(runs_batted_in) runs_batted_in, max(steals) steals, max(walks) walks from batter_stats_t where season = #{season}"
   result = Utils::transform_hash @db.execute query
@@ -152,9 +196,23 @@ def get_best_batter_stats_by_season( season )
   return result[0]
 end
 
+def get_best_batter_stats_by_team_and_season( team_id, season )
+  query = "select max(at_bats) at_bats, max(runs) runs, max(hits) hits, max(doubles) doubles, max(triples) triples, max(home_runs) home_runs, max(runs_batted_in) runs_batted_in, max(steals) steals, max(walks) walks from batter_stats_t bs join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season where tp.team_id = #{team_id} and bs.season = #{season}"
+  result = Utils::transform_hash @db.execute query
+
+  query2  = "select at_bats, hits, max(cast(hits as float) / at_bats) avg from batter_stats_t bs join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season where tp.team_id = #{team_id} and bs.season = #{season} and at_bats >= 300"
+  result2 = Utils::transform_hash @db.execute query2
+
+  result[0][:average] = result2[0]
+
+  return result[0]
+end
+
 def hilite( value )
-  if value == 2; then return "\e[33m\e[1m" end # bold yellow
-  if value == 1; then return "\e[1m"       end # bold white
+  if value == 4; then return "\e[33m\e[1m" end # bold yellow
+  if value == 3; then return "\e[1m"       end # bold white
+  if value == 2; then return "\e[36m" end
+  if value == 1; then return "\e[35m" end
   return                     "\e[0m"           # no hilite
 end
 
@@ -188,29 +246,41 @@ def print_pitcher_stats( pitcher, type )
     categories = {}
 
     if type == :regular and stat[:innings] >= 185
-      season_best = get_best_pitcher_stats_by_season stat[:season]
+      season_best      = get_best_pitcher_stats_by_season stat[:season]
+      team_best        = get_best_pitcher_stats_by_team stat[:team_id]
+      team_season_best = get_best_pitcher_stats_by_team_and_season stat[:team_id], stat[:season]
 
       stat.each_pair do |k, v|
         next if overall_best[k].nil?
 
-        if    v >= overall_best[k]; then categories[k] = 2
-        elsif v >= season_best[k];  then categories[k] = 1
-        else                             categories[k] = 0 end
+        if    v >= overall_best[k];     then categories[k] = 4
+        elsif v >= season_best[k];      then categories[k] = 3
+        elsif v >= team_best[k];        then categories[k] = 2
+        elsif v >= team_season_best[k]; then categories[k] = 1
+        else                                 categories[k] = 0 end
       end
 
-      overall_best_era = calc_era overall_best[:era]
-      season_best_era  = calc_era season_best[:era]
+      overall_best_era     = calc_era overall_best[:era]
+      season_best_era      = calc_era season_best[:era]
+      team_best_era        = calc_era team_best[:era]
+      team_season_best_era = calc_era team_season_best[:era]
 
-      if    era <= overall_best_era; then categories[:era] = 2
-      elsif era <= season_best_era;  then categories[:era] = 1
-      else                                categories[:era] = 0 end
+      if    era <= overall_best_era;     then categories[:era] = 4
+      elsif era <= season_best_era;      then categories[:era] = 3
+      elsif era <= team_best_era;        then categories[:era] = 2
+      elsif era <= team_season_best_era; then categories[:era] = 1
+      else                                    categories[:era] = 0 end
 
-      overall_best_ip = calc_ip overall_best[:ip]
-      season_best_ip  = calc_ip season_best[:ip]
+      overall_best_ip     = calc_ip overall_best[:ip]
+      season_best_ip      = calc_ip season_best[:ip]
+      team_best_ip        = calc_ip team_best[:ip]
+      team_season_best_ip = calc_ip team_season_best[:ip]
 
-      if    ip >= overall_best_ip; then categories[:ip] = 2
-      elsif ip >= season_best_ip;  then categories[:ip] = 1
-      else                              categories[:ip] = 0 end
+      if    ip >= overall_best_ip;     then categories[:ip] = 4
+      elsif ip >= season_best_ip;      then categories[:ip] = 3
+      elsif ip >= team_best_ip;        then categories[:ip] = 2
+      elsif ip >= team_season_best_ip; then categories[:ip] = 1
+      else                                  categories[:ip] = 0 end
     end
 
     printf "S%02d  %-10s  ", stat[ :season      ], stat[ :name        ]
@@ -285,22 +355,30 @@ def print_batter_stats( batter, type )
     categories = {}
 
     if type == :regular and stat[:at_bats] >= 300
-      season_best = get_best_batter_stats_by_season stat[:season]
+      season_best      = get_best_batter_stats_by_season stat[:season]
+      team_best        = get_best_batter_stats_by_team stat[:team_id]
+      team_season_best = get_best_batter_stats_by_team_and_season stat[:team_id], stat[:season]
 
       stat.each_pair do |k, v|
         next if overall_best[k].nil?
 
-        if    v >= overall_best[k]; then categories[k] = 2
-        elsif v >= season_best[k];  then categories[k] = 1
-        else                             categories[k] = 0 end
+        if    v >= overall_best[k];     then categories[k] = 4
+        elsif v >= season_best[k];      then categories[k] = 3
+        elsif v >= team_best[k];        then categories[k] = 2
+        elsif v >= team_season_best[k]; then categories[k] = 1
+        else                                 categories[k] = 0 end
       end
 
-      overall_best_avg = calc_avg overall_best[:average]
-      season_best_avg  = calc_avg season_best[:average]
+      overall_best_avg     = calc_avg overall_best[:average]
+      season_best_avg      = calc_avg season_best[:average]
+      team_best_avg        = calc_avg team_best[:average]
+      team_season_best_avg = calc_avg team_season_best[:average]
 
-      if    avg >= overall_best_avg; then categories[:avg] = 2
-      elsif avg >= season_best_avg;  then categories[:avg] = 1
-      else                                categories[:avg] = 0 end
+      if    avg >= overall_best_avg;     then categories[:avg] = 4
+      elsif avg >= season_best_avg;      then categories[:avg] = 3
+      elsif avg >= team_best_avg;        then categories[:avg] = 2
+      elsif avg >= team_season_best_avg; then categories[:avg] = 1
+      else                                    categories[:avg] = 0 end
     end
 
     printf "S%02d  %-10s  ", stat[ :season ], stat[ :name   ]
