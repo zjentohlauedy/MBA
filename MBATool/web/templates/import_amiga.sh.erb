@@ -11,7 +11,7 @@ then
     exit;
 fi
 
-soffice -env:UserInstallation=file://~/.libreoffice-alt --headless --convert-to csv --outdir $SEASON_DIR $SEASON_DIR/schedule.ods
+soffice -env:UserInstallation=file://$HOME/.libreoffice-alt --headless --convert-to csv --outdir $SEASON_DIR $SEASON_DIR/schedule.ods
 
 if [[ $SEASON_DIR/setgames -nt $SEASON_DIR/schedule.csv ]]
 then
