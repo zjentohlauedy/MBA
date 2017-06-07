@@ -6,6 +6,7 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'json'
+require 'tmpdir'
 require 'FileParser'
 require 'ProgRunner'
 require 'ScheduleParser'
@@ -163,10 +164,20 @@ extract_data = ProgRunner.new location, "extract_data"
 
 extract_data.execute "#{path}/LeagName.Dat", "#{path}/Players.S"
 
+convert_schedule = ProgRunner.new '/usr/bin', 'soffice'
+
+convert_schedule.execute "-env:UserInstallation=file://#{ENV['HOME']}/.libreoffice-alt", '--headless', '--convert-to', 'csv', '--outdir', Dir::tmpdir, './schedule.ods'
+
+if !convert_schedule.success?
+  puts "Error converting schedule: "
+  puts convert_schedule.get_output
+  raise "Processing Failed"
+end
+
 sp = ScheduleParser.new
 fp = FileParser.new sp
 
-fp.process_file "#{path}/schedule.csv"
+fp.process_file "#{Dir::tmpdir}/schedule.csv"
 
 team_records = {}
 
