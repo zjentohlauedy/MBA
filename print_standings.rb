@@ -77,8 +77,10 @@ def print_teams( teams )
     while result = record[:results].pop do
       break if (last_ten[:wins] + last_ten[:losses]) == 10 and streak[:final]
 
-      if result == 'W'; then last_ten[:wins  ] += 1; end
-      if result == 'L'; then last_ten[:losses] += 1; end
+      if (last_ten[:wins] + last_ten[:losses]) < 10
+        if result == 'W'; then last_ten[:wins  ] += 1; end
+        if result == 'L'; then last_ten[:losses] += 1; end
+      end
 
       if streak[:type].nil?
         streak[:type] = result
