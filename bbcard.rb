@@ -23,6 +23,14 @@ else
 end
 
 
+AllTimeRecord            = 5
+SeasonBestWithTeamRecord = 4
+SeasonBest               = 3
+TeamRecord               = 2
+SeasonBestForTeam        = 1
+NothingSpecial           = 0
+
+
 @db = SQLite3::Database.new "#{location}/mba.db"
 
 @db.results_as_hash  = true
@@ -208,12 +216,23 @@ def get_best_batter_stats_by_team_and_season( team_id, season )
   return result[0]
 end
 
+def calc_category_tag( value, op, targets = {} )
+  if    value.send( op, targets[:overall]);                                  then return AllTimeRecord
+  elsif value.send( op, targets[:season]) \
+    and value.send( op, targets[:team]);                                     then return SeasonBestWithTeamRecord
+  elsif value.send( op, targets[:season]);                                   then return SeasonBest
+  elsif value.send( op, targets[:team]);                                     then return TeamRecord
+  elsif value.send( op, targets[:team_season]);                              then return SeasonBestForTeam
+  else                                                                              return NothingSpecial end
+end
+
 def hilite( value )
-  if value == 4; then return "\e[33m\e[1m" end # bold yellow
-  if value == 3; then return "\e[1m"       end # bold white
-  if value == 2; then return "\e[36m" end
-  if value == 1; then return "\e[35m" end
-  return                     "\e[0m"           # no hilite
+  if value == AllTimeRecord;            then return "\e[33m\e[1m" end # bold yellow
+  if value == SeasonBestWithTeamRecord; then return "\e[36m\e[1m" end # bold cyan
+  if value == SeasonBest;               then return "\e[1m"       end # bold white
+  if value == TeamRecord;               then return "\e[36m"      end # cyan
+  if value == SeasonBestForTeam;        then return "\e[35m"      end # magenta
+  return                                            "\e[0m"           # no hilite
 end
 
 def unhilite()
@@ -253,11 +272,7 @@ def print_pitcher_stats( pitcher, type )
       stat.each_pair do |k, v|
         next if overall_best[k].nil?
 
-        if    v >= overall_best[k];     then categories[k] = 4
-        elsif v >= season_best[k];      then categories[k] = 3
-        elsif v >= team_best[k];        then categories[k] = 2
-        elsif v >= team_season_best[k]; then categories[k] = 1
-        else                                 categories[k] = 0 end
+        categories[k] = calc_category_tag( v, '>=', overall: overall_best[k], season: season_best[k], team: team_best[k], team_season: team_season_best[k] )
       end
 
       overall_best_era     = calc_era overall_best[:era]
@@ -265,22 +280,14 @@ def print_pitcher_stats( pitcher, type )
       team_best_era        = calc_era team_best[:era]
       team_season_best_era = calc_era team_season_best[:era]
 
-      if    era <= overall_best_era;     then categories[:era] = 4
-      elsif era <= season_best_era;      then categories[:era] = 3
-      elsif era <= team_best_era;        then categories[:era] = 2
-      elsif era <= team_season_best_era; then categories[:era] = 1
-      else                                    categories[:era] = 0 end
+      categories[:era] = calc_category_tag( era, '<=', overall: overall_best_era, season: season_best_era, team: team_best_era, team_season: team_season_best_era )
 
       overall_best_ip     = calc_ip overall_best[:ip]
       season_best_ip      = calc_ip season_best[:ip]
       team_best_ip        = calc_ip team_best[:ip]
       team_season_best_ip = calc_ip team_season_best[:ip]
 
-      if    ip >= overall_best_ip;     then categories[:ip] = 4
-      elsif ip >= season_best_ip;      then categories[:ip] = 3
-      elsif ip >= team_best_ip;        then categories[:ip] = 2
-      elsif ip >= team_season_best_ip; then categories[:ip] = 1
-      else                                  categories[:ip] = 0 end
+      categories[:ip] = calc_category_tag( ip, '>=', overall: overall_best_ip, season: season_best_ip, team: team_best_ip, team_season: team_season_best_ip )
     end
 
     printf "S%02d  %-10s  ", stat[ :season      ], stat[ :name        ]
@@ -362,11 +369,7 @@ def print_batter_stats( batter, type )
       stat.each_pair do |k, v|
         next if overall_best[k].nil?
 
-        if    v >= overall_best[k];     then categories[k] = 4
-        elsif v >= season_best[k];      then categories[k] = 3
-        elsif v >= team_best[k];        then categories[k] = 2
-        elsif v >= team_season_best[k]; then categories[k] = 1
-        else                                 categories[k] = 0 end
+        categories[k] = calc_category_tag( v, '>=', overall: overall_best[k], season: season_best[k], team: team_best[k], team_season: team_season_best[k] )
       end
 
       overall_best_avg     = calc_avg overall_best[:average]
@@ -374,11 +377,7 @@ def print_batter_stats( batter, type )
       team_best_avg        = calc_avg team_best[:average]
       team_season_best_avg = calc_avg team_season_best[:average]
 
-      if    avg >= overall_best_avg;     then categories[:avg] = 4
-      elsif avg >= season_best_avg;      then categories[:avg] = 3
-      elsif avg >= team_best_avg;        then categories[:avg] = 2
-      elsif avg >= team_season_best_avg; then categories[:avg] = 1
-      else                                    categories[:avg] = 0 end
+      categories[:avg] = calc_category_tag( avg, '>=', overall: overall_best_avg, season: season_best_avg, team: team_best_avg, team_season: team_season_best_avg )
     end
 
     printf "S%02d  %-10s  ", stat[ :season ], stat[ :name   ]
