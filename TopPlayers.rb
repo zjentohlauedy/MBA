@@ -313,14 +313,14 @@ end
 
 @categories = {
   'pitching'      => {  'label' => "Pitching Leaders",     'type' => 'pitcher',     'class'  => Pitcher,
-    'stats'       => [{ 'label' => "Wins",                 'stat' => :wins,         'format' => '%2d',    'direction' => :descending },
+    'stats'       => [{ 'label' => "Wins",                 'stat' => :wins,         'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Win/Loss Ratio",       'stat' => :wl_ratio,     'format' => '%s',     'direction' => :descending },
                       { 'label' => "Win Percentage",       'stat' => :win_pct,      'format' => '%s',     'direction' => :descending },
                       { 'label' => "Earned Run Average",   'stat' => :era,          'format' => '%5.2f',  'direction' => :ascending  },
                       { 'label' => "vs. Batting Average",  'stat' => :vsba,         'format' => '%s',     'direction' => :ascending  },
                       { 'label' => "Saves",                'stat' => :saves,        'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Innings Per Game",     'stat' => :inn_per_game, 'format' => '%5.2f',  'direction' => :descending },
-                      { 'label' => "Strike Outs",          'stat' => :strike_outs,  'format' => '%3d',    'direction' => :descending },
+                      { 'label' => "Strike Outs",          'stat' => :strike_outs,  'format' => '%4d',    'direction' => :descending },
                       { 'label' => "Strikeouts Per 9 Inn", 'stat' => :so_per_9,     'format' => '%5.2f',  'direction' => :descending },
                       { 'label' => "Walks & Hits Per Inn", 'stat' => :whip,         'format' => '%6.3f',  'direction' => :ascending  },
                       { 'label' => "Home Runs Per 9 Inn",  'stat' => :hr_per_9,     'format' => '%5.2f',  'direction' => :ascending  },
@@ -328,6 +328,7 @@ end
 
   'batting '      => {  'label' => "Hitting Leaders",      'type' => 'batter',      'class'  => Batter,
     'stats'       => [{ 'label' => "Batting Average",      'stat' => :average,      'format' => '%s',     'direction' => :descending },
+                      { 'label' => "Hits",                 'stat' => :hits,         'format' => '%4d',    'direction' => :descending },
                       { 'label' => "Doubles",              'stat' => :doubles,      'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Triples",              'stat' => :triples,      'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Home Runs",            'stat' => :home_runs,    'format' => '%3d',    'direction' => :descending },
