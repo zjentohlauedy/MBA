@@ -33,7 +33,7 @@ class PlayerRepository
   def get_free_agents_by_season( season )
     args = { season: season }
 
-    query = 'select * from players_t where player_id not in (select player_id from team_players_t where season = :season)'
+    query = 'select * from players_t where player_id not in (select player_id from team_players_t where season = :season) and retired_season is null'
 
     return Utils::transform_hash @db.execute query, args
   end
@@ -268,7 +268,7 @@ class PlayerRepository
   def save_player( player )
     args = {}
 
-    query = 'insert into players_t values ( :player_id, :first_name, :last_name, :first_phoenetic, :last_phoenetic, :skin_tone, :handedness, :player_type, :rookie_season, :longevity )'
+    query = 'insert into players_t values ( :player_id, :first_name, :last_name, :first_phoenetic, :last_phoenetic, :skin_tone, :handedness, :player_type, :rookie_season, :longevity, null )'
 
     args[ :player_id       ] = player[ :player_id       ]
     args[ :first_name      ] = player[ :first_name      ]

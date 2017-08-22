@@ -9,7 +9,8 @@ CREATE TABLE Players_T
    Handedness          INTEGER,
    Player_Type         INTEGER,
    Rookie_Season       INTEGER,
-   Longevity           INTEGER
+   Longevity           INTEGER,
+   Retired_Season      INTEGER
 );
 
 CREATE TABLE Player_Accolades_T
