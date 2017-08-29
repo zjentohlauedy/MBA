@@ -8,6 +8,7 @@ $: << "#{location}"
 require 'json'
 require 'sqlite3'
 
+require_relative 'MBATool/web/accolades'
 require_relative 'MBATool/web/positions'
 require_relative 'MBATool/web/phases'
 require_relative 'MBATool/web/utils'
@@ -216,6 +217,78 @@ def get_best_batter_stats_by_team_and_season( team_id, season )
   return result[0]
 end
 
+def get_player_accolades( player_id )
+  args = { player_id:   player_id }
+  query = %Q(
+  SELECT *
+  FROM   player_accolades_t
+  WHERE  player_id = :player_id
+  AND    accolade in ( #{Accolades::Player::All_Star_MVP}, #{Accolades::Player::World_Series_MVP} )
+  )
+
+  results = Utils::transform_hash @db.execute query, args
+
+  results.each do |result|
+    result[:accolade_name] = Accolades::get_accolade_name Accolades::Player::Type, result[:accolade]
+  end
+
+  return results
+end
+
+def get_batter_accolades( player_id )
+  args = { player_id:   player_id }
+  query = %Q(
+  SELECT *
+  FROM   batter_accolades_t
+  WHERE  player_id = :player_id
+  AND    accolade IN (
+           #{Accolades::Batting::Batter_of_the_Year          },
+           #{Accolades::Batting::Global_Batter_of_the_Year   },
+           #{Accolades::Batting::World_Batter_of_the_Year    },
+           #{Accolades::Batting::Atlantic_Batter_of_the_Year },
+           #{Accolades::Batting::North_Batter_of_the_Year    },
+           #{Accolades::Batting::Pacific_Batter_of_the_Year  },
+           #{Accolades::Batting::South_Batter_of_the_Year    },
+           #{Accolades::Batting::Batting_Rookie_of_the_Year  }
+         )
+  )
+
+  results = Utils::transform_hash @db.execute query, args
+
+  results.each do |result|
+    result[:accolade_name] = Accolades::get_accolade_name Accolades::Batting::Type, result[:accolade]
+  end
+
+  return results
+end
+
+def get_pitcher_accolades( player_id )
+  args = { player_id:   player_id }
+  query = %Q(
+  SELECT *
+  FROM   pitcher_accolades_t
+  WHERE  player_id = :player_id
+  AND    accolade IN (
+         #{Accolades::Pitching::Pitcher_of_the_Year          },
+         #{Accolades::Pitching::Global_Pitcher_of_the_Year   },
+         #{Accolades::Pitching::World_Pitcher_of_the_Year    },
+         #{Accolades::Pitching::Atlantic_Pitcher_of_the_Year },
+         #{Accolades::Pitching::North_Pitcher_of_the_Year    },
+         #{Accolades::Pitching::Pacific_Pitcher_of_the_Year  },
+         #{Accolades::Pitching::South_Pitcher_of_the_Year    },
+         #{Accolades::Pitching::Pitching_Rookie_of_the_Year  }
+         )
+  )
+
+  results = Utils::transform_hash @db.execute query, args
+
+  results.each do |result|
+    result[:accolade_name] = Accolades::get_accolade_name Accolades::Pitching::Type, result[:accolade]
+  end
+
+  return results
+end
+
 def calc_category_tag( value, op, targets = {} )
   if    value.send( op, targets[:overall]);                                  then return AllTimeRecord
   elsif value.send( op, targets[:season]) \
@@ -335,6 +408,20 @@ def print_pitcher_stats( pitcher, type )
          totals[ :strike_outs ]
 end
 
+def print_pitcher_awards( pitcher )
+  accolades = get_player_accolades( pitcher[:player_id] ).concat get_pitcher_accolades( pitcher[:player_id] )
+
+  return if accolades.length == 0
+
+  puts ""
+  puts "Awards:"
+  puts "Year  Award"
+
+  accolades.sort {|a,b| a[:season] <=> b[:season]}.each do |accolade|
+    printf "S%02d   %s\n", accolade[:season], accolade[:accolade_name]
+  end
+end
+
 def print_batter_stats( batter, type )
   totals = { games: 0, at_bats: 0, runs: 0, hits: 0, doubles: 0, triples: 0, home_runs: 0, runs_batted_in: 0, steals: 0, walks: 0, strike_outs: 0 }
 
@@ -428,6 +515,19 @@ def print_batter_stats( batter, type )
          totals[ :strike_outs    ]
 end
 
+def print_batter_awards( batter )
+  accolades = get_player_accolades( batter[:player_id] ).concat get_batter_accolades( batter[:player_id] )
+
+  return if accolades.length == 0
+
+  puts ""
+  puts "Awards:"
+  puts "Year  Award"
+
+  accolades.sort {|a,b| a[:season] <=> b[:season]}.each do |accolade|
+    printf "S%02d   %s\n", accolade[:season], accolade[:accolade_name]
+  end
+end
 
 def print_pitcher_card( pitcher )
   printf "P #{pitcher[:first_name]} #{pitcher[:last_name]}"
@@ -437,6 +537,7 @@ def print_pitcher_card( pitcher )
   print_pitcher_stats pitcher, :regular
   print_pitcher_stats pitcher, :playoff
   print_pitcher_stats pitcher, :allstar
+  print_pitcher_awards pitcher
 end
 
 def print_batter_card( batter )
@@ -447,6 +548,7 @@ def print_batter_card( batter )
   print_batter_stats batter, :regular
   print_batter_stats batter, :playoff
   print_batter_stats batter, :allstar
+  print_batter_awards batter
 end
 
 
