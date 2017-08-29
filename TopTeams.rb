@@ -273,7 +273,12 @@ class StatRankings
 
     @teams.sort!
 
-    top_teams = select_top_teams @teams
+    if stat == :errors
+      # started recording errors in S03
+      top_teams = select_top_teams( @teams.select {|team| team.season >= 3} )
+    else
+      top_teams = select_top_teams @teams
+    end
 
     if top_teams.size == 0
       puts " - No Teams Qualified"
