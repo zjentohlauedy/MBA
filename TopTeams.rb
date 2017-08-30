@@ -275,7 +275,7 @@ class StatRankings
 
     if stat == :errors
       # started recording errors in S03
-      top_teams = select_top_teams( @teams.select {|team| team.season >= 3} )
+      top_teams = select_top_teams( @teams.select {|team| team.season.nil? || team.season >= 3} )
     else
       top_teams = select_top_teams @teams
     end
