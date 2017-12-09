@@ -147,7 +147,7 @@ end
 
 
 if !File::exist? './schedule.ods'
-  raise 'Must run from directory contain a schedule file!'
+  raise 'Must run from directory containing a schedule file!'
 end
 
 convert_schedule = ProgRunner.new '/usr/bin', 'soffice'
