@@ -6,7 +6,9 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'tmpdir'
 require 'FileParser'
+require 'ProgRunner'
 require 'ScheduleParser'
 require 'TeamRecords'
 
@@ -79,15 +81,21 @@ def compare_head2head( teams )
 end
 
 
-if ARGV.length != 1
-  abort "Usage: #{__FILE__} <filename>\n"
+if !File::exist? './schedule.ods'
+  raise 'Must run from directory containing a schedule file!'
 end
 
-filename = ARGV[0]
+convert_schedule = ProgRunner.new '/usr/bin', 'soffice'
 
-if ! File.exists? filename
-  abort "File '#{filename}' not found.\n"
+convert_schedule.execute "-env:UserInstallation=file://#{ENV['HOME']}/.libreoffice-alt", '--headless', '--convert-to', 'csv', '--outdir', Dir::tmpdir, './schedule.ods'
+
+if !convert_schedule.success?
+  puts "Error converting schedule: "
+  puts convert_schedule.get_output
+  raise "Processing Failed"
 end
+
+filename = "#{Dir::tmpdir}/schedule.csv"
 
 sp = ScheduleParser.new
 fp = FileParser.new sp
