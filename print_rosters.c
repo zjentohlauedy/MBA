@@ -167,7 +167,7 @@ static void printPitcherStats( const pitching_s *stats )
      printf( "%2d %2d ", stats->wins, stats->losses );
 
      float norm_inn  = ((int)stats->innings);
-     /**/  norm_inn += (stats->innings - norm_inn) / 3.0;
+     /**/  norm_inn += (stats->innings - norm_inn) / 0.3;
 
      printf( "%5.2f ", (norm_inn > 0) ? ((float)stats->earned_runs) / norm_inn * 9.0 : 0 );
 
