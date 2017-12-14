@@ -4,6 +4,7 @@ $: << "#{location}"
 require 'sqlite3'
 require 'fileutils'
 require 'player_types'
+require 'pitcher_style'
 require 'org_repository'
 require 'org_decorator'
 require 'player_repository'
@@ -28,7 +29,9 @@ describe SeasonService do
 
     allow( @nm ).to receive :load_names
     allow( @nm ).to receive :save_names
+    allow( @pg ).to receive( :pick_pitcher_style ).and_return PitcherStyle::Starter
     allow( @pg ).to receive( :generate_pitcher ).and_return Hash.new
+    allow( @pg ).to receive( :generate_closer ).and_return Hash.new
     allow( @pg ).to receive( :generate_batter ).and_return Hash.new
     allow( @pr ).to receive :save_pitcher
     allow( @pr ).to receive :save_batter
@@ -107,10 +110,27 @@ describe SeasonService do
       @season_service.start_new_season
     end
 
+    it 'should request the pitcher style from player generator before creating each pitcher' do
+      @db.execute 'insert into team_players_t values (1, 4, 1)'
+
+      expect( @pg ).to receive( :pick_pitcher_style ).exactly( 32 ).times
+
+      @season_service.start_new_season
+    end
+
     it 'should generate 32 pitchers' do
       @db.execute 'insert into team_players_t values (1, 4, 1)'
 
       expect( @pg ).to receive( :generate_pitcher ).with( 5 ).exactly( 32 ).times.and_return Hash.new
+
+      @season_service.start_new_season
+    end
+
+    it 'should generate closers when pick pitcher style returns closer' do
+      @db.execute 'insert into team_players_t values (1, 4, 1)'
+      allow( @pg ).to receive( :pick_pitcher_style ).and_return PitcherStyle::Closer
+
+      expect( @pg ).to receive( :generate_closer ).with( 5 ).exactly( 32 ).times.and_return Hash.new
 
       @season_service.start_new_season
     end

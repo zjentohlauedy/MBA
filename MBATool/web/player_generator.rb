@@ -4,6 +4,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 
 require 'player_types'
+require 'pitcher_style'
 require 'positions'
 require 'handedness'
 require 'skin_tones'
@@ -15,18 +16,23 @@ class PlayerGenerator
     @db           = db
     @name_manager = name_manager
 
-    #                     0    1   2     3     4     5     6     7     8     9   10
-    #     percentage:     0  .05  .9  3.75  12.5    50    25  6.25  1.25   0.2  0.1
-    @rating_pbs       = [ 0,   4, 72,  300, 1000, 4000, 2000,  500,  100,   16,   8 ]
-    @rating_pbs_total = @rating_pbs.reduce(:+)
-
-    #                    0    1   2     3     4     5     6     7     8     9   10
-    #     percentage:    0  .05  .9  3.75  12.5    50    25  6.35  1.45     0    0
-    @power_pbs       = [ 0,   4, 72,  300, 1000, 4000, 2000,  508,  116,    0,   0 ]
-    @power_pbs_total = @power_pbs.reduce(:+)
+    #                      0    1   2     3     4     5     6     7     8     9   10
+    #     percentage:      0  .05  .9  3.75  12.5    50    25  6.25  1.25    .2   .1
+    @rating_pbs       =  [ 0,   4, 72,  300, 1000, 4000, 2000,  500,  100,   16,   8 ]
+    @rating_pbs_total =  @rating_pbs.reduce(:+)
 
     #                      0    1   2     3     4     5     6     7     8     9   10
-    #      percentage:     0    0   0     0  1.25  12.5    50    25    10  0.95  0.3
+    #     percentage:      0    0   0     0     0     0     4    50    25    13    8
+    @closer_pbs       =  [ 0,   0,  0,    0,    0,    0,  320, 4000, 2000, 1040, 640 ]
+    @closer_pbs_total =  @closer_pbs.reduce(:+)
+
+    #                      0    1   2     3     4     5     6     7     8     9   10
+    #     percentage:      0  .05  .9  3.75  12.5    50    25  6.35  1.45     0    0
+    @power_pbs       =   [ 0,   4, 72,  300, 1000, 4000, 2000,  508,  116,    0,   0 ]
+    @power_pbs_total =   @power_pbs.reduce(:+)
+
+    #                      0    1   2     3     4     5     6     7     8     9   10
+    #      percentage:     0    0   0     0  1.25  12.5    50    25    10   .95   .3
     @fatigue_pbs       = [ 0,   0,  0,    0,  100, 1000, 4000, 2000,  800,   76,  24 ]
     @fatigue_pbs_total = @fatigue_pbs.reduce(:+)
 
@@ -56,15 +62,44 @@ class PlayerGenerator
     pitcher[ :handedness      ] = pick_handedness
     pitcher[ :player_type     ] = PlayerTypes::Pitcher
     pitcher[ :rookie_season   ] = season
-    pitcher[ :longevity       ] = roll
+    pitcher[ :longevity       ] = roll @rating_pbs, @rating_pbs_total
 
     details = {}
 
     details[ :player_id ] = pitcher[ :player_id ]
-    details[ :speed     ] = roll
-    details[ :control   ] = roll
+    details[ :speed     ] = roll @rating_pbs, @rating_pbs_total
+    details[ :control   ] = roll @rating_pbs, @rating_pbs_total
     details[ :bunt      ] = pitcher[ :longevity ]
-    details[ :fatigue   ] = roll_fatigue
+    details[ :fatigue   ] = roll @fatigue_pbs, @fatigue_pbs_total
+
+    pitcher[ :details ] = details
+
+    return pitcher
+  end
+
+  def generate_closer( season )
+    pitcher = {}
+
+    name = @name_manager.get_name
+
+    pitcher[ :player_id       ] = get_next_player_id
+    pitcher[ :first_name      ] = name[ :first ]
+    pitcher[ :last_name       ] = name[ :last  ]
+    pitcher[ :first_phoenetic ] = ''
+    pitcher[ :last_phoenetic  ] = ''
+    pitcher[ :skin_tone       ] = pick_skin_tone
+    pitcher[ :handedness      ] = pick_handedness
+    pitcher[ :player_type     ] = PlayerTypes::Pitcher
+    pitcher[ :rookie_season   ] = season
+    pitcher[ :longevity       ] = roll @rating_pbs, @rating_pbs_total
+
+    details = {}
+
+    details[ :player_id ] = pitcher[ :player_id ]
+    details[ :speed     ] = roll @closer_pbs, @closer_pbs_total
+    details[ :control   ] = roll @closer_pbs, @closer_pbs_total
+    details[ :bunt      ] = pitcher[ :longevity ]
+    details[ :fatigue   ] = 1
 
     pitcher[ :details ] = details
 
@@ -85,19 +120,19 @@ class PlayerGenerator
     batter[ :handedness      ] = pick_handedness true
     batter[ :player_type     ] = PlayerTypes::Batter
     batter[ :rookie_season   ] = season
-    batter[ :longevity       ] = roll
+    batter[ :longevity       ] = roll @rating_pbs, @rating_pbs_total
 
     details = {}
 
     details[ :player_id          ] = batter[ :player_id ]
     details[ :primary_position   ] = pick_primary_position
     details[ :secondary_position ] = pick_secondary_position details[ :primary_position ]
-    details[ :power              ] = roll_power
-    details[ :hit_n_run          ] = roll
-    details[ :bunt               ] = roll
-    details[ :running            ] = roll
-    details[ :range              ] = roll
-    details[ :arm                ] = roll
+    details[ :power              ] = roll @power_pbs,  @power_pbs_total
+    details[ :hit_n_run          ] = roll @rating_pbs, @rating_pbs_total
+    details[ :bunt               ] = roll @rating_pbs, @rating_pbs_total
+    details[ :running            ] = roll @rating_pbs, @rating_pbs_total
+    details[ :range              ] = roll @rating_pbs, @rating_pbs_total
+    details[ :arm                ] = roll @rating_pbs, @rating_pbs_total
 
     batter[ :details ] = details
 
@@ -130,6 +165,10 @@ class PlayerGenerator
     return @random.rand(8) + 1
   end
 
+  def pick_pitcher_style
+    return (@random.rand(100) > 90) ? PitcherStyle::Closer : PitcherStyle::Starter
+  end
+
   def pick_secondary_position( primary_position )
     x = @random.rand(100) + 1
 
@@ -147,34 +186,13 @@ class PlayerGenerator
     end
   end
 
-  def roll
-    x = @random.rand(@rating_pbs_total) + 1
+  def roll( probabilities, total )
+    x = @random.rand(total) + 1
 
-    @rating_pbs.each_with_index do |p,i|
+    probabilities.each_with_index do |p,i|
       if (x -= p) <= 0
         return i
       end
     end
   end
-
-  def roll_power
-    x = @random.rand(@power_pbs_total) + 1
-
-    @power_pbs.each_with_index do |p,i|
-      if (x -= p) <= 0
-        return i
-      end
-    end
-  end
-
-  def roll_fatigue
-    x = @random.rand(@fatigue_pbs_total) + 1
-
-    @fatigue_pbs.each_with_index do |p,i|
-      if (x -= p) <= 0
-        return i
-      end
-    end
-  end
-
 end

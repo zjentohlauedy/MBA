@@ -6,6 +6,7 @@ require 'prog_runner'
 class SeasonService
 
   def initialize( db, org_repository, org_decorator, player_repository, name_manager, player_generator )
+    @random            = Random.new
     @db                = db
     @org_repository    = org_repository
     @org_decorator     = org_decorator
@@ -24,7 +25,10 @@ class SeasonService
     @name_manager.load_names
 
     (1..32).each do
-      rookie_pitcher = @player_generator.generate_pitcher next_season
+      case @player_generator.pick_pitcher_style
+      when PitcherStyle::Starter; rookie_pitcher = @player_generator.generate_pitcher next_season
+      when PitcherStyle::Closer;  rookie_pitcher = @player_generator.generate_closer next_season
+      end
 
       @player_repository.save_pitcher rookie_pitcher[:details]
       @player_repository.save_player  rookie_pitcher
