@@ -1,8 +1,8 @@
 define([], function() {
 
     var Constants = {
-        TEAM_MAX_PITCHERS:          10,
-        TEAM_MAX_BATTERS:           15,
+        TEAM_MAX_PITCHERS:          11,
+        TEAM_MAX_BATTERS:           14,
         ROOKIE_DRAFT_MAX_PITCHERS:   4,
         ROOKIE_DRAFT_MAX_BATTERS:    6,
         ROSTER_CUT_TARGET_PITCHERS:  3,
