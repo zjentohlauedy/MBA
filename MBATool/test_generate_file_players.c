@@ -184,56 +184,108 @@ static char *generateFilePlayers_ShouldReturnAFilePlayersWithPlayers_GivenAnOrgO
                               pitcher_s      *pitcher  = team_players[l].player->details.pitching;
                               filepitching_s *pitching = &(players_file[idx].filestats.filepitching);
 
-                              filehand_e  handedness = mapHandedness( team_players[l].player->handedness );
-                              filecolor_e color      = byte2int( pitching->color );
+                              if ( pitcher->fatigue > 1 ) {
+                                   filehand_e  handedness = mapHandedness( team_players[l].player->handedness );
+                                   filecolor_e color      = byte2int( pitching->color );
 
-                              int speed   = (age_adjustment >= 0) ? pitcher->speed   : MAX( pitcher->speed   + age_adjustment, 1 );
-                              int control = (age_adjustment >= 0) ? pitcher->control : MAX( pitcher->control + age_adjustment, 1 );
-                              int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MAX( pitcher->fatigue + age_adjustment, 4 );
+                                   int speed   = (age_adjustment >= 0) ? pitcher->speed   : MAX( pitcher->speed   + age_adjustment, 1 );
+                                   int control = (age_adjustment >= 0) ? pitcher->control : MAX( pitcher->control + age_adjustment, 1 );
+                                   int fatigue = (age_adjustment >= 0) ? pitcher->fatigue : MAX( pitcher->fatigue + age_adjustment, 4 );
 
-                              assertEquals( fpos_Pitcher, nibble( players_file[idx].position[0], n_High ) );
-                              assertEquals( handedness,   nibble( players_file[idx].position[0], n_Low  ) );
+                                   assertEquals( fpos_Pitcher, nibble( players_file[idx].position[0], n_High ) );
+                                   assertEquals( handedness,   nibble( players_file[idx].position[0], n_Low  ) );
 
-                              assertEquals(                         speed,     nibble( pitching->ratings[0], n_High ) );
-                              assertEquals(                         control,   nibble( pitching->ratings[0], n_Low  ) );
-                              assertEquals(                         fatigue,   nibble( pitching->ratings[1], n_High ) );
-                              assertEquals( team_players[l].player->longevity, nibble( pitching->ratings[1], n_Low  ) );
+                                   assertEquals(                         speed,     nibble( pitching->ratings[0], n_High ) );
+                                   assertEquals(                         control,   nibble( pitching->ratings[0], n_Low  ) );
+                                   assertEquals(                         fatigue,   nibble( pitching->ratings[1], n_High ) );
+                                   assertEquals( team_players[l].player->longevity, nibble( pitching->ratings[1], n_Low  ) );
 
-                              if   ( team_players[l].player->skin_tone == st_Dark ) assertEquals( fc_Dark,  color );
-                              else                                                  assertEquals( fc_Light, color );
+                                   if   ( team_players[l].player->skin_tone == st_Dark ) assertEquals( fc_Dark,  color );
+                                   else                                                  assertEquals( fc_Light, color );
 
-                              assertNonZero( word2int( players_file[idx].real_avg ) );
+                                   assertNonZero( word2int( players_file[idx].real_avg ) );
 
-                              assertNonZero( byte2int( pitching->real_wins   ) );
-                              assertNonZero( byte2int( pitching->real_losses ) );
-                              assertNonZero( byte2int( pitching->real_games  ) );
-                              assertNonZero( byte2int( pitching->real_starts ) );
-                              assertNonZero( word2int( pitching->real_inn    ) );
-                              assertNonZero( byte2int( pitching->real_er     ) );
-                              assertNonZero( byte2int( pitching->real_fa     ) );
-                              assertNonZero( word2int( pitching->vl_ab       ) );
-                              assertNonZero( word2int( pitching->vl_hits     ) );
-                              assertNonZero( byte2int( pitching->vl_hr       ) );
-                              assertNonZero( byte2int( pitching->vl_bb       ) );
-                              assertNonZero( word2int( pitching->vl_so       ) );
+                                   assertNonZero( byte2int( pitching->real_wins   ) );
+                                   assertNonZero( byte2int( pitching->real_losses ) );
+                                   assertNonZero( byte2int( pitching->real_games  ) );
+                                   assertNonZero( byte2int( pitching->real_starts ) );
+                                   assertNonZero( word2int( pitching->real_inn    ) );
+                                   assertNonZero( byte2int( pitching->real_er     ) );
+                                   assertNonZero( byte2int( pitching->real_fa     ) );
+                                   assertNonZero( word2int( pitching->vl_ab       ) );
+                                   assertNonZero( word2int( pitching->vl_hits     ) );
+                                   assertNonZero( byte2int( pitching->vl_hr       ) );
+                                   assertNonZero( byte2int( pitching->vl_bb       ) );
+                                   assertNonZero( word2int( pitching->vl_so       ) );
 
-                              assertEquals( 0, byte2int( pitching->real_saves  ) );
-                              assertEquals( 0, word2int( pitching->vr_ab       ) );
-                              assertEquals( 0, word2int( pitching->vr_hits     ) );
-                              assertEquals( 0, byte2int( pitching->vr_hr       ) );
-                              assertEquals( 0, byte2int( pitching->vr_bb       ) );
-                              assertEquals( 0, word2int( pitching->vr_so       ) );
-                              assertEquals( 0, byte2int( pitching->real_hb     ) );
-                              assertEquals( 0, byte2int( pitching->real_balk   ) );
-                              assertEquals( 0, byte2int( pitching->real_ab     ) );
-                              assertEquals( 0, byte2int( pitching->real_hits   ) );
-                              assertEquals( 0, byte2int( pitching->real_hr     ) );
-                              assertEquals( 0, byte2int( pitching->real_sh     ) );
-                              assertEquals( 0, byte2int( pitching->injury_days ) );
+                                   assertEquals( 0, byte2int( pitching->real_saves  ) );
+                                   assertEquals( 0, word2int( pitching->vr_ab       ) );
+                                   assertEquals( 0, word2int( pitching->vr_hits     ) );
+                                   assertEquals( 0, byte2int( pitching->vr_hr       ) );
+                                   assertEquals( 0, byte2int( pitching->vr_bb       ) );
+                                   assertEquals( 0, word2int( pitching->vr_so       ) );
+                                   assertEquals( 0, byte2int( pitching->real_hb     ) );
+                                   assertEquals( 0, byte2int( pitching->real_balk   ) );
+                                   assertEquals( 0, byte2int( pitching->real_ab     ) );
+                                   assertEquals( 0, byte2int( pitching->real_hits   ) );
+                                   assertEquals( 0, byte2int( pitching->real_hr     ) );
+                                   assertEquals( 0, byte2int( pitching->real_sh     ) );
+                                   assertEquals( 0, byte2int( pitching->injury_days ) );
 
-                              // this could be better...
-                              if      ( fatigue >= 8 ) assertNonZero(    byte2int( pitching->real_cg ) );
-                              else if ( fatigue == 4 ) assertEquals(  0, byte2int( pitching->real_cg ) );
+                                   // this could be better...
+                                   if      ( fatigue >= 8 ) assertNonZero(    byte2int( pitching->real_cg ) );
+                                   else if ( fatigue == 4 ) assertEquals(  0, byte2int( pitching->real_cg ) );
+                              }
+                              else
+                              {
+                                   filehand_e  handedness = mapHandedness( team_players[l].player->handedness );
+                                   filecolor_e color      = byte2int( pitching->color );
+
+                                   int speed   = (age_adjustment >= 0) ? pitcher->speed   : MAX( pitcher->speed   + age_adjustment, 1 );
+                                   int control = (age_adjustment >= 0) ? pitcher->control : MAX( pitcher->control + age_adjustment, 1 );
+                                   int fatigue = 1;
+
+                                   assertEquals( fpos_Pitcher, nibble( players_file[idx].position[0], n_High ) );
+                                   assertEquals( handedness,   nibble( players_file[idx].position[0], n_Low  ) );
+
+                                   assertEquals(                         speed,     nibble( pitching->ratings[0], n_High ) );
+                                   assertEquals(                         control,   nibble( pitching->ratings[0], n_Low  ) );
+                                   assertEquals(                         fatigue,   nibble( pitching->ratings[1], n_High ) );
+                                   assertEquals( team_players[l].player->longevity, nibble( pitching->ratings[1], n_Low  ) );
+
+                                   if   ( team_players[l].player->skin_tone == st_Dark ) assertEquals( fc_Dark,  color );
+                                   else                                                  assertEquals( fc_Light, color );
+
+                                   assertBetween( 0, 10, byte2int( pitching->real_wins   ) );
+                                   assertBetween( 0, 10, byte2int( pitching->real_losses ) );
+
+                                   assertNonZero( word2int( players_file[idx].real_avg ) );
+                                   assertNonZero( byte2int( pitching->real_saves  ) );
+                                   assertNonZero( byte2int( pitching->real_games  ) );
+                                   assertNonZero( word2int( pitching->real_inn    ) );
+                                   assertNonZero( byte2int( pitching->real_er     ) );
+                                   assertNonZero( byte2int( pitching->real_fa     ) );
+                                   assertNonZero( word2int( pitching->vl_ab       ) );
+                                   assertNonZero( word2int( pitching->vl_hits     ) );
+                                   assertNonZero( byte2int( pitching->vl_hr       ) );
+                                   assertNonZero( byte2int( pitching->vl_bb       ) );
+                                   assertNonZero( word2int( pitching->vl_so       ) );
+
+                                   assertEquals( 0, byte2int( pitching->real_starts ) );
+                                   assertEquals( 0, word2int( pitching->vr_ab       ) );
+                                   assertEquals( 0, word2int( pitching->vr_hits     ) );
+                                   assertEquals( 0, byte2int( pitching->vr_hr       ) );
+                                   assertEquals( 0, byte2int( pitching->vr_bb       ) );
+                                   assertEquals( 0, word2int( pitching->vr_so       ) );
+                                   assertEquals( 0, byte2int( pitching->real_hb     ) );
+                                   assertEquals( 0, byte2int( pitching->real_balk   ) );
+                                   assertEquals( 0, byte2int( pitching->real_ab     ) );
+                                   assertEquals( 0, byte2int( pitching->real_hits   ) );
+                                   assertEquals( 0, byte2int( pitching->real_hr     ) );
+                                   assertEquals( 0, byte2int( pitching->real_sh     ) );
+                                   assertEquals( 0, byte2int( pitching->injury_days ) );
+                                   assertEquals( 0, byte2int( pitching->real_cg     ) );
+                              }
                          }
                          else
                          {

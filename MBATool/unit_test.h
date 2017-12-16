@@ -96,7 +96,23 @@ static int  __unit_tests_failed__ = 0;
           }                                                        \
      } while ( 0 )
 
+#define assertBetweenInt( MIN, MAX, A )                                              \
+     do                                                                              \
+     {                                                                               \
+          int __actual__   = (A);                                                    \
+          int __minimum__  = (MIN);                                                  \
+          int __maximum__  = (MAX);                                                  \
+          if ( __actual__ < __minimum__ || __actual__ > __maximum__ )                \
+          {                                                                          \
+               sprintf( __unit_test_msgbuf__,                                        \
+                        "\033[0;31mFailed: %s; min: %d, max: %d, actual: %d\033[0m", \
+                        #A, __minimum__, __maximum__, __actual__ );                  \
+               return __unit_test_msgbuf__;                                          \
+          }                                                                          \
+     } while ( 0 )
+
 #define assertEquals assertEqualsInt
+#define assertBetween assertBetweenInt
 
 #define run_test(test, callback)                           \
      do                                                    \
