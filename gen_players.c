@@ -12,6 +12,28 @@
 #include "ewbfiles.h"
 
 
+
+typedef enum
+{
+     pos2_Pitcher      = 0,
+     pos2_Catcher,
+     pos2_FirstBase,
+     pos2_SecondBase,
+     pos2_ThirdBase,
+     pos2_ShortStop,
+     pos2_Infield,
+     pos2_LeftField,
+     pos2_CenterField,
+     pos2_RightField,
+     pos2_Outfield,
+     pos2_Unknown,
+     pos2_Designate,
+     pos2_Closer
+
+} position2_e;
+
+
+
 typedef struct
 {
      int start;
@@ -56,32 +78,32 @@ typedef struct
 
 static const double ab_per_game =  3.85;
 
-static const position_e positions[] = {
-     pos_Catcher,
-     pos_Catcher,
-     pos_FirstBase,
-     pos_FirstBase,
-     pos_SecondBase,
-     pos_SecondBase,
-     pos_ThirdBase,
-     pos_ThirdBase,
-     pos_ShortStop,
-     pos_LeftField,
-     pos_LeftField,
-     pos_CenterField,
-     pos_CenterField,
-     pos_RightField,
-     pos_RightField,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher,
-     pos_Pitcher
+static const position2_e positions[] = {
+     pos2_Catcher,
+     pos2_Catcher,
+     pos2_FirstBase,
+     pos2_FirstBase,
+     pos2_SecondBase,
+     pos2_SecondBase,
+     pos2_ThirdBase,
+     pos2_ThirdBase,
+     pos2_ShortStop,
+     pos2_LeftField,
+     pos2_LeftField,
+     pos2_CenterField,
+     pos2_CenterField,
+     pos2_RightField,
+     pos2_Closer,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher,
+     pos2_Pitcher
 };
 
 static const int secondary_pos[10][6] = {
@@ -103,6 +125,12 @@ static const int secondary_pos[10][6] = {
 //                                 0    1   2     3     4     5     6     7     8     9   10
 //            percentage:          0  .05  .9  3.75  12.5    50    25  6.25  1.25   0.2  0.1
 static const int rating_pbs[]  = { 0,   4, 72,  300, 1000, 4000, 2000,  500,  100,   16,   8 };
+//                                 0    1   2     3     4     5     6     7     8     9   10
+//            percentage:          0  .05  .9  3.75  12.5    50    25  6.25  1.25   0.2  0.1
+static const int closer_pbs[]  = { 0,   0,  0,    0,    0,    0,  320, 4000, 2000, 1040, 640 };
+//                                 0    1   2     3     4     5     6     7     8     9   10
+//            percentage:          0  .05  .9  3.75  12.5    50    25  6.25  1.25   0.2  0.1
+static const int power_pbs[]   = { 0,   4, 72,  300, 1000, 4000, 2000,  508,  116,    0,   0 };
 //                                 0    1   2     3     4     5     6     7     8     9   10
 //            percentage:          0    0   0     0  1.25  12.5    50    25    10  0.95  0.3
 static const int fatigue_pbs[] = { 0,   0,  0,    0,  100, 1000, 4000, 2000,  800,   76,  24 };
@@ -197,6 +225,58 @@ static const random_s win_pct[10][10] = {
      { { 710, 30 }, { 735, 30 }, { 760, 30 }, { 785, 30 }, { 810, 30 }, { 835, 30 }, { 860, 30 }, { 885, 30 }, { 910, 30 }, { 935, 35 } },
      { { 735, 30 }, { 760, 30 }, { 785, 30 }, { 810, 30 }, { 835, 30 }, { 860, 30 }, { 885, 30 }, { 910, 30 }, { 935, 35 }, { 965, 35 } }
 };
+/*
+static const random_s save_pct[10][10] = {
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } },
+     { {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 }, {   0,   0 } }
+};
+*/
+static const random_s closer_vs_batting_avg[10][10] = {
+     { { 235, 35 }, { 220, 20 }, { 210, 15 }, { 200, 15 }, { 190, 15 }, { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 } },
+     { { 220, 20 }, { 210, 15 }, { 200, 15 }, { 190, 15 }, { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 } },
+     { { 210, 15 }, { 200, 15 }, { 190, 15 }, { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 } },
+     { { 200, 15 }, { 190, 15 }, { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 } },
+     { { 190, 15 }, { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 } },
+     { { 185, 10 }, { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 }, { 145, 10 } },
+     { { 180, 10 }, { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 }, { 145, 10 }, { 135, 15 } },
+     { { 175, 10 }, { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 }, { 145, 10 }, { 135, 15 }, { 125, 15 } },
+     { { 170, 10 }, { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 }, { 145, 10 }, { 135, 15 }, { 125, 15 }, { 115, 15 } },
+     { { 167,  8 }, { 165,  7 }, { 160, 10 }, { 155, 10 }, { 150, 10 }, { 145, 10 }, { 135, 15 }, { 125, 15 }, { 115, 15 }, { 100, 20 } }
+};
+
+static const random_s closer_earned_run_avg[10][10] = {
+     { { 265, 35 }, { 240, 35 }, { 220, 30 }, { 205, 25 }, { 195, 20 }, { 185, 20 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 } },
+     { { 240, 30 }, { 220, 30 }, { 205, 25 }, { 195, 20 }, { 185, 20 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 } },
+     { { 220, 25 }, { 205, 25 }, { 195, 20 }, { 185, 20 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 } },
+     { { 205, 20 }, { 195, 20 }, { 185, 20 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 } },
+     { { 195, 15 }, { 185, 20 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 } },
+     { { 185, 15 }, { 175, 20 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 }, { 120, 15 } },
+     { { 175, 15 }, { 165, 20 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 }, { 120, 15 }, { 110, 15 } },
+     { { 165, 15 }, { 160, 15 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 }, { 120, 15 }, { 110, 15 }, {  95, 20 } },
+     { { 160, 10 }, { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 }, { 120, 15 }, { 110, 15 }, {  95, 20 }, {  75, 25 } },
+     { { 157,  8 }, { 155,  7 }, { 150, 10 }, { 140, 15 }, { 130, 15 }, { 120, 15 }, { 110, 15 }, {  95, 20 }, {  75, 25 }, {  50, 30 } }
+};
+
+static const random_s save_pct[10][10] = {
+     { { 430,  20 }, { 440,  25 }, { 450,  25 }, { 460,  30 }, { 470,  30 }, { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 } },
+     { { 440,  25 }, { 450,  25 }, { 460,  30 }, { 470,  30 }, { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 } },
+     { { 450,  25 }, { 460,  30 }, { 470,  30 }, { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 } },
+     { { 460,  30 }, { 470,  30 }, { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 } },
+     { { 470,  30 }, { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 } },
+     { { 480,  40 }, { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 }, { 625,  75 } },
+     { { 490,  45 }, { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 }, { 625,  75 }, { 650, 100 } },
+     { { 500,  45 }, { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 }, { 625,  75 }, { 650, 100 }, { 675, 100 } },
+     { { 515,  50 }, { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 }, { 625,  75 }, { 650, 100 }, { 675, 100 }, { 700, 100 } },
+     { { 530,  50 }, { 545,  60 }, { 560,  60 }, { 575,  75 }, { 600,  75 }, { 625,  75 }, { 650, 100 }, { 675, 100 }, { 700, 100 }, { 750, 150 } }
+};
 
 static const random_s at_bats_per_inn[10][10] = {
      //            1            2            3            4            5            6            7            8            9           10
@@ -254,6 +334,7 @@ static const random_s cg_pct[10]        = { {   0,  0 }, {   0,  0 }, {   0,  0 
 static int roll( const int start, const int range )
 {
      return (rand() % (range + 1)) + start;
+     //return (range / 2) + start;
 }
 
 
@@ -301,7 +382,7 @@ static int getFatigueFactor( const int fatigue )
 }
 
 
-static position_e getSecondaryPosition( const position_e position )
+static position2_e getSecondaryPosition( const position2_e position )
 {
      int value = roll( 0, 100 );
 
@@ -311,17 +392,17 @@ static position_e getSecondaryPosition( const position_e position )
           {
                switch ( i )
                {
-               case 0: return pos_Catcher;
-               case 1: return pos_FirstBase;
-               case 2: return pos_ThirdBase;
-               case 3: return pos_Infield;
-               case 4: return pos_RightField;
-               case 5: return pos_Outfield;
+               case 0: return pos2_Catcher;
+               case 1: return pos2_FirstBase;
+               case 2: return pos2_ThirdBase;
+               case 3: return pos2_Infield;
+               case 4: return pos2_RightField;
+               case 5: return pos2_Outfield;
                }
           }
      }
 
-     return pos_Designate;
+     return pos2_Designate;
 }
 
 
@@ -416,7 +497,7 @@ static void rollBatterAttributes( batter_attr_s *attributes )
      attributes->color       = ((rand() % 100) >= 50) ? '\0' : '@';
      attributes->hand        = ((rand() % 100) >= 50) ? 0 : 1;
 
-     attributes->power       = probabilityRoll( rating_pbs, RATING_PB_COUNT );
+     attributes->power       = probabilityRoll( power_pbs,  RATING_PB_COUNT );
      attributes->hit_n_run   = probabilityRoll( rating_pbs, RATING_PB_COUNT );
      attributes->bunt        = probabilityRoll( rating_pbs, RATING_PB_COUNT );
      attributes->speed       = probabilityRoll( rating_pbs, RATING_PB_COUNT );
@@ -433,6 +514,18 @@ static void rollPitcherAttributes( pitcher_attr_s *attributes )
      attributes->speed       = probabilityRoll( rating_pbs,  RATING_PB_COUNT );
      attributes->control     = probabilityRoll( rating_pbs,  RATING_PB_COUNT );
      attributes->fatigue     = probabilityRoll( fatigue_pbs, RATING_PB_COUNT );
+     attributes->bunt        = probabilityRoll( rating_pbs,  RATING_PB_COUNT );
+}
+
+
+static void rollCloserAttributes( pitcher_attr_s *attributes )
+{
+     attributes->color       = ((rand() % 100) >= 50) ? '\0' : '@';
+     attributes->hand        = ((rand() % 100) >= 50) ? 0 : 1;
+
+     attributes->speed       = probabilityRoll( closer_pbs,  RATING_PB_COUNT );
+     attributes->control     = probabilityRoll( closer_pbs,  RATING_PB_COUNT );
+     attributes->fatigue     = 1;
      attributes->bunt        = probabilityRoll( rating_pbs,  RATING_PB_COUNT );
 }
 
@@ -508,7 +601,74 @@ static void generatePitcher( fileplayer_s *player, const names_s *name )
      int2word( pitching->vl_so,     so   );
 }
 
-static void generateBatter( fileplayer_s *player, const names_s *name, const position_e position )
+
+static void generateCloser( fileplayer_s *player, const names_s *name )
+{
+     pitcher_attr_s attributes = { 0 };
+
+     rollCloserAttributes( &attributes );
+
+     strcpy( attributes.last_name,  name->last_name  );
+     strcpy( attributes.first_name, name->first_name );
+
+     int games = (rand() % 20) + 60;
+     int era   = getValueForTwo( closer_earned_run_avg,   attributes.speed, attributes.control );
+     int vsba  = getValueForTwo( closer_vs_batting_avg,   attributes.speed, attributes.control );
+     int svpct = getValueForTwo( save_pct,         attributes.speed, attributes.control );
+     int innpg = (rand() % 30) + 100;
+     int abpi  = getValueForTwo( at_bats_per_inn,  attributes.speed, attributes.control );
+     int sop9  = getValueForOne( so_per_9, attributes.speed );
+     int bbp9  = getValueForOne( walks_per_9, attributes.control );
+     int hrp9  = getValueForOne( hr_per_9, attributes.speed );
+
+     memset( player, '\0', sizeof(fileplayer_s) );
+
+     strncpy( player->last_name,  attributes.last_name,  sizeof(player->last_name)  );
+     strncpy( player->first_name, attributes.first_name, sizeof(player->first_name) );
+
+     termName( player->last_name,  sizeof(player->last_name)  );
+     termName( player->first_name, sizeof(player->first_name) );
+
+     int2word( player->real_avg, era );
+     player->year[0]     = 0x9D;
+     player->position[0] = attributes.hand;
+
+     struct pitching_s *pitching = &(player->filestats.filepitching);
+
+     setPitcherRatings( pitching->ratings, &attributes );
+
+     double dinn      = (double)games * (double)innpg / 100.0;
+     int    inn       = (int)floor( dinn ) * 10 + (rand() % 3);
+
+     dinn  = (double)inn / 10.0;
+     dinn += (((double)inn / 10.0) - dinn) / 3.0;
+
+     pitching->real_wins[0]   = (rand() % 10);
+     pitching->real_losses[0] = (rand() % 10);
+     pitching->real_games[0]  = games;
+     pitching->real_starts[0] = 0;
+     pitching->real_cg[0]     = 0;
+     pitching->real_saves[0]  = (int)round( (double)games * (double)svpct / 1000.0 );
+
+     pitching->color[0]       = attributes.color;
+     pitching->real_fa[0]     = 1;
+     pitching->real_er[0]     = (int)round( dinn * (double)era / 900.0 ); // era is ERA * 100
+     pitching->vl_hr[0]       = (int)round( dinn * (double)hrp9 / 900.0 ); // hrp9 is HR/9 * 100
+     pitching->vl_bb[0]       = (int)round( dinn * (double)bbp9 / 90.0 ); // bbp9 is BB/9 * 10
+
+     double dvsba = (double)vsba / 1000.0;
+     int    ab    = (int)round( dinn * ((float)abpi / 100.0) );
+     int    hits  = (int)round( dvsba * (float)ab );
+     int    so    = (int)round( dinn * (double)sop9 / 90.0 ); // sop9 is SO/9 * 10
+
+     int2word( pitching->real_inn,  inn  );
+     int2word( pitching->vl_ab,     ab   );
+     int2word( pitching->vl_hits,   hits );
+     int2word( pitching->vl_so,     so   );
+}
+
+
+static void generateBatter( fileplayer_s *player, const names_s *name, const position2_e position )
 {
      batter_attr_s attributes = { 0 };
 
@@ -610,11 +770,12 @@ int main( const int argc, const char *argv[] )
      {
           for ( int j = 0; j < PLAYERS_PER_TEAM; ++j )
           {
-               position_e pos = positions[j];
-               int        idx = (i * PLAYERS_PER_TEAM) + j;
+               position2_e pos = positions[j];
+               int         idx = (i * PLAYERS_PER_TEAM) + j;
 
-               if   ( pos == pos_Pitcher ) generatePitcher( &playersFile[idx], &nameList[next_name]      );
-               else                        generateBatter(  &playersFile[idx], &nameList[next_name], pos );
+               if      ( pos == pos2_Pitcher ) generatePitcher( &playersFile[idx], &nameList[next_name]      );
+               else if ( pos == pos2_Closer  ) generateCloser(  &playersFile[idx], &nameList[next_name]      );
+               else                            generateBatter(  &playersFile[idx], &nameList[next_name], pos );
 
                next_name++;
           }
