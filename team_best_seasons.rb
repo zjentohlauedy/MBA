@@ -38,7 +38,11 @@ class LeadersPrinter
 end
 
 class LeadersFilter
-  def apply( teams )
+  def apply( teams, stat )
+    if stat == :errors
+      return teams.select {|team| team.season.nil? || team.season >= 3}
+    end
+
     return teams
   end
 end

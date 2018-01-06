@@ -74,7 +74,7 @@ class StatRankings
 
     # CLOSERS DONT GET ENOUGH INNINGS BOO HOO
     if stat != :saves
-      players = @filter.apply players
+      players = @filter.apply players, stat
     end
 
 #    players.sort!

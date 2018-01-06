@@ -38,7 +38,7 @@ class LeadersPrinter
 end
 
 class LeadersFilter
-  def apply( players )
+  def apply( players, stat )
     if players[0].class == Pitcher
       return filter_pitchers players
     elsif players[0].class == Batter

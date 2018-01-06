@@ -41,7 +41,7 @@ class LeadersPrinter
 end
 
 class LeadersFilter
-  def apply( teams )
+  def apply( teams, stat )
     return teams
   end
 end
