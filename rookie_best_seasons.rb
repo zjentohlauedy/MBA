@@ -6,9 +6,80 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'sqlite3'
-require 'TopPlayers'
+require 'stat_rankings'
 
 require_relative 'MBATool/web/utils'
+
+
+class LeadersPrinter
+  def print_empty_indicator()
+    puts "--"
+  end
+
+  def print( player, format, index, tied )
+    value = player.get_sort_value
+    value = player.avgs.include?(player.get_sort_key) ? display_avg(value) : value
+
+    if tied; then printf " -  ";
+    else          printf "%2d. ", index + 1;
+    end
+
+    printf "%-2s %-20s S%02d  %-15s #{format}\n", player.pos, player.name, player.season, player.team, value
+  end
+
+  def print_tie_message( summary, format, index )
+    printf "%2d.    %-40s  #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
+  end
+
+  def display_avg(average)
+    avg = sprintf "%5.3f", average
+    avg.gsub /^0\./, ' .'
+  end
+end
+
+class LeadersFilter
+  def apply( players )
+    if players[0].class == Pitcher
+      return filter_pitchers players
+    elsif players[0].class == Batter
+      return filter_batters players
+    end
+
+    return players
+  end
+
+  def filter_pitchers( pitchers )
+    return pitchers.select { |p| p.innings.to_f >= 185.0 }
+  end
+
+  def filter_batters( batters )
+    return batters.select { |b| b.at_bats >= 300 }
+  end
+end
+
+class LeadersCompiler
+  def initialize( org )
+    @org = org
+  end
+
+  def compile_stats( list, target_class, type )
+    @org[:leagues].each do |league|
+      league[:divisions].each do |division|
+        division[:teams].each do |team|
+          next if team[:players].nil?
+
+          team[:players].each do |player|
+            next if  player[:stats][:simulated].nil?
+
+            if player[:type] == type
+              list.push( target_class.new team[:name], player, :simulated )
+            end
+          end
+        end
+      end
+    end
+  end
+end
 
 
 @db = SQLite3::Database.new "#{location}/mba.db"
@@ -110,6 +181,10 @@ org[:leagues].each do |league|
   end
 end
 
-sr = StatRankings.new org, :simulated, true
+printer  = LeadersPrinter.new
+filter   = LeadersFilter.new
+compiler = LeadersCompiler.new org
+
+sr = StatRankings.new printer, filter, compiler
 
 sr.process_categories @categories
