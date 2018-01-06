@@ -11,7 +11,62 @@ require 'FileParser'
 require 'ProgRunner'
 require 'ScheduleParser'
 require 'TeamRecords'
-require 'TopTeams'
+require 'stat_rankings'
+
+
+class LeadersPrinter
+  def print_empty_indicator()
+    puts "--"
+  end
+
+  def print( team, format, index, tied )
+    value = team.get_sort_value
+    value = team.avgs.include?(team.get_sort_key) ? display_avg(value) : value
+
+    if tied; then printf " -  ";
+    else          printf "%2d. ", index + 1;
+    end
+
+    printf "%-20s %-15s #{format}\n", team.name, team.team, value
+  end
+
+  def print_tie_message( summary, format, index )
+    printf "%2d.    %-30s    #{format}\n", index + 1, "#{summary.count} Teams Tied At", summary.value
+  end
+
+  def display_avg(average)
+    avg = sprintf "%5.3f", average
+    avg.gsub /^0\./, ' .'
+  end
+end
+
+class LeadersFilter
+  def apply( teams )
+    return teams
+  end
+end
+
+class LeadersCompiler
+  def initialize( org )
+    @org = org
+  end
+
+  def compile_stats( list, target_class, type )
+    @org[:leagues].each do |league|
+      league[:divisions].each do |division|
+        division[:teams].each do |team|
+          if    type == 'records'  and !team[:stats].nil?
+            list.push( target_class.new team )
+          elsif type == 'pitching' and !team[:pitching_stats][:simulated].nil?
+            list.push( target_class.new team, :simulated )
+          elsif type == 'batting'  and !team[:batting_stats][:simulated].nil?
+            list.push( target_class.new team, :simulated )
+          end
+        end
+      end
+    end
+  end
+end
 
 
 path = ARGV[0] || '.'
@@ -199,6 +254,10 @@ org[:leagues].each do |league|
   end
 end
 
-sr = StatRankings.new org
+printer  = LeadersPrinter.new
+filter   = LeadersFilter.new
+compiler = LeadersCompiler.new org
 
-sr.process_categories @categories
+sr = StatRankings.new printer, filter, compiler
+
+sr.process_categories @team_categories
