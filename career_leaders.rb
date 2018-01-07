@@ -7,7 +7,6 @@ location = File.dirname __FILE__
 $: << "#{location}"
 require 'sqlite3'
 require 'player_leaders_compiler'
-require 'relative_player_leaders_filter'
 require 'stat_rankings'
 
 require_relative 'MBATool/web/utils'
@@ -39,6 +38,32 @@ class LeadersPrinter
   def display_avg(average)
     avg = sprintf "%5.3f", average
     avg.gsub /^0\./, ' .'
+  end
+end
+
+class LeadersFilter
+  def apply( players, stat )
+    if players[0].class == Pitcher
+      return filter_pitchers players
+    elsif players[0].class == Batter
+      return filter_batters players
+    elsif players[0].class == Closer
+      return filter_closers players
+    end
+
+    return players
+  end
+
+  def filter_pitchers( pitchers )
+    return pitchers.select { |p| p.innings.to_f >= 1295.0 }
+  end
+
+  def filter_batters( batters )
+    return batters.select { |b| b.at_bats >= 2100 }
+  end
+
+  def filter_closers( closers )
+    return closers.select { |p| p.innings.to_f >= 595.0 }
   end
 end
 
@@ -183,7 +208,7 @@ org[:leagues].each do |league|
 end
 
 printer  = LeadersPrinter.new
-filter   = RelativePlayerLeadersFilter.new
+filter   = LeadersFilter.new
 compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler
