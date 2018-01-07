@@ -7,6 +7,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 require 'json'
 require 'ProgRunner'
+require 'absolute_player_leaders_filter'
 require 'player_leaders_compiler'
 require 'stat_rankings'
 
@@ -37,32 +38,6 @@ class LeadersPrinter
   end
 end
 
-class LeadersFilter
-  def apply( players, stat )
-    if players[0].class == Pitcher
-      return filter_pitchers players
-    elsif players[0].class == Batter
-      return filter_batters players
-    elsif players[0].class == Closer
-      return filter_closers players
-    end
-
-    return players
-  end
-
-  def filter_pitchers( pitchers )
-    return pitchers.select { |p| p.innings.to_f >= 185.0 }
-  end
-
-  def filter_batters( batters )
-    return batters.select { |b| b.at_bats >= 300 }
-  end
-
-  def filter_closers( closers )
-    return closers.select { |p| p.innings.to_f >= 85.0 }
-  end
-end
-
 
 path = ARGV[0] || '.'
 
@@ -73,7 +48,7 @@ extract_data.execute "#{path}/LeagName.Dat", "#{path}/Players.S"
 org = JSON.parse extract_data.get_output, {:symbolize_names => true}
 
 printer  = LeadersPrinter.new
-filter   = LeadersFilter.new
+filter   = AbsolutePlayerLeadersFilter.new
 compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler

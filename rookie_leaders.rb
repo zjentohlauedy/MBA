@@ -8,6 +8,7 @@ $: << "#{location}"
 require 'json'
 require 'ProgRunner'
 require 'player_leaders_compiler'
+require 'relative_player_leaders_filter'
 require 'stat_rankings'
 
 
@@ -34,30 +35,6 @@ class LeadersPrinter
   def display_avg(average)
     avg = sprintf "%5.3f", average
     avg.gsub /^0\./, ' .'
-  end
-end
-
-class LeadersFilter
-  def apply( players, stat )
-    if players[0].class == Pitcher
-      return filter_pitchers players
-    elsif players[0].class == Batter
-      return filter_batters players
-    end
-
-    return players
-  end
-
-  def filter_pitchers( pitchers )
-    max = pitchers.sort { |a,b| b.innings.to_f <=> a.innings.to_f }[0].innings.to_f
-
-    return pitchers.select { |p| p.innings.to_f >= (max * 0.4) }
-  end
-
-  def filter_batters( batters )
-    max = batters.sort { |a,b| b.at_bats <=> a.at_bats }[0].at_bats
-
-    return batters.select { |b| b.at_bats >= (max * 0.4) }
   end
 end
 
@@ -88,7 +65,7 @@ org[:leagues].each do |league|
 end
 
 printer  = LeadersPrinter.new
-filter   = LeadersFilter.new
+filter   = RelativePlayerLeadersFilter.new
 compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler
