@@ -7,6 +7,7 @@ location = File.dirname __FILE__
 $: << "#{location}"
 require 'json'
 require 'ProgRunner'
+require 'player_leaders_compiler'
 require 'stat_rankings'
 
 
@@ -60,30 +61,6 @@ class LeadersFilter
   end
 end
 
-class LeadersCompiler
-  def initialize( org )
-    @org = org
-  end
-
-  def compile_stats( list, target_class, type )
-    @org[:leagues].each do |league|
-      league[:divisions].each do |division|
-        division[:teams].each do |team|
-          next if team[:players].nil?
-
-          team[:players].each do |player|
-            next if  player[:stats][:simulated].nil?
-
-            if player[:type] == type
-              list.push( target_class.new team[:name], player, :simulated )
-            end
-          end
-        end
-      end
-    end
-  end
-end
-
 
 if ARGV.size == 1
   path   = '.'
@@ -112,7 +89,7 @@ end
 
 printer  = LeadersPrinter.new
 filter   = LeadersFilter.new
-compiler = LeadersCompiler.new org
+compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler
 

@@ -141,6 +141,52 @@ class Pitcher < Stats
 
 end
 
+class Closer < Stats
+  attr_reader :name, :team, :wins, :losses, :era, :games, :saves, :innings, :season, :seasons, :pos,
+              :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba, :win_pct, :avgs, :rookie_season,
+              :inn_per_game, :whip, :so_per_9, :hr_per_9, :wl_ratio, :efficiency, :eff_per_9, :identifier
+
+  def initialize( team, pitcher, style=:simulated )
+    @name          = "#{pitcher[:last_name]}, #{pitcher[:first_name]}"
+    @team          = team
+    @rookie_season = pitcher[:rookie_season]
+    @season        = pitcher[:stats][style][:season]
+    @seasons       = pitcher[:stats][style][:seasons]
+    @pos           = 'P'
+    @wins          = pitcher[:stats][style][:wins]
+    @losses        = pitcher[:stats][style][:losses]
+    @games         = pitcher[:stats][style][:games]
+    @saves         = pitcher[:stats][style][:saves]
+    @hits          = pitcher[:stats][style][:hits]
+    @earned_runs   = pitcher[:stats][style][:earned_runs]
+    @home_runs     = pitcher[:stats][style][:home_runs]
+    @walks         = pitcher[:stats][style][:walks]
+    @strike_outs   = pitcher[:stats][style][:strike_outs]
+    @identifier    = @name
+
+    adj_innings = pitcher[:stats][style][:innings] + (pitcher[:stats][style][:outs] / 3)
+    adj_outs    = pitcher[:stats][style][:outs] % 3
+    est_at_bats = (adj_innings * 3) + adj_outs + @hits
+
+    f_innings = adj_innings.to_f + (adj_outs.to_f / 3.0)
+
+    @innings      = "#{adj_innings}.#{adj_outs}"
+    @wl_ratio     = (@wins + @losses) > 0 ? @wins.to_f / (@wins + @losses) : 0
+    @win_pct      = (@games > 0) ? @wins.to_f / @games : 0
+    @era          = (f_innings > 0) ? @earned_runs.to_f / f_innings * 9.0 : 0
+    @vsba         = (est_at_bats > 0) ? @hits.to_f / est_at_bats.to_f : 0
+    @inn_per_game = (@games > 0) ? f_innings / @games.to_f : 0
+    @whip         = (f_innings > 0) ? (@walks.to_f + @hits.to_f) / f_innings : 0
+    @so_per_9     = (f_innings > 0) ? @strike_outs.to_f / f_innings * 9.0 : 0
+    @hr_per_9     = (f_innings > 0) ? @home_runs.to_f / f_innings * 9.0 : 0
+    @efficiency   = (adj_innings - @hits) + (@strike_outs - @hits)
+    @eff_per_9    = (f_innings > 0) ? @efficiency.to_f / f_innings * 9.0 : 0
+
+    @avgs = [:wl_ratio, :win_pct, :vsba]
+  end
+
+end
+
 class Batter < Stats
   attr_reader :name, :team, :pos, :average, :games, :at_bats, :runs, :hits, :seasons,
               :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs, :rookie_season,
