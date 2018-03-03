@@ -112,6 +112,34 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_starting_pitcher_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    # select max(strike_outs) from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where innings > 185 and p.fatigue = 1;
+
+    query = "select max(#{stat}) value from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where p.fatigue > 1 and #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    puts query.inspect
+
+    result = @db.get_first_row query, args
+
+    puts result.inspect
+
+    args = {value: result['value']}
+
+    query = "select ps.* from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where p.fatigue > 1 and #{stat} = :value"
+
+    unless season.nil?; query = "#{query} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  query = "#{query} and season_phase = :phase";  args[:phase ] = phase  end
+
+    puts query.inspect
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_pitcher_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 

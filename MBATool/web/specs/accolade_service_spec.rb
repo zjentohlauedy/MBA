@@ -20,17 +20,19 @@ describe AccoladeService do
 
     allow( @or ).to receive( :get_org ).with( 1 ).and_return( {organization_id: 1, season: 4} )
 
-    allow( @lr ).to receive( :get_league_stats_by_highest   ).and_return( [] )
-    allow( @dr ).to receive( :get_division_stats_by_highest ).and_return( [] )
-    allow( @tr ).to receive( :get_team_stats_by_highest     ).and_return( [] )
-    allow( @tr ).to receive( :get_team_accolades_by_season  ).and_return( [] )
-    allow( @tr ).to receive( :get_team_stats_by_lowest      ).and_return( [] )
-    allow( @tr ).to receive( :get_league_teams              ).and_return( [] )
-    allow( @pr ).to receive( :get_pitcher_stats_by_highest  ).and_return( [] )
-    allow( @pr ).to receive( :get_pitcher_stats_by_lowest   ).and_return( [] )
-    allow( @pr ).to receive( :get_batter_stats_by_highest   ).and_return( [] )
-    allow( @pr ).to receive( :get_batter_stats_by_lowest    ).and_return( [] )
-    allow( @pr ).to receive( :get_players_by_team           ).and_return( [] )
+    allow( @lr ).to receive( :get_league_stats_by_highest           ).and_return( [] )
+    allow( @dr ).to receive( :get_division_stats_by_highest         ).and_return( [] )
+    allow( @tr ).to receive( :get_team_stats_by_highest             ).and_return( [] )
+    allow( @tr ).to receive( :get_team_accolades_by_season          ).and_return( [] )
+    allow( @tr ).to receive( :get_team_stats_by_lowest              ).and_return( [] )
+    allow( @tr ).to receive( :get_league_teams                      ).and_return( [] )
+    allow( @pr ).to receive( :get_pitcher_stats_by_highest          ).and_return( [] )
+    allow( @pr ).to receive( :get_pitcher_stats_by_lowest           ).and_return( [] )
+    allow( @pr ).to receive( :get_starting_pitcher_stats_by_highest ).and_return( [] )
+    allow( @pr ).to receive( :get_starting_pitcher_stats_by_lowest  ).and_return( [] )
+    allow( @pr ).to receive( :get_batter_stats_by_highest           ).and_return( [] )
+    allow( @pr ).to receive( :get_batter_stats_by_lowest            ).and_return( [] )
+    allow( @pr ).to receive( :get_players_by_team                   ).and_return( [] )
 
     @accolade_service = AccoladeService.new @or, @lr, @dr, @tr, @pr
   end
@@ -172,21 +174,21 @@ describe AccoladeService do
     end
 
     it 'should call the player repository to get the highest or lowest values for all the pitcher accolades for the current season' do
-      expect( @pr ).to receive( :get_pitcher_stats_by_highest ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
-      expect( @pr ).to receive( :get_pitcher_stats_by_lowest  ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_starting_pitcher_stats_by_highest ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_starting_pitcher_stats_by_lowest  ).with( anything, 'innings', 185, 4, anything ).and_return( [] ).at_least :once
 
       @accolade_service.resolve_accolades
     end
 
     it 'should set the filter value to zero for most saves pitching accolade' do
-      expect( @pr ).to receive( :get_pitcher_stats_by_highest  ).with( 'saves', 'innings', 0, 4, Phases::RegularSeason ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_starting_pitcher_stats_by_highest  ).with( 'saves', 'innings', 0, 4, Phases::RegularSeason ).and_return( [] ).at_least :once
 
       @accolade_service.resolve_accolades
     end
 
     it 'should call the player repository to create accolades for the players returned by the get pitcher stats method' do
-      allow( @pr ).to receive( :get_pitcher_stats_by_highest ).and_return( [{player_id: 1, season: 4}] )
-      allow( @pr ).to receive( :get_pitcher_stats_by_lowest  ).and_return( [{player_id: 1, season: 4}] )
+      allow( @pr ).to receive( :get_starting_pitcher_stats_by_highest ).and_return( [{player_id: 1, season: 4}] )
+      allow( @pr ).to receive( :get_starting_pitcher_stats_by_lowest  ).and_return( [{player_id: 1, season: 4}] )
 
       expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Pitching::Most_Wins                  )
       expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Pitching::Best_Win_Loss_Ratio        )
