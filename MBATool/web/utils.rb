@@ -31,6 +31,8 @@ module Utils
   end
 
   def self.adjust_fatigue( rating, season, rookie_season, longevity )
+    if rating == 1 then return rating end
+
     adjustment = (season - rookie_season) - (longevity + 3)
 
     if adjustment < 0 then adjustment = 0 end

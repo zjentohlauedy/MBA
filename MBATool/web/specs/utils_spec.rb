@@ -106,5 +106,9 @@ describe Utils do
       expect( Utils::adjust_fatigue 9, 19, 5, 5 ).to eq 4
       expect( Utils::adjust_fatigue 9, 20, 5, 5 ).to eq 4
     end
+
+    it 'should should return same rating value if input fatigue is 1' do
+      expect( Utils::adjust_fatigue 1, 18, 5, 5 ).to eq 1
+    end
   end
 end
