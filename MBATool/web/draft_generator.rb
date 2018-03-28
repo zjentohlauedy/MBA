@@ -55,8 +55,8 @@ class DraftGenerator
 
     lcs_losers = playoff_teams.select { |t| t[:playoffs][:league_losses] == 4 }
 
-    ws_losers = playoff_teams.select { |t| (t[:playoffs][:losses] - t[:playoffs][:league_losses] - t[:playoffs][:division_losses]) == 5 }
-    ws_champs = playoff_teams.select { |t| (t[:playoffs][:wins]   - t[:playoffs][:league_wins]   - t[:playoffs][:division_wins])   == 5 }
+    ws_losers = playoff_teams.select { |t| (t[:playoffs][:losses] - t[:playoffs][:league_losses]) == 5 }
+    ws_champs = playoff_teams.select { |t| (t[:playoffs][:wins]   - t[:playoffs][:league_wins])   == 5 }
 
     teams.concat lcs_losers
     teams.concat ws_losers
