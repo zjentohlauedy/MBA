@@ -393,7 +393,7 @@ def print_pitcher_stats( pitcher, type )
 
   overall_era = calc_era totals
 
-  printf "%-15s  %6.2f  %3d %3d %4d.%d %3d %2d %4d %4d %4d %4d\n",
+  printf "\e[1m%-15s  %6.2f  %3d %3d %4d.%d %3d %2d %4d %4d %4d %4d\e[0m\n",
          'TOTAL',
          overall_era,
          totals[ :wins        ],
@@ -499,7 +499,7 @@ def print_batter_stats( batter, type )
 
   dsp_overall_avg = sprintf( "%5.3f", overall_avg ).gsub '0.', ' .'
 
-  printf "%-15s  %s %4d %4d %4d %4d %3d %3d %4d %4d %3d %4d %4d\n",
+  printf "\e[1m%-15s  %s %4d %4d %4d %4d %3d %3d %4d %4d %3d %4d %4d\e[0m\n",
          'TOTAL',
          dsp_overall_avg,
          totals[ :games          ],
