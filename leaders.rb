@@ -29,7 +29,10 @@ class LeadersPrinter
   end
 
   def print_tie_message( summary, format, index )
-    printf "%2d.    %-35s  #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
+    value = summary.value
+    value = summary.avgs.include?(summary.get_sort_key) ? display_avg(value) : value
+
+    printf "%2d.    %-35s  #{format}\n", index + 1, "#{summary.count} Players Tied At", value
   end
 
   def display_avg(average)

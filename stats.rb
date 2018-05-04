@@ -67,12 +67,18 @@ end
 
 
 class TieSummary
-  attr_reader :count, :value
+  attr_reader :count, :value, :avgs
 
-  def initialize( count, value )
-    @count   = count
-    @value   = value
+  def initialize( count, value, avgs, sort_key )
+    @count    = count
+    @value    = value
+    @avgs     = avgs
+    @sort_key = sort_key
   end
+
+ def get_sort_key()
+   return @sort_key
+ end
 end
 
 

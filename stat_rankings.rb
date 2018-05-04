@@ -57,7 +57,7 @@ class StatRankings
 
       players.reject! { |p| tied.include? p }
 
-      return TieSummary.new tied.length, tied[-1].get_sort_value
+      return TieSummary.new tied.length, tied[-1].get_sort_value, tied[-1].avgs, tied[-1].get_sort_key
     end
 
     return nil
