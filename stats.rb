@@ -196,7 +196,8 @@ end
 class Batter < Stats
   attr_reader :name, :team, :pos, :average, :games, :at_bats, :runs, :hits, :seasons,
               :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs, :rookie_season,
-              :steals, :errors, :slugging, :obp, :soa, :rpg, :season, :avgs, :identifier
+              :steals, :errors, :slugging, :obp, :soa, :rpg, :season, :avgs, :identifier,
+              :total_bases
 
   def initialize( team, batter, style=:simulated )
     @name          = "#{batter[:last_name]}, #{batter[:first_name]}"
@@ -218,6 +219,8 @@ class Batter < Stats
     @steals        = batter[:stats][style][:steals]
     @errors        = batter[:stats][style][:errors]
     @identifier    = @name
+
+    @total_bases = @hits + (@doubles * 2) + (@triples * 3) + (@home_runs * 4)
 
     appearances = @at_bats + @walks
     singles     = @hits - (@doubles + @triples + @home_runs)

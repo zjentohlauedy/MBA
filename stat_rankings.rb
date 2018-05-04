@@ -117,6 +117,8 @@ end
 
   'closing '      => {  'label' => "Closing Leaders",      'type' => 'closer',      'class'  => Closer,
     'stats'       => [{ 'label' => "Saves",                'stat' => :saves,        'format' => '%3d',    'direction' => :descending },
+                      { 'label' => "Games",                'stat' => :games,        'format' => '%3d',    'direction' => :descending },
+                      { 'label' => "Innings Pitched",      'stat' => :innings,      'format' => '%s',     'direction' => :descending },
                       { 'label' => "Earned Run Average",   'stat' => :era,          'format' => '%5.2f',  'direction' => :ascending  },
                       { 'label' => "vs. Batting Average",  'stat' => :vsba,         'format' => '%s',     'direction' => :ascending  },
                       { 'label' => "Strike Outs",          'stat' => :strike_outs,  'format' => '%4d',    'direction' => :descending },
@@ -131,6 +133,7 @@ end
                       { 'label' => "Doubles",              'stat' => :doubles,      'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Triples",              'stat' => :triples,      'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Home Runs",            'stat' => :home_runs,    'format' => '%3d',    'direction' => :descending },
+                      { 'label' => "Total Bases",          'stat' => :total_bases,  'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Runs",                 'stat' => :runs,         'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Runs Batted In",       'stat' => :rbi,          'format' => '%3d',    'direction' => :descending },
                       { 'label' => "Stolen Bases",         'stat' => :steals,       'format' => '%3d',    'direction' => :descending },
