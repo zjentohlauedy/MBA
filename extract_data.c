@@ -11,6 +11,42 @@
 #include "league.h"
 
 
+typedef enum
+{
+     dbpos_None        =  0,
+     dbpos_Catcher     =  1,
+     dbpos_FirstBase   =  2,
+     dbpos_SecondBase  =  3,
+     dbpos_ThirdBase   =  4,
+     dbpos_ShortStop   =  5,
+     dbpos_LeftField   =  6,
+     dbpos_CenterField =  7,
+     dbpos_RightField  =  8,
+     dbpos_Infield     =  9,
+     dbpos_Outfield    = 10
+
+} dbposition_e;
+
+
+static dbposition_e mapPosition( const position_e position )
+{
+     switch ( position )
+     {
+     case pos_Catcher:     return dbpos_Catcher;
+     case pos_FirstBase:   return dbpos_FirstBase;
+     case pos_SecondBase:  return dbpos_SecondBase;
+     case pos_ThirdBase:   return dbpos_ThirdBase;
+     case pos_ShortStop:   return dbpos_ShortStop;
+     case pos_LeftField:   return dbpos_LeftField;
+     case pos_CenterField: return dbpos_CenterField;
+     case pos_RightField:  return dbpos_RightField;
+     case pos_Infield:     return dbpos_Infield;
+     case pos_Outfield:    return dbpos_Outfield;
+     }
+
+     return dbpos_None;
+}
+
 static char *displayHand( const int hand )
 {
      switch ( hand )
@@ -89,8 +125,8 @@ static void printHitter( const player_s *player )
      printf( ",\"first_name\":\"%s\"", b->first_name );
      printf( ",\"last_name\":\"%s\"", b->last_name );
      printf( ",\"rookie_season\":\"%d\"", (b->year - 2000));
-     printf( ",\"primary_position\":%d", b->primary_pos );
-     printf( ",\"secondary_position\":%d", b->secondary_pos );
+     printf( ",\"primary_position\":%d", mapPosition( b->primary_pos ) );
+     printf( ",\"secondary_position\":%d", mapPosition( b->secondary_pos ) );
      printf( ",\"handedness\":%d", player->hand );
 
      printf( ",\"ratings\":" );
