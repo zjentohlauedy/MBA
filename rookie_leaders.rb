@@ -6,8 +6,10 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'json'
+require 'optparse'
 require 'ProgRunner'
 require 'player_leaders_compiler'
+require 'games_based_player_leaders_filter'
 require 'relative_player_leaders_filter'
 require 'stat_rankings'
 
@@ -39,22 +41,52 @@ class LeadersPrinter
 end
 
 
-if ARGV.size == 1
-  path   = '.'
-  season = ARGV[0]
-elsif ARGV.size > 1
-  path   = ARGV[0] || '.'
-  season = ARGV[1]
-else
-  puts "Usage: #{$PROGRAM_NAME} [path] <season>"
-  exit
+def get_max_rookie_season( org )
+  rookie_season = '0'
+
+  org[:leagues].each do |league|
+    league[:divisions].each do |division|
+      division[:teams].each do |team|
+        team[:players].each do |player|
+          if player[:rookie_season] > rookie_season
+            rookie_season = player[:rookie_season]
+          end
+        end
+      end
+    end
+  end
+
+  return rookie_season
 end
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-g', '--games  GAMES',  'Number of games played'    ) { |o| @options[ :games  ] = o }
+  opt.on( '-s', '--season SEASON', 'Rookie season to consider' ) { |o| @options[ :season ] = o }
+end.parse!
+
+
+path = ARGV[0] || '.'
+
+if @options[:season].nil?
+#  puts "Usage: #{$PROGRAM_NAME} <-s season> [path]"
+#  exit
+end
+
 
 extract_data = ProgRunner.new location, "extract_data"
 
 extract_data.execute "#{path}/LeagName.Dat", "#{path}/Players.S"
 
 org = JSON.parse extract_data.get_output, {:symbolize_names => true}
+
+if @options[:season].nil?
+  season = get_max_rookie_season org
+else
+  season = @options[:season]
+end
 
 org[:leagues].each do |league|
   league[:divisions].each do |division|
@@ -65,7 +97,13 @@ org[:leagues].each do |league|
 end
 
 printer  = LeadersPrinter.new
-filter   = RelativePlayerLeadersFilter.new
+
+if @options[:games]
+  filter = GamesBasedPlayerLeadersFilter.new @options[:games].to_i
+else
+  filter = RelativePlayerLeadersFilter.new
+end
+
 compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler
