@@ -6,8 +6,10 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'json'
+require 'optparse'
 require 'ProgRunner'
 require 'player_leaders_compiler'
+require 'games_based_player_leaders_filter'
 require 'relative_player_leaders_filter'
 require 'stat_rankings'
 
@@ -42,6 +44,13 @@ class LeadersPrinter
 end
 
 
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-g', '--games GAMES',   'Number of games played'    ) { |o| @options[ :games  ] = o }
+end.parse!
+
+
 path = ARGV[0] || '.'
 
 extract_data = ProgRunner.new location, "extract_data"
@@ -51,7 +60,13 @@ extract_data.execute "#{path}/LeagName.Dat", "#{path}/Players.S"
 org = JSON.parse extract_data.get_output, {:symbolize_names => true}
 
 printer  = LeadersPrinter.new
-filter   = RelativePlayerLeadersFilter.new
+
+if @options[:games]
+  filter = GamesBasedPlayerLeadersFilter.new @options[:games].to_i
+else
+  filter = RelativePlayerLeadersFilter.new
+end
+
 compiler = PlayerLeadersCompiler.new org
 
 sr = StatRankings.new printer, filter, compiler
