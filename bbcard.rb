@@ -40,6 +40,104 @@ TeamRecord               = 2
 SeasonBestForTeam        = 1
 NothingSpecial           = 0
 
+BatterComparisons = {
+  games:          '>=',
+  at_bats:        '>=',
+  runs:           '>=',
+  hits:           '>=',
+  doubles:        '>=',
+  triples:        '>=',
+  home_runs:      '>=',
+  runs_batted_in: '>=',
+  steals:         '>=',
+  walks:          '>=',
+  strike_outs:    '<=',
+  avg:            '>=',
+  sa:             '>=',
+  oba:            '>=',
+  soa:            '<=',
+  rpg:            '>='
+}
+
+PitcherComparisons = {
+  wins:           '>=',
+  losses:         '<=',
+  innings:        '>=',
+  outs:           '>=',
+  games:          '>=',
+  saves:          '>=',
+  hits:           '<=',
+  earned_runs:    '<=',
+  home_runs:      '<=',
+  walks:          '<=',
+  strike_outs:    '>=',
+  era:            '<=',
+  vsba:           '<=',
+  ip:             '>=',
+  ipg:            '>=',
+  whip:           '<=',
+  sop9:           '>=',
+  hrp9:           '<=',
+  eff:            '>='
+}
+
+
+class PrintFormatter
+  def initialize()
+    @stats        = {}
+    @categories   = {}
+    @career_bests = {}
+  end
+
+  def set_stats( stats )
+    @stats = stats
+  end
+
+  def set_categories( categories )
+    @categories = categories
+  end
+
+  def set_career_bests( career_bests )
+    @career_bests = career_bests
+  end
+
+  def print_stat( stat, format, field_length )
+    if format == '#avg'
+      text_value = sprintf( "%5.3f", @stats[stat] ).gsub '0.', '.'
+    elsif format == '#ip'
+      text_value = sprintf "%d.%d", @stats[:innings], @stats[:outs]
+    else
+      text_value = sprintf format, @stats[stat]
+    end
+
+    padding = (field_length - text_value.length)
+
+    printf( "%*s%s%s%s ", padding < 0 ? 0 : padding, "", hilite( @categories[stat], @career_bests[stat]), text_value, unhilite() )
+  end
+
+  def hilite( value, career_best = false )
+    hilite = "\e[0m"
+
+    case value
+    when AllTimeRecord;            hilite = "\e[1;33m"
+    when SeasonBestWithTeamRecord; hilite = "\e[1;36m"
+    when SeasonBest;               hilite = "\e[1;37m"
+    when TeamRecord;               hilite = "\e[36m"
+    when SeasonBestForTeam;        hilite = "\e[35m"
+    end
+
+    if career_best
+      hilite = "#{hilite}\e[4m"
+    end
+
+    return hilite
+  end
+
+  def unhilite()
+    return "\e[0m"
+  end
+end
+
 
 @db = SQLite3::Database.new "#{location}/mba.db"
 
@@ -385,23 +483,13 @@ def special_category_tag( categories, calc_method, stat, value, op, best )
   categories[stat] = calc_category_tag( value, op, overall: overall_best, season: season_best, team: team_best, team_season: team_season_best )
 end
 
-def hilite( value )
-  if value == AllTimeRecord;            then return "\e[1;33m" end # bold yellow
-  if value == SeasonBestWithTeamRecord; then return "\e[1;36m" end # bold cyan
-  if value == SeasonBest;               then return "\e[1;37m" end # bold white
-  if value == TeamRecord;               then return "\e[36m"   end # cyan
-  if value == SeasonBestForTeam;        then return "\e[35m"   end # magenta
-  return                                            "\e[0m"        # no hilite
-end
-
-def unhilite()
-  return "\e[0m"
-end
 
 def print_pitcher_stats( pitcher, type )
   totals = { wins: 0, losses: 0, innings: 0, outs: 0, games: 0, saves: 0, hits: 0, earned_runs: 0, home_runs: 0, walks: 0, strike_outs: 0 }
 
   if pitcher[:stats][type].length == 0; then return; end
+
+  pf = PrintFormatter.new
 
   puts ""
 
@@ -418,16 +506,19 @@ def print_pitcher_stats( pitcher, type )
   end
 
   pitcher[:stats][type].each do |stat|
-    era  = calc_era  stat
-    vsba = calc_vsba stat
-    ipg  = calc_ipg  stat
-    ip   = calc_ip   stat
-    whip = calc_whip stat
-    sop9 = calc_sop9 stat
-    hrp9 = calc_hrp9 stat
-    eff  = calc_eff  stat
+    stat[ :era  ] = calc_era  stat
+    stat[ :vsba ] = calc_vsba stat
+    stat[ :ipg  ] = calc_ipg  stat
+    stat[ :ip   ] = calc_ip   stat
+    stat[ :whip ] = calc_whip stat
+    stat[ :sop9 ] = calc_sop9 stat
+    stat[ :hrp9 ] = calc_hrp9 stat
+    stat[ :eff  ] = calc_eff  stat
+  end
 
-    categories = {}
+  pitcher[:stats][type].each do |stat|
+    categories  = {}
+    career_high = {}
 
     if type == :regular and stat[:innings] >= 185
       best = {
@@ -438,47 +529,69 @@ def print_pitcher_stats( pitcher, type )
       }
 
       stat.each_pair do |k, v|
-        next if best[:overall][k].nil?
+        next if best[:overall][k].nil? or best[:overall][k].is_a? Hash
 
-        categories[k] = calc_category_tag( v, '>=', overall: best[:overall][k], season: best[:season][k], team: best[:team][k], team_season: best[:team_season][k] )
+        targets = {
+          overall:     best[ :overall     ][k],
+          season:      best[ :season      ][k],
+          team:        best[ :team        ][k],
+          team_season: best[ :team_season ][k]
+        }
+
+        categories[k] = calc_category_tag( v, PitcherComparisons[k], targets )
       end
 
-      special_category_tag categories, 'calc_era',  :era,  era,  '<=', best
-      special_category_tag categories, 'calc_vsba', :vsba, vsba, '<=', best
-      special_category_tag categories, 'calc_ip',   :ip,   ip,   '>=', best
-      special_category_tag categories, 'calc_ipg',  :ipg,  ipg,  '>=', best
-      special_category_tag categories, 'calc_whip', :whip, whip, '<=', best
-      special_category_tag categories, 'calc_sop9', :sop9, sop9, '>=', best
-      special_category_tag categories, 'calc_hrp9', :hrp9, hrp9, '<=', best
-      special_category_tag categories, 'calc_eff',  :eff,  eff,  '>=', best
+      special_category_tag categories, 'calc_era',  :era,  stat[ :era  ], PitcherComparisons[ :era  ], best
+      special_category_tag categories, 'calc_vsba', :vsba, stat[ :vsba ], PitcherComparisons[ :vsba ], best
+      special_category_tag categories, 'calc_ip',   :ip,   stat[ :ip   ], PitcherComparisons[ :ip   ], best
+      special_category_tag categories, 'calc_ipg',  :ipg,  stat[ :ipg  ], PitcherComparisons[ :ipg  ], best
+      special_category_tag categories, 'calc_whip', :whip, stat[ :whip ], PitcherComparisons[ :whip ], best
+      special_category_tag categories, 'calc_sop9', :sop9, stat[ :sop9 ], PitcherComparisons[ :sop9 ], best
+      special_category_tag categories, 'calc_hrp9', :hrp9, stat[ :hrp9 ], PitcherComparisons[ :hrp9 ], best
+      special_category_tag categories, 'calc_eff',  :eff,  stat[ :eff  ], PitcherComparisons[ :eff  ], best
+
+      stat.keys.each do |key|
+        career_best = pitcher[:stats][type].map { |x|
+          x[:innings] >= 185 ? x[key] : nil
+        }.select { |x| ! x.nil? }.send PitcherComparisons[key] == '>=' ? :max : :min
+
+        next unless [Fixnum, Float].include? career_best.class
+
+        if career_best > 0
+          career_high[key] = stat[key] == career_best
+        end
+      end
     end
+
+    pf.set_stats        stat
+    pf.set_categories   categories
+    pf.set_career_bests career_high
 
     printf "S%02d  %-10s  ", stat[ :season      ], stat[ :name        ]
-    printf "%s%6.2f%s  ", hilite( categories[ :era         ]),        era,                                 unhilite()
-    printf "%s%3d%s ",    hilite( categories[ :wins        ]), stat[ :wins        ],                       unhilite()
-    printf "%3d ",                                             stat[ :losses      ]
-    printf "%s%4d.%d%s ", hilite( categories[ :ip          ]), stat[ :innings     ], stat[ :outs        ], unhilite()
-    printf "%s%3d%s ",    hilite( categories[ :games       ]), stat[ :games       ],                       unhilite()
-    printf "%s%2d%s ",    hilite( categories[ :saves       ]), stat[ :saves       ],                       unhilite()
-    printf "%4d ",                                             stat[ :hits        ]
-    printf "%4d ",                                             stat[ :earned_runs ]
+
+    pf.print_stat :era,           "%4.2f", 6
+    pf.print_stat :wins,          "%d",    4
+    pf.print_stat :losses,        "%d",    3
+    pf.print_stat :ip,            "#ip",   6
+    pf.print_stat :games,         "%d",    3
+    pf.print_stat :saves,         "%d",    2
+    pf.print_stat :hits,          "%d",    4
+    pf.print_stat :earned_runs,   "%d",    4
 
     if @options[:extended]
-      printf "%4d ",                                           stat[ :home_runs   ]
+      pf.print_stat :home_runs,     "%d",     4
     end
 
-    printf "%4d ",                                             stat[ :walks       ]
-    printf "%s%4d%s ",    hilite( categories[ :strike_outs ]), stat[ :strike_outs ],                       unhilite()
+    pf.print_stat :walks,         "%d",    4
+    pf.print_stat :strike_outs,   "%d",    4
 
     if @options[:extended]
-      dsp_avg = sprintf( "%5.3f", vsba ).gsub '0.', ' .'
-
-      printf "%s%s%s ",   hilite( categories[ :vsba        ]),        dsp_avg,                              unhilite()
-      printf "%s%5.2f%s ",hilite( categories[ :ipg         ]),        ipg,                              unhilite()
-      printf "%s%5.3f%s ",hilite( categories[ :whip        ]),        whip,                             unhilite()
-      printf "%s%5.2f%s ",hilite( categories[ :sop9        ]),        sop9,                              unhilite()
-      printf "%s%5.2f%s ",hilite( categories[ :hrp9        ]),        hrp9,                              unhilite()
-      printf "%s%+6.2f%s ", hilite( categories[ :eff         ]),      eff,                             unhilite()
+      pf.print_stat :vsba,          "#avg",   5
+      pf.print_stat :ipg,           "%4.2f",  5
+      pf.print_stat :whip,          "%5.3f",  5
+      pf.print_stat :sop9,          "%4.2f",  5
+      pf.print_stat :hrp9,          "%4.2f",  5
+      pf.print_stat :eff,           "%+5.2f", 6
     end
 
     printf "\n"
@@ -567,6 +680,8 @@ def print_batter_stats( batter, type )
 
   if batter[:stats][type].length == 0; then return; end
 
+  pf = PrintFormatter.new
+
   puts ""
 
   case type
@@ -582,15 +697,16 @@ def print_batter_stats( batter, type )
   end
 
   batter[:stats][type].each do |stat|
-    avg = calc_avg stat
-    sa  = calc_sa  stat
-    oba = calc_oba stat
-    soa = calc_soa stat
-    rpg = calc_rpg stat
+    stat[ :avg ] = calc_avg stat
+    stat[ :sa  ] = calc_sa  stat
+    stat[ :oba ] = calc_oba stat
+    stat[ :soa ] = calc_soa stat
+    stat[ :rpg ] = calc_rpg stat
+  end
 
-    dsp_avg = sprintf( "%5.3f", avg ).gsub '0.', ' .'
-
-    categories = {}
+  batter[:stats][type].each do |stat|
+    categories  = {}
+    career_high = {}
 
     if type == :regular and stat[:at_bats] >= 300
       best = {
@@ -601,42 +717,63 @@ def print_batter_stats( batter, type )
       }
 
       stat.each_pair do |k, v|
-        next if best[:overall][k].nil?
+        next if best[:overall][k].nil? or best[:overall][k].is_a? Hash
 
-        categories[k] = calc_category_tag( v, '>=', overall: best[:overall][k], season: best[:season][k], team: best[:team][k], team_season: best[:team_season][k] )
+        targets = {
+          overall:     best[ :overall     ][k],
+          season:      best[ :season      ][k],
+          team:        best[ :team        ][k],
+          team_season: best[ :team_season ][k]
+        }
+
+        categories[k] = calc_category_tag( v, BatterComparisons[k], targets )
       end
 
-      special_category_tag categories, 'calc_avg',  :avg,  avg,  '>=', best
-      special_category_tag categories, 'calc_sa',   :sa,   sa,   '>=', best
-      special_category_tag categories, 'calc_oba',  :oba,  oba,  '>=', best
-      special_category_tag categories, 'calc_soa',  :soa,  soa,  '<=', best
-      special_category_tag categories, 'calc_rpg',  :rpg,  rpg,  '>=', best
+      special_category_tag categories, 'calc_avg',  :avg, stat[ :avg ], BatterComparisons[ :avg ], best
+      special_category_tag categories, 'calc_sa',   :sa,  stat[ :sa  ], BatterComparisons[ :sa  ], best
+      special_category_tag categories, 'calc_oba',  :oba, stat[ :oba ], BatterComparisons[ :oba ], best
+      special_category_tag categories, 'calc_soa',  :soa, stat[ :soa ], BatterComparisons[ :soa ], best
+      special_category_tag categories, 'calc_rpg',  :rpg, stat[ :rpg ], BatterComparisons[ :rpg ], best
+
+      stat.keys.each do |key|
+        career_best = batter[:stats][type].map { |x|
+          x[:at_bats] >= 300 ? x[key] : nil
+        }.select { |x| ! x.nil? }.send BatterComparisons[key] == '>=' ? :max : :min
+
+        next unless [Fixnum, Float].include? career_best.class
+
+        if career_best > 0
+          career_high[key] = stat[key] == career_best
+        end
+      end
     end
 
+    pf.set_stats        stat
+    pf.set_categories   categories
+    pf.set_career_bests career_high
+
     printf "S%02d  %-10s  ", stat[ :season ], stat[ :name   ]
-    printf "%s%s%s ",  hilite( categories[ :avg            ]),        dsp_avg,          unhilite()
-    printf "%4d ",                                             stat[ :games          ]
-    printf "%s%4d%s ", hilite( categories[ :at_bats        ]), stat[ :at_bats        ], unhilite()
-    printf "%s%4d%s ", hilite( categories[ :runs           ]), stat[ :runs           ], unhilite()
-    printf "%s%4d%s ", hilite( categories[ :hits           ]), stat[ :hits           ], unhilite()
-    printf "%s%3d%s ", hilite( categories[ :doubles        ]), stat[ :doubles        ], unhilite()
-    printf "%s%3d%s ", hilite( categories[ :triples        ]), stat[ :triples        ], unhilite()
-    printf "%s%4d%s ", hilite( categories[ :home_runs      ]), stat[ :home_runs      ], unhilite()
-    printf "%s%4d%s ", hilite( categories[ :runs_batted_in ]), stat[ :runs_batted_in ], unhilite()
-    printf "%s%3d%s ", hilite( categories[ :steals         ]), stat[ :steals         ], unhilite()
-    printf "%s%4d%s ", hilite( categories[ :walks          ]), stat[ :walks          ], unhilite()
-    printf "%4d ",                                             stat[ :strike_outs    ]
+
+
+    pf.print_stat :avg,            "#avg", 5
+    pf.print_stat :games,          "%d",   4
+    pf.print_stat :at_bats,        "%d",   4
+    pf.print_stat :runs,           "%d",   4
+    pf.print_stat :hits,           "%d",   4
+    pf.print_stat :doubles,        "%d",   3
+    pf.print_stat :triples,        "%d",   3
+    pf.print_stat :home_runs,      "%d",   4
+    pf.print_stat :runs_batted_in, "%d",   4
+    pf.print_stat :steals,         "%d",   3
+    pf.print_stat :walks,          "%d",   4
+    pf.print_stat :strike_outs,    "%d",   4
 
     if @options[:extended]
-      dsp_sa  = sprintf( "%5.3f", sa  ).gsub '0.', ' .'
-      dsp_oba = sprintf( "%5.3f", oba ).gsub '0.', ' .'
-      dsp_soa = sprintf( "%5.3f", soa ).gsub '0.', ' .'
-
-      printf "%3d ",                                           stat[ :errors   ]
-      printf "%s%s%s ", hilite( categories[ :sa            ]),        dsp_sa,          unhilite()
-      printf "%s%s%s ", hilite( categories[ :oba           ]),        dsp_oba,         unhilite()
-      printf "%s%s%s ", hilite( categories[ :soa           ]),        dsp_soa,         unhilite()
-      printf "%s%4.2f%s ", hilite( categories[ :rpg           ]),        rpg,         unhilite()
+      pf.print_stat :errors, "%d",    3
+      pf.print_stat :sa,     "#avg",  5
+      pf.print_stat :oba,    "#avg",  5
+      pf.print_stat :soa,    "#avg",  5
+      pf.print_stat :rpg,    "%4.2f", 4
     end
 
     printf "\n"
