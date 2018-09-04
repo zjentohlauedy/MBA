@@ -4,11 +4,12 @@ require_relative 'MBATool/web/positions'
 class StatRankings
   attr_reader :pitchers, :batters
 
-  def initialize( printer, filter, compiler )
-    @players  = Array.new
-    @printer  = printer
-    @filter   = filter
-    @compiler = compiler
+  def initialize( printer, filter, compiler, options={modern_era: true} )
+    @players    = Array.new
+    @printer    = printer
+    @filter     = filter
+    @compiler   = compiler
+    @modern_era = options[:modern_era]
   end
 
   def process_categories( categories )
@@ -35,7 +36,19 @@ class StatRankings
     last_player = nil
     i           = 0
 
-    players.each do |player|
+    if @modern_era
+      start_modern_era_idx = players.find_index { |p| p.season && p.season >= 3 } || 0
+
+      if start_modern_era_idx < 15
+        start_modern_era_idx = 0
+      end
+    else
+      start_modern_era_idx = 0
+    end
+
+    players.each_with_index do |player, idx|
+      next if i > 0 and idx < start_modern_era_idx
+
       if i < min
         top_players.push player
       elsif player.get_sort_value == last_player.get_sort_value
@@ -77,7 +90,15 @@ class StatRankings
       players = @filter.apply players, stat
     end
 
-#    players.sort!
+    if @modern_era
+      start_modern_era_idx = players.find_index { |p| p.season && p.season >= 3 } || 0
+
+      if start_modern_era_idx < 15
+        start_modern_era_idx = 0
+      end
+    else
+      start_modern_era_idx = 0
+    end
 
     top_players = select_top_players players
     tie_summary = summarize_ties top_players
@@ -88,10 +109,16 @@ class StatRankings
     top_players.each_with_index do |player, idx|
       tied = (!last_player.nil? and player.get_sort_value == last_player.get_sort_value)
 
-      @printer.print player, format, idx, tied
+      position = idx == 0 ? idx : idx + start_modern_era_idx
+
+      @printer.print player, format, position, tied
+
+      if idx == 0 and start_modern_era_idx > 0
+        puts '...'
+      end
 
       last_player = player
-      last_idx    = idx
+      last_idx    = idx + start_modern_era_idx
     end
 
     unless tie_summary.nil?

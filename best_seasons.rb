@@ -5,6 +5,7 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'optparse'
 require 'sqlite3'
 require 'absolute_player_leaders_filter'
 require 'player_leaders_compiler'
@@ -22,15 +23,15 @@ class LeadersPrinter
     value = player.get_sort_value
     value = player.avgs.include?(player.get_sort_key) ? display_avg(value) : value
 
-    if tied; then printf " -  ";
-    else          printf "%2d. ", index + 1;
+    if tied; then printf "  -  ";
+    else          printf "%3d. ", index + 1;
     end
 
     printf "%-2s %-20s S%02d  %-15s #{format}\n", player.pos, player.name, player.season, player.team, value
   end
 
   def print_tie_message( summary, format, index )
-    printf "%2d.    %-40s  #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
+    printf "%2d.    %-40s   #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
   end
 
   def display_avg(average)
@@ -38,6 +39,13 @@ class LeadersPrinter
     avg.gsub /^0\./, ' .'
   end
 end
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-m', '--[no-]modern-era' ) { |o| @options[ :modern_era ] = o }
+end.parse!
 
 
 @db = SQLite3::Database.new "#{location}/mba.db"
@@ -143,6 +151,6 @@ printer  = LeadersPrinter.new
 filter   = AbsolutePlayerLeadersFilter.new
 compiler = PlayerLeadersCompiler.new org
 
-sr = StatRankings.new printer, filter, compiler
+sr = StatRankings.new printer, filter, compiler, @options
 
 sr.process_categories @categories

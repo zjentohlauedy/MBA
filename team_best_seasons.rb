@@ -5,6 +5,7 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'optparse'
 require 'sqlite3'
 require 'stat_rankings'
 
@@ -20,8 +21,8 @@ class LeadersPrinter
     value = team.get_sort_value
     value = team.avgs.include?(team.get_sort_key) ? display_avg(value) : value
 
-    if tied; then printf " -  ";
-    else          printf "%2d. ", index + 1;
+    if tied; then printf "  -  ";
+    else          printf "%3d. ", index + 1;
     end
 
     printf "%-20s %-15s S%02d  #{format}\n", team.name, team.team, team.season, value
@@ -68,6 +69,13 @@ class LeadersCompiler
     end
   end
 end
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-m', '--[no-]modern-era' ) { |o| @options[ :modern_era ] = o }
+end.parse!
 
 
 @db = SQLite3::Database.new "#{location}/mba.db"
@@ -131,6 +139,6 @@ printer  = LeadersPrinter.new
 filter   = LeadersFilter.new
 compiler = LeadersCompiler.new org
 
-sr = StatRankings.new printer, filter, compiler
+sr = StatRankings.new printer, filter, compiler, @options
 
 sr.process_categories @team_categories

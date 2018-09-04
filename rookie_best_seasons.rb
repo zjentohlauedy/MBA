@@ -5,6 +5,7 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'optparse'
 require 'sqlite3'
 require 'absolute_player_leaders_filter'
 require 'player_leaders_compiler'
@@ -38,6 +39,13 @@ class LeadersPrinter
     avg.gsub /^0\./, ' .'
   end
 end
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-m', '--[no-]modern-era' ) { |o| @options[ :modern_era ] = o }
+end.parse!
 
 
 @db = SQLite3::Database.new "#{location}/mba.db"
@@ -143,6 +151,6 @@ printer  = LeadersPrinter.new
 filter   = AbsolutePlayerLeadersFilter.new
 compiler = PlayerLeadersCompiler.new org
 
-sr = StatRankings.new printer, filter, compiler
+sr = StatRankings.new printer, filter, compiler, @options
 
 sr.process_categories @categories
