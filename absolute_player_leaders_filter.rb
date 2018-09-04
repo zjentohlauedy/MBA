@@ -20,6 +20,6 @@ class AbsolutePlayerLeadersFilter
   end
 
   def filter_closers( closers )
-    return closers.select { |p| p.innings.to_f >= 85.0 }
+    return closers.select { |p| p.innings.to_f >= 85.0 and p.inn_per_game <= 5.0 }
   end
 end
