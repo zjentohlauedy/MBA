@@ -242,7 +242,7 @@ end
 
 def get_player_by_name( firstname, lastname )
   args = { first_name: firstname, last_name: lastname }
-  query = "select * from players_t where first_name = :first_name and last_name = :last_name"
+  query = "select * from players_t where first_name = :first_name collate nocase and last_name = :last_name collate nocase"
 
   result = Utils::transform_hash @db.execute query, args
   result[0]
