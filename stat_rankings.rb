@@ -117,8 +117,7 @@ end
 
   'closing '      => {  'label' => "Closing Leaders",      'type' => 'closer',      'class'  => Closer,
     'stats'       => [{ 'label' => "Saves",                'stat' => :saves,        'format' => '%3d',    'direction' => :descending },
-                      { 'label' => "Games",                'stat' => :games,        'format' => '%3d',    'direction' => :descending },
-                      { 'label' => "Innings Pitched",      'stat' => :innings,      'format' => '%s',     'direction' => :descending },
+                      { 'label' => "Relief Pitching Eff.", 'stat' => :rpe,          'format' => '%+5.3f', 'direction' => :descending },
                       { 'label' => "Earned Run Average",   'stat' => :era,          'format' => '%5.2f',  'direction' => :ascending  },
                       { 'label' => "vs. Batting Average",  'stat' => :vsba,         'format' => '%s',     'direction' => :ascending  },
                       { 'label' => "Strike Outs",          'stat' => :strike_outs,  'format' => '%4d',    'direction' => :descending },

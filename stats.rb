@@ -148,7 +148,7 @@ class Pitcher < Stats
 end
 
 class Closer < Stats
-  attr_reader :name, :team, :wins, :losses, :era, :games, :saves, :innings, :season, :seasons, :pos,
+  attr_reader :name, :team, :wins, :losses, :era, :games, :saves, :innings, :season, :seasons, :pos, :rpe,
               :hits, :earned_runs, :home_runs, :walks, :strike_outs, :vsba, :win_pct, :avgs, :rookie_season,
               :inn_per_game, :whip, :so_per_9, :hr_per_9, :wl_ratio, :efficiency, :eff_per_9, :identifier
 
@@ -187,6 +187,7 @@ class Closer < Stats
     @hr_per_9     = (f_innings > 0) ? @home_runs.to_f / f_innings * 9.0 : 0
     @efficiency   = (adj_innings - @hits) + (@strike_outs - @hits)
     @eff_per_9    = (f_innings > 0) ? @efficiency.to_f / f_innings * 9.0 : 0
+    @rpe          = (@games > 0) ? ((@saves * 2) + @wins - @losses).to_f / @games.to_f : 0
 
     @avgs = [:wl_ratio, :win_pct, :vsba]
   end
