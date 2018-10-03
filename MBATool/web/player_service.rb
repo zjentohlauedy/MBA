@@ -242,7 +242,7 @@ class PlayerService
   end
 
   def save_player_accolade( request )
-    unless ['batting', 'pitching', 'player'].include? request[:type]
+    unless ['batting', 'closing', 'pitching', 'player'].include? request[:type]
       raise BadRequestError.new "Accolade type #{request[:type]} is not supported. Only batting and pitching accolade types are allowed."
     end
 
@@ -267,7 +267,7 @@ class PlayerService
     end
 
     if player[:player_type] == PlayerTypes::Pitcher
-      unless request[:type] == 'pitching'
+      unless ['closing', 'pitching'].include? request[:type]
         raise BadRequestError.new "Request to create #{request[:type]} accolade failed because player with ID #{request[:player_id]} is a pitcher."
       end
 

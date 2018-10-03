@@ -36,6 +36,7 @@ module Accolades
     World_Series_MVP  = 6
     All_Star_Champion = 7
     All_Star_MVP      = 8
+    Team_MVP          = 9
   end
 
   module Batting
@@ -88,6 +89,32 @@ module Accolades
     Pitching_Rookie_of_the_Year  = 20
   end
 
+  module Closing
+    Type = 'closing'
+
+    Closer_of_the_Year           = 101
+    Global_Closer_of_the_Year    = 102
+    World_Closer_of_the_Year     = 103
+    Atlantic_Closer_of_the_Year  = 104
+    North_Closer_of_the_Year     = 105
+    Pacific_Closer_of_the_Year   = 106
+    South_Closer_of_the_Year     = 107
+    Closing_Rookie_of_the_Year   = 108
+    Most_Wins                    = 109
+    Best_Win_Loss_Ratio          = 110
+    Best_Win_Percentage          = 111
+    Best_Earned_Run_Average      = 112
+    Best_vs_Batting_Average      = 113
+    Most_Saves                   = 114
+    Most_Strike_Outs             = 115
+    Most_Innings_per_Game        = 116
+    Best_Walks_Hits_Per_Inning   = 117
+    Most_Strike_Outs_per_Nine    = 118
+    Best_Home_Runs_per_Nine      = 119
+    Best_Efficiency              = 120
+    Best_Relief_Pitching_Eff     = 121
+  end
+
   AccoladeList = [
     { name: "World Title",                       value: Accolades::League::World_Title,                    type: Accolades::League::Type,   automatic: true  },
     { name: "Best Record",                       value: Accolades::League::Best_Record,                    type: Accolades::League::Type,   automatic: true  },
@@ -111,6 +138,7 @@ module Accolades
     { name: "World Series MVP",                  value: Accolades::Player::World_Series_MVP,               type: Accolades::Player::Type,   automatic: false },
     { name: "All Star Champion",                 value: Accolades::Player::All_Star_Champion,              type: Accolades::Player::Type,   automatic: true  },
     { name: "All Star MVP",                      value: Accolades::Player::All_Star_MVP,                   type: Accolades::Player::Type,   automatic: false },
+    { name: "Team MVP",                          value: Accolades::Player::Team_MVP,                       type: Accolades::Player::Type,   automatic: false },
 
     { name: "MBA Batter of the Year",            value: Accolades::Batting::Batter_of_the_Year,            type: Accolades::Batting::Type,  automatic: false },
     { name: "Global League Batter of the Year",  value: Accolades::Batting::Global_Batter_of_the_Year,     type: Accolades::Batting::Type,  automatic: false },
@@ -152,7 +180,29 @@ module Accolades
     { name: "Most Strike Outs per Nine",         value: Accolades::Pitching::Most_Strike_Outs_per_Nine,    type: Accolades::Pitching::Type, automatic: true  },
     { name: "Best Home Runs per Nine",           value: Accolades::Pitching::Best_Home_Runs_per_Nine,      type: Accolades::Pitching::Type, automatic: true  },
     { name: "Best Efficiency",                   value: Accolades::Pitching::Best_Efficiency,              type: Accolades::Pitching::Type, automatic: true  },
-    { name: "Pitching Rookie of the Year",       value: Accolades::Pitching::Pitching_Rookie_of_the_Year,  type: Accolades::Pitching::Type, automatic: false } ]
+    { name: "Pitching Rookie of the Year",       value: Accolades::Pitching::Pitching_Rookie_of_the_Year,  type: Accolades::Pitching::Type, automatic: false },
+
+    { name: "MBA Closer of the Year",            value: Accolades::Closing::Closer_of_the_Year,            type: Accolades::Closing::Type,  automatic: false },
+    { name: "Global League Closer of the Year",  value: Accolades::Closing::Global_Closer_of_the_Year,     type: Accolades::Closing::Type,  automatic: false },
+    { name: "World League Closer of the Year",   value: Accolades::Closing::World_Closer_of_the_Year,      type: Accolades::Closing::Type,  automatic: false },
+    { name: "Atlantic Closer of the Year",       value: Accolades::Closing::Atlantic_Closer_of_the_Year,   type: Accolades::Closing::Type,  automatic: false },
+    { name: "North Closer of the Year",          value: Accolades::Closing::North_Closer_of_the_Year,      type: Accolades::Closing::Type,  automatic: false },
+    { name: "Pacific Closer of the Year",        value: Accolades::Closing::Pacific_Closer_of_the_Year,    type: Accolades::Closing::Type,  automatic: false },
+    { name: "South Closer of the Year",          value: Accolades::Closing::South_Closer_of_the_Year,      type: Accolades::Closing::Type,  automatic: false },
+    { name: "Closing Rookie of the Year",        value: Accolades::Closing::Closing_Rookie_of_the_Year,    type: Accolades::Closing::Type,  automatic: false },
+    { name: "Most Wins",                         value: Accolades::Closing::Most_Wins,                     type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Win Loss Ratio",               value: Accolades::Closing::Best_Win_Loss_Ratio,           type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Win Percentage",               value: Accolades::Closing::Best_Win_Percentage,           type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Earned Run Average",           value: Accolades::Closing::Best_Earned_Run_Average,       type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best vs Batting Average",           value: Accolades::Closing::Best_vs_Batting_Average,       type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Most Saves",                        value: Accolades::Closing::Most_Saves,                    type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Most Strike Outs",                  value: Accolades::Closing::Most_Strike_Outs,              type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Most Innings per Game",             value: Accolades::Closing::Most_Innings_per_Game,         type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Walks Hits Per Inning",        value: Accolades::Closing::Best_Walks_Hits_Per_Inning,    type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Most Strike Outs per Nine",         value: Accolades::Closing::Most_Strike_Outs_per_Nine,     type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Home Runs per Nine",           value: Accolades::Closing::Best_Home_Runs_per_Nine,       type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Efficiency",                   value: Accolades::Closing::Best_Efficiency,               type: Accolades::Closing::Type,  automatic: true  },
+    { name: "Best Relief Pitching Eff.",         value: Accolades::Closing::Best_Relief_Pitching_Eff,      type: Accolades::Closing::Type,  automatic: true  } ]
 
   def self.valid?( type, value )
     AccoladeList.each do |accolade|

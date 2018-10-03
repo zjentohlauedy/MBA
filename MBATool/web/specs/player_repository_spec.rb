@@ -1080,6 +1080,189 @@ describe PlayerRepository do
     end
   end
 
+  describe '#get_closing_pitcher_stats_by_highest' do
+    it 'should return an array with at least one entry' do
+      @db.execute "insert into pitchers_t values (1, 7, 7, 7, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     be     >= 1
+    end
+
+    it 'should return the pitcher stats record with the highest value of the given stat' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 2
+    end
+
+    it 'should return multiple records if there is a tie' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+    end
+
+    it 'should work for any given stat' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 11, 11, 13, 12, 12, 10, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 1, #{Phases::RegularSeason}, 12, 13, 12, 11, 13, 12, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 1, #{Phases::RegularSeason}, 13, 12, 11, 10, 11, 11, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'wins',    'innings', 0)[0][:player_id] ).to eq 4
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'losses',  'innings', 0)[0][:player_id] ).to eq 3
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'games',   'innings', 0)[0][:player_id] ).to eq 2
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'saves',   'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'innings', 'innings', 0)[0][:player_id] ).to eq 3
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'outs',    'innings', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should work for a calculation of stats' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10,  5, 10,  5, 10,  5, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason},  5, 10,  5, 10,  5, 10, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'wins + games',     'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'losses - innings', 'innings', 0)[0][:player_id] ).to eq 2
+    end
+
+    it 'should work for derived stats' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_highest 'earned_run_avg', 'innings', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should only consider the given season' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0, 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 2
+    end
+
+    it 'should only consider the given season and phase' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0, 1, Phases::Playoff
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 2
+    end
+
+    it 'should consider all records if no season or phase are given' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 3
+    end
+
+    it 'should only consider records that meet given qualifying criteria' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 10, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 50, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 10, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 50, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 30
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 4
+    end
+
+    it 'should only consider closing pitchers' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 7)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 7)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 1, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0, 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 4
+    end
+
+    it 'should return an empty array if there are no qualifying stats records' do
+      result = @player_repository.get_closing_pitcher_stats_by_highest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+
+    it 'should raise an error if an invalid stat is given' do
+      expect { @player_repository.get_closing_pitcher_stats_by_highest 'invalid', 'innings', 0 }.to raise_error SQLite3::SQLException
+    end
+  end
+
   describe '#get_pitcher_stats_by_lowest' do
     it 'should return an array with at least one entry' do
       @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
@@ -1396,6 +1579,189 @@ describe PlayerRepository do
 
     it 'should raise an error if an invalid stat is given' do
       expect { @player_repository.get_starting_pitcher_stats_by_lowest 'invalid', 'innings', 0 }.to raise_error SQLite3::SQLException
+    end
+  end
+
+  describe '#get_closing_pitcher_stats_by_lowest' do
+    it 'should return an array with at least one entry' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     be     >= 1
+    end
+
+    it 'should return the pitcher stats record with the lowest value of the given stat' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+    end
+
+    it 'should return multiple records if there is a tie' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     2
+    end
+
+    it 'should work for any given stat' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 11, 11, 13, 12, 12, 10, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 1, #{Phases::RegularSeason}, 12, 13, 12, 11, 13, 12, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 1, #{Phases::RegularSeason}, 13, 12, 11, 10, 11, 11, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'wins',    'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'losses',  'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'games',   'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'saves',   'innings', 0)[0][:player_id] ).to eq 4
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'innings', 'innings', 0)[0][:player_id] ).to eq 1
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'outs',    'innings', 0)[0][:player_id] ).to eq 2
+    end
+
+    it 'should work for a calculation of stats' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10,  5, 10,  5, 10,  5, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason},  5, 10,  5, 10,  5, 10, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'wins + games',     'innings', 0)[0][:player_id] ).to eq 2
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'losses - innings', 'innings', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should work for derived stats' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 10, 10, 13, 10, 13, 1, 1, 1, 1, 1)"
+
+      expect( (@player_repository.get_closing_pitcher_stats_by_lowest 'earned_run_avg', 'innings', 0)[0][:player_id] ).to eq 1
+    end
+
+    it 'should only consider the given season' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0, 2
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 4
+    end
+
+    it 'should only consider the given season and phase' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0, 1, Phases::RegularSeason
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+    end
+
+    it 'should consider all records if no season or phase are given' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 2
+    end
+
+    it 'should only consider records that meet given qualifying criteria' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 50, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::Playoff},        2, 1, 1, 1, 10, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 2, #{Phases::RegularSeason}, 20, 1, 1, 1, 50, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 2, #{Phases::Playoff},        4, 1, 1, 1, 10, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 30
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 1
+    end
+
+    it 'should only consider starting pitchers' do
+      @db.execute "insert into pitchers_t values (1, 5, 5, 5, 1)"
+      @db.execute "insert into pitchers_t values (2, 5, 5, 5, 7)"
+      @db.execute "insert into pitchers_t values (3, 5, 5, 5, 7)"
+      @db.execute "insert into pitchers_t values (4, 5, 5, 5, 1)"
+      @db.execute "insert into pitcher_stats_t values (1, 1, #{Phases::RegularSeason}, 20, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (2, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (3, 1, #{Phases::RegularSeason}, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+      @db.execute "insert into pitcher_stats_t values (4, 1, #{Phases::RegularSeason}, 15, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)"
+
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0, 1
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     1
+
+      expect( result[0][:player_id] ).to eq 4
+    end
+
+    it 'should return an empty array if there are no qualifying stats records' do
+      result = @player_repository.get_closing_pitcher_stats_by_lowest 'wins', 'innings', 0
+
+      expect( result        ).to_not be_nil
+      expect( result        ).to     be_a   Array
+      expect( result.length ).to     eq     0
+    end
+
+    it 'should raise an error if an invalid stat is given' do
+      expect { @player_repository.get_closing_pitcher_stats_by_lowest 'invalid', 'innings', 0 }.to raise_error SQLite3::SQLException
     end
   end
 

@@ -196,7 +196,9 @@ class PlayerResponseMapper
   def map_pitcher_accolade( pitcher_accolade )
     return nil unless pitcher_accolade.is_a? Hash
 
-    pitcher_accolade[:accolade] = display_accolade 'pitching', pitcher_accolade[:accolade]
+    accolade_type = (pitcher_accolade[:accolade] > 100) ? 'closing' : 'pitching'
+
+    pitcher_accolade[:accolade] = display_accolade accolade_type, pitcher_accolade[:accolade]
 
     return pitcher_accolade
   end

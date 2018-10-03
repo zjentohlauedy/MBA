@@ -548,10 +548,28 @@ describe PlayerResponseMapper do
       expect( result ).to be_nil
     end
 
-    it 'should raise an internal server error if given invalid accolade' do
+    it 'should map closing accolades' do
+      pitcher_accolade = {player_id: 1, season: 1, accolade: 104}
+
+      result = @player_response_mapper.map_pitcher_accolade pitcher_accolade
+
+      expect( result             ).to_not be_nil
+      expect( result             ).to     be_a   Hash
+      expect( result[:player_id] ).to_not be_nil
+      expect( result[:season   ] ).to_not be_nil
+      expect( result[:accolade ] ).to_not be_nil
+    end
+
+    it 'should raise an internal server error if given invalid pitching accolade' do
       pitcher_accolade = {player_id: 1, season: 1, accolade: 99}
 
       expect { @player_response_mapper.map_pitcher_accolade pitcher_accolade }.to raise_error InternalServerError, 'Invalid accolade of type pitching with value 99.'
+    end
+
+    it 'should raise an internal server error if given invalid closing accolade' do
+      pitcher_accolade = {player_id: 1, season: 1, accolade: 199}
+
+      expect { @player_response_mapper.map_pitcher_accolade pitcher_accolade }.to raise_error InternalServerError, 'Invalid accolade of type closing with value 199.'
     end
   end
 end

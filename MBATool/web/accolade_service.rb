@@ -30,6 +30,7 @@ AccoladeLookups = [
   { accolade: Accolades::Player::World_Series_MVP,                },
   { accolade: Accolades::Player::All_Star_Champion,               },
   { accolade: Accolades::Player::All_Star_MVP,                    },
+  { accolade: Accolades::Player::Team_MVP,                        },
 
   { accolade: Accolades::Batting::Batter_of_the_Year,             },
   { accolade: Accolades::Batting::Global_Batter_of_the_Year,      },
@@ -71,7 +72,29 @@ AccoladeLookups = [
   { accolade: Accolades::Pitching::Most_Strike_Outs_per_Nine,    method: :get_starting_pitcher_stats_by_highest,  stat: 'so_per_nine',       phase: Phases::RegularSeason },
   { accolade: Accolades::Pitching::Best_Home_Runs_per_Nine,      method: :get_starting_pitcher_stats_by_lowest,   stat: 'hr_per_nine',       phase: Phases::RegularSeason },
   { accolade: Accolades::Pitching::Best_Efficiency,              method: :get_starting_pitcher_stats_by_highest,  stat: 'efficiency',        phase: Phases::RegularSeason },
-  { accolade: Accolades::Pitching::Pitching_Rookie_of_the_Year    } ]
+  { accolade: Accolades::Pitching::Pitching_Rookie_of_the_Year    },
+
+  { accolade: Accolades::Closing::Closer_of_the_Year,             },
+  { accolade: Accolades::Closing::Global_Closer_of_the_Year,      },
+  { accolade: Accolades::Closing::World_Closer_of_the_Year,       },
+  { accolade: Accolades::Closing::Atlantic_Closer_of_the_Year,    },
+  { accolade: Accolades::Closing::North_Closer_of_the_Year,       },
+  { accolade: Accolades::Closing::Pacific_Closer_of_the_Year,     },
+  { accolade: Accolades::Closing::South_Closer_of_the_Year,       },
+  { accolade: Accolades::Closing::Closing_Rookie_of_the_Year      },
+  { accolade: Accolades::Closing::Most_Wins,                     method: :get_closing_pitcher_stats_by_highest,   stat: 'wins',              phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Win_Loss_Ratio,           method: :get_closing_pitcher_stats_by_highest,   stat: 'win_loss_ratio',    phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Win_Percentage,           method: :get_closing_pitcher_stats_by_highest,   stat: 'win_pct',           phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Earned_Run_Average,       method: :get_closing_pitcher_stats_by_lowest,    stat: 'earned_run_avg',    phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_vs_Batting_Average,       method: :get_closing_pitcher_stats_by_lowest,    stat: 'vs_batting_avg',    phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Most_Saves,                    method: :get_closing_pitcher_stats_by_highest,   stat: 'saves',             phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Most_Strike_Outs,              method: :get_closing_pitcher_stats_by_highest,   stat: 'strike_outs',       phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Most_Innings_per_Game,         method: :get_closing_pitcher_stats_by_highest,   stat: 'innings_per_game',  phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Walks_Hits_Per_Inning,    method: :get_closing_pitcher_stats_by_lowest,    stat: 'whip',              phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Most_Strike_Outs_per_Nine,     method: :get_closing_pitcher_stats_by_highest,   stat: 'so_per_nine',       phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Home_Runs_per_Nine,       method: :get_closing_pitcher_stats_by_lowest,    stat: 'hr_per_nine',       phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Efficiency,               method: :get_closing_pitcher_stats_by_highest,   stat: 'efficiency',        phase: Phases::RegularSeason },
+  { accolade: Accolades::Closing::Best_Relief_Pitching_Eff,      method: :get_closing_pitcher_stats_by_highest,   stat: 'rpe',               phase: Phases::RegularSeason } ]
 
 
 class AccoladeService
@@ -86,6 +109,7 @@ class AccoladeService
       Accolades::Team::Type     => { repo: team_repository,       method: :save_team_accolade     },
       Accolades::Player::Type   => { repo: player_repository,     method: nil                     },
       Accolades::Pitching::Type => { repo: player_repository,     method: :save_pitcher_accolade, filter: { field: 'innings', value: 185 } },
+      Accolades::Closing::Type  => { repo: player_repository,     method: :save_pitcher_accolade, filter: { field: 'innings', value:  85 } },
       Accolades::Batting::Type  => { repo: player_repository,     method: :save_batter_accolade,  filter: { field: 'at_bats', value: 300 } }
     }
   end

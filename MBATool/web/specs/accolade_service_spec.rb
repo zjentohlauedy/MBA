@@ -30,6 +30,8 @@ describe AccoladeService do
     allow( @pr ).to receive( :get_pitcher_stats_by_lowest           ).and_return( [] )
     allow( @pr ).to receive( :get_starting_pitcher_stats_by_highest ).and_return( [] )
     allow( @pr ).to receive( :get_starting_pitcher_stats_by_lowest  ).and_return( [] )
+    allow( @pr ).to receive( :get_closing_pitcher_stats_by_highest  ).and_return( [] )
+    allow( @pr ).to receive( :get_closing_pitcher_stats_by_lowest   ).and_return( [] )
     allow( @pr ).to receive( :get_batter_stats_by_highest           ).and_return( [] )
     allow( @pr ).to receive( :get_batter_stats_by_lowest            ).and_return( [] )
     allow( @pr ).to receive( :get_players_by_team                   ).and_return( [] )
@@ -186,7 +188,7 @@ describe AccoladeService do
       @accolade_service.resolve_accolades
     end
 
-    it 'should call the player repository to create accolades for the players returned by the get pitcher stats method' do
+    it 'should call the player repository to create accolades for the players returned by the get starting pitcher stats method' do
       allow( @pr ).to receive( :get_starting_pitcher_stats_by_highest ).and_return( [{player_id: 1, season: 4}] )
       allow( @pr ).to receive( :get_starting_pitcher_stats_by_lowest  ).and_return( [{player_id: 1, season: 4}] )
 
@@ -229,6 +231,34 @@ describe AccoladeService do
       expect( @pr ).to receive( :save_batter_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Batting::Best_On_Base_Percentage )
       expect( @pr ).to receive( :save_batter_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Batting::Best_Strike_Out_Average )
       expect( @pr ).to receive( :save_batter_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Batting::Best_Runs_per_Game      )
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to get the highest or lowest values for all the closer accolades for the current season' do
+      expect( @pr ).to receive( :get_closing_pitcher_stats_by_highest ).with( anything, 'innings', 85, 4, anything ).and_return( [] ).at_least :once
+      expect( @pr ).to receive( :get_closing_pitcher_stats_by_lowest  ).with( anything, 'innings', 85, 4, anything ).and_return( [] ).at_least :once
+
+      @accolade_service.resolve_accolades
+    end
+
+    it 'should call the player repository to create accolades for the players returned by the get closing pitcher stats method' do
+      allow( @pr ).to receive( :get_closing_pitcher_stats_by_highest ).and_return( [{player_id: 1, season: 4}] )
+      allow( @pr ).to receive( :get_closing_pitcher_stats_by_lowest  ).and_return( [{player_id: 1, season: 4}] )
+
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Most_Wins                  )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Win_Loss_Ratio        )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Win_Percentage        )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Earned_Run_Average    )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_vs_Batting_Average    )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Most_Saves                 )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Most_Strike_Outs           )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Most_Innings_per_Game      )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Walks_Hits_Per_Inning )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Most_Strike_Outs_per_Nine  )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Home_Runs_per_Nine    )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Efficiency            )
+      expect( @pr ).to receive( :save_pitcher_accolade ).with( hash_including :player_id => 1, :season => 4, :accolade => Accolades::Closing::Best_Relief_Pitching_Eff   )
 
       @accolade_service.resolve_accolades
     end

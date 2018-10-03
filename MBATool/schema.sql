@@ -60,7 +60,8 @@ CREATE VIEW Pitcher_Stats_V AS SELECT *,
   ((CAST(Walks AS FLOAT) + Hits) / ((CAST(Outs AS FLOAT) / 3) + Innings)) WHIP,
   (CAST(Strike_Outs AS FLOAT) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) SO_Per_Nine,
   (CAST(Home_Runs AS FLOAT) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) HR_Per_Nine,
-  (((((CAST(Outs AS FLOAT) / 3) + Innings) - Hits) + (Strike_Outs - Hits)) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) Efficiency
+  (((((CAST(Outs AS FLOAT) / 3) + Innings) - Hits) + (Strike_Outs - Hits)) / (((CAST(Outs AS FLOAT) / 3) + Innings) / 9)) Efficiency,
+  (((CAST(Saves AS FLOAT) * 2) + Wins) / Games) RPE
   FROM Pitcher_Stats_T;
 
 CREATE TABLE Pitcher_Accolades_T

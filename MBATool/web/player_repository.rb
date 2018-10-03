@@ -122,6 +122,21 @@ class PlayerRepository
     return Utils::transform_hash @db.execute query, args
   end
 
+  def get_closing_pitcher_stats_by_highest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    filter = "p.fatigue = 1 and #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; filter = "#{filter} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  filter = "#{filter} and season_phase = :phase";  args[:phase ] = phase  end
+
+    max_query = "select max(#{stat}) value from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where #{filter}"
+
+    query = "select ps.* from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where #{stat} = (#{max_query}) and #{filter}"
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
   def get_pitcher_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
     args = {qualifying_value: qualifying_value}
 
@@ -141,6 +156,21 @@ class PlayerRepository
     args = {qualifying_value: qualifying_value}
 
     filter = "p.fatigue > 1 and #{qualifying_stat} >= :qualifying_value"
+
+    unless season.nil?; filter = "#{filter} and season       = :season"; args[:season] = season end
+    unless phase.nil?;  filter = "#{filter} and season_phase = :phase";  args[:phase ] = phase  end
+
+    min_query = "select min(#{stat}) value from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where #{filter}"
+
+    query = "select ps.* from pitcher_stats_v ps join pitchers_t p on ps.player_id = p.player_id where #{stat} = (#{min_query}) and #{filter}"
+
+    return Utils::transform_hash @db.execute query, args
+  end
+
+  def get_closing_pitcher_stats_by_lowest( stat, qualifying_stat, qualifying_value, season = nil, phase = nil )
+    args = {qualifying_value: qualifying_value}
+
+    filter = "p.fatigue = 1 and #{qualifying_stat} >= :qualifying_value"
 
     unless season.nil?; filter = "#{filter} and season       = :season"; args[:season] = season end
     unless phase.nil?;  filter = "#{filter} and season_phase = :phase";  args[:phase ] = phase  end
