@@ -3,9 +3,9 @@ define([], function() {
     var Constants = {
         TEAM_MAX_PITCHERS:          11,
         TEAM_MAX_BATTERS:           14,
-        ROOKIE_DRAFT_MAX_PITCHERS:   4,
+        ROOKIE_DRAFT_MAX_PITCHERS:   5,
         ROOKIE_DRAFT_MAX_BATTERS:    6,
-        ROSTER_CUT_TARGET_PITCHERS:  3,
+        ROSTER_CUT_TARGET_PITCHERS:  4,
         ROSTER_CUT_TARGET_BATTERS:   5,
 
         PICKS_PER_ROUND:            32,

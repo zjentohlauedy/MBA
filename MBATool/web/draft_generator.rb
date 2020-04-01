@@ -104,8 +104,7 @@ class DraftGenerator
            draft + draft.reverse +
            draft + draft.reverse +
            draft + draft.reverse +
-           draft + draft.reverse +
-           draft
+           draft + draft.reverse
   end
 
 end
