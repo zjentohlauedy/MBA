@@ -1,4 +1,13 @@
+path add dh0:c
+
 cd dh0:MBA/<%= season_name %>/
+
+if exists .in-progress
+  echo "error: game already in progress"
+  skip theend
+endif
+
+makedir .in-progress
 
 copy LeagName.Dat df1:
 copy parks.dat df1:
@@ -7,5 +16,7 @@ copy Players.S df1:
 cd df1:
 
 delete D#?G#?.TXT
+
+lab theend
 
 cd df0:
