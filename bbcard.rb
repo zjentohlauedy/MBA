@@ -284,69 +284,139 @@ def db_get_one( query )
   return result[0]
 end
 
+PitcherJoinPitchers    = 'join pitchers_t p on ps.player_id = p.player_id'
+PitcherJoinTeamPlayers = 'join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season'
+
+PitcherStatsBaseQuery  = "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherERABaseQuery    = "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherIPBaseQuery     = "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherVSBABaseQuery   = "select innings, outs, hits, min(cast(hits as float) / cast((innings * 3 + outs + hits) as float)) vsba from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherIPGBaseQuery    = "select innings, outs, games, max((cast(outs as float) / 3.0 + cast(innings as float)) / cast(games as float)) ipg from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherWHIPBaseQuery   = "select innings, outs, walks, hits, min(cast((walks + hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float))) whip from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherSOP9BaseQuery   = "select innings, outs, strike_outs, max(cast(strike_outs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherHRP9BaseQuery   = "select innings, outs, home_runs, min(cast(home_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps #{PitcherJoinPitchers}"
+PitcherEFFBaseQuery    = "select innings, outs, hits, strike_outs, max(cast(((cast(outs as float) / 3.0 + cast(innings as float)) - hits) + (strike_outs - hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) eff from pitcher_stats_t ps #{PitcherJoinPitchers}"
+
 def get_best_pitcher_stats_overall()
-  result        = db_get_one 'select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t'
-  result[:era]  = db_get_one 'select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185'
-  result[:ip]   = db_get_one 'select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t'
-  result[:vsba] = db_get_one 'select innings, outs, hits, min(cast(hits as float) / cast((innings * 3 + outs + hits) as float)) vsba from pitcher_stats_t where innings >= 185'
-  result[:ipg]  = db_get_one 'select innings, outs, games, max((cast(outs as float) / 3.0 + cast(innings as float)) / cast(games as float)) ipg from pitcher_stats_t where innings >= 185'
-  result[:whip] = db_get_one 'select innings, outs, walks, hits, min(cast((walks + hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float))) whip from pitcher_stats_t where innings >= 185'
-  result[:sop9] = db_get_one 'select innings, outs, strike_outs, max(cast(strike_outs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185'
-  result[:hrp9] = db_get_one 'select innings, outs, home_runs, min(cast(home_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185'
-  result[:eff]  = db_get_one 'select innings, outs, hits, strike_outs, max(cast(((cast(outs as float) / 3.0 + cast(innings as float)) - hits) + (strike_outs - hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) eff from pitcher_stats_t where innings >= 185'
+  result        = db_get_one "#{PitcherStatsBaseQuery} where fatigue > 1"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } where fatigue > 1 and innings >= 185"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } where fatigue > 1"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } where fatigue > 1 and innings >= 185"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } where fatigue > 1 and innings >= 185"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } where fatigue > 1 and innings >= 185"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } where fatigue > 1 and innings >= 185"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } where fatigue > 1 and innings >= 185"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } where fatigue > 1 and innings >= 185"
 
   return result
 end
 
 def get_best_pitcher_stats_by_team( team_id )
-  result        = db_get_one "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id}"
-  result[:era]  = db_get_one "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:ip]   = db_get_one "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id}"
-  result[:vsba] = db_get_one "select innings, outs, hits, min(cast(hits as float) / cast((innings * 3 + outs + hits) as float)) vsba from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:ipg]  = db_get_one "select innings, outs, games, max((cast(outs as float) / 3.0 + cast(innings as float)) / cast(games as float)) ipg from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:whip] = db_get_one "select innings, outs, walks, hits, min(cast((walks + hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float))) whip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:sop9] = db_get_one "select innings, outs, strike_outs, max(cast(strike_outs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:hrp9] = db_get_one "select innings, outs, home_runs, min(cast(home_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
-  result[:eff]  = db_get_one "select innings, outs, hits, strike_outs, max(cast(((cast(outs as float) / 3.0 + cast(innings as float)) - hits) + (strike_outs - hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) eff from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and innings >= 185"
+  result        = db_get_one "#{PitcherStatsBaseQuery} #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and innings >= 185"
 
   return result
 end
 
 def get_best_pitcher_stats_by_season( season )
-  result        = db_get_one "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t where season = #{season}"
-  result[:era]  = db_get_one "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:ip]   = db_get_one "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t where season = #{season}"
-  result[:vsba] = db_get_one "select innings, outs, hits, min(cast(hits as float) / cast((innings * 3 + outs + hits) as float)) vsba from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:ipg]  = db_get_one "select innings, outs, games, max((cast(outs as float) / 3.0 + cast(innings as float)) / cast(games as float)) ipg from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:whip] = db_get_one "select innings, outs, walks, hits, min(cast((walks + hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float))) whip from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:sop9] = db_get_one "select innings, outs, strike_outs, max(cast(strike_outs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:hrp9] = db_get_one "select innings, outs, home_runs, min(cast(home_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t where innings >= 185 and season = #{season}"
-  result[:eff]  = db_get_one "select innings, outs, hits, strike_outs, max(cast(((cast(outs as float) / 3.0 + cast(innings as float)) - hits) + (strike_outs - hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) eff from pitcher_stats_t where innings >= 185 and season = #{season}"
+  result        = db_get_one "#{PitcherStatsBaseQuery} where fatigue > 1 and season = #{season}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } where fatigue > 1 and season = #{season}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } where fatigue > 1 and season = #{season} and innings >= 185"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } where fatigue > 1 and season = #{season} and innings >= 185"
 
   return result
 end
 
 def get_best_pitcher_stats_by_team_and_season( team_id, season )
-  result        = db_get_one "select max(wins) wins, max(games) games, max(saves) saves, max(strike_outs) strike_outs from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season}"
-  result[:era]  = db_get_one "select innings, outs, earned_runs, min(cast(earned_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:ip]   = db_get_one "select innings, outs, max(cast(innings as float) + (cast(outs as float) / 10.0)) ip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season}"
-  result[:vsba] = db_get_one "select innings, outs, hits, min(cast(hits as float) / cast((innings * 3 + outs + hits) as float)) vsba from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:ipg]  = db_get_one "select innings, outs, games, max((cast(outs as float) / 3.0 + cast(innings as float)) / cast(games as float)) ipg from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:whip] = db_get_one "select innings, outs, walks, hits, min(cast((walks + hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float))) whip from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:sop9] = db_get_one "select innings, outs, strike_outs, max(cast(strike_outs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:hrp9] = db_get_one "select innings, outs, home_runs, min(cast(home_runs as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) era from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
-  result[:eff]  = db_get_one "select innings, outs, hits, strike_outs, max(cast(((cast(outs as float) / 3.0 + cast(innings as float)) - hits) + (strike_outs - hits) as float) / (cast(outs as float) / 3.0 + cast(innings as float)) * 9.0) eff from pitcher_stats_t ps join team_players_t tp on ps.player_id = tp.player_id and ps.season = tp.season where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result        = db_get_one "#{PitcherStatsBaseQuery} #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } #{PitcherJoinTeamPlayers} where fatigue > 1 and tp.team_id = #{team_id} and ps.season = #{season} and innings >= 185"
 
   return result
 end
 
-BatterStatsBaseQuery    = 'select max(at_bats) at_bats, max(runs) runs, max(hits) hits, max(doubles) doubles, max(triples) triples, max(home_runs) home_runs, max(runs_batted_in) runs_batted_in, max(steals) steals, max(walks) walks from batter_stats_t'
-BattingAverageBaseQuery = 'select at_bats, hits, max(cast(hits as float) / at_bats) avg from batter_stats_t'
-BattingSABaseQuery      = 'select at_bats, hits, doubles, triples, home_runs, max(cast(((hits - doubles - triples - home_runs) + doubles * 2 + triples * 3 + home_runs * 4) as float) / cast(at_bats as float)) sa from batter_stats_t'
-BattingOBABaseQuery     = 'select at_bats, hits, walks, max(cast((hits + walks) as float) / (at_bats + walks)) oba from batter_stats_t'
-BattingSOABaseQuery     = 'select at_bats, strike_outs, min(cast(strike_outs as float) / at_bats) soa from batter_stats_t'
-BattingRPGBaseQuery     = 'select games, runs, runs_batted_in, home_runs, max(cast((runs + runs_batted_in - home_runs) as float) / games) rpg from batter_stats_t'
-BattingJoinTeamPlayers  = 'bs join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season'
+
+def get_best_closer_stats_overall()
+  result        = db_get_one "#{PitcherStatsBaseQuery} where fatigue = 1"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } where fatigue = 1 and innings >= 85"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } where fatigue = 1"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } where fatigue = 1 and innings >= 85"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } where fatigue = 1 and innings >= 85"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } where fatigue = 1 and innings >= 85"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } where fatigue = 1 and innings >= 85"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } where fatigue = 1 and innings >= 85"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } where fatigue = 1 and innings >= 85"
+
+  return result
+end
+
+def get_best_closer_stats_by_team( team_id )
+  result        = db_get_one "#{PitcherStatsBaseQuery} #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and innings >= 85"
+
+  return result
+end
+
+def get_best_closer_stats_by_season( season )
+  result        = db_get_one "#{PitcherStatsBaseQuery} where fatigue = 1 and season = #{season}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } where fatigue = 1 and season = #{season}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } where fatigue = 1 and season = #{season} and innings >= 85"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } where fatigue = 1 and season = #{season} and innings >= 85"
+
+  return result
+end
+
+def get_best_closer_stats_by_team_and_season( team_id, season )
+  result        = db_get_one "#{PitcherStatsBaseQuery} #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season}"
+  result[:era]  = db_get_one "#{PitcherERABaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:ip]   = db_get_one "#{PitcherIPBaseQuery   } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season}"
+  result[:vsba] = db_get_one "#{PitcherVSBABaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:ipg]  = db_get_one "#{PitcherIPGBaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:whip] = db_get_one "#{PitcherWHIPBaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:sop9] = db_get_one "#{PitcherSOP9BaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:hrp9] = db_get_one "#{PitcherHRP9BaseQuery } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+  result[:eff]  = db_get_one "#{PitcherEFFBaseQuery  } #{PitcherJoinTeamPlayers} where tp.team_id = #{team_id} and ps.season = #{season} and innings >= 85"
+
+  return result
+end
+
+BatterStatsBaseQuery    = 'select max(at_bats) at_bats, max(runs) runs, max(hits) hits, max(doubles) doubles, max(triples) triples, max(home_runs) home_runs, max(runs_batted_in) runs_batted_in, max(steals) steals, max(walks) walks from batter_stats_t bs'
+BattingAverageBaseQuery = 'select at_bats, hits, max(cast(hits as float) / at_bats) avg from batter_stats_t bs'
+BattingSABaseQuery      = 'select at_bats, hits, doubles, triples, home_runs, max(cast(((hits - doubles - triples - home_runs) + doubles * 2 + triples * 3 + home_runs * 4) as float) / cast(at_bats as float)) sa from batter_stats_t bs'
+BattingOBABaseQuery     = 'select at_bats, hits, walks, max(cast((hits + walks) as float) / (at_bats + walks)) oba from batter_stats_t bs'
+BattingSOABaseQuery     = 'select at_bats, strike_outs, min(cast(strike_outs as float) / at_bats) soa from batter_stats_t bs'
+BattingRPGBaseQuery     = 'select games, runs, runs_batted_in, home_runs, max(cast((runs + runs_batted_in - home_runs) as float) / games) rpg from batter_stats_t bs'
+BattingJoinTeamPlayers  = 'join team_players_t tp on bs.player_id = tp.player_id and bs.season = tp.season'
 
 def get_best_batter_stats_overall()
   result       = db_get_one    BatterStatsBaseQuery
@@ -398,7 +468,7 @@ def get_player_accolades( player_id )
   SELECT *
   FROM   player_accolades_t
   WHERE  player_id = :player_id
-  AND    accolade in ( #{Accolades::Player::All_Star_MVP}, #{Accolades::Player::World_Series_MVP} )
+  AND    accolade in ( #{Accolades::Player::All_Star_MVP}, #{Accolades::Player::World_Series_MVP}, #{Accolades::Player::Team_MVP} )
   )
 
   results = Utils::transform_hash @db.execute query, args
@@ -451,14 +521,25 @@ def get_pitcher_accolades( player_id )
          #{Accolades::Pitching::North_Pitcher_of_the_Year    },
          #{Accolades::Pitching::Pacific_Pitcher_of_the_Year  },
          #{Accolades::Pitching::South_Pitcher_of_the_Year    },
-         #{Accolades::Pitching::Pitching_Rookie_of_the_Year  }
+         #{Accolades::Pitching::Pitching_Rookie_of_the_Year  },
+
+         #{Accolades::Closing::Closer_of_the_Year          },
+         #{Accolades::Closing::Global_Closer_of_the_Year   },
+         #{Accolades::Closing::World_Closer_of_the_Year    },
+         #{Accolades::Closing::Atlantic_Closer_of_the_Year },
+         #{Accolades::Closing::North_Closer_of_the_Year    },
+         #{Accolades::Closing::Pacific_Closer_of_the_Year  },
+         #{Accolades::Closing::South_Closer_of_the_Year    },
+         #{Accolades::Closing::Closing_Rookie_of_the_Year  }
          )
   )
 
   results = Utils::transform_hash @db.execute query, args
 
   results.each do |result|
-    result[:accolade_name] = Accolades::get_accolade_name Accolades::Pitching::Type, result[:accolade]
+    accolade_type = (result[:accolade] > 100) ? Accolades::Closing::Type : Accolades::Pitching::Type
+
+    result[:accolade_name] = Accolades::get_accolade_name accolade_type, result[:accolade]
   end
 
   return results
@@ -481,6 +562,12 @@ def special_category_tag( categories, calc_method, stat, value, op, best )
   team_season_best = send calc_method, best[ :team_season ][stat]
 
   categories[stat] = calc_category_tag( value, op, overall: overall_best, season: season_best, team: team_best, team_season: team_season_best )
+end
+
+
+def pitcher_stats_qualify( pitcher, stat )
+  return (pitcher[:details][:fatigue]  > 1 && stat[:innings] >= 185) ||
+         (pitcher[:details][:fatigue] == 1 && stat[:innings] >=  85)
 end
 
 
@@ -520,13 +607,24 @@ def print_pitcher_stats( pitcher, type )
     categories  = {}
     career_high = {}
 
-    if type == :regular and stat[:innings] >= 185
-      best = {
-        overall:     get_best_pitcher_stats_overall(),
-        season:      get_best_pitcher_stats_by_season( stat[:season] ),
-        team:        get_best_pitcher_stats_by_team( stat[:team_id] ),
-        team_season: get_best_pitcher_stats_by_team_and_season( stat[:team_id], stat[:season] )
-      }
+    if type == :regular and pitcher_stats_qualify( pitcher, stat )
+      if pitcher[:details][:fatigue] > 1
+        best = {
+          overall:     get_best_pitcher_stats_overall(),
+          season:      get_best_pitcher_stats_by_season( stat[:season] ),
+          team:        get_best_pitcher_stats_by_team( stat[:team_id] ),
+          team_season: get_best_pitcher_stats_by_team_and_season( stat[:team_id], stat[:season] )
+        }
+      end
+
+      if pitcher[:details][:fatigue] == 1
+        best = {
+          overall:     get_best_closer_stats_overall(),
+          season:      get_best_closer_stats_by_season( stat[:season] ),
+          team:        get_best_closer_stats_by_team( stat[:team_id] ),
+          team_season: get_best_closer_stats_by_team_and_season( stat[:team_id], stat[:season] )
+        }
+      end
 
       stat.each_pair do |k, v|
         next if best[:overall][k].nil? or best[:overall][k].is_a? Hash
@@ -550,12 +648,14 @@ def print_pitcher_stats( pitcher, type )
       special_category_tag categories, 'calc_hrp9', :hrp9, stat[ :hrp9 ], PitcherComparisons[ :hrp9 ], best
       special_category_tag categories, 'calc_eff',  :eff,  stat[ :eff  ], PitcherComparisons[ :eff  ], best
 
+      career_best_min_inn = (pitcher[:details][:fatigue] == 1) ? 85 : 185
+
       stat.keys.each do |key|
         career_best = pitcher[:stats][type].map { |x|
-          x[:innings] >= 185 ? x[key] : nil
+          x[:innings] >= career_best_min_inn ? x[key] : nil
         }.select { |x| ! x.nil? }.send PitcherComparisons[key] == '>=' ? :max : :min
 
-        next unless [Integer, Float].include? career_best.class
+        next unless [Fixnum, Float].include? career_best.class
 
         if career_best > 0
           career_high[key] = stat[key] == career_best
@@ -740,7 +840,7 @@ def print_batter_stats( batter, type )
           x[:at_bats] >= 300 ? x[key] : nil
         }.select { |x| ! x.nil? }.send BatterComparisons[key] == '>=' ? :max : :min
 
-        next unless [Integer, Float].include? career_best.class
+        next unless [Fixnum, Float].include? career_best.class
 
         if career_best > 0
           career_high[key] = stat[key] == career_best
