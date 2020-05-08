@@ -957,10 +957,20 @@ def print_batter_awards( batter )
   end
 end
 
+def generate_rating_bar(value)
+  return sprintf "\e[7m%*s\e[0m", value, ''
+end
+
 def print_pitcher_card( pitcher )
   printf "P #{pitcher[:first_name]} #{pitcher[:last_name]}"
 
   puts pitcher[:team].nil? ? "" : " - #{pitcher[:team][:name]}"
+
+  puts ""
+  printf "SPD: %-18s  ", generate_rating_bar( pitcher[:details][ :speed   ] )
+  printf "CTL: %-18s\n", generate_rating_bar( pitcher[:details][ :control ] )
+  printf "FTG: %-18s  ", generate_rating_bar( pitcher[:details][ :fatigue ] )
+  printf "CNS: %-18s\n", generate_rating_bar( pitcher[:details][ :bunt    ] )
 
   print_pitcher_stats pitcher, :regular
 
@@ -975,6 +985,14 @@ def print_batter_card( batter )
   printf "#{Positions::string_value batter[:details][:primary_position]} #{batter[:first_name]} #{batter[:last_name]}"
 
   puts batter[:team].nil? ? "" : " - #{batter[:team][:name]}"
+
+  puts ""
+  printf "PWR: %-18s  ", generate_rating_bar( batter[:details][ :power     ] )
+  printf "H&R: %-18s  ", generate_rating_bar( batter[:details][ :hit_n_run ] )
+  printf "SPD: %-18s\n", generate_rating_bar( batter[:details][ :running   ] )
+  printf "BNT: %-18s  ", generate_rating_bar( batter[:details][ :bunt      ] )
+  printf "ARM: %-18s  ", generate_rating_bar( batter[:details][ :arm       ] )
+  printf "RNG: %-18s\n", generate_rating_bar( batter[:details][ :range     ] )
 
   print_batter_stats batter, :regular
 
