@@ -23,6 +23,9 @@ TeamDivisions = {
   'Knights'   => 0, 'Expos'     => 1, 'Thunder'   => 2, 'Techs'     => 3,
   'Drizzle'   => 0, 'Dynamo'    => 1, 'Glory'     => 2, 'Quasars'   => 3 }
 
+Heading = '-          Record   Pct  GB  Dvsn.   Pct  Last10 Str  Diff'
+#          Lightning 107  45  .704   -  34 22  .607   6  4   4W   268
+
 
 def update_teams( teams, game )
   if teams[game.road_team].nil?
@@ -67,7 +70,7 @@ def update_teams( teams, game )
   end
 end
 
-def print_teams( teams )
+def decorate_teams( teams )
   leader_wins = teams[0][:wins]
 
   teams.each do |record|
@@ -92,31 +95,33 @@ def print_teams( teams )
       end
     end
 
-    win_pct = record[:wins].to_f  / (record[:wins]  + record[:losses] ).to_f
-    div_pct = record[:dwins].to_f / (record[:dwins] + record[:dlosses]).to_f
+    record[:win_pct] = record[:wins].to_f  / (record[:wins]  + record[:losses] ).to_f
+    record[:div_pct] = record[:dwins].to_f / (record[:dwins] + record[:dlosses]).to_f
 
-    games_back = (leader_wins - record[:wins]).to_s
-    games_back = (games_back == '0') ? '-' : games_back
+    record[:games_back] = (leader_wins - record[:wins]).to_s
+    record[:games_back] = (record[:games_back] == '0') ? '-' : record[:games_back]
 
-    printf "%-10s %3d %3d  %5s  %2s    %2d %2d  %5s   %2d %2d  %2d%c  %4d\n",
-           record[:name],
-           record[:wins],
-           record[:losses],
-           display_avg( win_pct ),
-           games_back,
-           record[:dwins],
-           record[:dlosses],
-           display_avg( div_pct ),
-           last_ten[:wins],
-           last_ten[:losses],
-           streak[:count],
-           streak[:type],
-           record[:runs_scored] - record[:runs_allowed]
+    record[:last_ten] = last_ten
+    record[:streak] = streak
   end
 end
 
-Heading = '-           Record    Pct  GB  Divison    Pct  Last10  Str  Diff'
-#          Settlers   107  45   .704   -    34 22   .607    6  4   4W   268
+def print_team( team )
+  printf "%-9s %3d %3d %5s  %2s  %2d %2d %5s  %2d %2d  %2d%c  %4d",
+         team[:name],
+         team[:wins],
+         team[:losses],
+         display_avg( team[:win_pct] ),
+         team[:games_back],
+         team[:dwins],
+         team[:dlosses],
+         display_avg( team[:div_pct] ),
+         team[:last_ten][:wins],
+         team[:last_ten][:losses],
+         team[:streak][:count],
+         team[:streak][:type],
+         team[:runs_scored] - team[:runs_allowed]
+end
 
 def compare(a, b)
   if b[:wins] == a[:wins]
@@ -181,22 +186,38 @@ schedule.days.each do |day|
   end
 end
 
-puts 'World League'
-puts '-'
-puts 'Atlantic'
-puts Heading
-#     Settlers   107- 45   34- 22    6-  4   4W   268
-print_teams( teams.values.select {|team| team[:division] == 0}.sort { |a, b| compare a, b })
+
+atlantic = teams.values.select {|team| team[:division] == 0}.sort { |a, b| compare a, b }
+north    = teams.values.select {|team| team[:division] == 1}.sort { |a, b| compare a, b }
+south    = teams.values.select {|team| team[:division] == 2}.sort { |a, b| compare a, b }
+pacific  = teams.values.select {|team| team[:division] == 3}.sort { |a, b| compare a, b }
+
+decorate_teams atlantic
+decorate_teams north
+decorate_teams south
+decorate_teams pacific
+
+puts 'World League                                                 Global League'
+puts '-                                                            -'
+puts 'Atlantic                                                     South'
+
+puts "#{Heading}   #{Heading}"
+
+(0..7).each do |i|
+  print_team atlantic[i]
+  printf '   '
+  print_team south[i]
+  printf "\n"
+end
+
 puts ''
-puts 'North'
-puts Heading
-print_teams( teams.values.select {|team| team[:division] == 1}.sort { |a, b| compare a, b })
-puts ''
-puts 'Global League'
-puts 'South'
-puts Heading
-print_teams( teams.values.select {|team| team[:division] == 2}.sort { |a, b| compare a, b })
-puts ''
-puts 'Pacific'
-puts Heading
-print_teams( teams.values.select {|team| team[:division] == 3}.sort { |a, b| compare a, b })
+puts 'North                                                        Pacific'
+
+puts "#{Heading}   #{Heading}"
+
+(0..7).each do |i|
+  print_team north[i]
+  printf '   '
+  print_team pacific[i]
+  printf "\n"
+end
