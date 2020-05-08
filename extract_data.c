@@ -128,6 +128,7 @@ static void printHitter( const player_s *player )
      printf( ",\"primary_position\":%d", mapPosition( b->primary_pos ) );
      printf( ",\"secondary_position\":%d", mapPosition( b->secondary_pos ) );
      printf( ",\"handedness\":%d", player->hand );
+     printf( ",\"injury_days\":%d", player->injury_days );
 
      printf( ",\"ratings\":" );
 
@@ -204,6 +205,7 @@ static void printPitcher( const player_s *player )
      printf( ",\"rookie_season\":\"%d\"", (p->year - 2000));
      printf( ",\"position\":%d", p->primary_pos );
      printf( ",\"handedness\":%d", player->hand );
+     printf( ",\"injury_days\":%d", player->injury_days );
 
      printf( ",\"ratings\":" );
 
