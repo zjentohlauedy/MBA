@@ -546,13 +546,13 @@ def get_pitcher_accolades( player_id )
 end
 
 def calc_category_tag( value, op, targets = {} )
-  if    value.send( op, targets[:overall]);                                  then return AllTimeRecord
+  if    value.send( op, targets[:overall]);     then return AllTimeRecord
   elsif value.send( op, targets[:season]) \
-    and value.send( op, targets[:team]);                                     then return SeasonBestWithTeamRecord
-  elsif value.send( op, targets[:season]);                                   then return SeasonBest
-  elsif value.send( op, targets[:team]);                                     then return TeamRecord
-  elsif value.send( op, targets[:team_season]);                              then return SeasonBestForTeam
-  else                                                                            return NothingSpecial end
+    and value.send( op, targets[:team]);        then return SeasonBestWithTeamRecord
+  elsif value.send( op, targets[:season]);      then return SeasonBest
+  elsif value.send( op, targets[:team]);        then return TeamRecord
+  elsif value.send( op, targets[:team_season]); then return SeasonBestForTeam
+  else                                               return NothingSpecial end
 end
 
 def special_category_tag( categories, calc_method, stat, value, op, best )

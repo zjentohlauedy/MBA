@@ -6,10 +6,19 @@ location = File.dirname __FILE__
 
 $: << "#{location}"
 require 'json'
+require 'optparse'
 require 'sqlite3'
 
+require_relative 'MBATool/web/accolades'
 require_relative 'MBATool/web/phases'
 require_relative 'MBATool/web/utils'
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-x', '--extended' ) { |o| @options[ :extended ] = o }
+end.parse!
 
 
 if ARGV.length != 1
@@ -50,6 +59,28 @@ def get_team_batting_stats( team_id )
   return Utils::transform_hash @db.execute query
 end
 
+def get_season_finish( team_id, season )
+  query = %Q(
+select ts.Team_Id, ROW_NUMBER() over (order by ts.Wins desc) as rank from Teams_T t
+join Division_Teams_T dt on t.Team_Id = dt.Team_Id
+join Division_Teams_T dt2 on dt.Division_Id = dt2.Division_Id
+join Team_Stats_T ts on dt2.Team_Id = ts.Team_Id
+where t.Team_Id = #{team_id}
+and ts.Season = #{season}
+and ts.Season_Phase = 1
+)
+
+  result = Utils::transform_hash @db.execute query
+
+  result.each do |record|
+    if record[:team_id] == team_id
+      return record[:rank]
+    end
+  end
+
+  return 0
+end
+
 
 def compile_totals( totals, stats )
   stats.keys.each do |key|
@@ -58,6 +89,12 @@ def compile_totals( totals, stats )
     else
       totals[key] += stats[key]
     end
+  end
+
+  if totals[:seasons].nil?
+    totals[:seasons] = 1
+  else
+    totals[:seasons] += 1
   end
 end
 
@@ -70,7 +107,29 @@ def print_phase( phase )
   end
 end
 
-def print_record_stats( stats, options={} )
+def get_finish_name( value )
+  case value
+  when 1; return 'First'
+  when 2; return 'Second'
+  when 3; return 'Third'
+  when 4; return 'Fourth'
+  when 5; return 'Fifth'
+  when 6; return 'Sixth'
+  when 7; return 'Seventh'
+  when 8; return 'Last'
+  end
+
+  return 'Unknown'
+end
+
+
+RecordStatsHeading = "Year     W   L   HW  HL   RW  RL   DW  DL   LW  LL    RS    RA"
+RecordStatsFormat  = "%-5s  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %4d  %4d\n"
+
+RecordStatsHeadingExtended = "Year     W   L   HW  HL   RW  RL   DW  DL   LW  LL   NW  NL    RS    RA  Diff  Finish"
+RecordStatsFormatExtended  = "%-5s  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %4d  %4d  %4d  %s\n"
+
+def print_record_stats( team, stats, options={} )
   if options[:total]
     printf "\e[1m"
     season = 'TOTAL'
@@ -78,20 +137,57 @@ def print_record_stats( stats, options={} )
     season = sprintf "S%02d", stats[:season]
   end
 
-  printf "%-5s  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %3d %3d  %4d  %4d\n",
-         season,
-         stats[:wins],
-         stats[:losses],
-         stats[:home_wins],
-         stats[:home_losses],
-         stats[:road_wins],
-         stats[:road_losses],
-         stats[:division_wins],
-         stats[:division_losses],
-         stats[:league_wins],
-         stats[:league_losses],
-         stats[:runs_scored],
-         stats[:runs_allowed]
+  if @options[:extended]
+    stats[ :non_league_wins   ] = stats[ :wins        ] - stats[ :league_wins   ]
+    stats[ :non_league_losses ] = stats[ :losses      ] - stats[ :league_losses ]
+    stats[ :scoring_diff      ] = stats[ :runs_scored ] - stats[ :runs_allowed  ]
+
+    if options[:phase] == Phases::RegularSeason
+      if options[:total]
+        avg = stats[:finish].to_f / stats[:seasons]
+
+        finish = sprintf "%3.1f", avg
+      else
+        finish = get_finish_name stats[:finish]
+      end
+    else
+      finish = '-'
+    end
+
+    printf RecordStatsFormatExtended,
+           season,
+           stats[:wins],
+           stats[:losses],
+           stats[:home_wins],
+           stats[:home_losses],
+           stats[:road_wins],
+           stats[:road_losses],
+           stats[:division_wins],
+           stats[:division_losses],
+           stats[:league_wins],
+           stats[:league_losses],
+           stats[:non_league_wins],
+           stats[:non_league_losses],
+           stats[:runs_scored],
+           stats[:runs_allowed],
+           stats[:scoring_diff],
+           finish
+  else
+    printf RecordStatsFormat,
+           season,
+           stats[:wins],
+           stats[:losses],
+           stats[:home_wins],
+           stats[:home_losses],
+           stats[:road_wins],
+           stats[:road_losses],
+           stats[:division_wins],
+           stats[:division_losses],
+           stats[:league_wins],
+           stats[:league_losses],
+           stats[:runs_scored],
+           stats[:runs_allowed]
+  end
 
   printf "\e[0m"
 end
@@ -153,6 +249,34 @@ def print_batting_stats( stats, options={} )
   printf "\e[0m"
 end
 
+def get_team_accolades( team_id )
+  args = { team_id: team_id }
+  query = 'SELECT * FROM team_accolades_t WHERE team_id = :team_id'
+
+  results = Utils::transform_hash @db.execute query, args
+
+  results.each do |result|
+    result[:accolade_name] = Accolades::get_accolade_name Accolades::Team::Type, result[:accolade]
+  end
+
+  return results
+end
+
+
+def print_team_awards( team )
+  accolades = get_team_accolades( team[:team_id] )
+
+  return if accolades.length == 0
+
+  puts ""
+  puts "Awards:"
+  puts "Year  Award"
+
+  accolades.sort_by {|acc| [ acc[:season], acc[:accolade] ]}.each do |accolade|
+    printf "S%02d   %s\n", accolade[:season], accolade[:accolade_name]
+  end
+end
+
 
 team = get_team_by_name @team_name
 
@@ -169,17 +293,23 @@ puts "#{team[:location]} #{team[:name]}"
 team_stats.map { |ts| ts[:season_phase] }.uniq.each do |phase|
   puts ""
   print_phase phase
-  puts "Year     W   L   HW  HL   RW  RL   DW  DL   LW  LL    RS    RA"
+  if @options[:extended]
+    puts RecordStatsHeadingExtended
+  else
+    puts RecordStatsHeading
+  end
 
   record_totals = {}
 
   team_stats.select { |ts| ts[:season_phase] == phase }.each do |stats|
-    print_record_stats stats
+    stats[:finish] = get_season_finish team[:team_id], stats[:season]
+
+    print_record_stats team, stats, :phase => phase
 
     compile_totals record_totals, stats
   end
 
-  print_record_stats record_totals, :total => true
+  print_record_stats team, record_totals, :total => true, :phase => phase
 end
 
 puts ""
@@ -227,3 +357,5 @@ batting.map { |ts| ts[:season_phase] }.uniq.each do |phase|
 
   print_batting_stats batting_totals, :total => true
 end
+
+print_team_awards team
