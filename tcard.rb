@@ -33,6 +33,52 @@ end
 @db.type_translation = true
 
 
+def calc_eff( stats )
+  if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
+
+  finn = (stats[:outs].to_f / 3.0 + stats[:innings].to_f)
+  eff  = (finn - stats[:hits]) + (stats[:strike_outs] - stats[:hits])
+
+  eff.to_f / finn * 9.0
+end
+
+def calc_ipg( stats )
+  if stats[:games] == 0; then return 0.0 end
+
+  (stats[:outs].to_f / 3.0 + stats[:innings].to_f) / stats[:games].to_f
+end
+
+def calc_vsba( stats )
+  if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
+
+  stats[:hits].to_f / (stats[:innings] * 3 + stats[:outs] + stats[:hits]).to_f
+end
+
+def calc_era( stats )
+  if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
+
+  stats[:earned_runs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
+end
+
+def calc_hrp9( stats )
+  if stats[:home_runs] == 0; then return 0.0 end
+
+  stats[:home_runs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
+end
+
+def calc_sop9( stats )
+  if stats[:strike_outs] == 0; then return 0.0 end
+
+  stats[:strike_outs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
+end
+
+def calc_whip( stats )
+  if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
+
+  (stats[:hits] + stats[:walks]).to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f)
+end
+
+
 def get_team_by_name( team_name )
   args  = { team_name: team_name }
   query = "select * from teams_t where name = :team_name collate nocase"
@@ -82,7 +128,17 @@ and ts.Season_Phase = 1
 end
 
 
-def compile_totals( totals, stats )
+def add_extended_stats( stats )
+  stats[:vsba] = calc_vsba stats
+  stats[:ipg]  = calc_ipg  stats
+  stats[:whip] = calc_whip stats
+  stats[:sop9] = calc_sop9 stats
+  stats[:hrp9] = calc_hrp9 stats
+  stats[:eff]  = calc_eff  stats
+end
+
+
+def compile_totals( totals, stats, options = {} )
   stats.keys.each do |key|
     if totals[key].nil?
       totals[key] = stats[key]
@@ -95,6 +151,15 @@ def compile_totals( totals, stats )
     totals[:seasons] = 1
   else
     totals[:seasons] += 1
+  end
+
+  if totals[:outs] && totals[:outs] > 2
+    totals[:innings] += 1
+    totals[:outs] -= 3
+  end
+
+  if options[:extended]
+    add_extended_stats totals
   end
 end
 
@@ -137,7 +202,7 @@ def print_record_stats( team, stats, options={} )
     season = sprintf "S%02d", stats[:season]
   end
 
-  if @options[:extended]
+  if options[:extended]
     stats[ :non_league_wins   ] = stats[ :wins        ] - stats[ :league_wins   ]
     stats[ :non_league_losses ] = stats[ :losses      ] - stats[ :league_losses ]
     stats[ :scoring_diff      ] = stats[ :runs_scored ] - stats[ :runs_allowed  ]
@@ -192,6 +257,13 @@ def print_record_stats( team, stats, options={} )
   printf "\e[0m"
 end
 
+PitchingStatsHeading = "Year    ERA      G    SV    IP        H    ER    HR    BB     SO"
+PitchingStatsFormat  = "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d\n"
+
+PitchingStatsHeadingExtended = "Year    ERA      G    SV    IP        H    ER    HR    BB     SO  VSBA INN/G  WHIP  SO/9  HR/9    EFF"
+PitchingStatsFormatExtended  = "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d  %s  %4.2f %5.3f %5.2f  %4.2f %+6.2f\n"
+
+
 def print_pitching_stats( stats, options={} )
   if options[:total]
     printf "\e[1m"
@@ -200,21 +272,43 @@ def print_pitching_stats( stats, options={} )
     season = sprintf "S%02d", stats[:season]
   end
 
-  inn = stats[:innings].to_f + (stats[:outs].to_f / 3.0)
-  era = (inn > 0) ? stats[:earned_runs].to_f / inn * 9.0 : 0.0
+  era = calc_era stats
 
-  printf "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d\n",
-         season,
-         era,
-         stats[:games],
-         stats[:saves],
-         stats[:innings],
-         stats[:outs],
-         stats[:hits],
-         stats[:earned_runs],
-         stats[:home_runs],
-         stats[:walks],
-         stats[:strike_outs]
+  if options[:extended]
+    dspavg = sprintf( "%5.3f", stats[:vsba]).gsub '0.','.'
+
+    printf PitchingStatsFormatExtended,
+           season,
+           era,
+           stats[:games],
+           stats[:saves],
+           stats[:innings],
+           stats[:outs],
+           stats[:hits],
+           stats[:earned_runs],
+           stats[:home_runs],
+           stats[:walks],
+           stats[:strike_outs],
+           dspavg,
+           stats[:ipg],
+           stats[:whip],
+           stats[:sop9],
+           stats[:hrp9],
+           stats[:eff]
+  else
+    printf PitchingStatsFormat,
+           season,
+           era,
+           stats[:games],
+           stats[:saves],
+           stats[:innings],
+           stats[:outs],
+           stats[:hits],
+           stats[:earned_runs],
+           stats[:home_runs],
+           stats[:walks],
+           stats[:strike_outs]
+  end
 
   printf "\e[0m"
 end
@@ -302,14 +396,16 @@ team_stats.map { |ts| ts[:season_phase] }.uniq.each do |phase|
   record_totals = {}
 
   team_stats.select { |ts| ts[:season_phase] == phase }.each do |stats|
-    stats[:finish] = get_season_finish team[:team_id], stats[:season]
+    if @options[:extended]
+      stats[:finish] = get_season_finish team[:team_id], stats[:season]
+    end
 
-    print_record_stats team, stats, :phase => phase
+    print_record_stats team, stats, :phase => phase, :extended => @options[:extended]
 
     compile_totals record_totals, stats
   end
 
-  print_record_stats team, record_totals, :total => true, :phase => phase
+  print_record_stats team, record_totals, :total => true, :phase => phase, :extended => @options[:extended]
 end
 
 puts ""
@@ -322,17 +418,25 @@ pitching.map { |ts| ts[:season_phase] }.uniq.each do |phase|
 
   puts ""
   print_phase phase
-  puts "Year    ERA      G    SV    IP        H    ER    HR    BB     SO"
+  if @options[:extended]
+    puts PitchingStatsHeadingExtended
+  else
+    puts PitchingStatsHeading
+  end
 
   pitching_totals = {}
 
   phase_pitching.each do |stats|
-    print_pitching_stats stats
+    if @options[:extended]
+      add_extended_stats stats
+    end
 
-    compile_totals pitching_totals, stats
+    print_pitching_stats stats, :extended => @options[:extended]
+
+    compile_totals pitching_totals, stats, :extended => @options[:extended]
   end
 
-  print_pitching_stats pitching_totals, :total => true
+  print_pitching_stats pitching_totals, :total => true, :extended => @options[:extended]
 end
 
 puts ""
