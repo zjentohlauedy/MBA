@@ -34,6 +34,7 @@ end
 
 
 def calc_eff( stats )
+  if stats[:innings].nil?; then return nil; end
   if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
 
   finn = (stats[:outs].to_f / 3.0 + stats[:innings].to_f)
@@ -43,39 +44,88 @@ def calc_eff( stats )
 end
 
 def calc_ipg( stats )
+  if stats[:innings].nil?; then return nil; end
   if stats[:games] == 0; then return 0.0 end
 
   (stats[:outs].to_f / 3.0 + stats[:innings].to_f) / stats[:games].to_f
 end
 
 def calc_vsba( stats )
+  if stats[:innings].nil?; then return nil; end
   if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
 
   stats[:hits].to_f / (stats[:innings] * 3 + stats[:outs] + stats[:hits]).to_f
 end
 
 def calc_era( stats )
+  if stats[:innings].nil?; then return nil; end
   if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
 
   stats[:earned_runs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
 end
 
 def calc_hrp9( stats )
+  if stats[:innings].nil?; then return nil; end
   if stats[:home_runs] == 0; then return 0.0 end
 
   stats[:home_runs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
 end
 
 def calc_sop9( stats )
+  if stats[:innings].nil?; then return nil; end
   if stats[:strike_outs] == 0; then return 0.0 end
 
   stats[:strike_outs].to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f) * 9.0
 end
 
 def calc_whip( stats )
+  if stats[:innings].nil?; then return nil; end
   if (stats[:innings] + stats[:outs]) == 0; then return 0.0 end
 
   (stats[:hits] + stats[:walks]).to_f / (stats[:outs].to_f / 3.0 + stats[:innings].to_f)
+end
+
+def calc_avg( stats )
+  if stats[:at_bats].nil?; then return nil; end
+  if stats[:at_bats] == 0; then return 0.0 end
+
+  stats[:hits].to_f / stats[:at_bats].to_f
+end
+
+def calc_soa( stats )
+  if stats[:at_bats].nil?; then return nil; end
+  if stats[:at_bats] == 0; then return 0.0 end
+
+  stats[:strike_outs].to_f / stats[:at_bats].to_f
+end
+
+def calc_oba( stats )
+  if stats[:at_bats].nil?; then return nil; end
+  if stats[:at_bats] == 0; then return 0.0 end
+
+  (stats[:hits] + stats[:walks]).to_f / (stats[:at_bats] + stats[:walks]).to_f
+end
+
+def calc_sa( stats )
+  if stats[:at_bats].nil?; then return nil; end
+  if stats[:at_bats] == 0; then return 0.0 end
+
+  extra_bases = stats[:doubles] + stats[:triples] + stats[:home_runs]
+  total_bases = (stats[:hits] - extra_bases) + (stats[:doubles] * 2) + (stats[:triples] * 3) + (stats[:home_runs] * 4)
+
+  total_bases.to_f / stats[:at_bats].to_f
+end
+
+def calc_rpg( stats )
+  if stats[:at_bats].nil?; then return nil; end
+  if stats[:games] == 0; then return 0.0 end
+
+  (stats[:runs] + stats[:runs_batted_in] - stats[:home_runs]).to_f / stats[:games].to_f
+end
+
+
+def display_avg( avg )
+  sprintf( "%5.3f", avg).gsub '0.',' .'
 end
 
 
@@ -135,6 +185,11 @@ def add_extended_stats( stats )
   stats[:sop9] = calc_sop9 stats
   stats[:hrp9] = calc_hrp9 stats
   stats[:eff]  = calc_eff  stats
+
+  stats[:sa]   = calc_sa   stats
+  stats[:oba]  = calc_oba  stats
+  stats[:soa]  = calc_soa  stats
+  stats[:rpg]  = calc_rpg  stats
 end
 
 
@@ -261,7 +316,7 @@ PitchingStatsHeading = "Year    ERA      G    SV    IP        H    ER    HR    B
 PitchingStatsFormat  = "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d\n"
 
 PitchingStatsHeadingExtended = "Year    ERA      G    SV    IP        H    ER    HR    BB     SO  VSBA INN/G  WHIP  SO/9  HR/9    EFF"
-PitchingStatsFormatExtended  = "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d  %s  %4.2f %5.3f %5.2f  %4.2f %+6.2f\n"
+PitchingStatsFormatExtended  = "%-5s  %5.2f  %4d  %3d  %5d.%1d  %5d  %4d  %4d  %4d  %5d %s  %4.2f %5.3f %5.2f  %4.2f %+6.2f\n"
 
 
 def print_pitching_stats( stats, options={} )
@@ -275,7 +330,7 @@ def print_pitching_stats( stats, options={} )
   era = calc_era stats
 
   if options[:extended]
-    dspavg = sprintf( "%5.3f", stats[:vsba]).gsub '0.','.'
+    dspavg = display_avg stats[:vsba]
 
     printf PitchingStatsFormatExtended,
            season,
@@ -313,6 +368,13 @@ def print_pitching_stats( stats, options={} )
   printf "\e[0m"
 end
 
+BattingStatsHeading = "Year     BA       G     AB     R      H    2B   3B    HR   RBI    BB     SO   SB    E"
+BattingStatsFormat  = "%-5s  %s  %5d  %5d  %4d  %5d  %4d  %3d  %4d  %4d  %4d  %5d  %3d  %3d\n"
+
+BattingStatsHeadingExtended = "Year     BA       G     AB     R      H    2B   3B    HR   RBI    BB     SO   SB    E    SA   OBA   SOA  RPG"
+BattingStatsFormatExtended  = "%-5s  %s  %5d  %5d  %4d  %5d  %4d  %3d  %4d  %4d  %4d  %5d  %3d  %3d %s %s %s %4.2f\n"
+
+
 def print_batting_stats( stats, options={} )
   if options[:total]
     printf "\e[1m"
@@ -321,24 +383,49 @@ def print_batting_stats( stats, options={} )
     season = sprintf "S%02d", stats[:season]
   end
 
-  avg = (stats[:at_bats] > 0) ? stats[:hits].to_f / stats[:at_bats].to_f : 0.0
-  dspavg = sprintf( "%5.3f", avg).gsub '0.',' .'
+  dspavg = display_avg( calc_avg stats )
 
-  printf "%-5s  %s  %5d  %5d  %4d  %5d  %4d  %3d  %4d  %4d  %4d  %5d  %3d  %3d\n",
-         season,
-         dspavg,
-         stats[:games],
-         stats[:at_bats],
-         stats[:runs],
-         stats[:hits],
-         stats[:doubles],
-         stats[:triples],
-         stats[:home_runs],
-         stats[:runs_batted_in],
-         stats[:walks],
-         stats[:strike_outs],
-         stats[:steals],
-         stats[:errors]
+  if options[:extended]
+    dspsa  = display_avg stats[:sa]
+    dspsoa = display_avg stats[:soa]
+    dspoba = display_avg stats[:oba]
+
+    printf BattingStatsFormatExtended,
+           season,
+           dspavg,
+           stats[:games],
+           stats[:at_bats],
+           stats[:runs],
+           stats[:hits],
+           stats[:doubles],
+           stats[:triples],
+           stats[:home_runs],
+           stats[:runs_batted_in],
+           stats[:walks],
+           stats[:strike_outs],
+           stats[:steals],
+           stats[:errors],
+           dspsa,
+           dspoba,
+           dspsoa,
+           stats[:rpg]
+  else
+    printf BattingStatsFormat,
+           season,
+           dspavg,
+           stats[:games],
+           stats[:at_bats],
+           stats[:runs],
+           stats[:hits],
+           stats[:doubles],
+           stats[:triples],
+           stats[:home_runs],
+           stats[:runs_batted_in],
+           stats[:walks],
+           stats[:strike_outs],
+           stats[:steals],
+           stats[:errors]
+  end
 
   printf "\e[0m"
 end
@@ -449,17 +536,26 @@ batting.map { |ts| ts[:season_phase] }.uniq.each do |phase|
 
   puts ""
   print_phase phase
-  puts "Year     BA       G     AB     R      H    2B   3B    HR   RBI    BB     SO   SB    E"
+
+  if @options[:extended]
+    puts BattingStatsHeadingExtended
+  else
+    puts BattingStatsHeadign
+  end
 
   batting_totals = {}
 
   phase_batting.each do |stats|
-    print_batting_stats stats
+    if @options[:extended]
+      add_extended_stats stats
+    end
 
-    compile_totals batting_totals, stats
+    print_batting_stats stats, :extended => @options[:extended]
+
+    compile_totals batting_totals, stats, :extended => @options[:extended]
   end
 
-  print_batting_stats batting_totals, :total => true
+  print_batting_stats batting_totals, :total => true, :extended => @options[:extended]
 end
 
 print_team_awards team
