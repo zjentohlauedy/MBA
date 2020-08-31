@@ -106,7 +106,13 @@ def decorate_teams( teams )
   end
 end
 
-def print_team( team )
+def print_team( team, games )
+  games_remaining = 152 - games
+
+  if team[:games_back].to_i > games_remaining
+    printf "\e[90m"
+  end
+
   printf "%-9s %3d %3d %5s  %2s  %2d %2d %5s  %2d %2d  %2d%c  %4d",
          team[:name],
          team[:wins],
@@ -121,6 +127,8 @@ def print_team( team )
          team[:streak][:count],
          team[:streak][:type],
          team[:runs_scored] - team[:runs_allowed]
+
+  printf "\e[0m"
 end
 
 def compare(a, b)
@@ -176,12 +184,14 @@ schedule = sp.schedule
 
 
 teams = {}
+games_played = 0
 
 schedule.days.each do |day|
   day.games.each do |game|
     break if day.day > 152
     break if !game.played
 
+    games_played = day.day
     update_teams teams, game
   end
 end
@@ -204,9 +214,9 @@ puts 'Atlantic                                                     South'
 puts "#{Heading}   #{Heading}"
 
 (0..7).each do |i|
-  print_team atlantic[i]
+  print_team atlantic[i], games_played
   printf '   '
-  print_team south[i]
+  print_team south[i], games_played
   printf "\n"
 end
 
@@ -216,8 +226,8 @@ puts 'North                                                        Pacific'
 puts "#{Heading}   #{Heading}"
 
 (0..7).each do |i|
-  print_team north[i]
+  print_team north[i], games_played
   printf '   '
-  print_team pacific[i]
+  print_team pacific[i], games_played
   printf "\n"
 end
