@@ -655,7 +655,7 @@ def print_pitcher_stats( pitcher, type )
           x[:innings] >= career_best_min_inn ? x[key] : nil
         }.select { |x| ! x.nil? }.send PitcherComparisons[key] == '>=' ? :max : :min
 
-        next unless [Fixnum, Float].include? career_best.class
+        next unless [Integer, Float].include? career_best.class
 
         if career_best > 0
           career_high[key] = stat[key] == career_best
@@ -840,7 +840,7 @@ def print_batter_stats( batter, type )
           x[:at_bats] >= 300 ? x[key] : nil
         }.select { |x| ! x.nil? }.send BatterComparisons[key] == '>=' ? :max : :min
 
-        next unless [Fixnum, Float].include? career_best.class
+        next unless [Integer, Float].include? career_best.class
 
         if career_best > 0
           career_high[key] = stat[key] == career_best
