@@ -6,7 +6,10 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'json'
+
 require 'tmpdir'
+require 'optparse'
 require 'FileParser'
 require 'ProgRunner'
 require 'ScheduleParser'
@@ -22,6 +25,16 @@ TeamDivisions = {
   'Rockets'   => 0, 'Hammers'   => 1, 'Wanderers' => 2, 'Flames'    => 3,
   'Knights'   => 0, 'Expos'     => 1, 'Thunder'   => 2, 'Techs'     => 3,
   'Drizzle'   => 0, 'Dynamo'    => 1, 'Glory'     => 2, 'Quasars'   => 3 }
+
+PlayoffMatchTypes = {
+  atl_tie_break: { divisions: [0],   order: 0, depth:  5 },
+  nor_tie_break: { divisions: [1],   order: 2, depth:  5 },
+  sou_tie_break: { divisions: [2],   order: 4, depth:  5 },
+  pac_tie_break: { divisions: [3],   order: 6, depth:  5 },
+  wlcs:          { divisions: [0,1], order: 1, depth: 25 },
+  glcs:          { divisions: [2,3], order: 5, depth: 25 },
+  world_series:  { divisions: [],    order: 3, depth: 57 }
+}
 
 Heading = '-          Record   Pct  GB  Dvsn.   Pct  Last10 Str  Diff'
 #          Lightning 107  45  .704   -  34 22  .607   6  4   4W   268
@@ -159,6 +172,15 @@ def display_avg(average)
 end
 
 
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '-r', '--regular-season' ) { |o| @options[ :regular_season ] = o }
+  opt.on( '-p', '--playoff'        ) { |o| @options[ :playoff        ] = o }
+  opt.on( '-a', '--allstar'        ) { |o| @options[ :allstar        ] = o }
+end.parse!
+
+
 if !File::exist? './schedule.ods'
   raise 'Must run from directory containing a schedule file!'
 end
@@ -183,51 +205,226 @@ fp.process_file filename
 schedule = sp.schedule
 
 
-teams = {}
-games_played = 0
+if @options.empty? || @options[:regular_season]
+  teams = {}
+  games_played = 0
 
-schedule.days.each do |day|
-  day.games.each do |game|
-    break if day.day > 152
-    break if !game.played
+  schedule.days.each do |day|
+    day.games.each do |game|
+      break if day.day > 152
+      break if !game.played
 
-    games_played = day.day
-    update_teams teams, game
+      games_played = day.day
+      update_teams teams, game
+    end
+  end
+
+
+  atlantic = teams.values.select {|team| team[:division] == 0}.sort { |a, b| compare a, b }
+  north    = teams.values.select {|team| team[:division] == 1}.sort { |a, b| compare a, b }
+  south    = teams.values.select {|team| team[:division] == 2}.sort { |a, b| compare a, b }
+  pacific  = teams.values.select {|team| team[:division] == 3}.sort { |a, b| compare a, b }
+
+  decorate_teams atlantic
+  decorate_teams north
+  decorate_teams south
+  decorate_teams pacific
+
+  puts 'World League                                                 Global League'
+  puts '-                                                            -'
+  puts 'Atlantic                                                     South'
+
+  puts "#{Heading}   #{Heading}"
+
+  (0..7).each do |i|
+    print_team atlantic[i], games_played
+    printf '   '
+    print_team south[i], games_played
+    printf "\n"
+  end
+
+  puts ''
+  puts 'North                                                        Pacific'
+
+  puts "#{Heading}   #{Heading}"
+
+  (0..7).each do |i|
+    print_team north[i], games_played
+    printf '   '
+    print_team pacific[i], games_played
+    printf "\n"
+  end
+end
+
+def find_match( matches, teams )
+  matches.each do |match|
+    if match[:teams].sort == teams.sort
+      return match
+    end
+  end
+
+  return nil
+end
+
+def get_playoff_match_type( game )
+  PlayoffMatchTypes.each do |k,v|
+    divisions = v[:divisions]
+
+    if divisions.include?(TeamDivisions[game.road_team]) && divisions.include?(TeamDivisions[game.home_team])
+      return k
+    end
+  end
+
+  return :world_series
+end
+
+def winner( match_type, team )
+  if [:atl_tie_break,:nor_tie_break,:sou_tie_break,:pac_tie_break].include? match_type
+    return team[:wins] == 1
+  end
+
+  if match_type == :allstar
+    return team[:wins] == 3
+  end
+
+  if [:wlcs,:glcs].include? match_type
+    return team[:wins] == 4
+  end
+
+  return team[:wins] == 5
+end
+
+
+if @options.empty? || @options[:playoff]
+  if @options.empty? || @options[:regular_season]
+    puts ''
+    puts '---'
+    puts ''
+  end
+
+  playoff_matches = []
+  games_played = 0
+  tie_breakers = false
+
+  schedule.days.each do |day|
+    day.games.each do |game|
+      next  if day.day <= 152
+      break if !game.played
+      break if TeamDivisions[game.home_team] == 4
+
+      teams = [ game.road_team, game.home_team ]
+
+      match = find_match playoff_matches, teams
+
+      if match.nil?
+
+        match = {
+          teams: [ game.road_team, game.home_team ],
+          type: get_playoff_match_type( game ),
+          results: {}
+        }
+
+        playoff_matches.push match
+      end
+
+      games_played = day.day
+      update_teams match[:results], game
+    end
+  end
+
+  playoff_matches.sort! { |a,b|
+    PlayoffMatchTypes[ a[:type] ][:order] <=> PlayoffMatchTypes[ b[:type] ][:order]
+  }
+
+  playoff_matches.each do |match|
+    road = true
+
+    indent = sprintf "%*s", PlayoffMatchTypes[ match[:type] ][:depth], ""
+
+    match[:teams].each do |team|
+      output = sprintf '%-10s', team
+
+      match[:results][team][:results].each do |result|
+        output += sprintf ' %s', result
+      end
+
+      output += sprintf " (%d)", match[:results][team][:wins]
+
+      if winner( match[:type], match[:results][team] )
+        if match[:type] == :world_series
+          puts "#{indent}\e[1;33m#{output}\e[0m"
+        else
+          puts "#{indent}\e[1;37m#{output}\e[0m"
+        end
+      else
+        puts indent + output
+      end
+
+      if road
+        road = false
+
+        puts indent + ('-' * output.length)
+      end
+    end
   end
 end
 
 
-atlantic = teams.values.select {|team| team[:division] == 0}.sort { |a, b| compare a, b }
-north    = teams.values.select {|team| team[:division] == 1}.sort { |a, b| compare a, b }
-south    = teams.values.select {|team| team[:division] == 2}.sort { |a, b| compare a, b }
-pacific  = teams.values.select {|team| team[:division] == 3}.sort { |a, b| compare a, b }
+if @options.empty? || @options[:allstar]
+  if @options.empty? || @options[:regular_season] || @options[:playoff]
+    puts ''
+    puts '---'
+    puts ''
+  end
 
-decorate_teams atlantic
-decorate_teams north
-decorate_teams south
-decorate_teams pacific
+  match = nil
+  playoff_matches = []
+  games_played = 0
+  tie_breakers = false
 
-puts 'World League                                                 Global League'
-puts '-                                                            -'
-puts 'Atlantic                                                     South'
+  schedule.days.each do |day|
+    day.games.each do |game|
+      next  if day.day <= 152
+      next if TeamDivisions[game.home_team] != 4
+      break if !game.played
 
-puts "#{Heading}   #{Heading}"
+      if match.nil?
+        match = {
+          teams: [ game.road_team, game.home_team ],
+          type: :allstar,
+          results: {}
+        }
+      end
 
-(0..7).each do |i|
-  print_team atlantic[i], games_played
-  printf '   '
-  print_team south[i], games_played
-  printf "\n"
-end
+      games_played = day.day
+      update_teams match[:results], game
+    end
+  end
 
-puts ''
-puts 'North                                                        Pacific'
+  road = true
+  indent = '     '
 
-puts "#{Heading}   #{Heading}"
+  if match
+    match[:teams].each do |team|
+      output = sprintf '%-10s', team
 
-(0..7).each do |i|
-  print_team north[i], games_played
-  printf '   '
-  print_team pacific[i], games_played
-  printf "\n"
+      match[:results][team][:results].each do |result|
+        output += sprintf ' %s', result
+      end
+
+      output += sprintf " (%d)", match[:results][team][:wins]
+
+      if winner( match[:type], match[:results][team] )
+        puts "#{indent}\e[1;37m#{output}\e[0m"
+      else
+        puts indent + output
+      end
+
+      if road
+        road = false
+
+        puts indent + ('-' * output.length)
+      end
+    end
+  end
 end
