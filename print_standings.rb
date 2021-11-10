@@ -27,18 +27,21 @@ TeamDivisions = {
   'Drizzle'   => 0, 'Dynamo'    => 1, 'Glory'     => 2, 'Quasars'   => 3 }
 
 PlayoffMatchTypes = {
-  atl_tie_break: { divisions: [0],   order: 0, depth:  5 },
-  nor_tie_break: { divisions: [1],   order: 2, depth:  5 },
-  sou_tie_break: { divisions: [2],   order: 4, depth:  5 },
-  pac_tie_break: { divisions: [3],   order: 6, depth:  5 },
-  wlcs:          { divisions: [0,1], order: 1, depth: 25 },
-  glcs:          { divisions: [2,3], order: 5, depth: 25 },
-  world_series:  { divisions: [],    order: 3, depth: 57 }
+  atl_tie_break: { divisions: [0],   order: 0, depth:  3 },
+  nor_tie_break: { divisions: [1],   order: 2, depth:  3 },
+  sou_tie_break: { divisions: [2],   order: 4, depth:  3 },
+  pac_tie_break: { divisions: [3],   order: 6, depth:  3 },
+  wlcs:          { divisions: [0,1], order: 1, depth: 23 },
+  glcs:          { divisions: [2,3], order: 5, depth: 23 },
+  world_series:  { divisions: [],    order: 3, depth: 61 }
 }
 
 Heading = '-          Record   Pct  GB  Dvsn.   Pct  Last10 Str  Diff'
 #          Lightning 107  45  .704   -  34 22  .607   6  4   4W   268
 
+def calc_pct(wins, losses)
+  return (wins + losses) == 0 ? 0.0 : wins.to_f / (wins + losses).to_f
+end
 
 def update_teams( teams, game )
   if teams[game.road_team].nil?
@@ -67,8 +70,8 @@ def update_teams( teams, game )
       home[:dlosses] += 1
     end
 
-    road[:results].push 'W'
-    home[:results].push 'L'
+    road[:results].push({ score: game.road_score, status: 'W' })
+    home[:results].push({ score: game.home_score, status: 'L' })
   else
     road[:losses] += 1
     home[:wins  ] += 1
@@ -78,8 +81,8 @@ def update_teams( teams, game )
       home[:dwins  ] += 1
     end
 
-    road[:results].push 'L'
-    home[:results].push 'W'
+    road[:results].push({ score: game.road_score, status: 'L' })
+    home[:results].push({ score: game.home_score, status: 'W' })
   end
 end
 
@@ -94,22 +97,22 @@ def decorate_teams( teams )
       break if (last_ten[:wins] + last_ten[:losses]) == 10 and streak[:final]
 
       if (last_ten[:wins] + last_ten[:losses]) < 10
-        if result == 'W'; then last_ten[:wins  ] += 1; end
-        if result == 'L'; then last_ten[:losses] += 1; end
+        if result[:status] == 'W'; then last_ten[:wins  ] += 1; end
+        if result[:status] == 'L'; then last_ten[:losses] += 1; end
       end
 
       if streak[:type].nil?
-        streak[:type] = result
+        streak[:type] = result[:status]
         streak[:count] += 1
-      elsif streak[:final] == false and streak[:type] == result
+      elsif streak[:final] == false and streak[:type] == result[:status]
         streak[:count] += 1
-      elsif streak[:final] == false and streak[:type] != result
+      elsif streak[:final] == false and streak[:type] != result[:status]
         streak[:final] = true
       end
     end
 
-    record[:win_pct] = record[:wins].to_f  / (record[:wins]  + record[:losses] ).to_f
-    record[:div_pct] = record[:dwins].to_f / (record[:dwins] + record[:dlosses]).to_f
+    record[:win_pct] = calc_pct record[:wins], record[:losses]
+    record[:div_pct] = calc_pct record[:dwins], record[:dlosses]
 
     record[:games_back] = (leader_wins - record[:wins]).to_s
     record[:games_back] = (record[:games_back] == '0') ? '-' : record[:games_back]
@@ -146,8 +149,8 @@ end
 
 def compare(a, b)
   if b[:wins] == a[:wins]
-    bpct = b[:dwins].to_f / (b[:dwins] + b[:dlosses]).to_f
-    apct = a[:dwins].to_f / (a[:dwins] + a[:dlosses]).to_f
+    bpct = calc_pct b[:dwins], b[:dlosses]
+    apct = calc_pct a[:dwins], a[:dlosses]
 
     if bpct == apct
       bdiff = b[:runs_scored] - b[:runs_allowed]
@@ -218,7 +221,6 @@ if @options.empty? || @options[:regular_season]
       update_teams teams, game
     end
   end
-
 
   atlantic = teams.values.select {|team| team[:division] == 0}.sort { |a, b| compare a, b }
   north    = teams.values.select {|team| team[:division] == 1}.sort { |a, b| compare a, b }
@@ -342,30 +344,43 @@ if @options.empty? || @options[:playoff]
     indent = sprintf "%*s", PlayoffMatchTypes[ match[:type] ][:depth], ""
 
     match[:teams].each do |team|
-      output = sprintf '%-10s', team
-
-      match[:results][team][:results].each do |result|
-        output += sprintf ' %s', result
-      end
-
-      output += sprintf " (%d)", match[:results][team][:wins]
+      team_highlight = ''
 
       if winner( match[:type], match[:results][team] )
         if match[:type] == :world_series
-          puts "#{indent}\e[1;33m#{output}\e[0m"
+          team_highlight = "\e[1;33m"
         else
-          puts "#{indent}\e[1;37m#{output}\e[0m"
+          team_highlight = "\e[1;37m"
         end
-      else
-        puts indent + output
       end
+
+      output = sprintf "#{team_highlight}%-10s\e[0m", team
+      output_length = 10
+
+      match[:results][team][:results].each do |result|
+        if result[:status] == 'W'
+          output += sprintf "\e[37m"
+        else
+          output += sprintf "\e[90m"
+        end
+
+        output += sprintf " %2d\e[0m", result[:score]
+        output_length += 3
+      end
+
+      output += sprintf " #{team_highlight}(%d)\e[0m", match[:results][team][:wins]
+      output_length += 4
+
+      puts indent + output
 
       if road
         road = false
 
-        puts indent + ('-' * output.length)
+        puts indent + ('-' * output_length)
       end
     end
+
+    puts ""
   end
 end
 
@@ -406,24 +421,35 @@ if @options.empty? || @options[:allstar]
 
   if match
     match[:teams].each do |team|
-      output = sprintf '%-10s', team
-
-      match[:results][team][:results].each do |result|
-        output += sprintf ' %s', result
-      end
-
-      output += sprintf " (%d)", match[:results][team][:wins]
+      team_highlight = ''
 
       if winner( match[:type], match[:results][team] )
-        puts "#{indent}\e[1;37m#{output}\e[0m"
-      else
-        puts indent + output
+        team_highlight = "\e[1;37m"
       end
+
+      output = sprintf "#{team_highlight}%-10s\e[0m", team
+      output_length = 10
+
+      match[:results][team][:results].each do |result|
+        if result[:status] == 'W'
+          output += sprintf "\e[37m"
+        else
+          output += sprintf "\e[90m"
+        end
+
+        output += sprintf " %2d\e[0m", result[:score]
+        output_length += 3
+      end
+
+      output += sprintf " #{team_highlight}(%d)\e[0m", match[:results][team][:wins]
+        output_length += 4
+
+      puts indent + output
 
       if road
         road = false
 
-        puts indent + ('-' * output.length)
+        puts indent + ('-' * output_length)
       end
     end
   end
