@@ -5,7 +5,7 @@ class ProgRunner
   end
 
   def execute( *args )
-    @output = File.read "|#{@executable} #{args.join ' '}"
+    @output = IO.read "|#{@executable} #{args.join ' '}"
     @result = $?.success?
   end
 
