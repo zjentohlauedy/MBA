@@ -225,9 +225,7 @@ ul.teamlist {
     margin-right: auto;
     margin-top: 0px;
     list-style-type: none;
-/*    columns: 4; */
-    -webkit-columns: 4;
-    -moz-columns: 4;
+    column-count: 4;
 }
 
 .accolade-entry select {
