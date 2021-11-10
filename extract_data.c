@@ -241,6 +241,8 @@ static void printPlayer( const player_s *player )
 static void printTeam( const team_s *team )
 {
      printf( "{\"name\":\"%s\"", team->name );
+     printf( ",\"wins\":%d",     team->wins );
+     printf( ",\"losses\":%d",   team->losses );
 
      if ( team->players != NULL )
      {
