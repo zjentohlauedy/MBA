@@ -29,7 +29,7 @@ class LeadersPrinter
   end
 
   def print_tie_message( summary, format, index )
-    printf "%2d.    %-30s    #{format}\n", index + 1, "#{summary.count} Teams Tied At", summary.value
+    printf "%3d. %-40s  #{format}\n", index + 1, "#{summary.count} Teams Tied At", summary.value
   end
 
   def display_avg(average)
