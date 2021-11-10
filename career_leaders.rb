@@ -29,11 +29,11 @@ class LeadersPrinter
     first_season = player.rookie_season > 0 ? player.rookie_season : 1
     last_season  = first_season + player.seasons - 1
 
-    printf "%-2s %-20s %d S%02d-S%02d   #{format}\n", player.pos, player.name, player.seasons, first_season, last_season, value
+    printf "%-2s %-20s %2d S%02d-S%02d   #{format}\n", player.pos, player.name, player.seasons, first_season, last_season, value
   end
 
   def print_tie_message( summary, format, index )
-    printf "%2d.    %-30s   #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
+    printf "%2d.    %-30s    #{format}\n", index + 1, "#{summary.count} Players Tied At", summary.value
   end
 
   def display_avg(average)
