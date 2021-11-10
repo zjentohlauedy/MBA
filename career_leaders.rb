@@ -5,6 +5,7 @@
 location = File.dirname __FILE__
 
 $: << "#{location}"
+require 'optparse'
 require 'sqlite3'
 require 'player_leaders_compiler'
 require 'stat_rankings'
@@ -66,12 +67,6 @@ class LeadersFilter
     return closers.select { |p| p.innings.to_f >= 595.0 }
   end
 end
-
-
-@db = SQLite3::Database.new "#{location}/mba.db"
-
-@db.results_as_hash  = true
-@db.type_translation = true
 
 
 def get_organization( organization_id )
@@ -154,6 +149,18 @@ def enrich_batter( batter, seasons = nil )
     batter[:stats][:simulated] = get_batter_stats_by_player_id batter[:player_id]
   end
 end
+
+
+@options = {}
+
+OptionParser.new do |opt|
+  opt.on( '--db', '--database DATABASE_FILE' ) { |o| @options[ :database ] = o }
+end.parse!
+
+@db = SQLite3::Database.new ( @options[:database] || "#{location}/mba.db")
+
+@db.results_as_hash  = true
+@db.type_translation = true
 
 
 if ARGV.length > 0
