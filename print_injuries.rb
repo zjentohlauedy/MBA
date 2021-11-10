@@ -40,6 +40,8 @@ org[:leagues].each do |league|
 
       should_print_team = true
 
+      games_remaining = 152 - (team[:wins] + team[:losses])
+
       team[:players].each do |player|
         next if player[:injury_days] == 0
 
@@ -55,13 +57,19 @@ org[:leagues].each do |league|
 
         injuries.push player
 
-        notice = player_before ? 'Games Remaining' : 'Games'
+        if games_remaining > player[:injury_days]
+          notice = player_before ? 'Games Remaining' : 'Games'
 
-        printf "%-2s %-20s %2d %s\n",
-               get_position_value( player ),
-               "#{player[:last_name]}, #{player[:first_name]}",
-               player[:injury_days],
-               notice
+          printf "%-2s %-20s %2d %s\n",
+                 get_position_value( player ),
+                 "#{player[:last_name]}, #{player[:first_name]}",
+                 player[:injury_days],
+                 notice
+        else
+          printf "%-2s %-20s    Out for Season\n",
+                 get_position_value( player ),
+                 "#{player[:last_name]}, #{player[:first_name]}"
+        end
       end
 
       unless should_print_team; puts ""; end
