@@ -167,6 +167,7 @@ end
                       { 'label' => "Errors",               'stat' => :errors,       'format' => '%3d',    'direction' => :ascending  },
                       { 'label' => "Slugging Average",     'stat' => :slugging,     'format' => '%s',     'direction' => :descending },
                       { 'label' => "On Base Percentage",   'stat' => :obp,          'format' => '%s',     'direction' => :descending },
+                      { 'label' => "O.P.S.",               'stat' => :ops,          'format' => '%s',     'direction' => :descending },
                       { 'label' => "Strike Out Average",   'stat' => :soa,          'format' => '%s',     'direction' => :ascending  },
                       { 'label' => "Runs Per Game",        'stat' => :rpg,          'format' => '%4.2f',  'direction' => :descending }]}
 }
@@ -205,6 +206,7 @@ end
                       { 'label' => "Errors",               'stat' => :errors,               'format' => '%3d',    'direction' => :ascending  },
                       { 'label' => "Slugging Average",     'stat' => :slugging,             'format' => '%s',     'direction' => :descending },
                       { 'label' => "On Base Percentage",   'stat' => :obp,                  'format' => '%s',     'direction' => :descending },
+                      { 'label' => "O.P.S.",               'stat' => :ops,                  'format' => '%s',     'direction' => :descending },
                       { 'label' => "Strike Out Average",   'stat' => :soa,                  'format' => '%s',     'direction' => :ascending  },
                       { 'label' => "Runs Per Game",        'stat' => :rpg,                  'format' => '%4.2f',  'direction' => :descending }]}
 }

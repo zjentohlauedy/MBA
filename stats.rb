@@ -197,7 +197,7 @@ end
 class Batter < Stats
   attr_reader :name, :team, :pos, :average, :games, :at_bats, :runs, :hits, :seasons,
               :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs, :rookie_season,
-              :steals, :errors, :slugging, :obp, :soa, :rpg, :season, :avgs, :identifier,
+              :steals, :errors, :slugging, :obp, :ops, :soa, :rpg, :season, :avgs, :identifier,
               :total_bases
 
   def initialize( team, batter, style=:simulated )
@@ -231,10 +231,11 @@ class Batter < Stats
     @average     = (@at_bats > 0) ? @hits.to_f / @at_bats.to_f : 0
     @slugging    = (@at_bats > 0) ? bases.to_f / @at_bats.to_f : 0
     @obp         = (@at_bats > 0) ? (@hits.to_f + @walks.to_f) / appearances.to_f : 0
+    @ops         = @obp + @slugging
     @soa         = (@at_bats > 0) ? @strike_outs.to_f / @at_bats.to_f : 0
     @rpg         = (@games > 0) ? production / @games.to_f : 0
 
-    @avgs = [:average, :obp, :soa, :slugging]
+    @avgs = [:average, :obp, :ops, :soa, :slugging]
   end
 
 end
@@ -314,7 +315,7 @@ end
 class Batting < Stats
   attr_reader :name, :team, :pos, :average, :games, :at_bats, :runs, :hits, :team,
               :doubles, :triples, :home_runs, :rbi, :walks, :strike_outs, :identifier,
-              :steals, :errors, :slugging, :obp, :soa, :rpg, :season, :avgs
+              :steals, :errors, :slugging, :obp, :ops, :soa, :rpg, :season, :avgs
 
   def initialize( team, style=:simulated )
     @name        = team[:location]
@@ -342,10 +343,11 @@ class Batting < Stats
     @average     = (@at_bats > 0) ? @hits.to_f / @at_bats.to_f : 0
     @slugging    = (@at_bats > 0) ? bases.to_f / @at_bats.to_f : 0
     @obp         = (@at_bats > 0) ? (@hits.to_f + @walks.to_f) / appearances.to_f : 0
+    @ops         = @obp + @slugging
     @soa         = (@at_bats > 0) ? @strike_outs.to_f / @at_bats.to_f : 0
     @rpg         = (@games > 0) ? production / @games.to_f : 0
 
-    @avgs = [:average, :obp, :soa, :slugging]
+    @avgs = [:average, :obp, :ops, :soa, :slugging]
   end
 
 end
