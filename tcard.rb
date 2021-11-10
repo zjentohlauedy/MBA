@@ -540,7 +540,7 @@ batting.map { |ts| ts[:season_phase] }.uniq.each do |phase|
   if @options[:extended]
     puts BattingStatsHeadingExtended
   else
-    puts BattingStatsHeadign
+    puts BattingStatsHeading
   end
 
   batting_totals = {}
